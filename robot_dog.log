@@ -1,0 +1,20 @@
+2024-12-16 23:22:22 INFO: Starting control_logic.py script...
+
+2024-12-16 23:22:22 DEBUG: Establishing serial connection with maestro...
+
+2024-12-16 23:22:22 INFO: Successfully established connection with maestro.
+
+2024-12-16 23:22:22 DEBUG: Sending baud rate initializer...
+
+2024-12-16 23:22:22 INFO: Successfully initialized maestro with baud rate.
+
+2024-12-16 23:22:22 DEBUG: Moving to neutral standing position...
+
+2024-12-16 23:22:23 DEBUG: Preparing legs...
+
+2024-12-16 23:22:23 INFO: Prepared legs.
+
+2024-12-16 23:22:26 DEBUG: Standing up...
+
+2024-12-16 23:22:26 INFO: Stood up.
+
