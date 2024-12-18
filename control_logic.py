@@ -84,77 +84,97 @@ from movement.standing.standing_inplace import neutralStandingPosition # import 
 
 ########## RUN ROBOTIC PROCESS ##########
 
-def runRobot(): # central function that runs the robot
-
+def runRobot():  # central function that runs the robot
     ##### set variables #####
+    global CHANNEL_DATA  # define channel data as global
+    CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
+    decoders = []  # define decoders as empty list
 
-    global CHANNEL_DATA # define channel data as global
-    CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS} # initialize with neutral values
-    decoders = [] # define decoders as empty list
+    ##### initialize camera #####
+    camera_process = start_camera_process()
+    if camera_process is None:
+        logging.error("ERROR 15 (control_logic.py): Failed to start camera process. Exiting...\n")
+        exit(1)
 
     ##### initialize PWM decoders #####
-
-    for pin in PWM_PINS: # loop through each PWM pin
-
-        decoder = PWMDecoder(pi, pin, pwmCallback) # initialize PWM decoder
-        decoders.append(decoder) # append decoder to decoders list
+    for pin in PWM_PINS:  # loop through each PWM pin
+        decoder = PWMDecoder(pi, pin, pwmCallback)  # initialize PWM decoder
+        decoders.append(decoder)  # append decoder to decoders list
 
     ##### run robotic logic #####
+    neutralStandingPosition()  # set to neutral standing position
+    time.sleep(3)  # wait for 3 seconds for the legs to move to neutral position
 
-    neutralStandingPosition() # set to neutral standing position
+    mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
 
-    try: # try to run robotic logic
+    try:
+        while True:
+            # Read MJPEG data from the camera process
+            chunk = camera_process.stdout.read(4096)
+            if not chunk:
+                logging.error("ERROR (control_logic.py): Camera process stopped sending data.")
+                break
 
-        while True: # loop indefinitely
+            mjpeg_buffer += chunk
 
-            time.sleep(0.1) # sleep for 0.1 seconds to prevent overloading the system
+            # Look for JPEG frame markers
+            start_idx = mjpeg_buffer.find(b'\xff\xd8')  # JPEG start marker
+            end_idx = mjpeg_buffer.find(b'\xff\xd9')  # JPEG end marker
 
-            frame = process_frame() # process the camera frame
+            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+                frame_data = mjpeg_buffer[start_idx:end_idx + 2]
+                mjpeg_buffer = mjpeg_buffer[end_idx + 2:]  # Remove processed frame from buffer
 
-            if frame is not None: # if the frame is not empty...
+                # Decode and display the frame
+                frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
+                if frame is not None:
+                    try:
+                        cv2.imshow("Robot Camera", frame)
+                        if cv2.waitKey(1) & 0xFF == ord('q'):
+                            logging.info("Exiting camera feed display.")
+                            break
+                    except Exception as e:
+                        logging.error(f"ERROR 11 (control_logic.py): cv2.imshow failed: {e}")
+                else:
+                    logging.warning("WARNING (control_logic.py): Failed to decode frame.")
+            else:
+                # Log incomplete frames and clear buffer if it's too large
+                if len(mjpeg_buffer) > 65536:  # If the buffer grows too large, reset it
+                    logging.warning("WARNING (control_logic.py): MJPEG buffer overflow. Resetting buffer.")
+                    mjpeg_buffer = b''
+                logging.warning("WARNING (control_logic.py): Incomplete frame received, skipping.")
 
-                cv2.imshow("Robot Camera", frame) # show the camera feed
-
-                if cv2.waitKey(1) & 0xFF == ord('q'): # if 'q' is pressed...
-
-                    break # break the loop
-
-            commands = interpretCommands(CHANNEL_DATA) # interpret commands from channel data and set to commands
-
-            for command, action in commands.items(): # loop through each command and action
-
-                # execute commands and return flags
+            # Handle commands
+            commands = interpretCommands(CHANNEL_DATA)
+            for command, action in commands.items():
                 executeCommands(command, action)
 
     ##### kill robotic process #####
+    except KeyboardInterrupt:  # upon keyboard interrupt...
+        logging.info("KeyboardInterrupt received. Exiting...\n")  # log keyboard interrupt
 
-    except KeyboardInterrupt: # upon keyboard interrupt...
+    except Exception as e:  # upon any other exception...
+        logging.error(f"ERROR 12 (control_logic.py): Unexpected exception in main loop: {e}\n")
+        exit(1)  # exit with error code 1
 
-        print("Exiting process...\n") # print exiting statement upon cmd + c
-
-    finally: # finally...
-
-        disableAllServos() # make all servos go limp
-
-        for decoder in decoders: # loop through each decoder
-
-            decoder.cancel() # cancel decoder
+    finally:  # finally...
+        ##### clean up servos and decoders #####
+        disableAllServos()  # make all servos go limp
+        for decoder in decoders:  # loop through each decoder
+            decoder.cancel()  # cancel decoder
 
         ##### close camera #####
+        if camera_process.poll() is None:  # if the camera process is still running...
+            camera_process.terminate()  # terminate the camera process
+            camera_process.wait()  # wait for the camera process to finish
 
-        if camera_process.poll() is None: # if the camera process is still running...
-
-            camera_process.terminate() # terminate the camera process
-
-            camera_process.wait() # wait for the camera process to finish
-
-        cv2.destroyAllWindows() # close all camera windows
+        cv2.destroyAllWindows()  # close all camera windows
 
         ##### clean up GPIO and pigpio #####
+        pi.stop()  # stop pigpio
+        GPIO.cleanup()  # clean up GPIO
+        closeMaestroConnection(MAESTRO)  # close serial connection to maestro
 
-        pi.stop() # stop pigpio
-        GPIO.cleanup() # clean up GPIO
-        closeMaestroConnection(MAESTRO) # close serial connection to maestro
 
 
 ########## PWM CALLBACK ##########
