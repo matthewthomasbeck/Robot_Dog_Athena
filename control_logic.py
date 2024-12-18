@@ -67,6 +67,7 @@ logging.info("Starting control_logic.py script...\n") # log the start of the scr
 
 from initialize.initialize_receiver import * # import PWMDecoder class from initialize_receiver along with functions
 from initialize.initialize_servos import * # import servo initialization functions and maestro object
+from initialize.initialize_camera import * # import camera initialization functions
 
 ##### import movement functions #####
 
@@ -107,6 +108,17 @@ def runRobot(): # central function that runs the robot
         while True: # loop indefinitely
 
             time.sleep(0.1) # sleep for 0.1 seconds to prevent overloading the system
+
+            frame = process_frame() # process the camera frame
+
+            if frame is not None: # if the frame is not empty...
+
+                cv2.imshow("Robot Camera", frame) # show the camera feed
+
+                if cv2.waitKey(1) & 0xFF == ord('q'): # if 'q' is pressed...
+
+                    break # break the loop
+
             commands = interpretCommands(CHANNEL_DATA) # interpret commands from channel data and set to commands
 
             for command, action in commands.items(): # loop through each command and action
@@ -127,6 +139,18 @@ def runRobot(): # central function that runs the robot
         for decoder in decoders: # loop through each decoder
 
             decoder.cancel() # cancel decoder
+
+        ##### close camera #####
+
+        if camera_process.poll() is None: # if the camera process is still running...
+
+            camera_process.terminate() # terminate the camera process
+
+            camera_process.wait() # wait for the camera process to finish
+
+        cv2.destroyAllWindows() # close all camera windows
+
+        ##### clean up GPIO and pigpio #####
 
         pi.stop() # stop pigpio
         GPIO.cleanup() # clean up GPIO
