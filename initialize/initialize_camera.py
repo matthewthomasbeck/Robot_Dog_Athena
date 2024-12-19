@@ -59,7 +59,7 @@ def start_camera_process():
 
         # Optimize rpicam-vid settings
         camera_process = subprocess.Popen(
-            ["rpicam-vid", "--width", "640", "--height", "480", "--framerate", "30", "--timeout", "0", "--output", "-", "--codec", "mjpeg"],
+            ["rpicam-vid", "--width", "1280", "--height", "720", "--framerate", "30", "--timeout", "0", "--output", "-", "--codec", "mjpeg", "--nopreview"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             bufsize=0
