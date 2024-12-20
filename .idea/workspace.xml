@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got a good resolution with the camera, 1280x720p">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="COntinued model testing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/test_opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/test_opencv.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/test_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/test_xml.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +51,7 @@
       <workItem from="1734459107589" duration="41000" />
       <workItem from="1734459425006" duration="61000" />
       <workItem from="1734459496556" duration="13991000" />
+      <workItem from="1734717093506" duration="778000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -101,7 +102,14 @@
       <option name="project" value="LOCAL" />
       <updated>1734642162797</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="COntinued model testing">
+      <created>1734717126666</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1734717126666</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -122,6 +130,7 @@
     <MESSAGE value="Camera successfully streams to opencv (for the most part, still model testing)" />
     <MESSAGE value="CV2 camera integration fully complete" />
     <MESSAGE value="Got a good resolution with the camera, 1280x720p" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got a good resolution with the camera, 1280x720p" />
+    <MESSAGE value="COntinued model testing" />
+    <option name="LAST_COMMIT_MESSAGE" value="COntinued model testing" />
   </component>
 </project>
