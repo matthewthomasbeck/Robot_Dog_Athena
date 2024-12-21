@@ -42,8 +42,8 @@ CHANNEL_TIMESTAMPS = { # set channel timestamps to current time for command requ
 
 ##### command registry hyperparameters #####
 
-JOYSTICK_THRESHOLD = 2 # number of times condition must be met to trigger a request on a joystick channel
-TOGGLE_THRESHOLD = 4 # number of times condition must be met to trigger a request on a button channel
+JOYSTICK_THRESHOLD = 40 # number of times condition must be met to trigger a request on a joystick channel
+TOGGLE_THRESHOLD = 40 # number of times condition must be met to trigger a request on a button channel
 TIME_FRAME = 0.10017 # time frame for condition to be met, default: 0.100158
 DEADBAND_HIGH = 1600 # deadband high for PWM signal
 DEADBAND_LOW = 1400 # deadband low for PWM signal
