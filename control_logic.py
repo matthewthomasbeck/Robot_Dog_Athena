@@ -71,7 +71,7 @@ from initialize.initialize_camera import * # import camera initialization functi
 
 ##### import movement functions #####
 
-from movement.standing.standing_inplace import neutralStandingPosition # import standing functions
+from movement.standing.standing_inplace import * # import standing functions
 
 
 
@@ -85,16 +85,19 @@ from movement.standing.standing_inplace import neutralStandingPosition # import 
 ########## RUN ROBOTIC PROCESS ##########
 
 def runRobot():  # central function that runs the robot
+
     ##### set variables #####
+
     global CHANNEL_DATA  # define channel data as global
     CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
     decoders = []  # define decoders as empty list
 
     ##### initialize camera #####
-    camera_process = start_camera_process()
-    if camera_process is None:
-        logging.error("ERROR 15 (control_logic.py): Failed to start camera process. Exiting...\n")
-        exit(1)
+
+    #camera_process = start_camera_process()
+    #if camera_process is None:
+        #logging.error("ERROR 15 (control_logic.py): Failed to start camera process. Exiting...\n")
+        #exit(1)
 
     ##### initialize PWM decoders #####
     for pin in PWM_PINS:  # loop through each PWM pin
@@ -105,44 +108,12 @@ def runRobot():  # central function that runs the robot
     neutralStandingPosition()  # set to neutral standing position
     time.sleep(3)  # wait for 3 seconds for the legs to move to neutral position
 
-    mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
+    #mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
 
     try:
         while True:
-            # Read MJPEG data from the camera process
-            chunk = camera_process.stdout.read(4096)
-            if not chunk:
-                logging.error("ERROR (control_logic.py): Camera process stopped sending data.")
-                break
 
-            mjpeg_buffer += chunk
-
-            # Look for JPEG frame markers
-            start_idx = mjpeg_buffer.find(b'\xff\xd8')  # JPEG start marker
-            end_idx = mjpeg_buffer.find(b'\xff\xd9')  # JPEG end marker
-
-            if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-                frame_data = mjpeg_buffer[start_idx:end_idx + 2]
-                mjpeg_buffer = mjpeg_buffer[end_idx + 2:]  # Remove processed frame from buffer
-
-                # Decode and display the frame
-                frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
-                if frame is not None:
-                    try:
-                        cv2.imshow("Robot Camera", frame)
-                        if cv2.waitKey(1) & 0xFF == ord('q'):
-                            logging.info("Exiting camera feed display.")
-                            break
-                    except Exception as e:
-                        logging.error(f"ERROR 11 (control_logic.py): cv2.imshow failed: {e}")
-                else:
-                    logging.warning("WARNING (control_logic.py): Failed to decode frame.")
-            else:
-                # Log incomplete frames and clear buffer if it's too large
-                if len(mjpeg_buffer) > 65536:  # If the buffer grows too large, reset it
-                    logging.warning("WARNING (control_logic.py): MJPEG buffer overflow. Resetting buffer.")
-                    mjpeg_buffer = b''
-                logging.warning("WARNING (control_logic.py): Incomplete frame received, skipping.")
+            # TODO Add cv2 logic here
 
             # Handle commands
             commands = interpretCommands(CHANNEL_DATA)
@@ -164,17 +135,16 @@ def runRobot():  # central function that runs the robot
             decoder.cancel()  # cancel decoder
 
         ##### close camera #####
-        if camera_process.poll() is None:  # if the camera process is still running...
-            camera_process.terminate()  # terminate the camera process
-            camera_process.wait()  # wait for the camera process to finish
+        #if camera_process.poll() is None:  # if the camera process is still running...
+            #camera_process.terminate()  # terminate the camera process
+            #camera_process.wait()  # wait for the camera process to finish
 
-        cv2.destroyAllWindows()  # close all camera windows
+        #cv2.destroyAllWindows()  # close all camera windows
 
         ##### clean up GPIO and pigpio #####
         pi.stop()  # stop pigpio
         GPIO.cleanup()  # clean up GPIO
         closeMaestroConnection(MAESTRO)  # close serial connection to maestro
-
 
 
 ########## PWM CALLBACK ##########
