@@ -126,8 +126,6 @@ def inference_loop(compiled_model, input_layer, output_layer, camera_process):
                         # Ensure the data type is correct
                         input_blob = input_blob.astype(np.float32)
 
-                        print(f"Input blob shape: {input_blob.shape}, dtype: {input_blob.dtype}")
-
                         # Perform inference
                         results = compiled_model([input_blob])[output_layer]
 
@@ -190,4 +188,3 @@ if __name__ == "__main__":
 
     # 4. Run inference loop
     inference_loop(compiled_model, input_layer, output_layer, camera_process)
-
