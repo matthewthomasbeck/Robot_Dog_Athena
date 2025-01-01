@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="basic output text file for quick work">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Solved weird import error">
+      <change afterPath="$PROJECT_DIR$/initialize/initialize_opencv.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initialize/initialize_receiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/initialize/initialize_receiver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/initialize/initialize_camera.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +53,7 @@
       <workItem from="1734459107589" duration="41000" />
       <workItem from="1734459425006" duration="61000" />
       <workItem from="1734459496556" duration="13991000" />
-      <workItem from="1734717093506" duration="3639000" />
+      <workItem from="1734717093506" duration="9644000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -123,7 +125,42 @@
       <option name="project" value="LOCAL" />
       <updated>1734735628520</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Adjusted signal tolorances">
+      <created>1734805655914</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1734805655914</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Removed shit from control_logic.py">
+      <created>1734813583929</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1734813583929</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Final full working test">
+      <created>1734825844871</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1734825844871</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Final full working test">
+      <created>1734826147467</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1734826147467</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Solved weird import error">
+      <created>1734829033492</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1734829033492</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -147,6 +184,10 @@
     <MESSAGE value="COntinued model testing" />
     <MESSAGE value="Full pipeline completely working" />
     <MESSAGE value="basic output text file for quick work" />
-    <option name="LAST_COMMIT_MESSAGE" value="basic output text file for quick work" />
+    <MESSAGE value="Adjusted signal tolorances" />
+    <MESSAGE value="Removed shit from control_logic.py" />
+    <MESSAGE value="Final full working test" />
+    <MESSAGE value="Solved weird import error" />
+    <option name="LAST_COMMIT_MESSAGE" value="Solved weird import error" />
   </component>
 </project>

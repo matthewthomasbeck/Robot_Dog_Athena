@@ -68,6 +68,7 @@ logging.info("Starting control_logic.py script...\n") # log the start of the scr
 from initialize.initialize_receiver import * # import PWMDecoder class from initialize_receiver along with functions
 from initialize.initialize_servos import * # import servo initialization functions and maestro object
 from initialize.initialize_camera import * # import camera initialization functions
+from initialize.initialize_opencv import * # import opencv initialization functions
 
 ##### import movement functions #####
 
@@ -85,66 +86,86 @@ from movement.standing.standing_inplace import * # import standing functions
 ########## RUN ROBOTIC PROCESS ##########
 
 def runRobot():  # central function that runs the robot
-
-    ##### set variables #####
-
-    global CHANNEL_DATA  # define channel data as global
+    global CHANNEL_DATA
     CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
     decoders = []  # define decoders as empty list
 
     ##### initialize camera #####
-
-    #camera_process = start_camera_process()
-    #if camera_process is None:
-        #logging.error("ERROR 15 (control_logic.py): Failed to start camera process. Exiting...\n")
-        #exit(1)
+    camera_process = start_camera_process(width=640, height=480, framerate=30)
+    if camera_process is None:
+        logging.error("ERROR 15 (control_logic.py): Failed to start camera process. Exiting...\n")
+        exit(1)
 
     ##### initialize PWM decoders #####
-    for pin in PWM_PINS:  # loop through each PWM pin
-        decoder = PWMDecoder(pi, pin, pwmCallback)  # initialize PWM decoder
-        decoders.append(decoder)  # append decoder to decoders list
+    for pin in PWM_PINS:
+        decoder = PWMDecoder(pi, pin, pwmCallback)
+        decoders.append(decoder)
 
     ##### run robotic logic #####
-    neutralStandingPosition()  # set to neutral standing position
-    time.sleep(3)  # wait for 3 seconds for the legs to move to neutral position
+    neutralStandingPosition()
+    time.sleep(3)
 
-    #mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
+    mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
 
     try:
         while True:
+            # Read chunk of data from the camera process
+            chunk = camera_process.stdout.read(4096)
+            if not chunk:
+                logging.error("ERROR (control_logic.py): Camera process stopped sending data.")
+                break
 
-            # TODO Add cv2 logic here
+            mjpeg_buffer += chunk
+
+            # Attempt to decode a single frame and display
+            prev_len = len(mjpeg_buffer)
+            mjpeg_buffer = decode_and_show_frame(mjpeg_buffer)
+
+            if mjpeg_buffer is None:
+                # If something went very wrong, stop
+                logging.warning("WARNING (control_logic.py): decode_and_show_frame returned None. Stopping.")
+                break
+            elif len(mjpeg_buffer) == prev_len:
+                # Means no complete JPEG was found (incomplete frame)
+                # If the buffer grows too large, reset it
+                if len(mjpeg_buffer) > 65536:
+                    logging.warning("WARNING (control_logic.py): MJPEG buffer overflow. Resetting buffer.")
+                    mjpeg_buffer = b''
+
+            # Check if 'q' was pressed in the imshow window
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                logging.info("Exiting camera feed display.")
+                break
 
             # Handle commands
             commands = interpretCommands(CHANNEL_DATA)
             for command, action in commands.items():
                 executeCommands(command, action)
 
-    ##### kill robotic process #####
-    except KeyboardInterrupt:  # upon keyboard interrupt...
-        logging.info("KeyboardInterrupt received. Exiting...\n")  # log keyboard interrupt
+    except KeyboardInterrupt:
+        logging.info("KeyboardInterrupt received. Exiting...\n")
 
-    except Exception as e:  # upon any other exception...
+    except Exception as e:
         logging.error(f"ERROR 12 (control_logic.py): Unexpected exception in main loop: {e}\n")
-        exit(1)  # exit with error code 1
+        exit(1)
 
-    finally:  # finally...
+    finally:
         ##### clean up servos and decoders #####
-        disableAllServos()  # make all servos go limp
-        for decoder in decoders:  # loop through each decoder
-            decoder.cancel()  # cancel decoder
+        disableAllServos()
+        for decoder in decoders:
+            decoder.cancel()
 
         ##### close camera #####
-        #if camera_process.poll() is None:  # if the camera process is still running...
-            #camera_process.terminate()  # terminate the camera process
-            #camera_process.wait()  # wait for the camera process to finish
+        if camera_process.poll() is None:
+            camera_process.terminate()
+            camera_process.wait()
 
-        #cv2.destroyAllWindows()  # close all camera windows
+        cv2.destroyAllWindows()
 
         ##### clean up GPIO and pigpio #####
-        pi.stop()  # stop pigpio
-        GPIO.cleanup()  # clean up GPIO
-        closeMaestroConnection(MAESTRO)  # close serial connection to maestro
+        pi.stop()
+        GPIO.cleanup()
+        closeMaestroConnection(MAESTRO)
 
 
 ########## PWM CALLBACK ##########
