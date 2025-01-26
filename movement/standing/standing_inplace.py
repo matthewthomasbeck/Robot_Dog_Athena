@@ -152,7 +152,7 @@ def fullForwardStandingPosition(): # function to set all servos to full forward 
 
         logging.debug("Preparing legs...\n")  # print initialization message
 
-        setTarget(3, 1148.5) # set front left hip to full forward
+        setTarget(4, 1148.5) # set front left hip to full forward
         setTarget(2, 992) # set front right hip to full forward
         setTarget(11, 1848.25) # set rear right hip to full forward
         setTarget(8, 1036) # set rear left hip to full forward
@@ -167,7 +167,7 @@ def fullForwardStandingPosition(): # function to set all servos to full forward 
 
         setTarget(5, 1266) # set front left knee to full forward
         setTarget(1, 1921) # set front right knee to full forward
-        setTarget(4, 1892.25)  # set front left ankle to full forward
+        setTarget(3, 1892.25)  # set front left ankle to full forward
         setTarget(0, 2000) # set front right ankle to full forward
 
         ##### back legs #####
