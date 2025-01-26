@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Commit">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added full foreward position">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +53,7 @@
       <workItem from="1734717093506" duration="9644000" />
       <workItem from="1735754562092" duration="1869000" />
       <workItem from="1736273226744" duration="73000" />
-      <workItem from="1737828427269" duration="2806000" />
+      <workItem from="1737828427269" duration="4046000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -167,7 +167,14 @@
       <option name="project" value="LOCAL" />
       <updated>1735754685742</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Added full foreward position">
+      <created>1737894675948</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1737894675948</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -196,6 +203,7 @@
     <MESSAGE value="Final full working test" />
     <MESSAGE value="Solved weird import error" />
     <MESSAGE value="Commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Commit" />
+    <MESSAGE value="Added full foreward position" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added full foreward position" />
   </component>
 </project>

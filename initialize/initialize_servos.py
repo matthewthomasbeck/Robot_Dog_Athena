@@ -55,6 +55,8 @@ def setTarget(channel, target): # function to set target position of a singular 
         command = bytearray([0x84, channel, target & 0x7F, (target >> 7) & 0x7F]) # create command to send to maestro
 
         MAESTRO.write(command) # write command to maestro
+        
+        logging.info(f"Moved servo {channel}.\n") # see if servo moved to a position
 
     except: # if movement failed...
 
