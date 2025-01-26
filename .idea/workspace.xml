@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added full foreward position">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added servo debug to help see why front left leg is lagging">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/initialize/initialize_servos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/standing/standing_inplace.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/standing/standing_inplace.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +55,7 @@
       <workItem from="1734717093506" duration="9644000" />
       <workItem from="1735754562092" duration="1869000" />
       <workItem from="1736273226744" duration="73000" />
-      <workItem from="1737828427269" duration="4046000" />
+      <workItem from="1737828427269" duration="5614000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -174,7 +176,14 @@
       <option name="project" value="LOCAL" />
       <updated>1737894675948</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Added servo debug to help see why front left leg is lagging">
+      <created>1737896090648</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1737896090648</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -204,6 +213,7 @@
     <MESSAGE value="Solved weird import error" />
     <MESSAGE value="Commit" />
     <MESSAGE value="Added full foreward position" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added full foreward position" />
+    <MESSAGE value="Added servo debug to help see why front left leg is lagging" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added servo debug to help see why front left leg is lagging" />
   </component>
 </project>
