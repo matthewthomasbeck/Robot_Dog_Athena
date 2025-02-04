@@ -137,5 +137,3 @@ def disableAllServos(): # function to disable servos via code
     except: # if failure to disable any or all servos...
 
         logging.error("ERROR 5 (initialize_servos.py): Failed to disable servo(s).\n") # print failure statement
-
-
