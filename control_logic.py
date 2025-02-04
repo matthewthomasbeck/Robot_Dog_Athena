@@ -73,6 +73,7 @@ from initialize.initialize_opencv import * # import opencv initialization functi
 ##### import movement functions #####
 
 from movement.standing.standing_inplace import * # import standing functions
+from movement.walking.manual_walking import * # import walking functions
 
 
 
@@ -225,6 +226,7 @@ def executeCommands(command, action): # function to interpret commands from chan
     elif command == 'channel-5':
         if action == 'MOVE FORWARD':
             print(f"{command}: {action}")
+            manualForward()
         elif action == 'MOVE BACKWARD':
             print(f"{command}: {action}")
 
