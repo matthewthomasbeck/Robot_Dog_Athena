@@ -49,7 +49,7 @@ def start_camera_process(width=640, height=480, framerate=30):
         )
         return camera_process
     except Exception as e:
-        print(f"ERROR (initialize_opencv.py): Failed to start camera process: {e}")
+        print(f"ERROR 15 (initialize_opencv.py): Failed to start camera process: {e}\n")
         return None
 
 
@@ -69,7 +69,7 @@ def load_and_compile_model(model_xml_path, device_name="MYRIAD"):
         print(f"Model input shape: {input_layer.shape}")
         return compiled_model, input_layer, output_layer
     except Exception as e:
-        print(f"ERROR (initialize_opencv.py): Failed to load/compile model: {e}")
+        print(f"ERROR 16 (initialize_opencv.py): Failed to load/compile model: {e}\n")
         return None, None, None
 
 
@@ -78,7 +78,7 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer):
     Sends dummy input to the compiled model to ensure it works.
     """
     if compiled_model is None or input_layer is None or output_layer is None:
-        print("ERROR (initialize_opencv.py): Model is not properly initialized.")
+        print("ERROR 17 (initialize_opencv.py): Model is not properly initialized.\n")
         return
 
     try:
@@ -87,7 +87,7 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer):
         _ = compiled_model([dummy_input])[output_layer]  # Just run inference to test
         print("Dummy input test passed!")
     except Exception as e:
-        print(f"ERROR (initialize_opencv.py): Dummy input test failed: {e}")
+        print(f"ERROR 18 (initialize_opencv.py): Dummy input test failed: {e}\n")
 
 
 def decode_and_show_frame(mjpeg_buffer):

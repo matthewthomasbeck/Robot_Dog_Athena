@@ -48,7 +48,7 @@ def kill_existing_camera_processes():
                 os.kill(int(pid), signal.SIGKILL)
             logging.info("Successfully killed existing camera processes.\n")
     except Exception as e:
-        logging.error(f"Failed to terminate existing camera processes: {e}\n")
+        logging.error(f"ERROR 13 (initialize_camera.py): Failed to terminate existing camera processes: {e}\n")
 
 
 ########## CREATE CAMERA PIPELINE ##########
@@ -67,5 +67,5 @@ def start_camera_process():
         logging.info("Camera process started successfully with rpicam-vid.")
         return camera_process
     except Exception as e:
-        logging.error(f"ERROR (initialize_camera.py): Failed to start camera process: {e}")
+        logging.error(f"ERROR 14 (initialize_camera.py): Failed to start camera process: {e}\n")
         return None
