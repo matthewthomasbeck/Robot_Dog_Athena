@@ -37,6 +37,27 @@ MAESTRO = createMaestroConnection() # create maestro connection
 
 NUM_SERVOS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] # number of servos as a list of their names
 
+##### set dictionary of servos and their ranges #####
+
+LEG_CONFIG = { # dictionary of leg configurations
+
+    'FL': {'hip': {'servo': 3, 'FULL_BACK': 1236.50, 'FULL_FRONT': 1892.25},
+           'upper': {'servo': 5, 'FULL_BACK': 1921.50, 'FULL_FRONT': 1266.00},
+           'lower': {'servo': 4, 'FULL_BACK': 1872.75, 'FULL_FRONT': 1148.50}},
+
+    'FR': {'hip': {'servo': 2, 'FULL_BACK': 1613.25, 'FULL_FRONT': 992.00},
+           'upper': {'servo': 1, 'FULL_BACK': 1310.00, 'FULL_FRONT': 1921.50},
+           'lower': {'servo': 0, 'FULL_BACK': 1231.75, 'FULL_FRONT': 2000.00}},
+
+    'BL': {'hip': {'servo': 8, 'FULL_BACK': 1623.00, 'FULL_FRONT': 1036.00},
+           'upper': {'servo': 7, 'FULL_BACK': 2000.00, 'FULL_FRONT': 1354.00},
+           'lower': {'servo': 6, 'FULL_BACK': 2000.00, 'FULL_FRONT': 1138.75}},
+
+    'BR': {'hip': {'servo': 11, 'FULL_BACK': 1261.00, 'FULL_FRONT': 1848.25},
+           'upper': {'servo': 10, 'FULL_BACK': 1065.25, 'FULL_FRONT': 1701.50},
+           'lower': {'servo': 9, 'FULL_BACK': 1221.75, 'FULL_FRONT': 2000.00}},
+}
+
 
 
 
@@ -83,16 +104,35 @@ def disableAllServos(): # function to disable servos via code
 
     logging.debug("Attempting to disable all servos...\n") # print initialization statement
 
+    ##### old try statement #####
+
+    #try:  # attempt to disable all servos
+
+        #for servo in range(len(NUM_SERVOS)):  # loop through all available servos
+
+            #setTarget(servo, 0)  # set target to 0 to disable the servo
+
+            #logging.info(f"Disabled servo {servo}.")  # print success statement
+
+        #logging.info("\nSuccessfully disabled all servos.\n")  # print success statement
+
+    ##### new try statement #####
+
     try: # attempt to disable all servos
 
-        for servo in range(len(NUM_SERVOS)): # loop through all available servos
+        for leg, joints in LEG_CONFIG.items(): # loop through each leg
 
-            setTarget(servo, 0) # set target to 0 to disable the servo
+            for joint, config in joints.items(): # loop through each joint
 
-            logging.info(f"Disabled servo {servo}.") # print success statement
+                servo = config['servo'] # get the servo number
+
+                setTarget(servo, 0) # set target to 0 to disable the servo
+
+                logging.info(f"Disabled servo {servo} ({leg} - {joint}).") # print success statement
 
         logging.info("\nSuccessfully disabled all servos.\n") # print success statement
 
+    ##### exception incase failure to disable servos #####
 
     except: # if failure to disable any or all servos...
 

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added servo debug to help see why front left leg is lagging">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Spoiler alert: changing servos didn't work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/initialize/initialize_servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/initialize/initialize_servos.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/standing/standing_inplace.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/standing/standing_inplace.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +53,7 @@
       <workItem from="1734717093506" duration="9644000" />
       <workItem from="1735754562092" duration="1869000" />
       <workItem from="1736273226744" duration="73000" />
-      <workItem from="1737828427269" duration="5614000" />
+      <workItem from="1737828427269" duration="6132000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -183,7 +181,21 @@
       <option name="project" value="LOCAL" />
       <updated>1737896090648</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Switched servos 3 and 4, will hopefully resolve lag issues">
+      <created>1737899603814</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1737899603814</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Spoiler alert: changing servos didn't work">
+      <created>1737899730759</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1737899730759</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -214,6 +226,8 @@
     <MESSAGE value="Commit" />
     <MESSAGE value="Added full foreward position" />
     <MESSAGE value="Added servo debug to help see why front left leg is lagging" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added servo debug to help see why front left leg is lagging" />
+    <MESSAGE value="Switched servos 3 and 4, will hopefully resolve lag issues" />
+    <MESSAGE value="Spoiler alert: changing servos didn't work" />
+    <option name="LAST_COMMIT_MESSAGE" value="Spoiler alert: changing servos didn't work" />
   </component>
 </project>
