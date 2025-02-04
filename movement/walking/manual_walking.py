@@ -46,29 +46,33 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     if leg not in LEG_CONFIG: # if leg is not in leg configuration...
 
-        logging.error(f"ERROR 19 (manual_walking.py): Invalid leg {leg} found.\n") # print error message
+        logging.error(f"ERROR 19 (manual_walking.py): Invalid leg '{leg}' found.\n") # print error message
 
         return # return to stop the function
 
-
+    ##### move leg to desired position #####
 
     for joint, servo_info in LEG_CONFIG[leg].items():
 
-        servo = servo_info['servo']
-        full_back = servo_info['FULL_BACK']
-        full_front = servo_info['FULL_FRONT']
+        ##### set variables #####
 
-        if action == 'LIFT':
+        servo = servo_info['servo'] # get servo pin
+        full_back = servo_info['FULL_BACK'] # get full back position
+        full_front = servo_info['FULL_FRONT'] # get full front position
 
-            setTarget(servo, full_back)  # Move joint to LIFT position
+        ##### move leg to desired position #####
 
-        elif action == 'FORWARD':
+        if action == 'LIFT': # if action is to lift leg...
 
-            setTarget(servo, full_front)  # Move joint to FORWARD position
+            setTarget(servo, full_back) # move leg to full back position
 
-        elif action == 'DOWN':
+        elif action == 'FORWARD': # if action is to move leg forward...
 
-            setTarget(servo, (full_front + full_back) / 2)  # Move joint to MID position
+            setTarget(servo, full_front) # move leg to full front position
+
+        elif action == 'DOWN': # if action is to move leg down...
+
+            setTarget(servo, (full_front + full_back) / 2) # move leg to center position
 
 
 ########## MANUAL FORWARD ##########
