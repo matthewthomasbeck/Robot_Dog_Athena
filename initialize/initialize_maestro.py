@@ -69,7 +69,7 @@ def establishSerialConnection(serialPortName, serialBaudRate, serialTimeout):
     except: # if connection failed...
 
         # print failure statement
-        logging.error("ERROR 1 (initialize_maestro.py): Failed to establish serial connection to maestro.\n")
+        logging.error("ERROR (initialize_maestro.py): Failed to establish serial connection to maestro.\n")
 
         return 1 # return error 1
 
@@ -96,7 +96,7 @@ def sendBaudRateIndication(maestro): # function to send baud rate indication to 
 
     except: # if baud rate indication failed...
 
-        logging.error("ERROR 2 (initialize_maestro.py): Failed to send baud rate indication to maestro.\n") # print failure
+        logging.error("ERROR (initialize_maestro.py): Failed to send baud rate indication to maestro.\n") # print failure
 
         return 2 # return error 2
 
@@ -142,4 +142,4 @@ def closeMaestroConnection(maestro): # function to close serial connection to ma
     except: # if closing connection failed...
 
         # print failure statement
-        logging.error("ERROR 3 (initialize_maestro.py): Failed to close serial connection to maestro.\n")
+        logging.error("ERROR (initialize_maestro.py): Failed to close serial connection to maestro.\n")

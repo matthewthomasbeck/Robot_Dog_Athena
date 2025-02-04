@@ -94,7 +94,7 @@ def runRobot():  # central function that runs the robot
     ##### initialize camera #####
     camera_process = start_camera_process(width=640, height=480, framerate=30)
     if camera_process is None:
-        logging.error("ERROR 15 (control_logic.py): Failed to start camera process. Exiting...\n")
+        logging.error("ERROR (control_logic.py): Failed to start camera process. Exiting...\n")
         exit(1)
 
     ##### initialize PWM decoders #####
@@ -147,7 +147,7 @@ def runRobot():  # central function that runs the robot
         logging.info("KeyboardInterrupt received. Exiting...\n")
 
     except Exception as e:
-        logging.error(f"ERROR 12 (control_logic.py): Unexpected exception in main loop: {e}\n")
+        logging.error(f"ERROR (control_logic.py): Unexpected exception in main loop: {e}\n")
         exit(1)
 
     finally:

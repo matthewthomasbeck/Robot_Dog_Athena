@@ -84,7 +84,7 @@ def neutralStandingPosition(): # function to set all servos to neutral standing 
     except: # if movement failed...
 
         # print failure statement
-        logging.error("ERROR 6 (standing_inplace.py): Failed to move to neutral standing position.\n")
+        logging.error("ERROR (standing_inplace.py): Failed to move to neutral standing position.\n")
 
 
 ########## TIPPY TOES ##########
@@ -133,7 +133,7 @@ def tippyToesStandingPosition(): # function to set all servos to tippy toes posi
     except: # if movement failed...
 
         # print failure statement
-        logging.error("ERROR 7 (standing_inplace.py): Failed to move to 'tippy toes' position.\n")
+        logging.error("ERROR (standing_inplace.py): Failed to move to 'tippy toes' position.\n")
 
 
 ########## FULL FORWARD ##########
@@ -182,4 +182,4 @@ def fullForwardStandingPosition(): # function to set all servos to full forward 
     except: # if movement failed...
 
         # print failure statement
-        logging.error("ERROR 8 (standing_inplace.py): Failed to move to full forward position.\n")
+        logging.error("ERROR (standing_inplace.py): Failed to move to full forward position.\n")

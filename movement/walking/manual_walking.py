@@ -46,7 +46,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     if leg not in LEG_CONFIG: # if leg is not in leg configuration...
 
-        logging.error(f"ERROR 19 (manual_walking.py): Invalid leg '{leg}' found.\n") # print error message
+        logging.error(f"ERROR (manual_walking.py): Invalid leg '{leg}' found.\n") # print error message
 
         return # return to stop the function
 

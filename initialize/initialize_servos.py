@@ -85,7 +85,7 @@ def setTarget(channel, target): # function to set target position of a singular 
 
     except: # if movement failed...
 
-        logging.error("ERROR 4 (initialize_servos.py): Failed to move servo.\n") # print failure statement
+        logging.error("ERROR (initialize_servos.py): Failed to move servo.\n") # print failure statement
 
 
 
@@ -136,4 +136,4 @@ def disableAllServos(): # function to disable servos via code
 
     except: # if failure to disable any or all servos...
 
-        logging.error("ERROR 5 (initialize_servos.py): Failed to disable servo(s).\n") # print failure statement
+        logging.error("ERROR (initialize_servos.py): Failed to disable servo(s).\n") # print failure statement
