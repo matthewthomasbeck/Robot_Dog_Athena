@@ -103,7 +103,7 @@ def runRobot():  # central function that runs the robot
         decoders.append(decoder)
 
     ##### run robotic logic #####
-    neutralStandingPosition()
+    #neutralStandingPosition()
     time.sleep(3)
 
     mjpeg_buffer = b''  # Initialize buffer for MJPEG frames

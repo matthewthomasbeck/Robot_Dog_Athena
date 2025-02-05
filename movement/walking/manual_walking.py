@@ -52,27 +52,33 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     ##### move leg to desired position #####
 
-    for joint, servo_info in LEG_CONFIG[leg].items():
+    try: # attempt to move leg to desired position
 
-        ##### set variables #####
+        for joint, servo_info in LEG_CONFIG[leg].items():
 
-        servo = servo_info['servo'] # get servo pin
-        full_back = servo_info['FULL_BACK'] # get full back position
-        full_front = servo_info['FULL_FRONT'] # get full front position
+            ##### set variables #####
 
-        ##### move leg to desired position #####
+            servo = servo_info['servo'] # get servo pin
+            full_back = servo_info['FULL_BACK'] # get full back position
+            full_front = servo_info['FULL_FRONT'] # get full front position
 
-        if action == 'LIFT': # if action is to lift leg...
+            ##### move leg to desired position #####
 
-            setTarget(servo, full_back) # move leg to full back position
+            if action == 'LIFT': # if action is to lift leg...
 
-        elif action == 'FORWARD': # if action is to move leg forward...
+                setTarget(servo, full_back) # move leg to full back position
 
-            setTarget(servo, full_front) # move leg to full front position
+            elif action == 'FORWARD': # if action is to move leg forward...
 
-        elif action == 'DOWN': # if action is to move leg down...
+                setTarget(servo, full_front) # move leg to full front position
 
-            setTarget(servo, (full_front + full_back) / 2) # move leg to center position
+            elif action == 'DOWN': # if action is to move leg down...
+
+                setTarget(servo, (full_front + full_back) / 2) # move leg to center position
+
+    except Exception as e: # if some error occurs...
+
+        logging.error(f"ERROR (manual_walking.py): Failed to move {leg} in moveLeg: {e}\n")
 
 
 ########## MANUAL FORWARD ##########
@@ -96,10 +102,16 @@ def manualForward(): # function to move forward manually
 
     ##### move forward #####
 
-    for step in gait_sequence: # iterate through each step in the gait sequence
+    try: # attempt to move forward
 
-        for leg, action in step.items(): # iterate through each leg in the step
+        for step in gait_sequence: # iterate through each step in the gait sequence
 
-            moveLeg(leg, action) # move leg to desired location
+            for leg, action in step.items(): # iterate through each leg in the step
 
-        time.sleep(0.2) # wait for smoother motion
+                moveLeg(leg, action) # move leg to desired location
+
+            time.sleep(0.2) # wait for smoother motion
+
+    except Exception as e: # if some error occurs...
+
+        logging.error(f"ERROR (manual_walking.py): Failed to move forward in manualForward: {e}\n")
