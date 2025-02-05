@@ -103,7 +103,7 @@ def runRobot():  # central function that runs the robot
         decoders.append(decoder)
 
     ##### run robotic logic #####
-    #neutralStandingPosition()
+    neutralStandingPosition()
     time.sleep(3)
 
     mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
@@ -230,7 +230,9 @@ def executeCommands(command, action): # function to interpret commands from chan
             print(f"{command}: {action}")
 
             try:
-                manualForward()
+                #manualForward()
+
+                oscillateOneServo()
 
                 logging.debug("Attempting to move forward...\n")
 

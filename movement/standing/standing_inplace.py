@@ -40,6 +40,8 @@ from initialize.initialize_servos import * # import servo logic functions
 
 ########## NEUTRAL ##########
 
+#TODO change the neutral standing position to be more neutral
+
 def neutralStandingPosition(): # function to set all servos to neutral standing position
 
     ##### move to neutral standing position #####

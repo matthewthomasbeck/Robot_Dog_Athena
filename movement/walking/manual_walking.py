@@ -74,11 +74,20 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
             elif action == 'DOWN': # if action is to move leg down...
 
-                setTarget(servo, (full_front + full_back) / 2) # move leg to center position
+                mid_position = (full_front + full_back) / 2
+
+                setTarget(servo, mid_position) # move leg to center position
 
     except Exception as e: # if some error occurs...
 
         logging.error(f"ERROR (manual_walking.py): Failed to move {leg} in moveLeg: {e}\n")
+
+
+########## OSCILLATE ONE SERVO ##########
+
+def oscillateOneServo(): # function to oscillate one servo
+
+    print("Test")
 
 
 ########## MANUAL FORWARD ##########
