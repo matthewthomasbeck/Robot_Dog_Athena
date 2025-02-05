@@ -232,6 +232,8 @@ def executeCommands(command, action): # function to interpret commands from chan
             try:
                 manualForward()
 
+                logging.debug("Attempting to move forward...\n")
+
             except Exception as e:
 
                 logging.error(f"ERROR (control_logic.py): Failed to move forward in executeCommands: {e}\n")
