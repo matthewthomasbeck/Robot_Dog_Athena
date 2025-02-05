@@ -224,10 +224,20 @@ def executeCommands(command, action): # function to interpret commands from chan
     ##### move channel 5 #####
 
     elif command == 'channel-5':
+
         if action == 'MOVE FORWARD':
+
             print(f"{command}: {action}")
-            manualForward()
+
+            try:
+                manualForward()
+
+            except Exception as e:
+
+                logging.error(f"ERROR (control_logic.py): Failed to move forward in executeCommands: {e}\n")
+
         elif action == 'MOVE BACKWARD':
+
             print(f"{command}: {action}")
 
     ##### shift channel 6 #####
