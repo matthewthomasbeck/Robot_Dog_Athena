@@ -56,10 +56,10 @@ def neutralStandingPosition(): # function to set all servos to neutral standing 
 
         logging.debug("Preparing legs...\n")  # print initialization message
 
-        setTarget(4, 1628) # set front left hip to neutral
-        setTarget(2, 1344.25) # set front right hip to neutral
-        setTarget(11, 1540) # set rear right hip to neutral
-        setTarget(8, 1378.50) # set rear left hip to neutral
+        setTarget(4, 1510.625) # set front left hip to neutral
+        setTarget(2, 1302.625) # set front right hip to neutral
+        setTarget(11, 1554.625) # set rear right hip to neutral
+        setTarget(8, 1329.5) # set rear left hip to neutral
 
         logging.info("Prepared legs.\n") # print success statement
 
@@ -69,17 +69,17 @@ def neutralStandingPosition(): # function to set all servos to neutral standing 
 
         ##### front legs #####
 
-        setTarget(5, 1344.25) # set front left knee to neutral
-        setTarget(1, 1902) # set front right knee to neutral
-        setTarget(0, 1505.75) # set front right ankle to neutral
-        setTarget(3, 1486) # set front left ankle to neutral
+        setTarget(5, 1593.75) # set front left knee to neutral
+        setTarget(1, 1615.75) # set front right knee to neutral
+        setTarget(0, 1615.875) # set front right ankle to neutral
+        setTarget(3, 1564.375) # set front left ankle to neutral
 
         ##### back legs #####
 
-        setTarget(7, 1456.75) # set rear left knee to neutral
-        setTarget(10, 1598.75) # set rear right knee to neutral
-        setTarget(6, 1730.75) # set rear left ankle to neutral
-        setTarget(9, 1393) # set rear right ankle to neutral
+        setTarget(7, 1677.0) # set rear left knee to neutral
+        setTarget(10, 1383.375) # set rear right knee to neutral
+        setTarget(6, 1569.375) # set rear left ankle to neutral
+        setTarget(9, 1610.875) # set rear right ankle to neutral
 
         logging.info("Moved to neutral standing.\n") # print success statement
 
