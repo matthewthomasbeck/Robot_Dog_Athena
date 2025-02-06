@@ -28,6 +28,7 @@ import logging # import logging for debugging
 ##### import necessary functions #####
 
 from initialize.initialize_servos import * # import servo logic functions
+import initialize.initialize_servos # import servo logic functions
 
 
 
@@ -87,20 +88,34 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
 def oscillateOneServo(servo_data, time_delay, step_interval): # function to oscillate one servo
 
-    # Update CUR_POS before sending the command
-    servo_data['CUR_POS'] += step_interval * servo_data['DIR']
+    # Ensure DIR is set correctly at the start
+    if servo_data['DIR'] == 0:
+        servo_data['DIR'] = 1  # Default to moving forward initially
+
+    # Move the servo in the current direction
+    new_pos = servo_data['CUR_POS'] + (step_interval * servo_data['DIR'])
 
     # Change direction if at bounds
-    if servo_data['CUR_POS'] >= servo_data['FULL_BACK']:
-        servo_data['CUR_POS'] = servo_data['FULL_BACK']  # Ensure it doesn't exceed limit
+    if new_pos >= servo_data['FULL_BACK']:
+        new_pos = servo_data['FULL_BACK']
         servo_data['DIR'] = -1
-    elif servo_data['CUR_POS'] <= servo_data['FULL_FRONT']:
-        servo_data['CUR_POS'] = servo_data['FULL_FRONT']  # Ensure it doesn't exceed limit
+    elif new_pos <= servo_data['FULL_FRONT']:
+        new_pos = servo_data['FULL_FRONT']
         servo_data['DIR'] = 1
+
+    # Update CUR_POS directly in leg_config
+    servo_data['CUR_POS'] = new_pos
+    initialize.initialize_servos.LEG_CONFIG['FL']['upper']['CUR_POS'] = new_pos  # Ensures original dictionary is updated
 
     # Send the updated position
     setTarget(servo_data['servo'], servo_data['CUR_POS'])
+
+    # Log the movement
+    logging.info(f"Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}")
+
+    # Sleep before next move
     time.sleep(time_delay)
+
 
 ########## MANUAL FORWARD ##########
 
