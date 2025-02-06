@@ -180,8 +180,7 @@ def pwmCallback(gpio, pulseWidth): # function to set pulse width to channel data
 
 servo_data = LEG_CONFIG['FL']['upper'] # FL upper leg servo (servo 5)
 SERVO_CHANNEL = servo_data['servo']
-time_delay = 0.01
-step_interval = 5
+arc_reduction = 0
 
 def executeCommands(command, action): # function to interpret commands from channel data and do things
 
@@ -235,9 +234,8 @@ def executeCommands(command, action): # function to interpret commands from chan
             print(f"{command}: {action}")
 
             try:
-                #manualForward() TODO
 
-                oscillateOneServo(servo_data, time_delay, step_interval)
+                oscillateOneServo(servo_data, arc_reduction)
 
                 logging.debug("Attempting to move forward...\n")
 

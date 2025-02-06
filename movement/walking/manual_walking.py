@@ -27,7 +27,7 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-from initialize.initialize_servos import * # import servo logic functions
+#from initialize.initialize_servos import * # import servo logic functions
 import initialize.initialize_servos # import servo logic functions
 
 
@@ -45,7 +45,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     ##### check if leg is valid #####
 
-    if leg not in LEG_CONFIG: # if leg is not in leg configuration...
+    if leg not in initialize.initialize_servos.LEG_CONFIG: # if leg is not in leg configuration...
 
         logging.error(f"ERROR (manual_walking.py): Invalid leg '{leg}' found.\n") # print error message
 
@@ -55,7 +55,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     try: # attempt to move leg to desired position
 
-        for joint, servo_info in LEG_CONFIG[leg].items():
+        for joint, servo_info in initialize.initialize_servos.LEG_CONFIG[leg].items():
 
             ##### set variables #####
 
@@ -67,17 +67,17 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
             if action == 'LIFT': # if action is to lift leg...
 
-                setTarget(servo, full_back) # move leg to full back position
+                initialize.initialize_servos.setTarget(servo, full_back) # move leg to full back position
 
             elif action == 'FORWARD': # if action is to move leg forward...
 
-                setTarget(servo, full_front) # move leg to full front position
+                initialize.initialize_servos.setTarget(servo, full_front) # move leg to full front position
 
             elif action == 'DOWN': # if action is to move leg down...
 
                 mid_position = (full_front + full_back) / 2
 
-                setTarget(servo, mid_position) # move leg to center position
+                initialize.initialize_servos.setTarget(servo, mid_position) # move leg to center position
 
     except Exception as e: # if some error occurs...
 
@@ -86,35 +86,35 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
 ########## OSCILLATE ONE SERVO ##########
 
-def oscillateOneServo(servo_data, time_delay, step_interval): # function to oscillate one servo
+def oscillateOneServo(servo_data, arc_reduction): # function to oscillate one servo
+
+    # Calculate reduced movement range
+    max_limit = servo_data['FULL_BACK'] - arc_reduction
+    min_limit = servo_data['FULL_FRONT'] + arc_reduction
 
     # Ensure DIR is set correctly at the start
     if servo_data['DIR'] == 0:
         servo_data['DIR'] = 1  # Default to moving forward initially
 
-    # Move the servo in the current direction
-    new_pos = servo_data['CUR_POS'] + (step_interval * servo_data['DIR'])
+    # Move directly between limits
+    if servo_data['DIR'] == 1:
+        new_pos = max_limit
+    else:
+        new_pos = min_limit
 
-    # Change direction if at bounds
-    if new_pos >= servo_data['FULL_BACK']:
-        new_pos = servo_data['FULL_BACK']
-        servo_data['DIR'] = -1
-    elif new_pos <= servo_data['FULL_FRONT']:
-        new_pos = servo_data['FULL_FRONT']
-        servo_data['DIR'] = 1
+    # Change direction
+    servo_data['DIR'] *= -1  # Flip direction
 
-    # Update CUR_POS directly in leg_config
+    # Update CUR_POS in leg_config
     servo_data['CUR_POS'] = new_pos
-    initialize.initialize_servos.LEG_CONFIG['FL']['upper']['CUR_POS'] = new_pos  # Ensures original dictionary is updated
+    initialize.initialize_servos.LEG_CONFIG['FL']['upper']['CUR_POS'] = new_pos  # Ensures the original dictionary is updated
 
     # Send the updated position
-    setTarget(servo_data['servo'], servo_data['CUR_POS'])
+    initialize.initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'])
 
     # Log the movement
-    logging.info(f"Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}")
-
-    # Sleep before next move
-    time.sleep(time_delay)
+    logging.info(
+        f"Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Reduction={arc_reduction}")
 
 
 ########## MANUAL FORWARD ##########
