@@ -237,7 +237,7 @@ def executeCommands(command, action): # function to interpret commands from chan
             try:
                 #manualForward() TODO
 
-                oscillateOneServo()
+                oscillateOneServo(servo_data, time_delay, step_interval)
 
                 logging.debug("Attempting to move forward...\n")
 
