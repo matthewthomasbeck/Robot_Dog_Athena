@@ -65,7 +65,7 @@ LEG_CONFIG = { # dictionary of leg configurations
 
 ########## MOVE A SINGLE SERVO ##########
 
-def setTarget(channel, target, speed=6000, acceleration=50): # function to set target position of a singular servo
+def setTarget(channel, target, speed=16383, acceleration=255): # function to set target position of a singular servo
 
     ##### move a servo to a desired position using its number and said position #####
 
