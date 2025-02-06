@@ -85,9 +85,6 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
 ########## OSCILLATE ONE SERVO ##########
 
-servo_data = LEG_CONFIG['FL']['upper']  # FL upper leg servo (servo 5)
-SERVO_CHANNEL = servo_data['servo']
-
 def oscillateOneServo(servo_data, time_delay, step_interval): # function to oscillate one servo
 
     # Update the servo position
