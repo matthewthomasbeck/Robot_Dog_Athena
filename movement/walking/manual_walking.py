@@ -86,35 +86,44 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
 ########## OSCILLATE ONE SERVO ##########
 
-def oscillateOneServo(servo_data, arc_reduction): # function to oscillate one servo
+def oscillateOneServo(arc_reduction): # function to oscillate one servo
 
-    # Calculate reduced movement range
-    max_limit = servo_data['FULL_BACK'] - arc_reduction
-    min_limit = servo_data['FULL_FRONT'] + arc_reduction
+    # Define upper leg servos
+    upper_leg_servos = {
+        "FL": initialize.initialize_servos.LEG_CONFIG['FL']['upper'],  # Front Left
+        "FR": initialize.initialize_servos.LEG_CONFIG['FR']['upper'],  # Front Right
+        "BL": initialize.initialize_servos.LEG_CONFIG['BL']['upper'],  # Back Left
+        "BR": initialize.initialize_servos.LEG_CONFIG['BR']['upper'],  # Back Right
+    }
 
-    # Ensure DIR is set correctly at the start
-    if servo_data['DIR'] == 0:
-        servo_data['DIR'] = 1  # Default to moving forward initially
+    for leg, servo_data in upper_leg_servos.items():
+        # Calculate reduced movement range
+        max_limit = servo_data['FULL_BACK'] - arc_reduction
+        min_limit = servo_data['FULL_FRONT'] + arc_reduction
 
-    # Move directly between limits
-    if servo_data['DIR'] == 1:
-        new_pos = max_limit
-    else:
-        new_pos = min_limit
+        # Ensure DIR is set correctly at the start
+        if servo_data['DIR'] == 0:
+            servo_data['DIR'] = 1  # Default to moving forward initially
 
-    # Change direction
-    servo_data['DIR'] *= -1  # Flip direction
+        # Flip movement direction for FR and BL to create scissor effect
+        if leg in ["FR", "BR"]:
+            servo_data['DIR'] *= -1  # Invert direction
 
-    # Update CUR_POS in leg_config
-    servo_data['CUR_POS'] = new_pos
-    initialize.initialize_servos.LEG_CONFIG['FL']['upper']['CUR_POS'] = new_pos  # Ensures the original dictionary is updated
+        # Move directly between limits
+        new_pos = max_limit if servo_data['DIR'] == 1 else min_limit
 
-    # Send the updated position
-    initialize.initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'])
+        # Change direction
+        servo_data['DIR'] *= -1  # Flip direction for next move
 
-    # Log the movement
-    logging.info(
-        f"Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Reduction={arc_reduction}")
+        # Update CUR_POS in leg_config
+        servo_data['CUR_POS'] = new_pos
+        initialize.initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = new_pos  # Ensure the original dictionary is updated
+
+        # Send the updated position
+        initialize.initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'])
+
+        # Log the movement
+        logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Reduction={arc_reduction}")
 
 
 ########## MANUAL FORWARD ##########
