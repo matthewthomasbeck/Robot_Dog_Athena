@@ -77,9 +77,9 @@ def setTarget(channel, target): # function to set target position of a singular 
 
         target = int(round(target * 4)) # adjust target from microseconds to quarter-microseconds
 
-        command = bytearray([0x84, channel, target & 0x7F, (target >> 7) & 0x7F]) # create command to send to maestro
+        command = bytearray([0x84, channel, target & 0x7F, (target >> 7) & 0x7F]) # create channel to send to maestro
 
-        MAESTRO.write(command) # write command to maestro
+        MAESTRO.write(command) # write channel to maestro
         
         logging.info(f"Moved servo {channel} to {target}.\n") # see if servo moved to a position
 

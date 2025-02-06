@@ -27,7 +27,7 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-from initialize.initialize_servos import * # import servo logic functions
+import initialize.initialize_servos as initialize_servos # import servo logic functions
 
 
 
@@ -40,53 +40,38 @@ from initialize.initialize_servos import * # import servo logic functions
 
 ########## NEUTRAL ##########
 
-#TODO change the neutral standing position to be more neutral
+def neutralStandingPosition():
 
-def neutralStandingPosition(): # function to set all servos to neutral standing position
+    logging.debug("Moving to neutral standing position...\n")
 
-    ##### move to neutral standing position #####
+    try:
 
-    logging.debug("Moving to neutral standing position...\n") # print initialization message
+        logging.debug("Preparing legs...\n")
 
-    try: # attempt to move to neutral standing position
+        # Define new neutral positions based on the config structure
+        new_positions = {
+            4: 1510.625,  2: 1302.625, 11: 1554.625, 8: 1329.5,  # Hip
+            5: 1593.75, 1: 1615.75, 0: 1615.875, 3: 1564.375,    # Front leg joints
+            7: 1677.0, 10: 1383.375, 6: 1569.375, 9: 1610.875    # Rear leg joints
+        }
 
-        ##### neutral hips #####
+        # Move servos to neutral positions
+        for servo, position in new_positions.items():
+            initialize_servos.setTarget(servo, position)
 
-        time.sleep(1) # wait a moment before proceeding incase there is movement before this
+        logging.debug("Updating LEG_CONFIG with new positions...\n")
 
-        logging.debug("Preparing legs...\n")  # print initialization message
+        # Update CUR_POS for each servo in LEG_CONFIG
+        for leg, joints in initialize_servos.LEG_CONFIG.items():
+            for joint, config in joints.items():
+                servo_id = config['servo']
+                if servo_id in new_positions:
+                    config['CUR_POS'] = new_positions[servo_id]
 
-        setTarget(4, 1510.625) # set front left hip to neutral
-        setTarget(2, 1302.625) # set front right hip to neutral
-        setTarget(11, 1554.625) # set rear right hip to neutral
-        setTarget(8, 1329.5) # set rear left hip to neutral
+        logging.info("Moved to neutral standing and updated LEG_CONFIG.\n")
 
-        logging.info("Prepared legs.\n") # print success statement
-
-        time.sleep(3) # stand by for movement
-
-        logging.debug("Moving to neutral standing...\n") # print initialization message
-
-        ##### front legs #####
-
-        setTarget(5, 1593.75) # set front left knee to neutral
-        setTarget(1, 1615.75) # set front right knee to neutral
-        setTarget(0, 1615.875) # set front right ankle to neutral
-        setTarget(3, 1564.375) # set front left ankle to neutral
-
-        ##### back legs #####
-
-        setTarget(7, 1677.0) # set rear left knee to neutral
-        setTarget(10, 1383.375) # set rear right knee to neutral
-        setTarget(6, 1569.375) # set rear left ankle to neutral
-        setTarget(9, 1610.875) # set rear right ankle to neutral
-
-        logging.info("Moved to neutral standing.\n") # print success statement
-
-    except: # if movement failed...
-
-        # print failure statement
-        logging.error("ERROR (standing_inplace.py): Failed to move to neutral standing position.\n")
+    except Exception as e:
+        logging.error(f"ERROR (standing_inplace.py): Failed to move to neutral standing position. {e}\n")
 
 
 ########## TIPPY TOES ##########
@@ -105,10 +90,10 @@ def tippyToesStandingPosition(): # function to set all servos to tippy toes posi
 
         logging.debug("Preparing legs...\n")  # print initialization message
 
-        setTarget(4, 1628) # set front left hip to tippy toes
-        setTarget(2, 1344.25) # set front right hip to tippy toes
-        setTarget(11, 1540) # set rear right hip to tippy toes
-        setTarget(8, 1378.50) # set rear left hip to tippy toes
+        initialize_servos.setTarget(4, 1628) # set front left hip to tippy toes
+        initialize_servos.setTarget(2, 1344.25) # set front right hip to tippy toes
+        initialize_servos.setTarget(11, 1540) # set rear right hip to tippy toes
+        initialize_servos.setTarget(8, 1378.50) # set rear left hip to tippy toes
 
         logging.info("Prepared legs.\n") # print success statement
 
@@ -118,17 +103,21 @@ def tippyToesStandingPosition(): # function to set all servos to tippy toes posi
 
         ##### front legs #####
 
-        setTarget(5, 1344.25) # set front left knee to tippy toes
-        setTarget(1, 1902) # set front right knee to tippy toes
-        setTarget(0, 1505.75) # set front right ankle to tippy toes
-        setTarget(3, 1486) # set front left ankle to tippy toes
+        initialize_servos.setTarget(5, 1344.25) # set front left knee to tippy toes
+        initialize_servos.setTarget(1, 1902) # set front right knee to tippy toes
+        initialize_servos.setTarget(0, 1505.75) # set front right ankle to tippy toes
+        initialize_servos.setTarget(3, 1486) # set front left ankle to tippy toes
 
         ##### back legs #####
 
-        setTarget(7, 1456.75) # set rear left knee to tippy toes
-        setTarget(10, 1598.75) # set rear right knee to tippy toes
-        setTarget(6, 1730.75) # set rear left ankle to tippy toes
-        setTarget(9, 1393) # set rear right ankle to tippy toes
+        initialize_servos.setTarget(7, 1456.75) # set rear left knee to tippy toes
+        initialize_servos.setTarget(10, 1598.75) # set rear right knee to tippy toes
+        initialize_servos.setTarget(6, 1730.75) # set rear left ankle to tippy toes
+        initialize_servos.setTarget(9, 1393) # set rear right ankle to tippy toes
+
+        ##### update config #####
+
+
 
         logging.info("Moved to 'tippy toes'.\n") # print success statement
 
@@ -154,10 +143,10 @@ def fullForwardStandingPosition(): # function to set all servos to full forward 
 
         logging.debug("Preparing legs...\n")  # print initialization message
 
-        setTarget(4, 1148.5) # set front left hip to full forward
-        setTarget(2, 992) # set front right hip to full forward
-        setTarget(11, 1848.25) # set rear right hip to full forward
-        setTarget(8, 1036) # set rear left hip to full forward
+        initialize_servos.setTarget(4, 1148.5) # set front left hip to full forward
+        initialize_servos.setTarget(2, 992) # set front right hip to full forward
+        initialize_servos.setTarget(11, 1848.25) # set rear right hip to full forward
+        initialize_servos.setTarget(8, 1036) # set rear left hip to full forward
 
         logging.info("Prepared legs.\n") # print success statement
 
@@ -167,17 +156,21 @@ def fullForwardStandingPosition(): # function to set all servos to full forward 
 
         ##### front legs #####
 
-        setTarget(5, 1266) # set front left knee to full forward
-        setTarget(1, 1921) # set front right knee to full forward
-        setTarget(3, 1892.25)  # set front left ankle to full forward
-        setTarget(0, 2000) # set front right ankle to full forward
+        initialize_servos.setTarget(5, 1266) # set front left knee to full forward
+        initialize_servos.setTarget(1, 1921) # set front right knee to full forward
+        initialize_servos.setTarget(3, 1892.25)  # set front left ankle to full forward
+        initialize_servos.setTarget(0, 2000) # set front right ankle to full forward
 
         ##### back legs #####
 
-        setTarget(7, 1354) # set rear left knee to full forward
-        setTarget(10, 1701.5) # set rear right knee to full forward
-        setTarget(6, 1138.75) # set rear left ankle to full forward
-        setTarget(9, 2000) # set rear right ankle to full forward
+        initialize_servos.setTarget(7, 1354) # set rear left knee to full forward
+        initialize_servos.setTarget(10, 1701.5) # set rear right knee to full forward
+        initialize_servos.setTarget(6, 1138.75) # set rear left ankle to full forward
+        initialize_servos.setTarget(9, 2000) # set rear right ankle to full forward
+
+        ##### update config #####
+
+
 
         logging.info("Moved to full forward.\n") # print success statement
 

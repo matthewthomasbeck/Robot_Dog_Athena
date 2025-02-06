@@ -87,24 +87,41 @@ from movement.walking.manual_walking import * # import walking functions
 ########## RUN ROBOTIC PROCESS ##########
 
 def runRobot():  # central function that runs the robot
+
+    ##### set vairables #####
+
     global CHANNEL_DATA
     CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
     decoders = []  # define decoders as empty list
+    IS_NEUTRAL = False # assume robot is not in neutral standing position until neutralStandingPosition() is called
 
     ##### initialize camera #####
+
     camera_process = start_camera_process(width=640, height=480, framerate=30)
+
     if camera_process is None:
+
         logging.error("ERROR (control_logic.py): Failed to start camera process. Exiting...\n")
         exit(1)
 
     ##### initialize PWM decoders #####
+
     for pin in PWM_PINS:
+
         decoder = PWMDecoder(pi, pin, pwmCallback)
         decoders.append(decoder)
 
     ##### run robotic logic #####
-    neutralStandingPosition()
-    time.sleep(3)
+
+    try: # try to put the robot in a neutral standing position
+
+        neutralStandingPosition() # move to neutral standing position
+        IS_NEUTRAL = True # set IS_NEUTRAL to True
+        time.sleep(3) # wait for 3 seconds
+
+    except Exception as e: # if there is an error, log the error
+
+        logging.error(f"ERROR (control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
     mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
 
@@ -140,8 +157,8 @@ def runRobot():  # central function that runs the robot
 
             # Handle commands
             commands = interpretCommands(CHANNEL_DATA)
-            for command, action in commands.items():
-                executeCommands(command, action)
+            for channel, (action, intensity) in commands.items():
+                IS_NEUTRAL = executeCommands(channel, action, intensity, IS_NEUTRAL)
 
     except KeyboardInterrupt:
         logging.info("KeyboardInterrupt received. Exiting...\n")
@@ -180,87 +197,104 @@ def pwmCallback(gpio, pulseWidth): # function to set pulse width to channel data
 
 arc_reduction = 0
 
-def executeCommands(command, action): # function to interpret commands from channel data and do things
+def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to interpret commands from channel data and do things
 
     ##### squat channel 2 #####
 
-    if command == 'channel-2':
+    if channel == 'channel-2':
         if action == 'NEUTRAL' or action == 'SQUAT DOWN':
             if action == 'SQUAT DOWN':
                 pass
                 #disableAllServos()
         elif action == 'SQUAT UP':
                 #eutralStandingPosition()
-                print(f"{command}: {action}")
+                print(f"{channel}: {action}")
 
     ##### tilt channel 0 #####
 
-    if command == 'channel-0':
+    if channel == 'channel-0':
         if action == 'TILT DOWN':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
         elif action == 'TILT UP':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
     ##### trigger channel 1 #####
 
-    elif command == 'channel-1':
+    elif channel == 'channel-1':
         if action == 'TRIGGER SHOOT':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
     ##### rotation channel 3 #####
 
-    elif command == 'channel-3':
+    elif channel == 'channel-3':
         if action == 'ROTATE LEFT':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
         elif action == 'ROTATE RIGHT':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
     ##### look channel 4 #####
 
-    elif command == 'channel-4':
+    elif channel == 'channel-4':
         if action == 'LOOK DOWN':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
         elif action == 'LOOK UP':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
     ##### move channel 5 #####
 
-    elif command == 'channel-5':
+    elif channel == 'channel-5':
 
         if action == 'MOVE FORWARD':
 
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
             try:
 
                 oscillateOneServo(arc_reduction)
-                time.sleep(0.1) # prevent CPU overload
-
-                logging.debug("Attempting to move forward...\n")
+                IS_NEUTRAL = False
+                time.sleep(0.1)
 
             except Exception as e:
 
                 logging.error(f"ERROR (control_logic.py): Failed to move forward in executeCommands: {e}\n")
 
+        elif action == 'NEUTRAL':
+
+            try:
+
+                if IS_NEUTRAL == False:
+
+                    neutralStandingPosition()
+                    time.sleep(0.1)
+                    IS_NEUTRAL = True
+
+            except Exception as e:
+
+                logging.error(f"ERROR (control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
+
         elif action == 'MOVE BACKWARD':
 
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
     ##### shift channel 6 #####
 
-    elif command == 'channel-6':
+    elif channel == 'channel-6':
         if action == 'SHIFT LEFT':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
         elif action == 'SHIFT RIGHT':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
 
     ##### extra channel 7 #####
 
-    elif command == 'channel-7':
+    elif channel == 'channel-7':
         if action == '+':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
         elif action == '-':
-            print(f"{command}: {action}")
+            print(f"{channel}: {action}")
+
+    ##### update is neutral standing #####
+
+    return IS_NEUTRAL # return neutral standing boolean for position awareness
 
 
 ########## RUN ROBOTIC PROCESS ##########
