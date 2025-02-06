@@ -234,6 +234,7 @@ def executeCommands(command, action): # function to interpret commands from chan
             try:
 
                 oscillateOneServo(arc_reduction)
+                time.sleep(0.1) # prevent CPU overload
 
                 logging.debug("Attempting to move forward...\n")
 
