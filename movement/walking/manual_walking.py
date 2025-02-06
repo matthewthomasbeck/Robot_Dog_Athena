@@ -42,13 +42,23 @@ import initialize.initialize_servos as initialize_servos # import servo logic fu
 
 def interpretIntensity(intensity, full_back, full_front): # function to interpret intensity
 
-    ##### find the intensity value to calculate arc later #####
+    ##### find intensity value to calculate arc later #####
 
     # find intensity by dividing the difference between full_back and full front,
     # converting to positive, dividing by 10, and multiplying by intensity
     arc_length = (abs(full_back - full_front) / 10) * intensity
 
-    return arc_length # return
+    ##### find speed #####
+
+    speed = int((intensity / 10) * 16383) # map intensity (1-10) to valid speed range (0-16383)
+
+    ##### find acceleration #####
+
+    acceleration = int((intensity / 10) * 255) # map intensity (1-10) to valid acceleration range (0-255)
+
+    ##### return arc length and speed #####
+
+    return arc_length, speed, acceleration # return movement parameters
 
 
 ########## MOVE LEG ##########
@@ -98,7 +108,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
 ########## OSCILLATE ONE SERVO ##########
 
-def oscillateOneServo(intensity): # function to oscillate one servo
+def oscillateLegs(intensity): # function to oscillate one servo
 
     # Define upper leg servos
     upper_leg_servos = {
@@ -113,9 +123,20 @@ def oscillateOneServo(intensity): # function to oscillate one servo
         full_back = servo_data['FULL_BACK']
         full_front = servo_data['FULL_FRONT']
         neutral_position = servo_data['NEUTRAL']
-        arc_length = interpretIntensity(intensity, full_back, full_front)
-        max_limit = full_back #- (arc_length / 2)
-        min_limit = full_front #+ (arc_length / 2)
+        arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front)
+
+        if full_back < full_front: # if back position greater number...
+
+            max_limit = neutral_position + (arc_length / 2)
+            min_limit = neutral_position - (arc_length / 2)
+
+        else: # if front position greater number...
+
+            max_limit = neutral_position - (arc_length / 2)
+            min_limit = neutral_position + (arc_length / 2)
+
+        #max_limit = servo_data['FULL_FRONT']
+        #min_limit = servo_data['FULL_BACK']
 
         # Ensure DIR is set correctly at the start
         if servo_data['DIR'] == 0:

@@ -248,9 +248,9 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
             try:
 
-                oscillateOneServo(intensity)
+                oscillateLegs(intensity)
                 IS_NEUTRAL = False
-                time.sleep(0.1)
+                time.sleep(0.2)
 
             except Exception as e:
 

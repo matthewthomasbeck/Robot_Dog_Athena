@@ -33,10 +33,6 @@ from initialize.initialize_maestro import * # import maestro initialization func
 
 MAESTRO = createMaestroConnection() # create maestro connection
 
-##### set servo number count for maestro #####
-
-#NUM_SERVOS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] # number of servos as a list of their names
-
 ##### set dictionary of servos and their ranges #####
 
 LEG_CONFIG = { # dictionary of leg configurations
@@ -69,19 +65,31 @@ LEG_CONFIG = { # dictionary of leg configurations
 
 ########## MOVE A SINGLE SERVO ##########
 
-def setTarget(channel, target): # function to set target position of a singular servo
+def setTarget(channel, target, speed=6000, acceleration=50): # function to set target position of a singular servo
 
     ##### move a servo to a desired position using its number and said position #####
 
     try: # attempt to move desired servo
 
-        target = int(round(target * 4)) # adjust target from microseconds to quarter-microseconds
+        target = int(round(target * 4)) # convert target from microseconds to quarter-microseconds
 
-        command = bytearray([0x84, channel, target & 0x7F, (target >> 7) & 0x7F]) # create channel to send to maestro
+        # ensure speed and acceleration are within valid ranges
+        speed = max(0, min(16383, speed))
+        acceleration = max(0, min(255, acceleration))
 
-        MAESTRO.write(command) # write channel to maestro
+        # create speed command
+        speed_command = bytearray([0x87, channel, speed & 0x7F, (speed >> 7) & 0x7F])
+        MAESTRO.write(speed_command)
+
+        # create acceleration command
+        accel_command = bytearray([0x89, channel, acceleration & 0x7F, (acceleration >> 7) & 0x7F])
+        MAESTRO.write(accel_command)
+
+        # create and send target position command
+        command = bytearray([0x84, channel, target & 0x7F, (target >> 7) & 0x7F])
+        MAESTRO.write(command)
         
-        logging.info(f"Moved servo {channel} to {target}.\n") # see if servo moved to a position
+        #logging.info(f"Moved servo {channel} to {target}.\n") # see if servo moved to a position
 
     except: # if movement failed...
 
@@ -103,20 +111,6 @@ def disableAllServos(): # function to disable servos via code
     ##### make all servos go limp for easy reinitialization #####
 
     logging.debug("Attempting to disable all servos...\n") # print initialization statement
-
-    ##### old try statement #####
-
-    #try:  # attempt to disable all servos
-
-        #for servo in range(len(NUM_SERVOS)):  # loop through all available servos
-
-            #setTarget(servo, 0)  # set target to 0 to disable the servo
-
-            #logging.info(f"Disabled servo {servo}.")  # print success statement
-
-        #logging.info("\nSuccessfully disabled all servos.\n")  # print success statement
-
-    ##### new try statement #####
 
     try: # attempt to disable all servos
 
