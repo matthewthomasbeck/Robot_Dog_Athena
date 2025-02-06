@@ -81,7 +81,7 @@ def setTarget(channel, target): # function to set target position of a singular 
 
         MAESTRO.write(command) # write command to maestro
         
-        logging.info(f"Moved servo {channel}.\n") # see if servo moved to a position
+        logging.info(f"Moved servo {channel} to {target}.\n") # see if servo moved to a position
 
     except: # if movement failed...
 
