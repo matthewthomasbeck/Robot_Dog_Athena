@@ -27,8 +27,7 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-#from initialize.initialize_servos import * # import servo logic functions
-import initialize.initialize_servos # import servo logic functions
+import initialize.initialize_servos as initialize_servos # import servo logic functions
 
 
 
@@ -45,7 +44,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     ##### check if leg is valid #####
 
-    if leg not in initialize.initialize_servos.LEG_CONFIG: # if leg is not in leg configuration...
+    if leg not in initialize_servos.LEG_CONFIG: # if leg is not in leg configuration...
 
         logging.error(f"ERROR (manual_walking.py): Invalid leg '{leg}' found.\n") # print error message
 
@@ -55,7 +54,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
     try: # attempt to move leg to desired position
 
-        for joint, servo_info in initialize.initialize_servos.LEG_CONFIG[leg].items():
+        for joint, servo_info in initialize_servos.LEG_CONFIG[leg].items():
 
             ##### set variables #####
 
@@ -67,17 +66,17 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
             if action == 'LIFT': # if action is to lift leg...
 
-                initialize.initialize_servos.setTarget(servo, full_back) # move leg to full back position
+                initialize_servos.setTarget(servo, full_back) # move leg to full back position
 
             elif action == 'FORWARD': # if action is to move leg forward...
 
-                initialize.initialize_servos.setTarget(servo, full_front) # move leg to full front position
+                initialize_servos.setTarget(servo, full_front) # move leg to full front position
 
             elif action == 'DOWN': # if action is to move leg down...
 
                 mid_position = (full_front + full_back) / 2
 
-                initialize.initialize_servos.setTarget(servo, mid_position) # move leg to center position
+                initialize_servos.setTarget(servo, mid_position) # move leg to center position
 
     except Exception as e: # if some error occurs...
 
@@ -90,10 +89,10 @@ def oscillateOneServo(arc_reduction): # function to oscillate one servo
 
     # Define upper leg servos
     upper_leg_servos = {
-        "FL": initialize.initialize_servos.LEG_CONFIG['FL']['upper'],  # Front Left
-        "FR": initialize.initialize_servos.LEG_CONFIG['FR']['upper'],  # Front Right
-        "BL": initialize.initialize_servos.LEG_CONFIG['BL']['upper'],  # Back Left
-        "BR": initialize.initialize_servos.LEG_CONFIG['BR']['upper'],  # Back Right
+        "FL": initialize_servos.LEG_CONFIG['FL']['upper'],  # Front Left
+        "FR": initialize_servos.LEG_CONFIG['FR']['upper'],  # Front Right
+        "BL": initialize_servos.LEG_CONFIG['BL']['upper'],  # Back Left
+        "BR": initialize_servos.LEG_CONFIG['BR']['upper'],  # Back Right
     }
 
     for leg, servo_data in upper_leg_servos.items():
@@ -103,24 +102,28 @@ def oscillateOneServo(arc_reduction): # function to oscillate one servo
 
         # Ensure DIR is set correctly at the start
         if servo_data['DIR'] == 0:
-            servo_data['DIR'] = 1  # Default to moving forward initially
+            if leg in ["FL", "BR"]:  # FL & BR move forward first
+                servo_data['DIR'] = 1
+            else:  # FR & BL move backward first
+                servo_data['DIR'] = -1
 
-        # Flip movement direction for FR and BL to create scissor effect
-        if leg in ["FR", "BR"]:
-            servo_data['DIR'] *= -1  # Invert direction
+        # Move in the current direction
+        new_pos = servo_data['CUR_POS'] + (servo_data['DIR'] * abs(max_limit - min_limit))
 
-        # Move directly between limits
-        new_pos = max_limit if servo_data['DIR'] == 1 else min_limit
-
-        # Change direction
-        servo_data['DIR'] *= -1  # Flip direction for next move
+        # Change direction at limits
+        if new_pos >= max_limit:
+            new_pos = max_limit
+            servo_data['DIR'] = -1  # Move backward next cycle
+        elif new_pos <= min_limit:
+            new_pos = min_limit
+            servo_data['DIR'] = 1  # Move forward next cycle
 
         # Update CUR_POS in leg_config
         servo_data['CUR_POS'] = new_pos
-        initialize.initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = new_pos  # Ensure the original dictionary is updated
+        initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = new_pos  # Ensure the original dictionary is updated
 
         # Send the updated position
-        initialize.initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'])
+        initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'])
 
         # Log the movement
         logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Reduction={arc_reduction}")
