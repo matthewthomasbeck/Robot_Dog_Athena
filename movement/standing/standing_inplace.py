@@ -48,12 +48,15 @@ def neutralStandingPosition():
 
         logging.debug("Preparing legs...\n")
 
-        # Define new neutral positions based on the config structure
-        new_positions = {
-            4: 1510.625,  2: 1302.625, 11: 1554.625, 8: 1329.5,  # Hip
-            5: 1593.75, 1: 1615.75, 0: 1615.875, 3: 1564.375,    # Front leg joints
-            7: 1677.0, 10: 1383.375, 6: 1569.375, 9: 1610.875    # Rear leg joints
-        }
+        # Create a dictionary to store the neutral positions dynamically
+        new_positions = {}
+
+        # Iterate over LEG_CONFIG to extract NEUTRAL positions
+        for leg, joints in initialize_servos.LEG_CONFIG.items():
+            for joint, config in joints.items():
+                servo_id = config['servo']
+                neutral_position = config['NEUTRAL']
+                new_positions[servo_id] = neutral_position
 
         # Move servos to neutral positions
         for servo, position in new_positions.items():

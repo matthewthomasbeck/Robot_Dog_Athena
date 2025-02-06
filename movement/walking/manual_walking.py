@@ -38,6 +38,19 @@ import initialize.initialize_servos as initialize_servos # import servo logic fu
 #################################################
 
 
+########## CALCULATE INTENSITY ##########
+
+def interpretIntensity(intensity, full_back, full_front): # function to interpret intensity
+
+    ##### find the intensity value to calculate arc later #####
+
+    # find intensity by dividing the difference between full_back and full front,
+    # converting to positive, dividing by 10, and multiplying by intensity
+    arc_length = (abs(full_back - full_front) / 10) * intensity
+
+    return arc_length # return
+
+
 ########## MOVE LEG ##########
 
 def moveLeg(leg, action): # function to move a leg to a desired position
@@ -85,7 +98,7 @@ def moveLeg(leg, action): # function to move a leg to a desired position
 
 ########## OSCILLATE ONE SERVO ##########
 
-def oscillateOneServo(arc_reduction): # function to oscillate one servo
+def oscillateOneServo(intensity): # function to oscillate one servo
 
     # Define upper leg servos
     upper_leg_servos = {
@@ -96,9 +109,13 @@ def oscillateOneServo(arc_reduction): # function to oscillate one servo
     }
 
     for leg, servo_data in upper_leg_servos.items():
-        # Calculate reduced movement range
-        max_limit = servo_data['FULL_BACK'] - arc_reduction
-        min_limit = servo_data['FULL_FRONT'] + arc_reduction
+
+        full_back = servo_data['FULL_BACK']
+        full_front = servo_data['FULL_FRONT']
+        neutral_position = servo_data['NEUTRAL']
+        arc_length = interpretIntensity(intensity, full_back, full_front)
+        max_limit = full_back #- (arc_length / 2)
+        min_limit = full_front #+ (arc_length / 2)
 
         # Ensure DIR is set correctly at the start
         if servo_data['DIR'] == 0:
@@ -126,7 +143,7 @@ def oscillateOneServo(arc_reduction): # function to oscillate one servo
         initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'])
 
         # Log the movement
-        logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Reduction={arc_reduction}")
+        logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Length={arc_length}")
 
 
 ########## MANUAL FORWARD ##########

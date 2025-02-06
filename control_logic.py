@@ -195,8 +195,6 @@ def pwmCallback(gpio, pulseWidth): # function to set pulse width to channel data
 
 ########## INTERPRET COMMANDS ##########
 
-arc_reduction = 0
-
 def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to interpret commands from channel data and do things
 
     ##### squat channel 2 #####
@@ -250,7 +248,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
             try:
 
-                oscillateOneServo(arc_reduction)
+                oscillateOneServo(intensity)
                 IS_NEUTRAL = False
                 time.sleep(0.1)
 
