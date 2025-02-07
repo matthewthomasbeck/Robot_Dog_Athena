@@ -155,4 +155,4 @@ def oscillateLegs(intensity): # function to oscillate one servo
 
     while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()):
 
-        time.sleep(0.05) # wait for servo to reach target
+        time.sleep(0.1) # wait for servo to reach target
