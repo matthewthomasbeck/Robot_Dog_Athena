@@ -48,15 +48,25 @@ def interpretIntensity(intensity, full_back, full_front): # function to interpre
     # converting to positive, dividing by 10, and multiplying by intensity
     arc_length = (abs(full_back - full_front) / 10) * intensity
 
-    ##### find speed #####
+    ##### find speed and acceleration #####
 
-    speed = int(((16383 / 5) / 10) * intensity) # map intensity (1-10) to valid speed range (0-16383)
+    if intensity == 1 or intensity == 2:
+        speed = int(((16383 / 5) / 10) * intensity)
+        acceleration = int(((255 / 5) / 10) * intensity)
+    elif intensity == 3 or intensity == 4:
+        speed = int(((16383 / 4) / 10) * intensity)
+        acceleration = int(((255 / 4) / 10) * intensity)
+    elif intensity == 5 or intensity == 6:
+        speed = int(((16383 / 3) / 10) * intensity)
+        acceleration = int(((255 / 3) / 10) * intensity)
+    elif intensity == 7 or intensity == 8:
+        speed = int(((16383 / 2) / 10) * intensity)
+        acceleration = int(((255 / 2) / 10) * intensity)
+    else:
+        speed = int((16383 / 10) * intensity)
+        acceleration = int((255 / 10) * intensity)
 
-    ##### find acceleration #####
-
-    acceleration = int(((255 / 4) / 10) * intensity) # map intensity (1-10) to valid acceleration range (0-255)
-
-    ##### return arc length and speed #####
+    ##### return arc length speed and acceleration #####
 
     return arc_length, speed, acceleration # return movement parameters
 
