@@ -60,7 +60,7 @@ def neutralStandingPosition():
 
         # Move servos to neutral positions
         for servo, position in new_positions.items():
-            initialize_servos.setTarget(servo, position)
+            initialize_servos.setTarget(servo, position, speed=16383, acceleration=255)
 
         logging.debug("Updating LEG_CONFIG with new positions...\n")
 
