@@ -21,8 +21,7 @@
 ##### import necessary libraries #####
 
 import time # import time library for time functions
-import os # import os library for system functions
-import sys # import sys library for system functions
+import math # import math library for pi, used with elliptical movement
 import logging # import logging for debugging
 
 ##### import necessary functions #####
