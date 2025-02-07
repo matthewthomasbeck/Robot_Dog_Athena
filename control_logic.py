@@ -250,7 +250,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
                 oscillateLegs(intensity)
                 IS_NEUTRAL = False
-                time.sleep(0.2)
+                #time.sleep(0.1)
 
             except Exception as e:
 

@@ -57,8 +57,10 @@ def neutralStandingPosition():
                 servo_id = config['servo']
                 neutral_position = config['NEUTRAL']
                 new_positions[servo_id] = neutral_position
+                config['DIR'] = 0
+                config['MOVED'] = False
 
-        # Move servos to neutral positions
+                # Move servos to neutral positions
         for servo, position in new_positions.items():
             initialize_servos.setTarget(servo, position, speed=16383, acceleration=255)
 

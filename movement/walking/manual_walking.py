@@ -75,33 +75,51 @@ def interpretIntensity(intensity, full_back, full_front): # function to interpre
 
 def oscillateLegs(intensity): # function to oscillate one servo
 
-    # Define upper leg servos
-    upper_leg_servos = {
-        "FL": initialize_servos.LEG_CONFIG['FL']['upper'],  # Front Left
-        "FR": initialize_servos.LEG_CONFIG['FR']['upper'],  # Front Right
-        "BL": initialize_servos.LEG_CONFIG['BL']['upper'],  # Back Left
-        "BR": initialize_servos.LEG_CONFIG['BR']['upper'],  # Back Right
+    ##### set vairables #####
+
+    upper_leg_servos = { # define upper leg servos
+
+        "FL": initialize_servos.LEG_CONFIG['FL']['upper'], # front left
+        "FR": initialize_servos.LEG_CONFIG['FR']['upper'], # front right
+        "BL": initialize_servos.LEG_CONFIG['BL']['upper'], # back left
+        "BR": initialize_servos.LEG_CONFIG['BR']['upper'], # back right
     }
+
+    arc_lengths = [] # store all arc lengths for uniform movement distance
+    speeds = [] # store all speeds for uniform movement speed
+    accelerations = [] # store all accelerations for uniform movement acceleration
+
+    ##### oscillate upper legs #####
 
     for leg, servo_data in upper_leg_servos.items():
 
-        full_back = servo_data['FULL_BACK']
-        full_front = servo_data['FULL_FRONT']
-        neutral_position = servo_data['NEUTRAL']
-        arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front)
+        full_back = servo_data['FULL_BACK'] # get full back position
+        full_front = servo_data['FULL_FRONT'] # get full front position
+        arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front) # get movement parameters
+        arc_lengths.append(arc_length) # append arc length to list
+        speeds.append(speed) # append speed to list
+        accelerations.append(acceleration) # append acceleration to list
+        servo_data['MOVED'] = False
+
+    min_arc_length = min(arc_lengths) # get minimum arc length
+    min_speed = min(speeds) # get minimum speed
+    min_acceleration = min(accelerations) # get minimum acceleration
+
+    for leg, servo_data in upper_leg_servos.items():
+
+        full_back = servo_data['FULL_BACK']  # get full back position
+        full_front = servo_data['FULL_FRONT'] # get full front position
+        neutral_position = servo_data['NEUTRAL'] # get neutral position
 
         if full_back < full_front: # if back position greater number...
 
-            max_limit = neutral_position + (arc_length / 2)
-            min_limit = neutral_position - (arc_length / 2)
+            max_limit = neutral_position + (min_arc_length / 2)
+            min_limit = neutral_position - (min_arc_length / 2)
 
         else: # if front position greater number...
 
-            max_limit = neutral_position - (arc_length / 2)
-            min_limit = neutral_position + (arc_length / 2)
-
-        #max_limit = servo_data['FULL_FRONT']
-        #min_limit = servo_data['FULL_BACK']
+            max_limit = neutral_position - (min_arc_length / 2)
+            min_limit = neutral_position + (min_arc_length / 2)
 
         # Ensure DIR is set correctly at the start
         if servo_data['DIR'] == 0:
@@ -126,7 +144,15 @@ def oscillateLegs(intensity): # function to oscillate one servo
         initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = new_pos  # Ensure the original dictionary is updated
 
         # Send the updated position
-        initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'], speed, acceleration)
+        initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'], min_speed, min_acceleration)
+
+        servo_data['MOVED'] = True
 
         # Log the movement
-        logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Length={arc_length}")
+        logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Length={min_arc_length}")
+
+    ##### ensure all servos have moved before new oscillation cycle #####
+
+    while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()):
+
+        time.sleep(0.05) # wait for servo to reach target
