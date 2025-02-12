@@ -72,7 +72,7 @@ def interpretIntensity(intensity, full_back, full_front): # function to interpre
 
 ########## OSCILLATE LEGS ##########
 
-def oscillateLegs(intensity): # function to oscillate one servo
+def manualTrot(intensity): # function to oscillate one servo
 
     ##### set vairables #####
 

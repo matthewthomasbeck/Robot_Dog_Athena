@@ -248,7 +248,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
             try:
 
-                oscillateLegs(intensity)
+                manualTrot(intensity)
                 IS_NEUTRAL = False
 
             except Exception as e:

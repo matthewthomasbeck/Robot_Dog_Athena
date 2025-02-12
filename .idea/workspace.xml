@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Spoiler alert: changing servos didn't work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/initialize/initialize_servos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/walking/manual_walking.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/manual_walking.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +78,9 @@
       <workItem from="1738782417052" duration="939000" />
       <workItem from="1738843417541" duration="22326000" />
       <workItem from="1738877255469" duration="445000" />
+      <workItem from="1738890704721" duration="9399000" />
+      <workItem from="1739201040257" duration="109000" />
+      <workItem from="1739398628192" duration="613000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
