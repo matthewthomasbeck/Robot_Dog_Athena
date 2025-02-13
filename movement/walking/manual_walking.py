@@ -29,6 +29,27 @@ import logging # import logging for debugging
 import initialize.initialize_servos as initialize_servos # import servo logic functions
 
 
+########## CREATE DEPENDENCIES ##########
+
+##### define servos #####
+
+upper_leg_servos = { # define upper leg servos
+
+    "FL": initialize_servos.LEG_CONFIG['FL']['upper'],  # front left
+    "FR": initialize_servos.LEG_CONFIG['FR']['upper'],  # front right
+    "BL": initialize_servos.LEG_CONFIG['BL']['upper'],  # back left
+    "BR": initialize_servos.LEG_CONFIG['BR']['upper'],  # back right
+}
+
+lower_leg_servos = { # define lower leg servos
+
+    "FL": initialize_servos.LEG_CONFIG['FL']['lower'],  # front left
+    "FR": initialize_servos.LEG_CONFIG['FR']['lower'],  # front right
+    "BL": initialize_servos.LEG_CONFIG['BL']['lower'],  # back left
+    "BR": initialize_servos.LEG_CONFIG['BR']['lower'],  # back right
+}
+
+
 
 
 
@@ -70,50 +91,65 @@ def interpretIntensity(intensity, full_back, full_front): # function to interpre
     return arc_length, speed, acceleration # return movement parameters
 
 
+########## CORRECT LEG SYNC ##########
+
+def correctLegSync(upper_leg_servos):
+
+    # Get movement directions
+    dir_FL = upper_leg_servos["FL"]["DIR"]
+    dir_FR = upper_leg_servos["FR"]["DIR"]
+    dir_BL = upper_leg_servos["BL"]["DIR"]
+    dir_BR = upper_leg_servos["BR"]["DIR"]
+
+    # Fix diagonal pairs (FL & BR) and (FR & BL)
+    if dir_FL != dir_BR:
+        logging.warning("FL & BR were out of sync. Correcting.")
+        upper_leg_servos["BR"]["DIR"] = dir_FL  # Sync BR to FL
+
+    if dir_FR != dir_BL:
+        logging.warning("FR & BL were out of sync. Correcting.")
+        upper_leg_servos["BL"]["DIR"] = dir_FR  # Sync BL to FR
+
+    # Fix adjacent legs to ensure they are NOT in sync
+    if dir_FL == dir_FR:  # If FL & FR are in sync, flip FR
+        logging.warning("FL & FR were in sync. Correcting FR.")
+        upper_leg_servos["FR"]["DIR"] *= -1
+
+    if dir_BL == dir_BR:  # If BL & BR are in sync, flip BR
+        logging.warning("BL & BR were in sync. Correcting BR.")
+        upper_leg_servos["BR"]["DIR"] *= -1
+
+    logging.info("Leg synchronization corrected.")
+
+
 ########## OSCILLATE LEGS ##########
 
 def manualTrot(intensity): # function to oscillate one servo
 
     ##### set vairables #####
 
-    upper_leg_servos = { # define upper leg servos
+    arc_lengths = []  # Store all arc lengths for uniform movement distance
+    speeds = []  # Store all speeds for uniform movement speed
+    accelerations = []  # Store all accelerations for uniform movement acceleration
 
-        "FL": initialize_servos.LEG_CONFIG['FL']['upper'], # front left
-        "FR": initialize_servos.LEG_CONFIG['FR']['upper'], # front right
-        "BL": initialize_servos.LEG_CONFIG['BL']['upper'], # back left
-        "BR": initialize_servos.LEG_CONFIG['BR']['upper'], # back right
-    }
-
-    lower_leg_servos = { # define lower leg servos
-
-        "FL": initialize_servos.LEG_CONFIG['FL']['lower'], # front left
-        "FR": initialize_servos.LEG_CONFIG['FR']['lower'], # front right
-        "BL": initialize_servos.LEG_CONFIG['BL']['lower'], # back left
-        "BR": initialize_servos.LEG_CONFIG['BR']['lower'], # back right
-    }
-
-    arc_lengths = [] # store all arc lengths for uniform movement distance
-    speeds = [] # store all speeds for uniform movement speed
-    accelerations = [] # store all accelerations for uniform movement acceleration
-
-    ##### find movement parameters #####
-
-    for leg, servo_data in upper_leg_servos.items(): # loop through upper leg servos to get parameters with intensity
-
-        full_back = servo_data['FULL_BACK'] # get full back position
-        full_front = servo_data['FULL_FRONT'] # get full front position
-        arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front) # get movement parameters
-        arc_lengths.append(arc_length) # append arc length to list
-        speeds.append(speed) # append speed to list
-        accelerations.append(acceleration) # append acceleration to list
+    ##### Find movement parameters #####
+    for leg, servo_data in upper_leg_servos.items():  # Loop through upper leg servos to get parameters with intensity
+        full_back = servo_data['FULL_BACK']  # Get full back position
+        full_front = servo_data['FULL_FRONT']  # Get full front position
+        arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front)  # Get movement parameters
+        arc_lengths.append(arc_length)  # Append arc length to list
+        speeds.append(speed)  # Append speed to list
+        accelerations.append(acceleration)  # Append acceleration to list
         servo_data['MOVED'] = False
 
-    min_arc_length = min(arc_lengths) # get minimum arc length
-    min_speed = min(speeds) # get minimum speed
-    min_acceleration = min(accelerations) # get minimum acceleration
+    min_arc_length = min(arc_lengths)  # Get minimum arc length
+    min_speed = min(speeds)  # Get minimum speed
+    min_acceleration = min(accelerations)  # Get minimum acceleration
 
-    ##### oscillate upper legs #####
+    ##### Correct leg synchronization #####
+    correctLegSync(upper_leg_servos)  # Auto-correct movement directions before executing movement
 
+    ##### Oscillate upper legs #####
     diagonal_pairs = [("FL", "BR"), ("FR", "BL")]  # Trot pairings
 
     for pair in diagonal_pairs:
@@ -168,6 +204,6 @@ def manualTrot(intensity): # function to oscillate one servo
 
     ##### ensure all servos have moved before new oscillation cycle #####
 
-    #while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()): # while not all servos have moved...
+    while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()): # while not all servos have moved...
 
-        #time.sleep(0.15) # wait for servo to reach target
+        time.sleep(0.15) # wait for servo to reach target

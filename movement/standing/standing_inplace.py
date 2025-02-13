@@ -73,6 +73,8 @@ def neutralStandingPosition():
                 if servo_id in new_positions:
                     config['CUR_POS'] = new_positions[servo_id]
 
+        time.sleep(0.1) # wait for servos to reach destination
+
         logging.info("Moved to neutral standing and updated LEG_CONFIG.\n")
 
     except Exception as e:

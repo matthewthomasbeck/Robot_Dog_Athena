@@ -1,6 +1,6 @@
 Project Athena!
 
-Crator(s):
+Creator(s):
 
 Hi, my name is Matthew Beck, and I am responsible for writing specifically the code for this robot dog. Other extremely important controbutors to this project as a whole are Omar Ferrer,
 a fellow software engineer who helped me create the environemnt (wouldn't have been able to do it without him tbh) that allowed me to do this in the first place, and Aaed Musa, the

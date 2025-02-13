@@ -248,7 +248,6 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
             try:
                 manualTrot(intensity)
-                time.sleep(.2)
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -262,7 +261,6 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
                 if IS_NEUTRAL == False:
 
                     neutralStandingPosition()
-                    time.sleep(0.1)
                     IS_NEUTRAL = True
 
             except Exception as e:
