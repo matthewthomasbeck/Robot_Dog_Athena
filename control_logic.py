@@ -247,8 +247,8 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             print(f"{channel}: {action}")
 
             try:
-
                 manualTrot(intensity)
+                time.sleep(.2)
                 IS_NEUTRAL = False
 
             except Exception as e:

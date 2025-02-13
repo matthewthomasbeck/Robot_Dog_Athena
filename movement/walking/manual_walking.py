@@ -114,55 +114,60 @@ def manualTrot(intensity): # function to oscillate one servo
 
     ##### oscillate upper legs #####
 
-    for leg, servo_data in upper_leg_servos.items():
+    diagonal_pairs = [("FL", "BR"), ("FR", "BL")]  # Trot pairings
 
-        full_back = servo_data['FULL_BACK']  # get full back position
-        full_front = servo_data['FULL_FRONT'] # get full front position
-        neutral_position = servo_data['NEUTRAL'] # get neutral position
+    for pair in diagonal_pairs:
+        move_commands = []  # Store commands to execute simultaneously
 
-        if full_back < full_front: # if back position greater number (servo moves counter-clockwise)...
+        for leg in pair:
+            servo_data = upper_leg_servos[leg]
 
-            max_limit = neutral_position + (min_arc_length / 2) # set max limit less than min
-            min_limit = neutral_position - (min_arc_length / 2) # set min limit greater than max
+            full_back = servo_data['FULL_BACK']
+            full_front = servo_data['FULL_FRONT']
+            neutral_position = servo_data['NEUTRAL']
 
-        else: # if front position greater number (servo moves clockwise)...
+            if full_back < full_front:
+                max_limit = neutral_position + (min_arc_length / 2)
+                min_limit = neutral_position - (min_arc_length / 2)
+            else:
+                max_limit = neutral_position - (min_arc_length / 2)
+                min_limit = neutral_position + (min_arc_length / 2)
 
-            max_limit = neutral_position - (min_arc_length / 2) # set max limit greater than min
-            min_limit = neutral_position + (min_arc_length / 2) # set min limit less than max
+            # Initialize movement direction
+            if servo_data['DIR'] == 0:
+                if leg in ["FL", "BR"]:
+                    servo_data['DIR'] = 1  # Move forward
+                else:
+                    servo_data['DIR'] = -1  # Move backward
 
-        ##### initialize leg directions #####
+            # Compute new position
+            new_pos = servo_data['CUR_POS'] + (servo_data['DIR'] * abs(max_limit - min_limit))
 
-        if servo_data['DIR'] == 0: # if direction is 0...
-            if leg in ["FL", "BR"]: # if leg is front left or back right...
-                servo_data['DIR'] = 1 # front left back right legs move forward
-            else: # if leg is not front left or back right...
-                servo_data['DIR'] = -1 # front left back right legs move backward
+            # Change direction at limits
+            if new_pos >= max_limit:
+                new_pos = max_limit
+                servo_data['DIR'] = -1  # Move backward next cycle
+            elif new_pos <= min_limit:
+                new_pos = min_limit
+                servo_data['DIR'] = 1  # Move forward next cycle
 
-        new_pos = servo_data['CUR_POS'] + (servo_data['DIR'] * abs(max_limit - min_limit)) # calculate new position
+            # Update servo data
+            servo_data['CUR_POS'] = new_pos
+            initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = new_pos
 
-        ##### change leg direction at upper leg limit #####
+            # Store movement command for simultaneous execution
+            move_commands.append((servo_data['servo'], new_pos, min_speed, min_acceleration))
+            servo_data['MOVED'] = True
 
-        if new_pos >= max_limit: # if new position greater than max limit...
-            new_pos = max_limit # set new position to max limit
-            servo_data['DIR'] = -1 # move backward next cycle
-        elif new_pos <= min_limit: # if new position less than min limit...
-            new_pos = min_limit # set new position to min limit
-            servo_data['DIR'] = 1 # move forward next cycle
+            logging.info(
+                f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {new_pos} with DIR={servo_data['DIR']}, Arc Length={min_arc_length}")
 
-        ##### update servo config and move servo #####
-
-        servo_data['CUR_POS'] = new_pos # update current position
-        initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = new_pos # update current position in config
-
-        # move servo to new position
-        initialize_servos.setTarget(servo_data['servo'], servo_data['CUR_POS'], min_speed, min_acceleration)
-        servo_data['MOVED'] = True # set moved to true to prevent new movement
-
-        # log new movement
-        logging.info(f"{leg} Upper Leg: Moved servo {servo_data['servo']} to {servo_data['CUR_POS']} with DIR={servo_data['DIR']}, Arc Length={min_arc_length}")
+        # Send all move commands for the pair at once
+        for servo, pos, speed, acc in move_commands:
+            initialize_servos.setTarget(servo, pos, speed, acc)
 
     ##### ensure all servos have moved before new oscillation cycle #####
 
-    while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()): # while not all servos have moved...
+    #while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()): # while not all servos have moved...
 
-        time.sleep(0.1) # wait for servo to reach target
+        #time.sleep(0.15) # wait for servo to reach target
