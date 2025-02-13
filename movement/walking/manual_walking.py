@@ -128,6 +128,7 @@ def manualTrot(intensity): # function to oscillate one servo
 
     ##### set vairables #####
 
+    diagonal_pairs = [("FL", "BR"), ("FR", "BL")]  # Trot pairings
     arc_lengths = []  # Store all arc lengths for uniform movement distance
     speeds = []  # Store all speeds for uniform movement speed
     accelerations = []  # Store all accelerations for uniform movement acceleration
@@ -146,18 +147,15 @@ def manualTrot(intensity): # function to oscillate one servo
     min_speed = min(speeds)  # Get minimum speed
     min_acceleration = min(accelerations)  # Get minimum acceleration
 
-    ##### Correct leg synchronization #####
-    correctLegSync(upper_leg_servos)  # Auto-correct movement directions before executing movement
-
-    ##### Oscillate upper legs #####
-    diagonal_pairs = [("FL", "BR"), ("FR", "BL")]  # Trot pairings
+    ##### move upper legs #####
 
     for pair in diagonal_pairs:
+
         move_commands = []  # Store commands to execute simultaneously
 
         for leg in pair:
-            servo_data = upper_leg_servos[leg]
 
+            servo_data = upper_leg_servos[leg]
             full_back = servo_data['FULL_BACK']
             full_front = servo_data['FULL_FRONT']
             neutral_position = servo_data['NEUTRAL']
@@ -180,10 +178,10 @@ def manualTrot(intensity): # function to oscillate one servo
             new_pos = servo_data['CUR_POS'] + (servo_data['DIR'] * abs(max_limit - min_limit))
 
             # Change direction at limits
-            if new_pos >= max_limit:
+            if servo_data['DIR'] == 1:
                 new_pos = max_limit
                 servo_data['DIR'] = -1  # Move backward next cycle
-            elif new_pos <= min_limit:
+            elif servo_data['DIR'] == -1:
                 new_pos = min_limit
                 servo_data['DIR'] = 1  # Move forward next cycle
 
@@ -201,9 +199,3 @@ def manualTrot(intensity): # function to oscillate one servo
         # Send all move commands for the pair at once
         for servo, pos, speed, acc in move_commands:
             initialize_servos.setTarget(servo, pos, speed, acc)
-
-    ##### ensure all servos have moved before new oscillation cycle #####
-
-    while not all(servo_data['MOVED'] for servo_data in upper_leg_servos.values()): # while not all servos have moved...
-
-        time.sleep(0.15) # wait for servo to reach target

@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Spoiler alert: changing servos didn't work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/standing/standing_inplace.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/standing/standing_inplace.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/walking/manual_walking.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/manual_walking.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

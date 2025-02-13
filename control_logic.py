@@ -79,9 +79,9 @@ from movement.walking.manual_walking import * # import walking functions
 
 
 
-################################################
-############### COMMAND REQUESTS ###############
-################################################
+#########################################
+############### RUN ROBOT ###############
+#########################################
 
 
 ########## RUN ROBOTIC PROCESS ##########
@@ -203,9 +203,9 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
         if action == 'NEUTRAL' or action == 'SQUAT DOWN':
             if action == 'SQUAT DOWN':
                 pass
-                #disableAllServos()
+                # function to squat
         elif action == 'SQUAT UP':
-                #eutralStandingPosition()
+                # function to neutral
                 print(f"{channel}: {action}")
 
     ##### tilt channel 0 #####
