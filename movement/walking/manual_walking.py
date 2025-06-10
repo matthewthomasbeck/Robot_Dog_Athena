@@ -27,26 +27,31 @@ import logging # import logging for debugging
 ##### import necessary functions #####
 
 import initialize.initialize_servos as initialize_servos # import servo logic functions
+from kinematics.kinematics import Kinematics # import kinematics functions
 
 
 ########## CREATE DEPENDENCIES ##########
+
+##### initialize kinematics #####
+
+k = Kinematics(initialize_servos.LINK_CONFIG) # use link lengths to initialize kinematic functions
 
 ##### define servos #####
 
 upper_leg_servos = { # define upper leg servos
 
-    "FL": initialize_servos.LEG_CONFIG['FL']['upper'],  # front left
-    "FR": initialize_servos.LEG_CONFIG['FR']['upper'],  # front right
-    "BL": initialize_servos.LEG_CONFIG['BL']['upper'],  # back left
-    "BR": initialize_servos.LEG_CONFIG['BR']['upper'],  # back right
+    "FL": initialize_servos.SERVO_CONFIG['FL']['upper'],  # front left
+    "FR": initialize_servos.SERVO_CONFIG['FR']['upper'],  # front right
+    "BL": initialize_servos.SERVO_CONFIG['BL']['upper'],  # back left
+    "BR": initialize_servos.SERVO_CONFIG['BR']['upper'],  # back right
 }
 
 lower_leg_servos = { # define lower leg servos
 
-    "FL": initialize_servos.LEG_CONFIG['FL']['lower'],  # front left
-    "FR": initialize_servos.LEG_CONFIG['FR']['lower'],  # front right
-    "BL": initialize_servos.LEG_CONFIG['BL']['lower'],  # back left
-    "BR": initialize_servos.LEG_CONFIG['BR']['lower'],  # back right
+    "FL": initialize_servos.SERVO_CONFIG['FL']['lower'],  # front left
+    "FR": initialize_servos.SERVO_CONFIG['FR']['lower'],  # front right
+    "BL": initialize_servos.SERVO_CONFIG['BL']['lower'],  # back left
+    "BR": initialize_servos.SERVO_CONFIG['BR']['lower'],  # back right
 }
 
 
@@ -93,6 +98,35 @@ def interpretIntensity(intensity, full_back, full_front): # function to interpre
 
 ########## MANUAL TROT ##########
 
+
+def moveFrontLeftLeg(x, y, z, speed=100, acceleration=10):
+    """
+    Moves the front left leg to a specified (x, y, z) foot position in meters.
+    Uses inverse kinematics and maps angles to servo positions.
+    """
+    from kinematics.kinematics import Kinematics
+
+    # Run inverse kinematics
+    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
+
+    # Define neutral angle assumptions (you can tune these)
+    hip_neutral_angle = 0
+    upper_neutral_angle = 90
+    lower_neutral_angle = 90
+
+    # Move each joint
+    for joint, angle, neutral in zip(
+        ['hip', 'upper', 'lower'],
+        [hip_angle, upper_angle, lower_angle],
+        [hip_neutral_angle, upper_neutral_angle, lower_neutral_angle]
+    ):
+        servo_data = initialize_servos.SERVO_CONFIG['FL'][joint]
+        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+        pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
+        initialize_servos.setTarget(servo_data['servo'], pwm, speed, acceleration)
+
+
+
 def manualTrot(intensity): # function to oscillate one servo
 
     ##### set vairables #####
@@ -103,8 +137,8 @@ def manualTrot(intensity): # function to oscillate one servo
     accelerations = []  # Store all accelerations for uniform movement acceleration
 
     ##### Find movement parameters #####
-    for leg, upper_servo_data in initialize_servos.LEG_CONFIG.items(): # Loop through upper leg servos to get parameters with intensity
-        upper_servo_data = initialize_servos.LEG_CONFIG[leg]['upper']
+    for leg, upper_servo_data in initialize_servos.SERVO_CONFIG.items(): # Loop through upper leg servos to get parameters with intensity
+        upper_servo_data = initialize_servos.SERVO_CONFIG[leg]['upper']
         full_back = upper_servo_data['FULL_BACK']  # Get full back position
         full_front = upper_servo_data['FULL_FRONT']  # Get full front position
         arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front)  # Get movement parameters
@@ -155,7 +189,7 @@ def manualTrot(intensity): # function to oscillate one servo
             if upper_servo_data['DIR'] == 1:
                 upper_new_pos = max_limit
                 upper_servo_data['CUR_POS'] = upper_new_pos
-                initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = upper_new_pos
+                initialize_servos.SERVO_CONFIG[leg]['upper']['CUR_POS'] = upper_new_pos
 
                 logging.debug("Lifting up...")
 
@@ -194,7 +228,7 @@ def manualTrot(intensity): # function to oscillate one servo
             elif upper_servo_data['DIR'] == -1:
                 upper_new_pos = min_limit
                 upper_servo_data['CUR_POS'] = upper_new_pos
-                initialize_servos.LEG_CONFIG[leg]['upper']['CUR_POS'] = upper_new_pos
+                initialize_servos.SERVO_CONFIG[leg]['upper']['CUR_POS'] = upper_new_pos
 
                 logging.debug("Planting foot...")
 

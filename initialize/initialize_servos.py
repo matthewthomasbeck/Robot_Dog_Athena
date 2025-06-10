@@ -33,9 +33,19 @@ from initialize.initialize_maestro import * # import maestro initialization func
 
 MAESTRO = createMaestroConnection() # create maestro connection
 
+##### set dictionary of linkages and their lengths #####
+
+LINK_CONFIG = { # dictionary of leg linkages
+
+    'HIP_OFFSET': 0.0485394, # centerline to hip servo
+    'HIP_TO_LEG_PLANE': 0.0290068, # axis to leg plane
+    'FEMUR_LENGTH': 0.11, # femur length
+    'TIBIA_LENGTH': 0.125, # tibia length
+}
+
 ##### set dictionary of servos and their ranges #####
 
-LEG_CONFIG = { # dictionary of leg configurations
+SERVO_CONFIG = { # dictionary of leg configurations
 
     'FL': {'hip': {'servo': 3, 'FULL_BACK': 1236.50, 'FULL_FRONT': 1892.25, 'NEUTRAL': 1564.375, 'CUR_POS': 1564.375, 'DIR': 0, 'MOVED': False},
            'upper': {'servo': 5, 'FULL_BACK': 1921.50, 'FULL_FRONT': 1266.00, 'NEUTRAL': 1593.75, 'CUR_POS': 1593.75, 'DIR': 0, 'MOVED': False},
@@ -96,6 +106,28 @@ def setTarget(channel, target, speed, acceleration): # function to set target po
         logging.error("ERROR (initialize_servos.py): Failed to move servo.\n") # print failure statement
 
 
+########## ANGLE TO TARGET ##########
+
+def map_angle_to_servo_position(angle, joint_data, angle_neutral, is_inverted=False):
+    """
+    Maps an angle (in degrees) to a servo pulse width using joint calibration data.
+    - angle: target angle in degrees
+    - joint_data: dict with FULL_BACK, FULL_FRONT, NEUTRAL
+    - angle_neutral: the angle (in degrees) that corresponds to the NEUTRAL pulse
+    - is_inverted: True if increasing angle lowers pulse
+    """
+    full_back = joint_data['FULL_BACK']
+    full_front = joint_data['FULL_FRONT']
+    neutral_pulse = joint_data['NEUTRAL']
+
+    pulse_range = full_front - full_back
+    direction = -1 if is_inverted else 1
+
+    # map angle to pulse
+    pulse = neutral_pulse + direction * ((angle - angle_neutral) / 90) * pulse_range
+    return int(round(pulse))
+
+
 
 
 
@@ -114,7 +146,7 @@ def disableAllServos(): # function to disable servos via code
 
     try: # attempt to disable all servos
 
-        for leg, joints in LEG_CONFIG.items(): # loop through each leg
+        for leg, joints in SERVO_CONFIG.items(): # loop through each leg
 
             for joint, config in joints.items(): # loop through each joint
 

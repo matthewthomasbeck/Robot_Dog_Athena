@@ -247,7 +247,8 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             print(f"{channel}: {action}")
 
             try:
-                manualTrot(intensity)
+                #manualTrot(intensity)
+                moveFrontLeftLeg(0.1, LINK_CONFIG['HIP_OFFSET'], -0.12)
                 IS_NEUTRAL = False
 
             except Exception as e:

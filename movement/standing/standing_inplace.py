@@ -51,8 +51,8 @@ def neutralStandingPosition():
         # Create a dictionary to store the neutral positions dynamically
         new_positions = {}
 
-        # Iterate over LEG_CONFIG to extract NEUTRAL positions
-        for leg, joints in initialize_servos.LEG_CONFIG.items():
+        # Iterate over SERVO_CONFIG to extract NEUTRAL positions
+        for leg, joints in initialize_servos.SERVO_CONFIG.items():
             for joint, config in joints.items():
                 servo_id = config['servo']
                 neutral_position = config['NEUTRAL']
@@ -60,14 +60,14 @@ def neutralStandingPosition():
                 config['DIR'] = 0
                 config['MOVED'] = False
 
-                # Move servos to neutral positions
+        # Move servos to neutral positions
         for servo, position in new_positions.items():
             initialize_servos.setTarget(servo, position, speed=16383, acceleration=255)
 
-        logging.debug("Updating LEG_CONFIG with new positions...\n")
+        logging.debug("Updating SERVO_CONFIG with new positions...\n")
 
-        # Update CUR_POS for each servo in LEG_CONFIG
-        for leg, joints in initialize_servos.LEG_CONFIG.items():
+        # Update CUR_POS for each servo in SERVO_CONFIG
+        for leg, joints in initialize_servos.SERVO_CONFIG.items():
             for joint, config in joints.items():
                 servo_id = config['servo']
                 if servo_id in new_positions:
@@ -75,7 +75,7 @@ def neutralStandingPosition():
 
         time.sleep(0.1) # wait for servos to reach destination
 
-        logging.info("Moved to neutral standing and updated LEG_CONFIG.\n")
+        logging.info("Moved to neutral standing and updated SERVO_CONFIG.\n")
 
     except Exception as e:
         logging.error(f"ERROR (standing_inplace.py): Failed to move to neutral standing position. {e}\n")
@@ -89,7 +89,7 @@ def tippyToesStandingPosition(): # function to set all servos to tippy toes posi
 
     logging.debug("Moving to tippy toes position...\n") # print initialization message
 
-    try: # attempt to move to tippy toes position
+    try: # attempt to move to tippy-toes position
 
         ##### tippy toes hips #####
 
