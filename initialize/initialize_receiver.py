@@ -216,7 +216,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-3'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[rotateLeftRightChannel3], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-3'] = ('MOVE FORWARD', intensity)
+            commands['channel-3'] = ('ROTATE LEFT', intensity)
             CHANNEL_COUNTERS['channel-3'] = 0
 
     elif DEADBAND_LOW <= channel_data[rotateLeftRightChannel3] <= DEADBAND_HIGH:
@@ -237,7 +237,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-3'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[rotateLeftRightChannel3], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-3'] = ('MOVE BACKWARD', intensity)
+            commands['channel-3'] = ('ROTATE RIGHT', intensity)
             CHANNEL_COUNTERS['channel-3'] = 0
 
     ##### look channel 4 #####
@@ -250,7 +250,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[lookUpDownChannel4], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-4'] = ('MOVE FORWARD', intensity)
+            commands['channel-4'] = ('LOOK UP', intensity)
             CHANNEL_COUNTERS['channel-4'] = 0
 
     elif DEADBAND_LOW <= channel_data[lookUpDownChannel4] <= DEADBAND_HIGH:
@@ -271,7 +271,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[lookUpDownChannel4], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-4'] = ('MOVE BACKWARD', intensity)
+            commands['channel-4'] = ('LOOK DOWN', intensity)
             CHANNEL_COUNTERS['channel-4'] = 0
 
     ##### move channel 5 #####
