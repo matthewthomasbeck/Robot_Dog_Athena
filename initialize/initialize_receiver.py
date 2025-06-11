@@ -318,7 +318,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-6'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[shiftLeftRightChannel6], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-6'] = ('MOVE LEFT', intensity)
+            commands['channel-6'] = ('SHIFT LEFT', intensity)
             CHANNEL_COUNTERS['channel-6'] = 0
 
     elif DEADBAND_LOW <= channel_data[shiftLeftRightChannel6] <= DEADBAND_HIGH:
@@ -339,7 +339,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-6'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[shiftLeftRightChannel6], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-6'] = ('MOVE RIGHT', intensity)
+            commands['channel-6'] = ('SHIFT RIGHT', intensity)
             CHANNEL_COUNTERS['channel-6'] = 0
 
     ##### extra channel 7 #####
