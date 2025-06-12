@@ -130,30 +130,38 @@ def moveFrontLeftLeg(x, y, z, speed=100, acceleration=10):
         initialize_servos.setTarget(servo_data['servo'], pwm, speed, acceleration)
 
 
+def moveBackRightLeg(x, y, z, speed=100, acceleration=10):
+    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
+
+    hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
+
+    for joint, angle, neutral in zip(['hip', 'upper', 'lower'], [hip_angle, upper_angle, lower_angle], [hip_neutral, upper_neutral, lower_neutral]):
+        servo_data = initialize_servos.SERVO_CONFIG['BR'][joint]
+        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+        pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
+        initialize_servos.setTarget(servo_data['servo'], pwm, speed, acceleration)
+
+
 fl_gait_state = {
     'phase': 'stance',       # current phase: 'stance' or 'swing'
     'last_time': time.time(),  # time of last phase switch (optional here)
-    'duration': 0.3,           # phase duration (not used here since you trigger manually)
     'returned_to_neutral': False
 }
 
-FL_SWING_POSITION = {
-    'x': -0.0250,
-    'y': -0.0065,
-    'z': -0.0400
+br_gait_state = {
+    'phase': 'stance',
+    'last_time': time.time(),
+    'returned_to_neutral': False
 }
 
-FL_NEUTRAL_POSITION = {
-    'x': -0.1150,
-    'y': 0.0065,
-    'z': -0.0700
-}
+FL_SWING_POSITION = {'x': -0.0250, 'y': -0.0065,'z': -0.0400}
+FL_NEUTRAL_POSITION = {'x': -0.1150, 'y': 0.0065, 'z': -0.0700}
+FL_STANCE_POSITION = {'x': -0.1550, 'y': -0.0015, 'z': -0.1100}
 
-FL_STANCE_POSITION = {
-    'x': -0.1550,
-    'y': -0.0015,
-    'z': -0.1100
-}
+BR_SWING_POSITION = {'x': -0.1100, 'y': -0.0085, 'z': -0.1700}
+BR_NEUTRAL_POSITION = {'x': -0.0150, 'y': 0.0015, 'z': -0.0700}
+BR_STANCE_POSITION = {'x': 0.0250, 'y': -0.0035, 'z': -0.0150}
+
 
 def updateFrontLeftGaitBD(state):
     global fl_gait_state
@@ -172,6 +180,22 @@ def updateFrontLeftGaitBD(state):
     fl_gait_state['returned_to_neutral'] = False
 
 
+def updateBackRightGaitBD(state):
+    global br_gait_state
+
+    if not state.get('FORWARD', False):
+        return
+
+    if br_gait_state['phase'] == 'stance':
+        moveBackRightToPosition(BR_SWING_POSITION)
+        br_gait_state['phase'] = 'swing'
+    else:
+        moveBackRightToPosition(BR_STANCE_POSITION)
+        br_gait_state['phase'] = 'stance'
+
+    br_gait_state['returned_to_neutral'] = False
+
+
 def resetFrontLeftForwardGait():
     global fl_gait_state
 
@@ -180,8 +204,16 @@ def resetFrontLeftForwardGait():
         fl_gait_state['returned_to_neutral'] = True
         logging.info("FL leg returned to neutral forward gait position.")
 
+def resetBackRightForwardGait():
+    global br_gait_state
 
-def moveFrontLeftToPosition(pos, speed=16383, acceleration=125):
+    if not br_gait_state['returned_to_neutral']:
+        moveBackRightToPosition(BR_NEUTRAL_POSITION)
+        br_gait_state['returned_to_neutral'] = True
+        logging.info("BR leg returned to neutral forward gait position.")
+
+
+def moveFrontLeftToPosition(pos, speed=16383, acceleration=75):
     """
     Moves the FL leg to a given position dictionary with x, y, z.
     """
@@ -193,7 +225,15 @@ def moveFrontLeftToPosition(pos, speed=16383, acceleration=125):
         acceleration=acceleration
     )
 
-    time.sleep(0.1)  # small delay to ensure movement is registered
+
+def moveBackRightToPosition(pos, speed=16383, acceleration=75):
+    moveBackRightLeg(
+        x=pos['x'],
+        y=pos['y'],
+        z=pos['z'],
+        speed=speed,
+        acceleration=acceleration
+    )
 
 
 # TODO FOOT TUNING
@@ -219,3 +259,26 @@ def _applyFootPosition():
     x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
     moveFrontLeftLeg(x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+
+foot_position_BR = {
+    'x': 0.0,
+    'y': -initialize_servos.LINK_CONFIG['HIP_OFFSET'],  # Negative because BR is on the opposite side
+    'z': -0.10
+}
+
+def adjustBR_X(forward=True, delta=0.005):
+    direction = 1 if forward else -1
+    foot_position_BR['x'] += direction * delta
+    _applyFootPositionBR()
+def adjustBR_Y(left=True, delta=0.005):
+    direction = 1 if left else -1
+    foot_position_BR['y'] += direction * delta
+    _applyFootPositionBR()
+def adjustBR_Z(up=True, delta=0.005):
+    direction = 1 if up else -1
+    foot_position_BR['z'] += direction * delta
+    _applyFootPositionBR()
+def _applyFootPositionBR():
+    x, y, z = foot_position_BR['x'], foot_position_BR['y'], foot_position_BR['z']
+    moveBackRightLeg(x, y, z, speed=16383, acceleration=255)
+    logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
