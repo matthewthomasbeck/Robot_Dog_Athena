@@ -219,24 +219,67 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
     ##### trigger channel 1 #####
 
     elif channel == 'channel-1':
+
         if action == 'TRIGGER SHOOT':
             print(f"{channel}: {action}")
 
     ##### rotation channel 3 #####
 
     elif channel == 'channel-3':
+
         if action == 'ROTATE LEFT':
+
             print(f"{channel}: {action}")
+
+            try:
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to rotate left in executeCommands: {e}\n")
+
+        elif action == 'NEUTRAL':
+
+            IS_NEUTRAL = True
+
         elif action == 'ROTATE RIGHT':
+
             print(f"{channel}: {action}")
+
+            try:
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to rotate right in executeCommands: {e}\n")
 
     ##### look channel 4 #####
 
     elif channel == 'channel-4':
+
         if action == 'LOOK DOWN':
-            print(f"{channel}: {action}")
+
+            logging.info(f"{channel}: {action}")
+
+            try:
+                #adjustFL_Z(up=True) # testing z axis
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to look down in executeCommands: {e}\n")
+
+        elif action == 'NEUTRAL':
+
+            IS_NEUTRAL = True
+
         elif action == 'LOOK UP':
-            print(f"{channel}: {action}")
+
+            logging.info(f"{channel}: {action}")
+
+            try:
+                #adjustFL_Z(up=False) # testing z axis
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to look up in executeCommands: {e}\n")
 
     ##### move channel 5 #####
 
@@ -244,15 +287,14 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
         if action == 'MOVE FORWARD':
 
-            print(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}")
 
             try:
-                #manualTrot(intensity)
-                moveFrontLeftLeg(0.1, LINK_CONFIG['HIP_OFFSET'], -0.12)
+                #adjustFL_Y(left=True) # testing y axis
+                updateFrontLeftGaitBD({'FORWARD': True})
                 IS_NEUTRAL = False
 
             except Exception as e:
-
                 logging.error(f"ERROR (control_logic.py): Failed to move forward in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
@@ -261,7 +303,8 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
                 if IS_NEUTRAL == False:
 
-                    neutralStandingPosition()
+                    resetFrontLeftForwardGait()
+                    #neutralStandingPosition()
                     IS_NEUTRAL = True
 
             except Exception as e:
@@ -270,15 +313,45 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
         elif action == 'MOVE BACKWARD':
 
-            print(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}")
+
+            try:
+                #adjustFL_Y(left=False) # testing y axis
+                #updateFrontLeftGaitBD({'FORWARD': True}) TODO implement reverse gait later
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to move backward in executeCommands: {e}\n")
 
     ##### shift channel 6 #####
 
     elif channel == 'channel-6':
+
         if action == 'SHIFT LEFT':
-            print(f"{channel}: {action}")
+
+            logging.info(f"{channel}: {action}")
+
+            try:
+                #adjustFL_X(forward=True) # testing x axis
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to shift left in executeCommands: {e}\n")
+
+        elif action == 'NEUTRAL':
+
+            IS_NEUTRAL = True
+
         elif action == 'SHIFT RIGHT':
-            print(f"{channel}: {action}")
+
+            logging.info(f"{channel}: {action}")
+
+            try:
+                #adjustFL_X(forward=False) # testing x axis
+                IS_NEUTRAL = False
+
+            except Exception as e:
+                logging.error(f"ERROR (control_logic.py): Failed to shift right in executeCommands: {e}\n")
 
     ##### extra channel 7 #####
 

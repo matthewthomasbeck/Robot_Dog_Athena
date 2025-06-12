@@ -54,6 +54,10 @@ lower_leg_servos = { # define lower leg servos
     "BR": initialize_servos.SERVO_CONFIG['BR']['lower'],  # back right
 }
 
+##### leg pairs #####
+
+DIAGONAL_PAIRS = [('FL', 'BR'), ('FR', 'BL')]
+
 
 
 
@@ -126,144 +130,92 @@ def moveFrontLeftLeg(x, y, z, speed=100, acceleration=10):
         initialize_servos.setTarget(servo_data['servo'], pwm, speed, acceleration)
 
 
+fl_gait_state = {
+    'phase': 'stance',       # current phase: 'stance' or 'swing'
+    'last_time': time.time(),  # time of last phase switch (optional here)
+    'duration': 0.3,           # phase duration (not used here since you trigger manually)
+    'returned_to_neutral': False
+}
 
-def manualTrot(intensity): # function to oscillate one servo
+FL_SWING_POSITION = {
+    'x': -0.0250,
+    'y': -0.0065,
+    'z': -0.0400
+}
 
-    ##### set vairables #####
+FL_NEUTRAL_POSITION = {
+    'x': -0.1150,
+    'y': 0.0065,
+    'z': -0.0700
+}
 
-    diagonal_pairs = [("FL", "BR"), ("FR", "BL")]  # Trot pairings
-    upper_arc_lengths = []  # Store all arc lengths for uniform movement distance
-    speeds = []  # Store all speeds for uniform movement speed
-    accelerations = []  # Store all accelerations for uniform movement acceleration
+FL_STANCE_POSITION = {
+    'x': -0.1550,
+    'y': -0.0015,
+    'z': -0.1100
+}
 
-    ##### Find movement parameters #####
-    for leg, upper_servo_data in initialize_servos.SERVO_CONFIG.items(): # Loop through upper leg servos to get parameters with intensity
-        upper_servo_data = initialize_servos.SERVO_CONFIG[leg]['upper']
-        full_back = upper_servo_data['FULL_BACK']  # Get full back position
-        full_front = upper_servo_data['FULL_FRONT']  # Get full front position
-        arc_length, speed, acceleration = interpretIntensity(intensity, full_back, full_front)  # Get movement parameters
-        upper_arc_lengths.append(arc_length)  # Append arc length to list
-        speeds.append(speed)  # Append speed to list
-        accelerations.append(acceleration)  # Append acceleration to list
-        upper_servo_data['MOVED'] = False
+def updateFrontLeftGaitBD(state):
+    global fl_gait_state
 
-    min_upper_arc_length = min(upper_arc_lengths)  # Get minimum arc length
-    min_speed = min(speeds)  # Get minimum speed
-    min_acceleration = min(accelerations)  # Get minimum acceleration
+    if not state.get('FORWARD', False):
+        return  # neutral recovery handled elsewhere
 
-    ##### move upper legs #####
+    # If joystick is held, keep alternating between stance/swing
+    if fl_gait_state['phase'] == 'stance':
+        moveFrontLeftToPosition(FL_SWING_POSITION)
+        fl_gait_state['phase'] = 'swing'
+    else:
+        moveFrontLeftToPosition(FL_STANCE_POSITION)
+        fl_gait_state['phase'] = 'stance'
 
-    for pair in diagonal_pairs:
-
-        for leg in pair:
-
-            upper_servo_data = upper_leg_servos[leg]
-            full_back = upper_servo_data['FULL_BACK']
-            full_front = upper_servo_data['FULL_FRONT']
-            neutral_position = upper_servo_data['NEUTRAL']
-
-            lower_servo_data = lower_leg_servos[leg]
-
-            if full_back < full_front:
-                max_limit = neutral_position + (min_upper_arc_length / 2)
-                min_limit = neutral_position - (min_upper_arc_length / 2)
-            else:
-                min_upper_arc_length = (-1 * min_upper_arc_length)
-
-                max_limit = neutral_position + (min_upper_arc_length / 2)
-                min_limit = neutral_position - (min_upper_arc_length / 2)
-
-            # Initialize movement direction
-            if upper_servo_data['DIR'] == 0:
-                if leg in ["FL", "BR"]:
-                    upper_servo_data['DIR'] = 1  # Move forward
-                else:
-                    upper_servo_data['DIR'] = -1  # Move backward
-
-            # Compute new position
-            #upper_new_pos = upper_servo_data['CUR_POS'] + (upper_servo_data['DIR'] * abs(max_limit - min_limit))
-
-            logging.info(f"Moving {leg}.\n")
-
-            # Change direction at limits
-            if upper_servo_data['DIR'] == 1:
-                upper_new_pos = max_limit
-                upper_servo_data['CUR_POS'] = upper_new_pos
-                initialize_servos.SERVO_CONFIG[leg]['upper']['CUR_POS'] = upper_new_pos
-
-                logging.debug("Lifting up...")
-
-                liftLowerLeg(  # lift-up lower leg
-
-                    lower_servo_data['servo'],
-                    min_upper_arc_length,
-                    16383,
-                    255
-                )
-
-                time.sleep(0.1)
-
-                logging.debug("Swinging Leg...")
-
-                initialize_servos.setTarget(upper_servo_data['servo'], upper_new_pos, min_speed, min_acceleration)
-
-                time.sleep(0.05)
-
-                logging.debug("Stepping down...")
-
-                neutralLowerLeg(  # touch down lower leg
-
-                    lower_servo_data['servo'],
-                    lower_servo_data['NEUTRAL'],
-                    16383,
-                    255
-                )
-
-                time.sleep(0.05)
-
-                upper_servo_data['DIR'] = -1  # Move backward next cycle
-
-                logging.info("Stepped forward.\n")
-
-            elif upper_servo_data['DIR'] == -1:
-                upper_new_pos = min_limit
-                upper_servo_data['CUR_POS'] = upper_new_pos
-                initialize_servos.SERVO_CONFIG[leg]['upper']['CUR_POS'] = upper_new_pos
-
-                logging.debug("Planting foot...")
-
-                lowerLowerLeg( # touch down lower leg
-
-                    lower_servo_data['servo'],
-                    min_upper_arc_length,
-                    16383,
-                    255
-                )
-
-                time.sleep(0.1)
-
-                logging.debug("Pushing back...")
-
-                initialize_servos.setTarget(upper_servo_data['servo'], upper_new_pos, min_speed, min_acceleration)
-
-                time.sleep(0.05)
-
-                logging.info("pushed backwards.\n")
-
-                upper_servo_data['DIR'] = 1  # Move forward next cycle
-
-            upper_servo_data['MOVED'] = True
+    fl_gait_state['returned_to_neutral'] = False
 
 
-# function to oscillate lower leg
-def liftLowerLeg(servo_name, arc_length, speed, acceleration):
+def resetFrontLeftForwardGait():
+    global fl_gait_state
 
-    initialize_servos.setTarget(servo_name, (-1 * arc_length), speed, acceleration)
+    if not fl_gait_state['returned_to_neutral']:
+        moveFrontLeftToPosition(FL_NEUTRAL_POSITION)
+        fl_gait_state['returned_to_neutral'] = True
+        logging.info("FL leg returned to neutral forward gait position.")
 
-def neutralLowerLeg(servo_name, arc_length, speed, acceleration):
 
-    initialize_servos.setTarget(servo_name, arc_length, speed, acceleration)
+def moveFrontLeftToPosition(pos, speed=16383, acceleration=125):
+    """
+    Moves the FL leg to a given position dictionary with x, y, z.
+    """
+    moveFrontLeftLeg(
+        x=pos['x'],
+        y=pos['y'],
+        z=pos['z'],
+        speed=speed,
+        acceleration=acceleration
+    )
 
-def lowerLowerLeg(servo_name, arc_length, speed, acceleration):
+    time.sleep(0.1)  # small delay to ensure movement is registered
 
-    initialize_servos.setTarget(servo_name, (1 * arc_length), speed, acceleration)
+
+# TODO FOOT TUNING
+
+foot_position_FL = {
+    'x': 0.0,
+    'y': initialize_servos.LINK_CONFIG['HIP_OFFSET'],
+    'z': -0.10
+}
+def adjustFL_X(forward=True, delta=0.005):
+    direction = 1 if forward else -1
+    foot_position_FL['x'] += direction * delta
+    _applyFootPosition()
+def adjustFL_Y(left=True, delta=0.005):
+    direction = 1 if left else -1
+    foot_position_FL['y'] += direction * delta
+    _applyFootPosition()
+def adjustFL_Z(up=True, delta=0.005):
+    direction = 1 if up else -1
+    foot_position_FL['z'] += direction * delta
+    _applyFootPosition()
+def _applyFootPosition():
+    x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
+    moveFrontLeftLeg(x, y, z, speed=16383, acceleration=255)
+    logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")

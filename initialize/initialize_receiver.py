@@ -144,7 +144,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
         'channel-0': ('NEUTRAL', 0), # set channel 0 to neutral for silence
         'channel-1': ('NEUTRAL', 0), # set channel 1 to neutral for silence
         'channel-2': ('NEUTRAL', 0), # set channel 2 to neutral for silence
-        'channel-7':  ('NEUTRAL', 0), # set channel 7 to neutral for silence
+        'channel-7': ('NEUTRAL', 0), # set channel 7 to neutral for silence
     }
 
     current_time = time.time() # set current time to current time
@@ -250,7 +250,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[lookUpDownChannel4], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-4'] = ('LOOK UP', intensity)
+            commands['channel-4'] = ('LOOK DOWN', intensity)
             CHANNEL_COUNTERS['channel-4'] = 0
 
     elif DEADBAND_LOW <= channel_data[lookUpDownChannel4] <= DEADBAND_HIGH:
@@ -271,7 +271,7 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
         if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
             intensity = getJoystickIntensity(channel_data[lookUpDownChannel4], DEADBAND_LOW, DEADBAND_HIGH)
-            commands['channel-4'] = ('LOOK DOWN', intensity)
+            commands['channel-4'] = ('LOOK UP', intensity)
             CHANNEL_COUNTERS['channel-4'] = 0
 
     ##### move channel 5 #####
