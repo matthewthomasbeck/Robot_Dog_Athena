@@ -260,7 +260,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBR_Z(up=True) # testing z axis
+                #adjustBL_Z(up=True) # testing z axis
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -275,7 +275,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBR_Z(up=False) # testing z axis
+                #adjustBL_Z(up=False) # testing z axis
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -290,9 +290,8 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBR_Y(left=True) # testing y axis
-                updateFrontLeftGaitBD({'FORWARD': True})
-                updateBackRightGaitBD({'FORWARD': True})
+                #adjustBL_Y(left=True) # testing y axis
+                trotForward(intensity)
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -306,6 +305,8 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
                     resetFrontLeftForwardGait()
                     resetBackRightForwardGait()
+                    resetFrontRightForwardGait()
+                    resetBackLeftForwardGait()
                     #neutralStandingPosition()
                     IS_NEUTRAL = True
 
@@ -318,7 +319,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBR_Y(left=False) # testing y axis
+                #adjustBL_Y(left=False) # testing y axis
                 #updateFrontLeftGaitBD({'FORWARD': True}) TODO implement reverse gait later
                 IS_NEUTRAL = False
 
@@ -334,7 +335,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBR_X(forward=True) # testing x axis
+                #adjustBL_X(forward=True) # testing x axis
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -349,7 +350,7 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBR_X(forward=False) # testing x axis
+                #adjustBL_X(forward=False) # testing x axis
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -370,6 +371,4 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
 ########## RUN ROBOTIC PROCESS ##########
 
-##### complete all initialization and begin robotic process #####
-
-runRobot() # initialize receiver
+runRobot() # run the robot process
