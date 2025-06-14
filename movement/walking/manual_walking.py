@@ -229,42 +229,40 @@ def updateBackLeftGaitBD(state, speed, acceleration, stride_scalar):
     bl_gait_state['returned_to_neutral'] = False
 
 
-########## RESET LEG GAITS ##########
+########## RESET LEG FORWARD GAIT ##########
 
-def resetFrontLeftForwardGait(): # reset leg as quickly as possible
-    global fl_gait_state
+def resetLegForwardGait(leg_id):
+    gait_states = {
+        'FL': fl_gait_state,
+        'FR': fr_gait_state,
+        'BL': bl_gait_state,
+        'BR': br_gait_state
+    }
 
-    if not fl_gait_state['returned_to_neutral']:
-        moveLegToPosition('FL', FL_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
-        fl_gait_state['returned_to_neutral'] = True
-        logging.info("FL leg returned to neutral forward gait position.")
+    neutral_positions = {
+        'FL': FL_NEUTRAL_POSITION,
+        'FR': FR_NEUTRAL_POSITION,
+        'BL': BL_NEUTRAL_POSITION,
+        'BR': BR_NEUTRAL_POSITION
+    }
 
-def resetBackRightForwardGait(): # reset leg as quickly as possible
-    global br_gait_state
+    gait_state = gait_states[leg_id]
+    neutral_position = neutral_positions[leg_id]
 
-    if not br_gait_state['returned_to_neutral']:
-        moveLegToPosition('BR', BR_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
-        br_gait_state['returned_to_neutral'] = True
-        logging.info("BR leg returned to neutral forward gait position.")
-
-def resetFrontRightForwardGait(): # reset leg as quickly as possible
-    global fr_gait_state
-
-    if not fr_gait_state['returned_to_neutral']:
-        moveLegToPosition('FR', FR_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
-        fr_gait_state['returned_to_neutral'] = True
-        logging.info("FR leg returned to neutral forward gait position.")
-
-def resetBackLeftForwardGait(): # reset leg as quickly as possible
-    global bl_gait_state
-
-    if not bl_gait_state['returned_to_neutral']:
-        moveLegToPosition('BL', BL_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
-        bl_gait_state['returned_to_neutral'] = True
-        logging.info("BL leg returned to neutral forward gait position.")
+    if not gait_state['returned_to_neutral']:
+        moveLegToPosition(
+            leg_id,
+            pos=neutral_position,
+            speed=16383,
+            acceleration=255,
+            stride_scalar=1,
+            use_bezier=False
+        )
+        gait_state['returned_to_neutral'] = True
+        logging.info(f"{leg_id} leg returned to neutral forward gait position.")
 
 
-########## MOVE FOOT FUNCTIONS ##########
+########## MOVE FOOT FUNCTION ##########
 
 def moveLegToPosition(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=False):
     if use_bezier:

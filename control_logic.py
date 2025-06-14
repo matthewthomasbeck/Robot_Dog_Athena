@@ -303,10 +303,10 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
 
                 if IS_NEUTRAL == False:
 
-                    resetFrontLeftForwardGait()
-                    resetBackRightForwardGait()
-                    resetFrontRightForwardGait()
-                    resetBackLeftForwardGait()
+                    resetLegForwardGait('FL')
+                    resetLegForwardGait('BR')
+                    resetLegForwardGait('FR')
+                    resetLegForwardGait('BL')
                     #neutralStandingPosition()
                     IS_NEUTRAL = True
 
