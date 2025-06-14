@@ -62,9 +62,9 @@ DIAGONAL_PAIRS = [('FL', 'BR'), ('FR', 'BL')]
 
 
 
-#################################################
-############### WALKING FUNCTIONS ###############
-#################################################
+#########################################
+############### UTILITIES ###############
+#########################################
 
 
 ########## CALCULATE INTENSITY ##########
@@ -99,6 +99,26 @@ def interpretIntensity(intensity): # function to interpret intensity (full_back/
     return speed, acceleration, stride_scalar # return movement parameters
 
 
+########## BEZIER CURVE ##########
+
+def bezier_curve(p0, p1, p2, steps):
+    curve = []
+    for t in [i / steps for i in range(steps + 1)]:
+        x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0]
+        y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1]
+        z = (1 - t) ** 2 * p0[2] + 2 * (1 - t) * t * p1[2] + t ** 2 * p2[2]
+        curve.append((x, y, z))
+    return curve
+
+
+
+
+
+#################################################
+############### WALKING FUNCTIONS ###############
+#################################################
+
+
 ########## LEG PHASE CONFIG ##########
 
 ##### gait states #####
@@ -126,26 +146,21 @@ BL_SWING_POSITION = {'x': 0.0150, 'y': -0.0035, 'z': -0.0100}
 BL_NEUTRAL_POSITION = {'x': 0.0200, 'y': 0.0115, 'z': -0.0850}
 BL_STANCE_POSITION = {'x': 0.0150, 'y': 0.0315, 'z': -0.2250}
 
-##### gait timing #####
-
-GAIT_CYCLE_DURATION = 0.6
-GAIT_HALF_PHASE = GAIT_CYCLE_DURATION / 2
-
 
 ########## GAIT FUNCTIONS ##########
 
 def trotForward(intensity):
 
-    speed, acceleration, stride_scalar = interpretIntensity(intensity)
+    speed, acceleration, stride_scalar = interpretIntensity(intensity) # TODO experiment with timing difference
 
     updateFrontLeftGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
-    time.sleep(.15)
+    #time.sleep(.15)
     updateBackRightGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
-    time.sleep(.15)
+    #time.sleep(.15)
     updateFrontRightGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
-    time.sleep(.15)
+    #time.sleep(.15)
     updateBackLeftGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
-    time.sleep(.15)
+    #time.sleep(.15)
 
 
 ########## UPDATE LEG GAITS ##########
@@ -158,10 +173,10 @@ def updateFrontLeftGaitBD(state, speed, acceleration, stride_scalar):
 
     # If joystick is held, keep alternating between stance/swing
     if fl_gait_state['phase'] == 'stance':
-        moveFrontLeftToPosition(FL_SWING_POSITION, speed, acceleration, stride_scalar)
+        moveFrontLeftToPosition(FL_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
         fl_gait_state['phase'] = 'swing'
     else:
-        moveFrontLeftToPosition(FL_STANCE_POSITION, speed, acceleration, stride_scalar)
+        moveFrontLeftToPosition(FL_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
         fl_gait_state['phase'] = 'stance'
 
     fl_gait_state['returned_to_neutral'] = False
@@ -173,10 +188,10 @@ def updateBackRightGaitBD(state, speed, acceleration, stride_scalar):
         return
 
     if br_gait_state['phase'] == 'stance':
-        moveBackRightToPosition(BR_SWING_POSITION, speed, acceleration, stride_scalar)
+        moveBackRightToPosition(BR_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
         br_gait_state['phase'] = 'swing'
     else:
-        moveBackRightToPosition(BR_STANCE_POSITION, speed, acceleration, stride_scalar)
+        moveBackRightToPosition(BR_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
         br_gait_state['phase'] = 'stance'
 
     br_gait_state['returned_to_neutral'] = False
@@ -189,10 +204,10 @@ def updateFrontRightGaitBD(state, speed, acceleration, stride_scalar):
 
     # If joystick is held, keep alternating between stance/swing
     if fr_gait_state['phase'] == 'stance':
-        moveFrontRightToPosition(FR_SWING_POSITION, speed, acceleration, stride_scalar)
+        moveFrontRightToPosition(FR_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
         fr_gait_state['phase'] = 'swing'
     else:
-        moveFrontRightToPosition(FR_STANCE_POSITION, speed, acceleration, stride_scalar)
+        moveFrontRightToPosition(FR_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
         fr_gait_state['phase'] = 'stance'
 
     fr_gait_state['returned_to_neutral'] = False
@@ -205,10 +220,10 @@ def updateBackLeftGaitBD(state, speed, acceleration, stride_scalar):
 
     # If joystick is held, keep alternating between stance/swing
     if bl_gait_state['phase'] == 'stance':
-        moveBackLeftToPosition(BL_SWING_POSITION, speed, acceleration, stride_scalar)
+        moveBackLeftToPosition(BL_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
         bl_gait_state['phase'] = 'swing'
     else:
-        moveBackLeftToPosition(BL_STANCE_POSITION, speed, acceleration, stride_scalar)
+        moveBackLeftToPosition(BL_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
         bl_gait_state['phase'] = 'stance'
 
     bl_gait_state['returned_to_neutral'] = False
@@ -216,142 +231,223 @@ def updateBackLeftGaitBD(state, speed, acceleration, stride_scalar):
 
 ########## RESET LEG GAITS ##########
 
-def resetFrontLeftForwardGait():
+def resetFrontLeftForwardGait(): # reset leg as quickly as possible
     global fl_gait_state
 
     if not fl_gait_state['returned_to_neutral']:
-        moveFrontLeftToPosition(FL_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1) # reset quickly
+        moveFrontLeftToPosition(FL_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
         fl_gait_state['returned_to_neutral'] = True
         logging.info("FL leg returned to neutral forward gait position.")
 
-def resetBackRightForwardGait():
+def resetBackRightForwardGait(): # reset leg as quickly as possible
     global br_gait_state
 
     if not br_gait_state['returned_to_neutral']:
-        moveBackRightToPosition(BR_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1) # reset quickly
+        moveBackRightToPosition(BR_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
         br_gait_state['returned_to_neutral'] = True
         logging.info("BR leg returned to neutral forward gait position.")
 
-def resetFrontRightForwardGait():
+def resetFrontRightForwardGait(): # reset leg as quickly as possible
     global fr_gait_state
 
     if not fr_gait_state['returned_to_neutral']:
-        moveFrontRightToPosition(FR_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1) # reset quickly
+        moveFrontRightToPosition(FR_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
         fr_gait_state['returned_to_neutral'] = True
         logging.info("FR leg returned to neutral forward gait position.")
 
-def resetBackLeftForwardGait():
+def resetBackLeftForwardGait(): # reset leg as quickly as possible
     global bl_gait_state
 
     if not bl_gait_state['returned_to_neutral']:
-        moveBackLeftToPosition(BL_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1) # reset quickly
+        moveBackLeftToPosition(BL_NEUTRAL_POSITION, speed=16383, acceleration=255, stride_scalar=1, use_bezier=False)
         bl_gait_state['returned_to_neutral'] = True
         logging.info("BL leg returned to neutral forward gait position.")
 
 
 ########## MOVE FOOT FUNCTIONS ##########
 
-def moveFrontLeftToPosition(pos, speed, acceleration, stride_scalar):
-    moveFrontLeftLeg(
-        x=pos['x'] * stride_scalar,
-        y=pos['y'],
-        z=pos['z'],
-        speed=speed,
-        acceleration=acceleration
-    )
+def moveFrontLeftToPosition(pos, speed, acceleration, stride_scalar, use_bezier=False):
 
+    if use_bezier:
+        p0 = getNeutralPosition('FL', stride_scalar)
+        p2 = {
+            'x': pos['x'] * stride_scalar,
+            'y': pos['y'] * stride_scalar,
+            'z': pos['z']
+        }
+        p1 = {
+            'x': (p0['x'] + p2['x']) / 2,
+            'y': (p0['y'] + p2['y']) / 2,
+            'z': max(p0['z'], p2['z']) + 0.025  # raise foot
+        }
 
-def moveBackRightToPosition(pos, speed, acceleration, stride_scalar):
-    moveBackRightLeg(
-        x=pos['x'] * stride_scalar,
-        y=pos['y'],
-        z=pos['z'],
-        speed=speed,
-        acceleration=acceleration
-    )
+        curve = bezier_curve(
+            p0=(p0['x'], p0['y'], p0['z']),
+            p1=(p1['x'], p1['y'], p1['z']),
+            p2=(p2['x'], p2['y'], p2['z']),
+            steps=4
+        )
 
-def moveFrontRightToPosition(pos, speed, acceleration, stride_scalar):
-    moveFrontRightLeg(
-        x=pos['x'] * stride_scalar,
-        y=-pos['y'],  # Invert y for front right
-        z=pos['z'],
-        speed=speed,
-        acceleration=acceleration
-    )
+        for x, y, z in curve:
+            moveLeg('FL', x, y, z, speed, acceleration)
+            #TODO test time.sleep here
 
-def moveBackLeftToPosition(pos, speed, acceleration, stride_scalar):
-    moveBackLeftLeg(
-        x=pos['x'] * stride_scalar,
-        y=-pos['y'],  # Invert y for back left
-        z=pos['z'],
-        speed=speed,
-        acceleration=acceleration
-    )
+    else:
+        moveLeg(
+            'FL',
+            x=pos['x'] * stride_scalar,
+            y=pos['y'] * stride_scalar,
+            z=pos['z'],
+            speed=speed,
+            acceleration=acceleration
+        )
+
+def moveBackRightToPosition(pos, speed, acceleration, stride_scalar, use_bezier=False):
+
+    if use_bezier:
+        p0 = getNeutralPosition('BR', stride_scalar)
+        p2 = {
+            'x': pos['x'] * stride_scalar,
+            'y': pos['y'] * stride_scalar,
+            'z': pos['z']
+        }
+        p1 = {
+            'x': (p0['x'] + p2['x']) / 2,
+            'y': (p0['y'] + p2['y']) / 2,
+            'z': max(p0['z'], p2['z']) + 0.025  # raise foot
+        }
+
+        curve = bezier_curve(
+            p0=(p0['x'], p0['y'], p0['z']),
+            p1=(p1['x'], p1['y'], p1['z']),
+            p2=(p2['x'], p2['y'], p2['z']),
+            steps=4
+        )
+
+        for x, y, z in curve:
+            moveLeg('BR', x, y, z, speed, acceleration)
+
+    else:
+        moveLeg(
+            'BR',
+            x=pos['x'] * stride_scalar,
+            y=pos['y'] * stride_scalar,
+            z=pos['z'],
+            speed=speed,
+            acceleration=acceleration
+        )
+
+def moveFrontRightToPosition(pos, speed, acceleration, stride_scalar, use_bezier=False):
+
+    if use_bezier:
+        p0 = getNeutralPosition('FR', stride_scalar)
+        p2 = {
+            'x': pos['x'] * stride_scalar,
+            'y': pos['y'] * stride_scalar,
+            'z': pos['z']
+        }
+        p1 = {
+            'x': (p0['x'] + p2['x']) / 2,
+            'y': (p0['y'] + p2['y']) / 2,
+            'z': max(p0['z'], p2['z']) + 0.025  # raise foot
+        }
+
+        curve = bezier_curve(
+            p0=(p0['x'], p0['y'], p0['z']),
+            p1=(p1['x'], p1['y'], p1['z']),
+            p2=(p2['x'], p2['y'], p2['z']),
+            steps=4
+        )
+
+        for x, y, z in curve:
+            moveLeg('FR', x, y, z, speed, acceleration)
+
+    else:
+        moveLeg(
+            'FR',
+            x=pos['x'] * stride_scalar,
+            y=pos['y'] * stride_scalar,
+            z=pos['z'],
+            speed=speed,
+            acceleration=acceleration
+        )
+
+def moveBackLeftToPosition(pos, speed, acceleration, stride_scalar, use_bezier=False):
+
+    if use_bezier:
+        p0 = getNeutralPosition('BL', stride_scalar)
+        p2 = {
+            'x': pos['x'] * stride_scalar,
+            'y': pos['y'] * stride_scalar,
+            'z': pos['z']
+        }
+        p1 = {
+            'x': (p0['x'] + p2['x']) / 2,
+            'y': (p0['y'] + p2['y']) / 2,
+            'z': max(p0['z'], p2['z']) + 0.025  # raise foot
+        }
+
+        curve = bezier_curve(
+            p0=(p0['x'], p0['y'], p0['z']),
+            p1=(p1['x'], p1['y'], p1['z']),
+            p2=(p2['x'], p2['y'], p2['z']),
+            steps=4
+        )
+
+        for x, y, z in curve:
+            moveLeg('BL', x, y, z, speed, acceleration)
+
+    else:
+        moveLeg(
+            'BL',
+            x=pos['x'] * stride_scalar,
+            y=pos['y'] * stride_scalar,
+            z=pos['z'],
+            speed=speed,
+            acceleration=acceleration
+        )
 
 
 ########## MOVE LEG FUNCTIONS ##########
 
-def moveFrontLeftLeg(x, y, z, speed, acceleration):
-
-    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
-    hip_neutral_angle, upper_neutral_angle, lower_neutral_angle = 0, 90, 90 # TODO fix why the fuck these angles are 90 and not 45????
-
-    for joint, angle, neutral in zip(['hip', 'upper', 'lower'], [hip_angle, upper_angle, lower_angle], [hip_neutral_angle, upper_neutral_angle, lower_neutral_angle]
-    ):
-
-        joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
-
-        servo_data = initialize_servos.SERVO_CONFIG['FL'][joint]
-        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-        pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
-        initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
-
-
-def moveBackRightLeg(x, y, z, speed, acceleration):
-
+def moveLeg(leg_id, x, y, z, speed, acceleration):
     hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
     hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
 
-    for joint, angle, neutral in zip(['hip', 'upper', 'lower'], [hip_angle, upper_angle, lower_angle], [hip_neutral, upper_neutral, lower_neutral]):
+    for joint, angle, neutral in zip(['hip', 'upper', 'lower'],
+                                     [hip_angle, upper_angle, lower_angle],
+                                     [hip_neutral, upper_neutral, lower_neutral]):
 
         joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
         joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
 
-        servo_data = initialize_servos.SERVO_CONFIG['BR'][joint]
+        servo_data = initialize_servos.SERVO_CONFIG[leg_id][joint]
         is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
         pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
         initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
 
-def moveFrontRightLeg(x, y, z, speed, acceleration):
 
-    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
-    hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
+########## GET NEUTRAL POSITION ##########
 
-    for joint, angle, neutral in zip(['hip', 'upper', 'lower'], [hip_angle, upper_angle, lower_angle], [hip_neutral, upper_neutral, lower_neutral]):
+def getNeutralPosition(leg_id, stride_scalar):
+    config = initialize_servos.SERVO_CONFIG[leg_id]
 
-        joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
+    # This assumes you’ve stored neutral X/Y/Z positions for each leg somewhere
+    # You already have FL_NEUTRAL_POSITION etc., so maybe do:
+    NEUTRAL_POSITIONS = {
+        'FL': FL_NEUTRAL_POSITION,
+        'FR': FR_NEUTRAL_POSITION,
+        'BL': BL_NEUTRAL_POSITION,
+        'BR': BR_NEUTRAL_POSITION
+    }
 
-        servo_data = initialize_servos.SERVO_CONFIG['FR'][joint]
-        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-        pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
-        initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
+    neutral = NEUTRAL_POSITIONS[leg_id]
 
-def moveBackLeftLeg(x, y, z, speed, acceleration):
-
-    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
-    hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
-
-    for joint, angle, neutral in zip(['hip', 'upper', 'lower'], [hip_angle, upper_angle, lower_angle], [hip_neutral, upper_neutral, lower_neutral]):
-
-        joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
-
-        servo_data = initialize_servos.SERVO_CONFIG['BL'][joint]
-        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-        pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
-        initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
+    return {
+        'x': neutral['x'] * stride_scalar,
+        'y': neutral['y'] * stride_scalar,
+        'z': neutral['z']
+    }
 
 
 ########## FOOT TUNING ##########
@@ -378,7 +474,7 @@ def adjustFL_Z(up=True, delta=0.005):
     _applyFootPosition()
 def _applyFootPosition():
     x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
-    moveFrontLeftLeg(x, y, z, speed=16383, acceleration=255, stride_scalar=1)
+    moveLeg('FL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 
 ##### back right tuning #####
@@ -403,7 +499,7 @@ def adjustBR_Z(up=True, delta=0.005):
     _applyFootPositionBR()
 def _applyFootPositionBR():
     x, y, z = foot_position_BR['x'], foot_position_BR['y'], foot_position_BR['z']
-    moveBackRightLeg(x, y, z, speed=16383, acceleration=255, stride_scalar=1)
+    moveLeg('BR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 
 ##### front right tuning #####
@@ -428,7 +524,7 @@ def adjustFR_Z(up=True, delta=0.005):
     _applyFootPositionFR()
 def _applyFootPositionFR():
     x, y, z = foot_position_FR['x'], foot_position_FR['y'], foot_position_FR['z']
-    moveFrontRightLeg(x, y, z, speed=16383, acceleration=255, stride_scalar=1)
+    moveLeg('FR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 
 ##### back left tuning #####
@@ -453,5 +549,5 @@ def adjustBL_Z(up=True, delta=0.005):
     _applyFootPositionBL()
 def _applyFootPositionBL():
     x, y, z = foot_position_BL['x'], foot_position_BL['y'], foot_position_BL['z']
-    moveBackLeftLeg(x, y, z, speed=16383, acceleration=255, stride_scalar=1)
+    moveLeg('BL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
