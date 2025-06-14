@@ -54,10 +54,6 @@ lower_leg_servos = { # define lower leg servos
     "BR": initialize_servos.SERVO_CONFIG['BR']['lower'],  # back right
 }
 
-##### leg pairs #####
-
-DIAGONAL_PAIRS = [('FL', 'BR'), ('FR', 'BL')]
-
 
 
 
@@ -317,32 +313,11 @@ def getNeutralPosition(leg_id, stride_scalar):
 
 ########## FOOT TUNING ##########
 
-##### front left tuning #####
-
 foot_position_FL = {
     'x': 0.0,
     'y': initialize_servos.LINK_CONFIG['HIP_OFFSET'],
     'z': -0.10
 }
-
-def adjustFL_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    foot_position_FL['x'] += direction * delta
-    _applyFootPosition()
-def adjustFL_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    foot_position_FL['y'] += direction * delta
-    _applyFootPosition()
-def adjustFL_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    foot_position_FL['z'] += direction * delta
-    _applyFootPosition()
-def _applyFootPosition():
-    x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
-    moveLeg('FL', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
-
-##### back right tuning #####
 
 foot_position_BR = {
     'x': 0.0,
@@ -350,49 +325,11 @@ foot_position_BR = {
     'z': -0.10
 }
 
-def adjustBR_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    foot_position_BR['x'] += direction * delta
-    _applyFootPositionBR()
-def adjustBR_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    foot_position_BR['y'] += direction * delta
-    _applyFootPositionBR()
-def adjustBR_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    foot_position_BR['z'] += direction * delta
-    _applyFootPositionBR()
-def _applyFootPositionBR():
-    x, y, z = foot_position_BR['x'], foot_position_BR['y'], foot_position_BR['z']
-    moveLeg('BR', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
-
-##### front right tuning #####
-
 foot_position_FR = {
     'x': foot_position_BR['x'],  # Same x as BR
     'y': -foot_position_BR['y'],  # Invert y for front right
     'z': foot_position_BR['z']  # Same z as BR
 }
-
-def adjustFR_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    foot_position_FR['x'] += direction * delta
-    _applyFootPositionFR()
-def adjustFR_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    foot_position_FR['y'] += direction * delta
-    _applyFootPositionFR()
-def adjustFR_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    foot_position_FR['z'] += direction * delta
-    _applyFootPositionFR()
-def _applyFootPositionFR():
-    x, y, z = foot_position_FR['x'], foot_position_FR['y'], foot_position_FR['z']
-    moveLeg('FR', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → FR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
-
-##### back left tuning #####
 
 foot_position_BL = {
     'x': foot_position_FL['x'],  # Same x as FL
@@ -400,18 +337,69 @@ foot_position_BL = {
     'z': foot_position_FL['z']  # Same z as FL
 }
 
+def adjustFL_X(forward=True, delta=0.005):
+    direction = 1 if forward else -1
+    foot_position_FL['x'] += direction * delta
+    _applyFootPosition()
+def adjustBR_X(forward=True, delta=0.005):
+    direction = 1 if forward else -1
+    foot_position_BR['x'] += direction * delta
+    _applyFootPositionBR()
+def adjustFR_X(forward=True, delta=0.005):
+    direction = 1 if forward else -1
+    foot_position_FR['x'] += direction * delta
+    _applyFootPositionFR()
 def adjustBL_X(forward=True, delta=0.005):
     direction = 1 if forward else -1
     foot_position_BL['x'] += direction * delta
     _applyFootPositionBL()
+
+def adjustFL_Y(left=True, delta=0.005):
+    direction = 1 if left else -1
+    foot_position_FL['y'] += direction * delta
+    _applyFootPosition()
+def adjustBR_Y(left=True, delta=0.005):
+    direction = 1 if left else -1
+    foot_position_BR['y'] += direction * delta
+    _applyFootPositionBR()
+def adjustFR_Y(left=True, delta=0.005):
+    direction = 1 if left else -1
+    foot_position_FR['y'] += direction * delta
+    _applyFootPositionFR()
 def adjustBL_Y(left=True, delta=0.005):
     direction = 1 if left else -1
     foot_position_BL['y'] += direction * delta
     _applyFootPositionBL()
+
+def adjustFL_Z(up=True, delta=0.005):
+    direction = 1 if up else -1
+    foot_position_FL['z'] += direction * delta
+    _applyFootPosition()
+def adjustBR_Z(up=True, delta=0.005):
+    direction = 1 if up else -1
+    foot_position_BR['z'] += direction * delta
+    _applyFootPositionBR()
+def adjustFR_Z(up=True, delta=0.005):
+    direction = 1 if up else -1
+    foot_position_FR['z'] += direction * delta
+    _applyFootPositionFR()
 def adjustBL_Z(up=True, delta=0.005):
     direction = 1 if up else -1
     foot_position_BL['z'] += direction * delta
     _applyFootPositionBL()
+
+def _applyFootPosition():
+    x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
+    moveLeg('FL', x, y, z, speed=16383, acceleration=255)
+    logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+def _applyFootPositionBR():
+    x, y, z = foot_position_BR['x'], foot_position_BR['y'], foot_position_BR['z']
+    moveLeg('BR', x, y, z, speed=16383, acceleration=255)
+    logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+def _applyFootPositionFR():
+    x, y, z = foot_position_FR['x'], foot_position_FR['y'], foot_position_FR['z']
+    moveLeg('FR', x, y, z, speed=16383, acceleration=255)
+    logging.info(f"TUNING → FR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionBL():
     x, y, z = foot_position_BL['x'], foot_position_BL['y'], foot_position_BL['z']
     moveLeg('BL', x, y, z, speed=16383, acceleration=255)

@@ -25,6 +25,18 @@ import pigpio # import pigpio library for PWM control
 import logging # import logging library for debugging
 import os # import os library for system commands and log files
 
+##### import initialization functions #####
+
+from initialize.initialize_receiver import * # import PWMDecoder class from initialize_receiver along with functions
+from initialize.initialize_servos import * # import servo initialization functions and maestro object
+from initialize.initialize_camera import * # import camera initialization functions
+from initialize.initialize_opencv import * # import opencv initialization functions
+
+##### import movement functions #####
+
+from movement.standing.standing_inplace import * # import standing functions
+from movement.walking.manual_walking import * # import walking functions
+
 
 ########## CREATE DEPENDENCIES ##########
 
@@ -60,20 +72,9 @@ logging.basicConfig( # configure the logging module to write mode, overwriting t
 
 logging.info("Starting control_logic.py script...\n") # log the start of the script
 
+##### create different control modes #####
 
-########## IMPORT DEPENDENCIES ##########
-
-##### import initialization functions #####
-
-from initialize.initialize_receiver import * # import PWMDecoder class from initialize_receiver along with functions
-from initialize.initialize_servos import * # import servo initialization functions and maestro object
-from initialize.initialize_camera import * # import camera initialization functions
-from initialize.initialize_opencv import * # import opencv initialization functions
-
-##### import movement functions #####
-
-from movement.standing.standing_inplace import * # import standing functions
-from movement.walking.manual_walking import * # import walking functions
+MODE = 'control'
 
 
 
