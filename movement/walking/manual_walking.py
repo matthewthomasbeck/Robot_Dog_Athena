@@ -153,80 +153,53 @@ def trotForward(intensity):
 
     speed, acceleration, stride_scalar = interpretIntensity(intensity) # TODO experiment with timing difference
 
-    updateFrontLeftGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
+    updateLegGait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
     #time.sleep(.15)
-    updateBackRightGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
+    updateLegGait('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
     #time.sleep(.15)
-    updateFrontRightGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
+    updateLegGait('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
     #time.sleep(.15)
-    updateBackLeftGaitBD({'FORWARD': True}, speed, acceleration, stride_scalar)
+    updateLegGait('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
     #time.sleep(.15)
 
 
 ########## UPDATE LEG GAITS ##########
 
-def updateFrontLeftGaitBD(state, speed, acceleration, stride_scalar):
-    global fl_gait_state
-
+def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
     if not state.get('FORWARD', False):
-        return  # neutral recovery handled elsewhere
+        return  # Skip if not moving forward
 
-    # If joystick is held, keep alternating between stance/swing
-    if fl_gait_state['phase'] == 'stance':
-        moveLegToPosition('FL', FL_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
-        fl_gait_state['phase'] = 'swing'
+    gait_states = {
+        'FL': fl_gait_state,
+        'FR': fr_gait_state,
+        'BL': bl_gait_state,
+        'BR': br_gait_state
+    }
+
+    swing_positions = {
+        'FL': FL_SWING_POSITION,
+        'FR': FR_SWING_POSITION,
+        'BL': BL_SWING_POSITION,
+        'BR': BR_SWING_POSITION
+    }
+
+    stance_positions = {
+        'FL': FL_STANCE_POSITION,
+        'FR': FR_STANCE_POSITION,
+        'BL': BL_STANCE_POSITION,
+        'BR': BR_STANCE_POSITION
+    }
+
+    gait_state = gait_states[leg_id]
+
+    if gait_state['phase'] == 'stance':
+        moveLegToPosition(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
+        gait_state['phase'] = 'swing'
     else:
-        moveLegToPosition('FL', FL_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
-        fl_gait_state['phase'] = 'stance'
+        moveLegToPosition(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=True)
+        gait_state['phase'] = 'stance'
 
-    fl_gait_state['returned_to_neutral'] = False
-
-def updateBackRightGaitBD(state, speed, acceleration, stride_scalar):
-    global br_gait_state
-
-    if not state.get('FORWARD', False):
-        return
-
-    if br_gait_state['phase'] == 'stance':
-        moveLegToPosition('BR', BR_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
-        br_gait_state['phase'] = 'swing'
-    else:
-        moveLegToPosition('BR', BR_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
-        br_gait_state['phase'] = 'stance'
-
-    br_gait_state['returned_to_neutral'] = False
-
-def updateFrontRightGaitBD(state, speed, acceleration, stride_scalar):
-    global fr_gait_state
-
-    if not state.get('FORWARD', False):
-        return  # neutral recovery handled elsewhere
-
-    # If joystick is held, keep alternating between stance/swing
-    if fr_gait_state['phase'] == 'stance':
-        moveLegToPosition('FR', FR_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
-        fr_gait_state['phase'] = 'swing'
-    else:
-        moveLegToPosition('FR', FR_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
-        fr_gait_state['phase'] = 'stance'
-
-    fr_gait_state['returned_to_neutral'] = False
-
-def updateBackLeftGaitBD(state, speed, acceleration, stride_scalar):
-    global bl_gait_state
-
-    if not state.get('FORWARD', False):
-        return  # neutral recovery handled elsewhere
-
-    # If joystick is held, keep alternating between stance/swing
-    if bl_gait_state['phase'] == 'stance':
-        moveLegToPosition('BL', BL_SWING_POSITION, speed, acceleration, stride_scalar, use_bezier=False)
-        bl_gait_state['phase'] = 'swing'
-    else:
-        moveLegToPosition('BL', BL_STANCE_POSITION, speed, acceleration, stride_scalar, use_bezier=True)
-        bl_gait_state['phase'] = 'stance'
-
-    bl_gait_state['returned_to_neutral'] = False
+    gait_state['returned_to_neutral'] = False
 
 
 ########## RESET LEG FORWARD GAIT ##########
