@@ -55,20 +55,33 @@ with open(venv_path) as f: # open the virtual environment path
 
 ##### set up logging #####
 
-logFile = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log" # set the log file path
+logFile = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"
 
-if os.path.exists(logFile): # if the old log file exists...
+# Rename old log file *after* confirming logger setup
+if os.path.exists(logFile):
+    os.rename(logFile, f"{logFile}.bak")
 
-    os.rename(logFile, f"{logFile}.bak") # rename the old log file with a timestamp
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
-logging.basicConfig( # configure the logging module to write mode, overwriting the old log file
+# Remove any existing handlers
+for handler in logger.handlers[:]:
+    logger.removeHandler(handler)
 
-    filename=logFile,
-    filemode='w',
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s: %(message)s',
+# File handler
+file_handler = logging.FileHandler(logFile, mode='w')
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s %(levelname)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
-)
+))
+logger.addHandler(file_handler)
+
+# Console handler (optional, for debugging via systemd logs)
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(logging.Formatter('%(message)s'))
+logger.addHandler(console_handler)
+
+logger.info("Logging setup complete.\n")
 
 logging.info("Starting control_logic.py script...\n") # log the start of the script
 
