@@ -134,9 +134,9 @@ def tippyToesStandingPosition(): # function to set all servos to tippy toes posi
         logging.error("ERROR (standing_inplace.py): Failed to move to 'tippy toes' position.\n")
 
 
-########## FULL FORWARD ##########
+########## SQUATTING ##########
 
-def fullForwardStandingPosition(): # function to set all servos to full forward position
+def squattingStandingPosition(): # function to set all servos to full forward position
 
     ##### move to full forward position #####
 

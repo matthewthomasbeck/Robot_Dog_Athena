@@ -27,7 +27,8 @@ import logging # import logging for debugging
 ##### import necessary functions #####
 
 import initialize.initialize_servos as initialize_servos # import servo logic functions
-from kinematics.kinematics import Kinematics # import kinematics functions
+from mathematics.mathematics import * # import all mathematical functions
+from movement.positions_config import * # import leg positions config
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -58,58 +59,6 @@ lower_leg_servos = { # define lower leg servos
 
 
 
-#########################################
-############### UTILITIES ###############
-#########################################
-
-
-########## CALCULATE INTENSITY ##########
-
-def interpretIntensity(intensity): # function to interpret intensity (full_back/front DEPRECATED)
-
-    ##### find speed, acceleration, stride_scalar #####
-
-    if intensity == 1 or intensity == 2:
-        speed = int(((16383 / 5) / 10) * intensity)
-        acceleration = int(((255 / 5) / 10) * intensity)
-        stride_scalar = 0.2  # default stride scalar for high intensity
-    elif intensity == 3 or intensity == 4:
-        speed = int(((16383 / 4) / 10) * intensity)
-        acceleration = int(((255 / 4) / 10) * intensity)
-        stride_scalar = 0.4  # default stride scalar for high intensity
-    elif intensity == 5 or intensity == 6:
-        speed = int(((16383 / 3) / 10) * intensity)
-        acceleration = int(((255 / 3) / 10) * intensity)
-        stride_scalar = 0.6  # default stride scalar for high intensity
-    elif intensity == 7 or intensity == 8:
-        speed = int(((16383 / 2) / 10) * intensity)
-        acceleration = int(((255 / 2) / 10) * intensity)
-        stride_scalar = 0.8  # default stride scalar for high intensity
-    else:
-        speed = int((16383 / 10) * intensity)
-        acceleration = int((255 / 10) * intensity)
-        stride_scalar = 1.0 # default stride scalar for high intensity
-
-    ##### return arc length speed and acceleration #####
-
-    return speed, acceleration, stride_scalar # return movement parameters
-
-
-########## BEZIER CURVE ##########
-
-def bezier_curve(p0, p1, p2, steps):
-    curve = []
-    for t in [i / steps for i in range(steps + 1)]:
-        x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0]
-        y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1]
-        z = (1 - t) ** 2 * p0[2] + 2 * (1 - t) * t * p1[2] + t ** 2 * p2[2]
-        curve.append((x, y, z))
-    return curve
-
-
-
-
-
 #################################################
 ############### WALKING FUNCTIONS ###############
 #################################################
@@ -124,30 +73,12 @@ br_gait_state = {'phase': 'stance', 'last_time': time.time(), 'returned_to_neutr
 fr_gait_state = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
 bl_gait_state = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
 
-##### phase positions #####
-
-FL_SWING_POSITION = {'x': -0.0250, 'y': -0.0065,'z': -0.0400}
-FL_NEUTRAL_POSITION = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
-FL_STANCE_POSITION = {'x': -0.1550, 'y': -0.0015, 'z': -0.1100}
-
-BR_SWING_POSITION = {'x': -0.1100, 'y': -0.0085, 'z': -0.1700}
-BR_NEUTRAL_POSITION = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
-BR_STANCE_POSITION = {'x': 0.0250, 'y': -0.0035, 'z': -0.0150}
-
-FR_SWING_POSITION = {'x': -0.1200, 'y': -0.0465, 'z': -0.3950}
-FR_NEUTRAL_POSITION = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
-FR_STANCE_POSITION = {'x': 0.0050, 'y': -0.0015, 'z': -0.0300}
-
-BL_SWING_POSITION = {'x': 0.0150, 'y': -0.0035, 'z': -0.0100}
-BL_NEUTRAL_POSITION = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
-BL_STANCE_POSITION = {'x': -0.0250, 'y': 0.0115, 'z': -0.0750}
-
 
 ########## GAIT FUNCTIONS ##########
 
 def trotForward(intensity):
 
-    speed, acceleration, stride_scalar = interpretIntensity(intensity) # TODO experiment with timing difference
+    speed, acceleration, stride_scalar = interpret_intensity(intensity) # TODO experiment with timing difference
 
     updateLegGait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
     #time.sleep(.15)
@@ -173,17 +104,17 @@ def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
     }
 
     swing_positions = {
-        'FL': FL_SWING_POSITION,
-        'FR': FR_SWING_POSITION,
-        'BL': BL_SWING_POSITION,
-        'BR': BR_SWING_POSITION
+        'FL': FL_SWING,
+        'FR': FR_SWING,
+        'BL': BL_SWING,
+        'BR': BR_SWING
     }
 
     stance_positions = {
-        'FL': FL_STANCE_POSITION,
-        'FR': FR_STANCE_POSITION,
-        'BL': BL_STANCE_POSITION,
-        'BR': BR_STANCE_POSITION
+        'FL': FL_STANCE,
+        'FR': FR_STANCE,
+        'BL': BL_STANCE,
+        'BR': BR_STANCE
     }
 
     gait_state = gait_states[leg_id]
@@ -209,10 +140,10 @@ def resetLegForwardGait(leg_id):
     }
 
     neutral_positions = {
-        'FL': FL_NEUTRAL_POSITION,
-        'FR': FR_NEUTRAL_POSITION,
-        'BL': BL_NEUTRAL_POSITION,
-        'BR': BR_NEUTRAL_POSITION
+        'FL': FL_NEUTRAL,
+        'FR': FR_NEUTRAL,
+        'BL': BL_NEUTRAL,
+        'BR': BR_NEUTRAL
     }
 
     gait_state = gait_states[leg_id]
@@ -296,10 +227,10 @@ def getNeutralPosition(leg_id, stride_scalar):
     # This assumes you’ve stored neutral X/Y/Z positions for each leg somewhere
     # You already have FL_NEUTRAL_POSITION etc., so maybe do:
     NEUTRAL_POSITIONS = {
-        'FL': FL_NEUTRAL_POSITION,
-        'FR': FR_NEUTRAL_POSITION,
-        'BL': BL_NEUTRAL_POSITION,
-        'BR': BR_NEUTRAL_POSITION
+        'FL': FL_NEUTRAL,
+        'FR': FR_NEUTRAL,
+        'BL': BL_NEUTRAL,
+        'BR': BR_NEUTRAL
     }
 
     neutral = NEUTRAL_POSITIONS[leg_id]

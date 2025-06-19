@@ -24,9 +24,9 @@ import math # import math library for calculations
 
 
 
-##########################################
-############### KINEMATICS ###############
-##########################################
+#########################################
+############### UTILITIES ###############
+#########################################
 
 
 ########## INVERSE KINEMATICS ##########
@@ -39,11 +39,6 @@ class Kinematics:
         self.tibia = link_config['TIBIA_LENGTH']
 
     def inverse_kinematics(self, x, y, z):
-        """
-        Compute joint angles needed to place the foot at (x, y, z)
-        relative to the leg base frame (hip joint at origin).
-        Returns angles in degrees: (hip_abduction_angle, upper_angle, lower_angle)
-        """
 
         # Hip abduction (rotation around Z) from Y offset
         hip_angle = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
@@ -74,3 +69,47 @@ class Kinematics:
             math.degrees(theta2),      # upper leg
             math.degrees(theta3)       # knee
         )
+
+
+########## CALCULATE INTENSITY ##########
+
+def interpret_intensity(intensity): # function to interpret intensity
+
+    ##### find speed, acceleration, stride_scalar #####
+
+    if intensity == 1 or intensity == 2:
+        speed = int(((16383 / 5) / 10) * intensity)
+        acceleration = int(((255 / 5) / 10) * intensity)
+        stride_scalar = 0.2  # default stride scalar for high intensity
+    elif intensity == 3 or intensity == 4:
+        speed = int(((16383 / 4) / 10) * intensity)
+        acceleration = int(((255 / 4) / 10) * intensity)
+        stride_scalar = 0.4  # default stride scalar for high intensity
+    elif intensity == 5 or intensity == 6:
+        speed = int(((16383 / 3) / 10) * intensity)
+        acceleration = int(((255 / 3) / 10) * intensity)
+        stride_scalar = 0.6  # default stride scalar for high intensity
+    elif intensity == 7 or intensity == 8:
+        speed = int(((16383 / 2) / 10) * intensity)
+        acceleration = int(((255 / 2) / 10) * intensity)
+        stride_scalar = 0.8  # default stride scalar for high intensity
+    else:
+        speed = int((16383 / 10) * intensity)
+        acceleration = int((255 / 10) * intensity)
+        stride_scalar = 1.0 # default stride scalar for high intensity
+
+    ##### return arc length speed and acceleration #####
+
+    return speed, acceleration, stride_scalar # return movement parameters
+
+
+########## BEZIER CURVE ##########
+
+def bezier_curve(p0, p1, p2, steps):
+    curve = []
+    for t in [i / steps for i in range(steps + 1)]:
+        x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0]
+        y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1]
+        z = (1 - t) ** 2 * p0[2] + 2 * (1 - t) * t * p1[2] + t ** 2 * p2[2]
+        curve.append((x, y, z))
+    return curve
