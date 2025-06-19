@@ -147,7 +147,7 @@ def runRobot():  # central function that runs the robot
     try: # try to run the main robotic process
 
         # Detect mode and maybe start socket server
-        MODE = detect_ssh_and_prompt_mode()
+        MODE = detect_ssh_and_prompt_mode() # TODO comment this out whenever I don't need to tune
 
         if MODE.startswith("ssh"):
             server = setup_unix_socket()
