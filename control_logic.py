@@ -24,6 +24,10 @@ import RPi.GPIO as GPIO # import GPIO library for pin control
 import pigpio # import pigpio library for PWM control
 import logging # import logging library for debugging
 import os # import os library for system commands and log files
+import sys
+import termios
+import tty
+import socket
 
 ##### import initialization functions #####
 
@@ -31,6 +35,7 @@ from initialize.initialize_receiver import * # import PWMDecoder class from init
 from initialize.initialize_servos import * # import servo initialization functions and maestro object
 from initialize.initialize_camera import * # import camera initialization functions
 from initialize.initialize_opencv import * # import opencv initialization functions
+from initialize.initialize_internet import * # import internet control functionality
 
 ##### import movement functions #####
 
@@ -85,9 +90,9 @@ logger.info("Logging setup complete.\n")
 
 logging.info("Starting control_logic.py script...\n") # log the start of the script
 
-##### create different control modes #####
+##### TODO create different control modes #####
 
-MODE = 'control'
+MODE = 'radio'
 
 
 
@@ -139,7 +144,18 @@ def runRobot():  # central function that runs the robot
 
     mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
 
-    try:
+    try: # try to run the main robotic process
+
+        # Detect mode and maybe start socket server
+        MODE = detect_ssh_and_prompt_mode()
+
+        if MODE.startswith("ssh"):
+            server = setup_unix_socket()
+            logging.info("Waiting for SSH control client to connect to socket...")
+            conn, _ = server.accept()
+            conn.setblocking(True)
+            logging.info("SSH client connected.")
+
         while True:
             # Read chunk of data from the camera process
             chunk = camera_process.stdout.read(4096)
@@ -169,10 +185,30 @@ def runRobot():  # central function that runs the robot
                 logging.info("Exiting camera feed display.")
                 break
 
-            # Handle commands
-            commands = interpretCommands(CHANNEL_DATA)
-            for channel, (action, intensity) in commands.items():
-                IS_NEUTRAL = executeCommands(channel, action, intensity, IS_NEUTRAL)
+            # TODO OLD CODE Handle commands
+            #commands = interpretCommands(CHANNEL_DATA)
+            #for channel, (action, intensity) in commands.items():
+                #IS_NEUTRAL = executeCommands(channel, action, intensity, IS_NEUTRAL)
+
+            if MODE == 'radio':
+                commands = interpretCommands(CHANNEL_DATA)
+                for channel, (action, intensity) in commands.items():
+                    IS_NEUTRAL = executeRadioCommands(channel, action, intensity, IS_NEUTRAL)
+
+            elif MODE.startswith("ssh"):
+                try:
+                    key = conn.recv(3).decode()
+                    if not key:
+                        continue
+                    if key.startswith('\x1b'):
+                        key = key[:3]  # arrow key
+                    else:
+                        key = key[0]
+                    IS_NEUTRAL = executeKeyboardCommands(
+                        key, IS_NEUTRAL, intensity=5, tune_mode=(MODE == 'ssh-tune')
+                    )
+                except Exception as e:
+                    logging.error(f"ERROR (control_logic.py): Socket read error: {e}\n")
 
     except KeyboardInterrupt:
         logging.info("KeyboardInterrupt received. Exiting...\n")
@@ -209,7 +245,7 @@ def pwmCallback(gpio, pulseWidth): # function to set pulse width to channel data
 
 ########## INTERPRET COMMANDS ##########
 
-def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to interpret commands from channel data and do things
+def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to interpret commands from channel data and do things
 
     ##### squat channel 2 #####
 
@@ -381,6 +417,62 @@ def executeCommands(channel, action, intensity, IS_NEUTRAL): # function to inter
     ##### update is neutral standing #####
 
     return IS_NEUTRAL # return neutral standing boolean for position awareness
+
+
+########## EXECUTE KEYBOARD COMMANDS ##########
+
+def executeKeyboardCommands(key, IS_NEUTRAL, intensity=5, tune_mode=False):
+
+    if key == 'q':
+        logging.info("Exiting control logic.")
+        return IS_NEUTRAL  # Exit condition
+
+    elif key == 'w':  # Move forward
+        trotForward(intensity)
+        IS_NEUTRAL = False
+
+    elif key == 's':  # Move backward
+        #trotBackward(intensity)
+        IS_NEUTRAL = False
+
+    elif key == 'a':  # Shift left
+        #trotLeft(intensity)
+        IS_NEUTRAL = False
+
+    elif key == 'd':  # Shift right
+        #trotRight(intensity)
+        IS_NEUTRAL = False
+
+    elif key == 'r':  # Rotate right
+        #rotateRight(intensity)
+        IS_NEUTRAL = False
+
+    elif key == 'l':  # Rotate left
+        #rotateLeft(intensity)
+        IS_NEUTRAL = False
+
+    elif key == 'u':  # Look up
+        #adjustBL_Z(up=False)
+        IS_NEUTRAL = False
+
+    elif key == 'j':  # Look down
+        #adjustBL_Z(up=True)
+        IS_NEUTRAL = False
+
+    elif key == 'i':  # Tilt up
+        #adjustBL_Y(left=False)
+        IS_NEUTRAL = False
+
+    elif key == 'k':  # Tilt down
+        #adjustBL_Y(left=True)
+        IS_NEUTRAL = False
+
+    elif key == 'n':  # Neutral position
+        if not IS_NEUTRAL:
+            neutralStandingPosition()
+            IS_NEUTRAL = True
+
+    return IS_NEUTRAL  # Return updated neutral standing state
 
 
 ########## RUN ROBOTIC PROCESS ##########
