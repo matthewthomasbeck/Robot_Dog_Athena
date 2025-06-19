@@ -90,7 +90,7 @@ logger.info("Logging setup complete.\n")
 
 logging.info("Starting control_logic.py script...\n") # log the start of the script
 
-##### TODO create different control modes #####
+##### create different control modes #####
 
 MODE = 'radio'
 
@@ -112,6 +112,7 @@ def runRobot():  # central function that runs the robot
     global CHANNEL_DATA
     CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
     decoders = []  # define decoders as empty list
+    CURRENT_LEG = 'FL' # default current leg for tuning mode
     IS_NEUTRAL = False # assume robot is not in neutral standing position until neutralStandingPosition() is called
 
     ##### initialize camera #####
@@ -204,8 +205,8 @@ def runRobot():  # central function that runs the robot
                         key = key[:3]  # arrow key
                     else:
                         key = key[0]
-                    IS_NEUTRAL = executeKeyboardCommands(
-                        key, IS_NEUTRAL, intensity=5, tune_mode=(MODE == 'ssh-tune')
+                    IS_NEUTRAL, CURRENT_LEG = executeKeyboardCommands(
+                        key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode=(MODE == 'ssh-tune'),
                     )
                 except Exception as e:
                     logging.error(f"ERROR (control_logic.py): Socket read error: {e}\n")
@@ -370,7 +371,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
             try:
                 #adjustBL_Y(left=False) # testing y axis
-                #updateFrontLeftGaitBD({'FORWARD': True}) TODO implement reverse gait later
+                #updateFrontLeftGaitBD({'FORWARD': True})
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -421,58 +422,150 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
 ########## EXECUTE KEYBOARD COMMANDS ##########
 
-def executeKeyboardCommands(key, IS_NEUTRAL, intensity=5, tune_mode=False):
+##### temporary dictionary of commands #####
 
-    if key == 'q':
-        logging.info("Exiting control logic.")
-        return IS_NEUTRAL  # Exit condition
+ADJUSTMENT_FUNCS = {
+    'FL': {
+        'x+': adjustFL_X,
+        'x-': lambda: adjustFL_X(forward=False),
+        'y+': adjustFL_Y,
+        'y-': lambda: adjustFL_Y(left=False),
+        'z+': adjustFL_Z,
+        'z-': lambda: adjustFL_Z(up=False),
+    },
+    'FR': {
+        'x+': adjustFR_X,
+        'x-': lambda: adjustFR_X(forward=False),
+        'y+': adjustFR_Y,
+        'y-': lambda: adjustFR_Y(left=False),
+        'z+': adjustFR_Z,
+        'z-': lambda: adjustFR_Z(up=False),
+    },
+    'BL': {
+        'x+': adjustBL_X,
+        'x-': lambda: adjustBL_X(forward=False),
+        'y+': adjustBL_Y,
+        'y-': lambda: adjustBL_Y(left=False),
+        'z+': adjustBL_Z,
+        'z-': lambda: adjustBL_Z(up=False),
+    },
+    'BR': {
+        'x+': adjustBR_X,
+        'x-': lambda: adjustBR_X(forward=False),
+        'y+': adjustBR_Y,
+        'y-': lambda: adjustBR_Y(left=False),
+        'z+': adjustBR_Z,
+        'z-': lambda: adjustBR_Z(up=False),
+    }
+}
 
-    elif key == 'w':  # Move forward
-        trotForward(intensity)
-        IS_NEUTRAL = False
+##### keyboard commands for tuning mode and normal operation #####
 
-    elif key == 's':  # Move backward
-        #trotBackward(intensity)
-        IS_NEUTRAL = False
+def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode=False):
 
-    elif key == 'a':  # Shift left
-        #trotLeft(intensity)
-        IS_NEUTRAL = False
+    if tune_mode:
 
-    elif key == 'd':  # Shift right
-        #trotRight(intensity)
-        IS_NEUTRAL = False
+        if key == 'q': # x axis positive
+            ADJUSTMENT_FUNCS[CURRENT_LEG]['x+']()
+            IS_NEUTRAL = False
 
-    elif key == 'r':  # Rotate right
-        #rotateRight(intensity)
-        IS_NEUTRAL = False
+        elif key == 'a': # x axis negative
+            ADJUSTMENT_FUNCS[CURRENT_LEG]['x-']()
+            IS_NEUTRAL = False
 
-    elif key == 'l':  # Rotate left
-        #rotateLeft(intensity)
-        IS_NEUTRAL = False
+        elif key == 'w': # y axis positive
+            ADJUSTMENT_FUNCS[CURRENT_LEG]['y+']()
+            IS_NEUTRAL = False
 
-    elif key == 'u':  # Look up
-        #adjustBL_Z(up=False)
-        IS_NEUTRAL = False
+        elif key == 's': # y axis negative
+            ADJUSTMENT_FUNCS[CURRENT_LEG]['y-']()
+            IS_NEUTRAL = False
 
-    elif key == 'j':  # Look down
-        #adjustBL_Z(up=True)
-        IS_NEUTRAL = False
+        elif key == 'e': # z axis positive
+            ADJUSTMENT_FUNCS[CURRENT_LEG]['z+']()
+            IS_NEUTRAL = False
 
-    elif key == 'i':  # Tilt up
-        #adjustBL_Y(left=False)
-        IS_NEUTRAL = False
+        elif key == 'd': # z axis negative
+            ADJUSTMENT_FUNCS[CURRENT_LEG]['z-']()
+            IS_NEUTRAL = False
 
-    elif key == 'k':  # Tilt down
-        #adjustBL_Y(left=True)
-        IS_NEUTRAL = False
+        elif key == '1': # set current leg to front left
 
-    elif key == 'n':  # Neutral position
-        if not IS_NEUTRAL:
-            neutralStandingPosition()
-            IS_NEUTRAL = True
+            CURRENT_LEG = 'FL'  # Set current leg to front left
+            IS_NEUTRAL = False
 
-    return IS_NEUTRAL  # Return updated neutral standing state
+        elif key == '2': # set current leg to front right
+
+            CURRENT_LEG = 'FR'  # Set current leg to front right
+            IS_NEUTRAL = False
+
+        elif key == '3': # set current leg to back left
+
+            CURRENT_LEG = 'BL'  # Set current leg to back left
+            IS_NEUTRAL = False
+
+        elif key == '4': # set current leg to back right
+
+            CURRENT_LEG = 'BR'  # Set current leg to back right
+            IS_NEUTRAL = False
+
+        elif key == 'n':
+            if not IS_NEUTRAL:
+                neutralStandingPosition()
+                IS_NEUTRAL = True
+
+    else:  # Normal operation mode
+
+        if key == 'q':
+            logging.info("Exiting control logic.")
+            return IS_NEUTRAL  # Exit condition
+
+        elif key == 'w':  # Move forward
+            trotForward(intensity)
+            IS_NEUTRAL = False
+
+        elif key == 's':  # Move backward
+            # trotBackward(intensity)
+            IS_NEUTRAL = False
+
+        elif key == 'a':  # Shift left
+            # trotLeft(intensity)
+            IS_NEUTRAL = False
+
+        elif key == 'd':  # Shift right
+            # trotRight(intensity)
+            IS_NEUTRAL = False
+
+        elif key == '\x1b[C':  # Rotate right
+            # rotateRight(intensity)
+            IS_NEUTRAL = False
+
+        elif key == '\x1b[D':  # Rotate left
+            # rotateLeft(intensity)
+            IS_NEUTRAL = False
+
+        elif key == '\x1b[A':  # Look up
+            # adjustBL_Z(up=False)
+            IS_NEUTRAL = False
+
+        elif key == '\x1b[B':  # Look down
+            # adjustBL_Z(up=True)
+            IS_NEUTRAL = False
+
+        elif key == 'i':  # Tilt up
+            # adjustBL_Y(left=False)
+            IS_NEUTRAL = False
+
+        elif key == 'k':  # Tilt down
+            # adjustBL_Y(left=True)
+            IS_NEUTRAL = False
+
+        elif key == 'n':  # Neutral position
+            if not IS_NEUTRAL:
+                neutralStandingPosition()
+                IS_NEUTRAL = True
+
+    return IS_NEUTRAL, CURRENT_LEG  # Return updated neutral standing state
 
 
 ########## RUN ROBOTIC PROCESS ##########
