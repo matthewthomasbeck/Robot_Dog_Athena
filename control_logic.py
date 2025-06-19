@@ -39,7 +39,7 @@ from utilities.internet import * # import internet control functionality
 
 ##### import movement functions #####
 
-from movement.standing.standing_inplace import * # import standing functions
+from movement.standing.standing import * # import standing functions
 from movement.walking.forward import * # import walking functions
 from movement.fundamental_movement import * # import fundamental movement functions
 
@@ -136,10 +136,10 @@ def runRobot():  # central function that runs the robot
 
     try: # try to put the robot in a neutral standing position
 
-        resetLegForwardGait('FL')
-        resetLegForwardGait('BR')
-        resetLegForwardGait('FR')
-        resetLegForwardGait('BL')
+        set_leg_neutral('FL')
+        set_leg_neutral('BR')
+        set_leg_neutral('FR')
+        set_leg_neutral('BL')
         IS_NEUTRAL = True # set IS_NEUTRAL to True
         time.sleep(3) # wait for 3 seconds
 
@@ -343,7 +343,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                trotForward(intensity)
+                trot_forward(intensity)
                 IS_NEUTRAL = False
 
             except Exception as e:
@@ -355,10 +355,10 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
                 if IS_NEUTRAL == False:
 
-                    resetLegForwardGait('FL')
-                    resetLegForwardGait('BR')
-                    resetLegForwardGait('FR')
-                    resetLegForwardGait('BL')
+                    set_leg_neutral('FL')
+                    set_leg_neutral('BR')
+                    set_leg_neutral('FR')
+                    set_leg_neutral('BL')
                     IS_NEUTRAL = True
 
             except Exception as e:
@@ -505,12 +505,22 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
             CURRENT_LEG = 'BR'  # Set current leg to back right
             IS_NEUTRAL = False
 
+        elif key == 'r': # right-leading swing
+
+
+            IS_NEUTRAL = False
+
+        elif key == 'l': # left-leading swing
+
+
+            IS_NEUTRAL = False
+
         elif key == 'n':
             if not IS_NEUTRAL:
-                resetLegForwardGait('FL')
-                resetLegForwardGait('BR')
-                resetLegForwardGait('FR')
-                resetLegForwardGait('BL')
+                set_leg_neutral('FL')
+                set_leg_neutral('BR')
+                set_leg_neutral('FR')
+                set_leg_neutral('BL')
                 IS_NEUTRAL = True
 
     else:  # Normal operation mode
@@ -520,7 +530,7 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
             return IS_NEUTRAL  # Exit condition
 
         elif key == 'w':  # Move forward
-            trotForward(intensity)
+            trot_forward(intensity)
             IS_NEUTRAL = False
 
         elif key == 's':  # Move backward
@@ -561,10 +571,10 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
 
         elif key == 'n':  # Neutral position
             if not IS_NEUTRAL:
-                resetLegForwardGait('FL')
-                resetLegForwardGait('BR')
-                resetLegForwardGait('FR')
-                resetLegForwardGait('BL')
+                set_leg_neutral('FL')
+                set_leg_neutral('BR')
+                set_leg_neutral('FR')
+                set_leg_neutral('BL')
                 IS_NEUTRAL = True
 
     return IS_NEUTRAL, CURRENT_LEG  # Return updated neutral standing state

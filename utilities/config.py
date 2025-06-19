@@ -11,9 +11,22 @@
 
 
 
-################################################
-############### SET SERVO CONFIG ###############
-################################################
+##########################################################
+############### IMPORT/CREATE DEPENDENCIES ###############
+##########################################################
+
+
+########## IMPORT DEPENDENCIES ##########
+
+import time # import time library for gait timing
+
+
+
+
+
+###################################################
+############### CREATE SERVO CONFIG ###############
+###################################################
 
 
 ##### set dictionary of linkages and their lengths #####
@@ -30,9 +43,9 @@ LINK_CONFIG = { # dictionary of leg linkages
 
 
 
-#######################################################
-############### DECLARE LEG LINK PARAMS ###############
-#######################################################
+######################################################
+############### CREATE LEG LINK PARAMS ###############
+######################################################
 
 
 ##### set dictionary of servos and their ranges #####
@@ -60,9 +73,17 @@ SERVO_CONFIG = { # dictionary of leg configurations
 
 
 
-#####################################################
-############### DECLARE LEG POSITIONS ###############
-#####################################################
+########################################################################
+############### CREATE EUCLIDEAN-BASED LEG CONFIGURATION ###############
+########################################################################
+
+
+########## LEG PHASE CONFIG ##########
+
+FL_GAIT_STATE = {'phase': 'stance', 'last_time': time.time(), 'returned_to_neutral': False}
+BR_GAIT_STATE = {'phase': 'stance', 'last_time': time.time(), 'returned_to_neutral': False}
+FR_GAIT_STATE = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
+BL_GAIT_STATE = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
 
 
 ########## FRONT LEFT ##########

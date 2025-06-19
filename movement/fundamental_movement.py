@@ -23,16 +23,15 @@
 ##### import necessary functions #####
 
 import utilities.servos as initialize_servos # import servo logic functions
-from utilities.config import * # import configuration data for servos and link lengths
+import utilities.config as config # import configuration data for servos and link lengths
 from utilities.mathematics import * # import all mathematical functions
-from movement.standing.standing_inplace import neutral_standing_position # import neutral standing position function
 
 
 ########## CREATE DEPENDENCIES ##########
 
 ##### initialize kinematics #####
 
-k = Kinematics(LINK_CONFIG) # use link lengths to initialize kinematic functions
+k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic functions
 
 ##### define servos #####
 
@@ -63,7 +62,7 @@ lower_leg_servos = { # define lower leg servos
 
 ########## MOVE FOOT FUNCTION ##########
 
-def move_leg_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=False):
+def move_foot_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=False):
     if use_bezier:
         p0 = neutral_standing_position(leg_id, stride_scalar)
         p2 = {
@@ -85,11 +84,11 @@ def move_leg_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=
         )
 
         for x, y, z in curve:
-            moveLeg(leg_id, x, y, z, speed, acceleration)
+            move_leg(leg_id, x, y, z, speed, acceleration)
             # TODO: test adding time.sleep here
 
     else:
-        moveLeg(
+        move_leg(
             leg_id,
             x=pos['x'] * stride_scalar,
             y=pos['y'] * stride_scalar,
@@ -101,7 +100,7 @@ def move_leg_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=
 
 ########## MOVE LEG FUNCTION ##########
 
-def moveLeg(leg_id, x, y, z, speed, acceleration):
+def move_leg(leg_id, x, y, z, speed, acceleration):
     hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
     hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
 
@@ -116,6 +115,64 @@ def moveLeg(leg_id, x, y, z, speed, acceleration):
         is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
         pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
         initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
+
+
+########## GET NEUTRAL POSITIONS ##########
+
+def neutral_standing_position(leg_id, stride_scalar):
+
+    NEUTRAL_POSITIONS = {
+        'FL': config.FL_NEUTRAL,
+        'FR': config.FR_NEUTRAL,
+        'BL': config.BL_NEUTRAL,
+        'BR': config.BR_NEUTRAL
+    }
+
+    neutral = NEUTRAL_POSITIONS[leg_id]
+
+    return {
+        'x': neutral['x'] * stride_scalar,
+        'y': neutral['y'] * stride_scalar,
+        'z': neutral['z']
+    }
+
+
+########## SET LEG TO NEUTRAL ##########
+
+def set_leg_neutral(leg_id):
+
+    ##### set variables #####
+
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+    neutral_positions = {
+        'FL': config.FL_NEUTRAL, 'FR': config.FR_NEUTRAL, 'BL': config.BL_NEUTRAL, 'BR': config.BR_NEUTRAL
+    }
+    gait_state = gait_states[leg_id]
+    neutral_position = neutral_positions[leg_id]
+
+    ##### return legs to neutral #####
+
+    if not gait_state['returned_to_neutral']: # if leg has not returned to neutral position...
+
+        try: # try to move leg to neutral position
+
+            move_foot_to_pos(
+                leg_id,
+                pos=neutral_position,
+                speed=16383,
+                acceleration=255,
+                stride_scalar=1,
+                use_bezier=False
+            )
+
+            gait_state['returned_to_neutral'] = True
+
+        except Exception as e: # if movement fails...
+
+            logging.error(f"(manual_walking.py): Failed to reset {leg_id} leg forward gait: {e}\n")
+            return
 
 
 ########## FOOT TUNING ##########
@@ -178,17 +235,17 @@ def adjustBL_Z(up=True, delta=0.005):
 
 def _applyFootPosition():
     x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
-    moveLeg('FL', x, y, z, speed=16383, acceleration=255)
+    move_leg('FL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionBR():
     x, y, z = foot_position_BR['x'], foot_position_BR['y'], foot_position_BR['z']
-    moveLeg('BR', x, y, z, speed=16383, acceleration=255)
+    move_leg('BR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionFR():
     x, y, z = foot_position_FR['x'], foot_position_FR['y'], foot_position_FR['z']
-    moveLeg('FR', x, y, z, speed=16383, acceleration=255)
+    move_leg('FR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionBL():
     x, y, z = foot_position_BL['x'], foot_position_BL['y'], foot_position_BL['z']
-    moveLeg('BL', x, y, z, speed=16383, acceleration=255)
+    move_leg('BL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")

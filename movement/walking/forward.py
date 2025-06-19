@@ -26,7 +26,7 @@ import logging # import logging for debugging
 ##### import necessary functions #####
 
 from utilities.mathematics import interpret_intensity # import intensity interpretation function
-from utilities.config import * # import leg positions config
+import utilities.config as config # import leg positions config
 import movement.fundamental_movement as fundamental_movement # import fundamental movement function to move legs to positions
 
 
@@ -38,19 +38,9 @@ import movement.fundamental_movement as fundamental_movement # import fundamenta
 #################################################
 
 
-########## LEG PHASE CONFIG ##########
-
-##### gait states #####
-
-fl_gait_state = {'phase': 'stance', 'last_time': time.time(), 'returned_to_neutral': False}
-br_gait_state = {'phase': 'stance', 'last_time': time.time(), 'returned_to_neutral': False}
-fr_gait_state = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
-bl_gait_state = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
-
-
 ########## GAIT FUNCTIONS ##########
 
-def trotForward(intensity): # function to trot forward
+def trot_forward(intensity): # function to trot forward
 
     ##### get intensity #####
 
@@ -67,13 +57,13 @@ def trotForward(intensity): # function to trot forward
 
     try: # try to update leg gait
 
-        updateLegGait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        update_leg_gait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
-        updateLegGait('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        update_leg_gait('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
-        updateLegGait('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        update_leg_gait('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
-        updateLegGait('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        update_leg_gait('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
 
     except Exception as e: # if gait update fails...
@@ -83,7 +73,7 @@ def trotForward(intensity): # function to trot forward
 
 ########## UPDATE LEG GAITS ##########
 
-def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
+def update_leg_gait(leg_id, state, speed, acceleration, stride_scalar):
 
     ##### gait pre-check #####
 
@@ -92,9 +82,15 @@ def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
 
     ##### set variables #####
 
-    gait_states = {'FL': fl_gait_state, 'FR': fr_gait_state, 'BL': bl_gait_state, 'BR': br_gait_state}
-    swing_positions = {'FL': FL_SWING, 'FR': FR_SWING, 'BL': BL_SWING, 'BR': BR_SWING}
-    stance_positions = {'FL': FL_STANCE, 'FR': FR_STANCE, 'BL': BL_STANCE, 'BR': BR_STANCE}
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+    swing_positions = {
+        'FL': config.FL_SWING, 'FR': config.FR_SWING, 'BL': config.BL_SWING, 'BR': config.BR_SWING
+    }
+    stance_positions = {
+        'FL': config.FL_STANCE, 'FR': config.FR_STANCE, 'BL': config.BL_STANCE, 'BR': config.BR_STANCE
+    }
     gait_state = gait_states[leg_id]
 
     ##### update leg gait #####
@@ -102,7 +98,7 @@ def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
     if gait_state['phase'] == 'stance': # if leg is in stance phase...
 
         try: # try to move leg to swing position
-            fundamental_movement.move_leg_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
+            fundamental_movement.move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
             gait_state['phase'] = 'swing'
 
         except Exception as e: # if movement fails...
@@ -112,7 +108,7 @@ def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
     else: # if leg is in swing phase...
 
         try: # try to move leg to stance position
-            fundamental_movement.move_leg_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False) #TODO enable bezier once fixed
+            fundamental_movement.move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False) #TODO enable bezier once fixed
             gait_state['phase'] = 'stance'
 
         except Exception as e: # if movement fails...
@@ -120,37 +116,3 @@ def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
             return
 
     gait_state['returned_to_neutral'] = False # reset neutral position flag
-
-
-########## RESET LEG FORWARD GAIT ##########
-
-def resetLegForwardGait(leg_id):
-
-    ##### set variables #####
-
-    gait_states = {'FL': fl_gait_state, 'FR': fr_gait_state, 'BL': bl_gait_state, 'BR': br_gait_state}
-    neutral_positions = {'FL': FL_NEUTRAL, 'FR': FR_NEUTRAL, 'BL': BL_NEUTRAL, 'BR': BR_NEUTRAL}
-    gait_state = gait_states[leg_id]
-    neutral_position = neutral_positions[leg_id]
-
-    ##### return legs to neutral #####
-
-    if not gait_state['returned_to_neutral']: # if leg has not returned to neutral position...
-
-        try: # try to move leg to neutral position
-
-            fundamental_movement.move_leg_to_pos(
-                leg_id,
-                pos=neutral_position,
-                speed=16383,
-                acceleration=255,
-                stride_scalar=1,
-                use_bezier=False
-            )
-
-            gait_state['returned_to_neutral'] = True
-
-        except Exception as e: # if movement fails...
-
-            logging.error(f"(manual_walking.py): Failed to reset {leg_id} leg forward gait: {e}\n")
-            return
