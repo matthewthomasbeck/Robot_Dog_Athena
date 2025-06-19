@@ -19,6 +19,7 @@
 ########## IMPORT DEPENDENCIES ##########
 
 import math # import math library for calculations
+import logging # import logging for debugging
 
 
 
@@ -40,35 +41,43 @@ class Kinematics:
 
     def inverse_kinematics(self, x, y, z):
 
-        # Hip abduction (rotation around Z) from Y offset
-        hip_angle = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
+        ##### calculate inverse kinematics #####
 
-        # Project leg into sagittal plane (XZ), accounting for hip linkage offset
-        hip_plane_offset = self.hip_to_leg_plane
-        x_leg = x - hip_plane_offset  # adjust X
-        leg_plane_dist = math.sqrt(x_leg**2 + z**2)
+        try: # attempt to calculate inverse kinematics
 
-        # Clamp leg distance to reachable range
-        min_reach = abs(self.femur - self.tibia)
-        max_reach = self.femur + self.tibia
-        leg_plane_dist = max(min_reach, min(max_reach, leg_plane_dist))
+            # Hip abduction (rotation around Z) from Y offset
+            hip_angle = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
 
-        # Law of Cosines for knee angle (theta3)
-        cos_theta3 = (self.femur**2 + self.tibia**2 - leg_plane_dist**2) / (2 * self.femur * self.tibia)
-        theta3 = math.acos(cos_theta3)  # radians
+            # Project leg into sagittal plane (XZ), accounting for hip linkage offset
+            hip_plane_offset = self.hip_to_leg_plane
+            x_leg = x - hip_plane_offset  # adjust X
+            leg_plane_dist = math.sqrt(x_leg**2 + z**2)
 
-        # Law of Cosines for shoulder angle (theta2)
-        cos_theta2 = (self.femur**2 + leg_plane_dist**2 - self.tibia**2) / (2 * self.femur * leg_plane_dist)
-        theta2_offset = math.acos(cos_theta2)  # radians
-        shoulder_to_foot_angle = math.atan2(-z, x_leg)  # radians
+            # Clamp leg distance to reachable range
+            min_reach = abs(self.femur - self.tibia)
+            max_reach = self.femur + self.tibia
+            leg_plane_dist = max(min_reach, min(max_reach, leg_plane_dist))
 
-        theta2 = shoulder_to_foot_angle - theta2_offset
+            # Law of Cosines for knee angle (theta3)
+            cos_theta3 = (self.femur**2 + self.tibia**2 - leg_plane_dist**2) / (2 * self.femur * self.tibia)
+            theta3 = math.acos(cos_theta3)  # radians
 
-        return (
-            hip_angle,                  # around Z (abduction/adduction)
-            math.degrees(theta2),      # upper leg
-            math.degrees(theta3)       # knee
-        )
+            # Law of Cosines for shoulder angle (theta2)
+            cos_theta2 = (self.femur**2 + leg_plane_dist**2 - self.tibia**2) / (2 * self.femur * leg_plane_dist)
+            theta2_offset = math.acos(cos_theta2)  # radians
+            shoulder_to_foot_angle = math.atan2(-z, x_leg)  # radians
+
+            theta2 = shoulder_to_foot_angle - theta2_offset
+
+            return (
+                hip_angle,                  # around Z (abduction/adduction)
+                math.degrees(theta2),      # upper leg
+                math.degrees(theta3)       # knee
+            )
+
+        except Exception as e: # if there is an error calculating inverse kinematics...
+
+            logging.error(f"(mathematics.py) Failed to calculate inverse kinematics for x={x}, y={y}, z={z}: {e}\n")
 
 
 ########## CALCULATE INTENSITY ##########
@@ -77,39 +86,56 @@ def interpret_intensity(intensity): # function to interpret intensity
 
     ##### find speed, acceleration, stride_scalar #####
 
-    if intensity == 1 or intensity == 2:
-        speed = int(((16383 / 5) / 10) * intensity)
-        acceleration = int(((255 / 5) / 10) * intensity)
-        stride_scalar = 0.2  # default stride scalar for high intensity
-    elif intensity == 3 or intensity == 4:
-        speed = int(((16383 / 4) / 10) * intensity)
-        acceleration = int(((255 / 4) / 10) * intensity)
-        stride_scalar = 0.4  # default stride scalar for high intensity
-    elif intensity == 5 or intensity == 6:
-        speed = int(((16383 / 3) / 10) * intensity)
-        acceleration = int(((255 / 3) / 10) * intensity)
-        stride_scalar = 0.6  # default stride scalar for high intensity
-    elif intensity == 7 or intensity == 8:
-        speed = int(((16383 / 2) / 10) * intensity)
-        acceleration = int(((255 / 2) / 10) * intensity)
-        stride_scalar = 0.8  # default stride scalar for high intensity
-    else:
-        speed = int((16383 / 10) * intensity)
-        acceleration = int((255 / 10) * intensity)
-        stride_scalar = 1.0 # default stride scalar for high intensity
+    try: # attempt to interpret intensity
 
-    ##### return arc length speed and acceleration #####
+        if intensity == 1 or intensity == 2:
+            speed = int(((16383 / 5) / 10) * intensity)
+            acceleration = int(((255 / 5) / 10) * intensity)
+            stride_scalar = 0.2  # default stride scalar for high intensity
+        elif intensity == 3 or intensity == 4:
+            speed = int(((16383 / 4) / 10) * intensity)
+            acceleration = int(((255 / 4) / 10) * intensity)
+            stride_scalar = 0.4  # default stride scalar for high intensity
+        elif intensity == 5 or intensity == 6:
+            speed = int(((16383 / 3) / 10) * intensity)
+            acceleration = int(((255 / 3) / 10) * intensity)
+            stride_scalar = 0.6  # default stride scalar for high intensity
+        elif intensity == 7 or intensity == 8:
+            speed = int(((16383 / 2) / 10) * intensity)
+            acceleration = int(((255 / 2) / 10) * intensity)
+            stride_scalar = 0.8  # default stride scalar for high intensity
+        else:
+            speed = int((16383 / 10) * intensity)
+            acceleration = int((255 / 10) * intensity)
+            stride_scalar = 1.0 # default stride scalar for high intensity
 
-    return speed, acceleration, stride_scalar # return movement parameters
+        return speed, acceleration, stride_scalar # return movement parameters
+
+    except Exception as e: # if there is an error interpreting intensity...
+
+        logging.error(f"(mathematics.py) Failed to interpret intensity {intensity}: {e}\n")
 
 
 ########## BEZIER CURVE ##########
 
 def bezier_curve(p0, p1, p2, steps):
+
+    ##### set variables #####
+
     curve = []
-    for t in [i / steps for i in range(steps + 1)]:
-        x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0]
-        y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1]
-        z = (1 - t) ** 2 * p0[2] + 2 * (1 - t) * t * p1[2] + t ** 2 * p2[2]
-        curve.append((x, y, z))
-    return curve
+
+    ##### create bezier curve #####
+
+    try: # attempt to create bezier curve
+
+        for t in [i / steps for i in range(steps + 1)]:
+            x = (1 - t) ** 2 * p0[0] + 2 * (1 - t) * t * p1[0] + t ** 2 * p2[0]
+            y = (1 - t) ** 2 * p0[1] + 2 * (1 - t) * t * p1[1] + t ** 2 * p2[1]
+            z = (1 - t) ** 2 * p0[2] + 2 * (1 - t) * t * p1[2] + t ** 2 * p2[2]
+            curve.append((x, y, z))
+
+        return curve
+
+    except Exception as e: # if there is an error creating bezier curve...
+
+        logging.error(f"(mathematics.py) Failed to create bezier curve: {e}\n")

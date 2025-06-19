@@ -41,6 +41,7 @@ from initialize.initialize_internet import * # import internet control functiona
 
 from movement.standing.standing_inplace import * # import standing functions
 from movement.walking.manual_walking import * # import walking functions
+from movement.fundamental_movement import * # import fundamental movement functions
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -90,7 +91,7 @@ logger.info("Logging setup complete.\n")
 
 logging.info("Starting control_logic.py script...\n") # log the start of the script
 
-##### create different control modes #####
+##### create different control mode #####
 
 MODE = 'radio'
 
@@ -121,7 +122,7 @@ def runRobot():  # central function that runs the robot
 
     if camera_process is None:
 
-        logging.error("ERROR (control_logic.py): Failed to start camera process. Exiting...\n")
+        logging.error("(control_logic.py): Failed to start camera process. Exiting...\n")
         exit(1)
 
     ##### initialize PWM decoders #####
@@ -144,18 +145,18 @@ def runRobot():  # central function that runs the robot
 
     except Exception as e: # if there is an error, log the error
 
-        logging.error(f"ERROR (control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
+        logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
     mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
 
     try: # try to run the main robotic process
 
         # Detect mode and maybe start socket server
-        MODE = detect_ssh_and_prompt_mode() # TODO comment this out whenever I don't need to tune
+        #MODE = detect_ssh_and_prompt_mode() # TODO comment this out whenever I don't need to tune
 
         if MODE.startswith("ssh"):
             server = setup_unix_socket()
-            logging.info("Waiting for SSH control client to connect to socket...")
+            logging.info("Waiting for SSH control client to connect to socket...\n")
             conn, _ = server.accept()
             conn.setblocking(True)
             logging.info("SSH client connected.")
@@ -164,7 +165,7 @@ def runRobot():  # central function that runs the robot
             # Read chunk of data from the camera process
             chunk = camera_process.stdout.read(4096)
             if not chunk:
-                logging.error("ERROR (control_logic.py): Camera process stopped sending data.")
+                logging.error("(control_logic.py): Camera process stopped sending data.\n")
                 break
 
             mjpeg_buffer += chunk
@@ -175,24 +176,24 @@ def runRobot():  # central function that runs the robot
 
             if mjpeg_buffer is None:
                 # If something went very wrong, stop
-                logging.warning("WARNING (control_logic.py): decode_and_show_frame returned None. Stopping.")
+                logging.warning("(control_logic.py): decode_and_show_frame returned None. Stopping...\n")
                 break
             elif len(mjpeg_buffer) == prev_len:
                 # Means no complete JPEG was found (incomplete frame)
                 # If the buffer grows too large, reset it
                 if len(mjpeg_buffer) > 65536:
-                    logging.warning("WARNING (control_logic.py): MJPEG buffer overflow. Resetting buffer.")
+                    logging.warning("(control_logic.py): MJPEG buffer overflow. Resetting buffer.\n")
                     mjpeg_buffer = b''
 
             # Check if 'q' was pressed in the imshow window
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                logging.info("Exiting camera feed display.")
+                logging.info("Exiting camera feed display.\n")
                 break
 
             # TODO OLD CODE Handle commands
             #commands = interpretCommands(CHANNEL_DATA)
             #for channel, (action, intensity) in commands.items():
-                #IS_NEUTRAL = executeCommands(channel, action, intensity, IS_NEUTRAL)
+                #IS_NEUTRAL = executeRadioCommands(channel, action, intensity, IS_NEUTRAL)
 
             if MODE == 'radio':
                 commands = interpretCommands(CHANNEL_DATA)
@@ -212,13 +213,13 @@ def runRobot():  # central function that runs the robot
                         key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode=(MODE == 'ssh-tune'),
                     )
                 except Exception as e:
-                    logging.error(f"ERROR (control_logic.py): Socket read error: {e}\n")
+                    logging.error(f"(control_logic.py): Socket read error: {e}\n")
 
     except KeyboardInterrupt:
         logging.info("KeyboardInterrupt received. Exiting...\n")
 
     except Exception as e:
-        logging.error(f"ERROR (control_logic.py): Unexpected exception in main loop: {e}\n")
+        logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
         exit(1)
 
     finally:
@@ -289,7 +290,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to rotate left in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to rotate left in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
@@ -303,7 +304,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to rotate right in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to rotate right in executeCommands: {e}\n")
 
     ##### look channel 4 #####
 
@@ -314,11 +315,10 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBL_Z(up=True) # testing z axis
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to look down in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to look down in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
@@ -329,11 +329,10 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBL_Z(up=False) # testing z axis
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to look up in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to look up in executeCommands: {e}\n")
 
     ##### move channel 5 #####
 
@@ -344,12 +343,11 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBL_Y(left=True) # testing y axis
                 trotForward(intensity)
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to move forward in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to move forward in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
@@ -365,19 +363,17 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
             except Exception as e:
 
-                logging.error(f"ERROR (control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
 
         elif action == 'MOVE BACKWARD':
 
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBL_Y(left=False) # testing y axis
-                #updateFrontLeftGaitBD({'FORWARD': True})
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to move backward in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to move backward in executeCommands: {e}\n")
 
     ##### shift channel 6 #####
 
@@ -388,11 +384,10 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBL_X(forward=True) # testing x axis
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to shift left in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to shift left in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
@@ -403,11 +398,10 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                #adjustBL_X(forward=False) # testing x axis
                 IS_NEUTRAL = False
 
             except Exception as e:
-                logging.error(f"ERROR (control_logic.py): Failed to shift right in executeCommands: {e}\n")
+                logging.error(f"(control_logic.py): Failed to shift right in executeCommands: {e}\n")
 
     ##### extra channel 7 #####
 

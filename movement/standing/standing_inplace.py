@@ -21,13 +21,12 @@
 ##### import necessary libraries #####
 
 import time # import time library for time functions
-import os # import os library for system functions
-import sys # import sys library for system functions
 import logging # import logging for debugging
 
 ##### import necessary functions #####
 
 import initialize.initialize_servos as initialize_servos # import servo logic functions
+from movement.positions_config import * # import leg positions config
 
 
 
@@ -40,45 +39,22 @@ import initialize.initialize_servos as initialize_servos # import servo logic fu
 
 ########## NEUTRAL ##########
 
-def neutralStandingPosition():
+def neutral_standing_position(leg_id, stride_scalar):
 
-    logging.debug("Moving to neutral standing position...\n")
+    NEUTRAL_POSITIONS = {
+        'FL': FL_NEUTRAL,
+        'FR': FR_NEUTRAL,
+        'BL': BL_NEUTRAL,
+        'BR': BR_NEUTRAL
+    }
 
-    try:
+    neutral = NEUTRAL_POSITIONS[leg_id]
 
-        logging.debug("Preparing legs...\n")
-
-        # Create a dictionary to store the neutral positions dynamically
-        new_positions = {}
-
-        # Iterate over SERVO_CONFIG to extract NEUTRAL positions
-        for leg, joints in initialize_servos.SERVO_CONFIG.items():
-            for joint, config in joints.items():
-                servo_id = config['servo']
-                neutral_position = config['NEUTRAL']
-                new_positions[servo_id] = neutral_position
-                config['DIR'] = 0
-                config['MOVED'] = False
-
-        # Move servos to neutral positions
-        for servo, position in new_positions.items():
-            initialize_servos.setTarget(servo, position, speed=16383, acceleration=255)
-
-        logging.debug("Updating SERVO_CONFIG with new positions...\n")
-
-        # Update CUR_POS for each servo in SERVO_CONFIG
-        for leg, joints in initialize_servos.SERVO_CONFIG.items():
-            for joint, config in joints.items():
-                servo_id = config['servo']
-                if servo_id in new_positions:
-                    config['CUR_POS'] = new_positions[servo_id]
-
-        time.sleep(0.1) # wait for servos to reach destination
-
-        logging.info("Moved to neutral standing and updated SERVO_CONFIG.\n")
-
-    except Exception as e:
-        logging.error(f"ERROR (standing_inplace.py): Failed to move to neutral standing position. {e}\n")
+    return {
+        'x': neutral['x'] * stride_scalar,
+        'y': neutral['y'] * stride_scalar,
+        'z': neutral['z']
+    }
 
 
 ########## TIPPY TOES ##########
@@ -131,7 +107,7 @@ def tippyToesStandingPosition(): # function to set all servos to tippy toes posi
     except: # if movement failed...
 
         # print failure statement
-        logging.error("ERROR (standing_inplace.py): Failed to move to 'tippy toes' position.\n")
+        logging.error("(standing_inplace.py): Failed to move to 'tippy toes' position.\n")
 
 
 ########## SQUATTING ##########
@@ -184,4 +160,4 @@ def squattingStandingPosition(): # function to set all servos to full forward po
     except: # if movement failed...
 
         # print failure statement
-        logging.error("ERROR (standing_inplace.py): Failed to move to full forward position.\n")
+        logging.error("(standing_inplace.py): Failed to move to full forward position.\n")
