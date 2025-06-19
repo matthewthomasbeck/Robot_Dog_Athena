@@ -127,20 +127,20 @@ bl_gait_state = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutra
 ##### phase positions #####
 
 FL_SWING_POSITION = {'x': -0.0250, 'y': -0.0065,'z': -0.0400}
-FL_NEUTRAL_POSITION = {'x': -0.1150, 'y': 0.0065, 'z': -0.0700}
+FL_NEUTRAL_POSITION = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
 FL_STANCE_POSITION = {'x': -0.1550, 'y': -0.0015, 'z': -0.1100}
 
 BR_SWING_POSITION = {'x': -0.1100, 'y': -0.0085, 'z': -0.1700}
-BR_NEUTRAL_POSITION = {'x': -0.0150, 'y': 0.0015, 'z': -0.0700}
+BR_NEUTRAL_POSITION = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
 BR_STANCE_POSITION = {'x': 0.0250, 'y': -0.0035, 'z': -0.0150}
 
 FR_SWING_POSITION = {'x': -0.1200, 'y': -0.0465, 'z': -0.3950}
-FR_NEUTRAL_POSITION = {'x': -0.0000, 'y': 0.0035, 'z': -0.1150}
+FR_NEUTRAL_POSITION = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
 FR_STANCE_POSITION = {'x': 0.0050, 'y': -0.0015, 'z': -0.0300}
 
 BL_SWING_POSITION = {'x': 0.0150, 'y': -0.0035, 'z': -0.0100}
-BL_NEUTRAL_POSITION = {'x': 0.0200, 'y': 0.0115, 'z': -0.0850}
-BL_STANCE_POSITION = {'x': 0.0150, 'y': 0.0315, 'z': -0.2250}
+BL_NEUTRAL_POSITION = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
+BL_STANCE_POSITION = {'x': -0.0250, 'y': 0.0115, 'z': -0.0750}
 
 
 ########## GAIT FUNCTIONS ##########
