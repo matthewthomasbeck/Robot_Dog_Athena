@@ -21,13 +21,12 @@
 ##### import necessary libraries #####
 
 import time # import time library for time functions
-import math # import math library for pi, used with elliptical movement
 import logging # import logging for debugging
 
 ##### import necessary functions #####
 
 import initialize.initialize_servos as initialize_servos # import servo logic functions
-from mathematics.mathematics import * # import all mathematical functions
+import mathematics.mathematics as mathematics # import all mathematical functions
 from movement.positions_config import * # import leg positions config
 
 
@@ -35,7 +34,7 @@ from movement.positions_config import * # import leg positions config
 
 ##### initialize kinematics #####
 
-k = Kinematics(initialize_servos.LINK_CONFIG) # use link lengths to initialize kinematic functions
+k = mathematics.Kinematics(initialize_servos.LINK_CONFIG) # use link lengths to initialize kinematic functions
 
 ##### define servos #####
 
@@ -78,16 +77,16 @@ bl_gait_state = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutra
 
 def trotForward(intensity):
 
-    speed, acceleration, stride_scalar = interpret_intensity(intensity) # TODO experiment with timing difference
+    speed, acceleration, stride_scalar = mathematics.interpret_intensity(intensity) # TODO experiment with timing difference
 
     updateLegGait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
-    #time.sleep(.15)
+    time.sleep(.15)
     updateLegGait('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
-    #time.sleep(.15)
+    time.sleep(.15)
     updateLegGait('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
-    #time.sleep(.15)
+    time.sleep(.15)
     updateLegGait('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
-    #time.sleep(.15)
+    time.sleep(.15)
 
 
 ########## UPDATE LEG GAITS ##########
@@ -123,7 +122,7 @@ def updateLegGait(leg_id, state, speed, acceleration, stride_scalar):
         moveLegToPosition(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
         gait_state['phase'] = 'swing'
     else:
-        moveLegToPosition(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=True)
+        moveLegToPosition(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
         gait_state['phase'] = 'stance'
 
     gait_state['returned_to_neutral'] = False
@@ -178,7 +177,7 @@ def moveLegToPosition(leg_id, pos, speed, acceleration, stride_scalar, use_bezie
             'z': max(p0['z'], p2['z']) + 0.025
         }
 
-        curve = bezier_curve(
+        curve = mathematics.bezier_curve(
             p0=(p0['x'], p0['y'], p0['z']),
             p1=(p1['x'], p1['y'], p1['z']),
             p2=(p2['x'], p2['y'], p2['z']),
@@ -244,29 +243,10 @@ def getNeutralPosition(leg_id, stride_scalar):
 
 ########## FOOT TUNING ##########
 
-foot_position_FL = {
-    'x': 0.0,
-    'y': initialize_servos.LINK_CONFIG['HIP_OFFSET'],
-    'z': -0.10
-}
-
-foot_position_BR = {
-    'x': 0.0,
-    'y': -initialize_servos.LINK_CONFIG['HIP_OFFSET'],  # Negative because BR is on the opposite side
-    'z': -0.10
-}
-
-foot_position_FR = {
-    'x': foot_position_BR['x'],  # Same x as BR
-    'y': -foot_position_BR['y'],  # Invert y for front right
-    'z': foot_position_BR['z']  # Same z as BR
-}
-
-foot_position_BL = {
-    'x': foot_position_FL['x'],  # Same x as FL
-    'y': -foot_position_FL['y'],  # Invert y for back left
-    'z': foot_position_FL['z']  # Same z as FL
-}
+foot_position_FL = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
+foot_position_FR = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
+foot_position_BL = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
+foot_position_BR = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
 
 def adjustFL_X(forward=True, delta=0.005):
     direction = 1 if forward else -1

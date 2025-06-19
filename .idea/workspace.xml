@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Spoiler alert: changing servos didn't work">
-      <change afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/movement/positions_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kinematics/kinematics.py" beforeDir="false" afterPath="$PROJECT_DIR$/mathematics/mathematics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/standing/standing_inplace.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/standing/standing_inplace.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/positions_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/positions_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/walking/manual_walking.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/manual_walking.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -87,7 +84,7 @@
       <workItem from="1740675762073" duration="1000" />
       <workItem from="1749434175910" duration="16372000" />
       <workItem from="1749609572258" duration="35045000" />
-      <workItem from="1750261286589" duration="17419000" />
+      <workItem from="1750261286589" duration="19509000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
