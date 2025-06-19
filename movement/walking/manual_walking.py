@@ -68,13 +68,13 @@ def trotForward(intensity): # function to trot forward
     try: # try to update leg gait
 
         updateLegGait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.15)
+        time.sleep(.06)
         updateLegGait('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.15)
+        time.sleep(.06)
         updateLegGait('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.15)
+        time.sleep(.06)
         updateLegGait('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.15)
+        time.sleep(.06)
 
     except Exception as e: # if gait update fails...
 
