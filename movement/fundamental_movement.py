@@ -20,12 +20,10 @@
 
 ##### import necessary libraries #####
 
-import logging # import logging for debugging
-
 ##### import necessary functions #####
 
-import initialize.initialize_servos as initialize_servos # import servo logic functions
-from mathematics.mathematics import * # import all mathematical functions
+import utilities.servos as initialize_servos # import servo logic functions
+from utilities.mathematics import * # import all mathematical functions
 from movement.standing.standing_inplace import neutral_standing_position # import neutral standing position function
 
 

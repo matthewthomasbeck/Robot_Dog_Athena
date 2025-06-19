@@ -25,8 +25,8 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-from mathematics.mathematics import interpret_intensity # import intensity interpretation function
-from movement.positions_config import * # import leg positions config
+from utilities.mathematics import interpret_intensity # import intensity interpretation function
+from utilities.config import * # import leg positions config
 import movement.fundamental_movement as fundamental_movement # import fundamental movement function to move legs to positions
 
 

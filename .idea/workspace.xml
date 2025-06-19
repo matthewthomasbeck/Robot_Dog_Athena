@@ -5,7 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Spoiler alert: changing servos didn't work">
-      <change beforePath="$PROJECT_DIR$/movement/walking/manual_walking.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/manual_walking.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_internet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/internet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_maestro.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/maestro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/opencv.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_receiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/receiver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/initialize/initialize_servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/servos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mathematics/mathematics.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/mathematics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/positions_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/standing/standing_inplace.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/standing/standing_inplace.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/walking/manual_walking.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/forward.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +54,11 @@
     &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/utilities" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -82,7 +98,7 @@
       <workItem from="1740675762073" duration="1000" />
       <workItem from="1749434175910" duration="16372000" />
       <workItem from="1749609572258" duration="35045000" />
-      <workItem from="1750261286589" duration="26014000" />
+      <workItem from="1750261286589" duration="26758000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>

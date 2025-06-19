@@ -24,7 +24,7 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-from initialize.initialize_maestro import * # import maestro initialization functions
+from utilities.maestro import * # import maestro initialization functions
 
 
 ########## CREATE DEPENDENCIES ##########

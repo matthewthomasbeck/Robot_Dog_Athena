@@ -25,8 +25,8 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-import initialize.initialize_servos as initialize_servos # import servo logic functions
-from movement.positions_config import * # import leg positions config
+import utilities.servos as initialize_servos # import servo logic functions
+from utilities.config import * # import leg positions config
 
 
 
