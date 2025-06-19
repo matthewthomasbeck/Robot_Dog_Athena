@@ -86,6 +86,14 @@ FR_GAIT_STATE = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutra
 BL_GAIT_STATE = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutral': False}
 
 
+########## LEG TUNE CONFIG ##########
+
+FL_TUNE = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
+FR_TUNE = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
+BL_TUNE = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
+BR_TUNE = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
+
+
 ########## FRONT LEFT ##########
 
 FL_SQUATTING = {'x': 0.0400, 'y': -0.0065, 'z': 0.0250}
@@ -99,7 +107,7 @@ FL_STANCE = {'x': -0.1000, 'y': -0.0315, 'z': -0.1350}
 
 FR_SQUATTING = {'x': 0.1600, 'y': 0.0035, 'z': -0.1000}
 FR_NEUTRAL = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
-FR_TIPPYTOES = {'x': 0.0150, 'y': -0.0015, 'z': -0.0050}
+FR_TIPPYTOES = {'x': -0.0150, 'y': -0.0015, 'z': -0.0050}
 FR_SWING = {'x': -0.1100, 'y': -0.0065, 'z': 0.0550}
 FR_STANCE = {'x': 0.0200, 'y': -0.0015, 'z': -0.0450}
 

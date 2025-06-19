@@ -25,8 +25,9 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-import utilities.servos as initialize_servos # import servo logic functions
 import utilities.config as config # import leg positions config
+from utilities.mathematics import interpret_intensity # import intensity interpretation function
+from movement.fundamental_movement import move_foot_to_pos # import fundamental movement function to move foot to pos
 
 
 
@@ -37,74 +38,204 @@ import utilities.config as config # import leg positions config
 ##########################################################
 
 
-########## TIPPY TOES ##########
+########## NEUTRAL POSITION ##########
 
-def tippyToesStandingPosition(): # function to set all servos to tippy toes position
+def neutral_position(intensity): # function to set all legs to squatting position
 
-    ##### move to tippy toes position #####
+    ##### get intensity #####
 
-    logging.debug("Moving to tippy toes position...\n") # print initialization message
+    try: # try to calculate intensity of the movement
 
-    try: # attempt to move to tippy-toes position
+        speed, acceleration, _ = interpret_intensity(intensity) # TODO experiment with timing difference
 
-        # TODO implement this
+    except Exception as e: # if interpretation fails...
 
-        logging.info("Moved to 'tippy toes'.\n") # print success statement
+        logging.error(f"(standing.py): Failed to interpret intensity in neutral_position(): {e}\n")
+        return
 
-    except: # if movement failed...
+    ##### move legs forward #####
 
-        # print failure statement
-        logging.error("(standing_inplace.py): Failed to move to 'tippy toes' position.\n")
+    try: # try to update legs to neutral position
 
+        set_leg_neutral('FL', {'FORWARD': True}, speed, acceleration)
+        set_leg_neutral('BR', {'FORWARD': True}, speed, acceleration)
+        set_leg_neutral('FR', {'FORWARD': True}, speed, acceleration)
+        set_leg_neutral('BL', {'FORWARD': True}, speed, acceleration)
 
-########## SQUATTING ##########
+    except Exception as e: # if gait update fails...
 
-def squattingStandingPosition(): # function to set all servos to full forward position
-
-    ##### move to full forward position #####
-
-    logging.debug("Moving to full forward position...\n") # print initialization message
-
-    try: # attempt to move to tippy toes position
-
-        ##### full forward hips #####
-
-        time.sleep(1) # wait a moment before proceeding incase there is movement before this
-
-        logging.debug("Preparing legs...\n")  # print initialization message
-
-        initialize_servos.setTarget(4, 1148.5) # set front left hip to full forward
-        initialize_servos.setTarget(2, 992) # set front right hip to full forward
-        initialize_servos.setTarget(11, 1848.25) # set rear right hip to full forward
-        initialize_servos.setTarget(8, 1036) # set rear left hip to full forward
-
-        logging.info("Prepared legs.\n") # print success statement
-
-        time.sleep(3) # stand by for movement
-
-        logging.debug("Moving to full forward...\n") # print initialization message
-
-        ##### front legs #####
-
-        initialize_servos.setTarget(5, 1266) # set front left knee to full forward
-        initialize_servos.setTarget(1, 1921) # set front right knee to full forward
-        initialize_servos.setTarget(3, 1892.25)  # set front left ankle to full forward
-        initialize_servos.setTarget(0, 2000) # set front right ankle to full forward
-
-        ##### back legs #####
-
-        initialize_servos.setTarget(7, 1354) # set rear left knee to full forward
-        initialize_servos.setTarget(10, 1701.5) # set rear right knee to full forward
-        initialize_servos.setTarget(6, 1138.75) # set rear left ankle to full forward
-        initialize_servos.setTarget(9, 2000) # set rear right ankle to full forward
-
-        ##### update config #####
+        logging.error(f"(standing.py): Failed to move legs to neutral position: {e}\n")
 
 
+########## SET LEG NEUTRAL ##########
 
-        logging.info("Moved to full forward.\n") # print success statement
+def set_leg_neutral(leg_id, state, speed, acceleration): # function to return leg to neutral
 
-    except: # if movement failed...
+    ##### set variables #####
 
-        # print failure statement
-        logging.error("(standing_inplace.py): Failed to move to full forward position.\n")
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+    neutral_positions = {
+        'FL': config.FL_NEUTRAL, 'FR': config.FR_NEUTRAL, 'BL': config.BL_NEUTRAL, 'BR': config.BR_NEUTRAL
+    }
+    gait_state = gait_states[leg_id]
+    neutral_position = neutral_positions[leg_id]
+
+    ##### return legs to neutral #####
+
+    if not gait_state['returned_to_neutral']: # if leg has not returned to neutral position...
+
+        try: # try to move leg to neutral position
+
+            move_foot_to_pos(
+                leg_id,
+                neutral_position,
+                speed,
+                acceleration,
+                stride_scalar=1,
+                use_bezier=False
+            )
+
+            gait_state['returned_to_neutral'] = True
+
+        except Exception as e: # if movement fails...
+
+            logging.error(f"(manual_walking.py): Failed to reset {leg_id} leg neutral position: {e}\n")
+            return
+
+
+########## TIPPYTOES POSITION ##########
+
+def tippytoes_position(intensity): # function to set all legs to tippytoes position
+
+    ##### get intensity #####
+
+    try: # try to calculate intensity of the movement
+
+        speed, acceleration, _ = interpret_intensity(intensity) # TODO experiment with timing difference
+
+    except Exception as e: # if interpretation fails...
+
+        logging.error(f"(standing.py): Failed to interpret intensity in tippytoes_position(): {e}\n")
+        return
+
+    ##### move legs forward #####
+
+    try: # try to update leg tippytoes
+
+        set_leg_tippytoes('FL', {'FORWARD': True}, speed, acceleration)
+        set_leg_tippytoes('BR', {'FORWARD': True}, speed, acceleration)
+        set_leg_tippytoes('FR', {'FORWARD': True}, speed, acceleration)
+        set_leg_tippytoes('BL', {'FORWARD': True}, speed, acceleration)
+
+    except Exception as e: # if gait update fails...
+
+        logging.error(f"(standing.py): Failed to move legs to tippytoes position: {e}\n")
+
+
+########## SET LEG TIPPYTOES ##########
+
+def set_leg_tippytoes(leg_id, state, speed, acceleration):
+
+    ##### gait pre-check #####
+
+    if not state.get('FORWARD', False): # if leg is moving forward...
+        return  # skip if not moving forward
+
+    ##### set variables #####
+
+    tippytoes_positions = {
+        'FL': config.FL_TIPPYTOES, 'FR': config.FR_TIPPYTOES, 'BL': config.BL_TIPPYTOES, 'BR': config.BR_TIPPYTOES
+    }
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+    gait_state = gait_states[leg_id]
+    current_phase = gait_state.get('phase')
+    tippytoes_pos = tippytoes_positions[leg_id]
+
+    ##### check if already at tippytoes #####
+
+    if gait_state.get('last_position') == 'tippytoes':
+        return  # skip if already at tippytoes
+
+    ##### move leg to tippytoes #####
+
+    try: # try to move leg to tippytoes position
+        move_foot_to_pos(leg_id, tippytoes_pos, speed, acceleration, stride_scalar=1, use_bezier=False)
+        gait_state['last_position'] = 'tippytoes'
+        gait_state['phase'] = 'stance'  # tippytoes is a grounded stance
+        gait_state['returned_to_neutral'] = False
+
+    except Exception as e: # if movement fails...
+        logging.error(f"(standing.py): Failed to move leg {leg_id} to tippytoes position: {e}\n")
+        return
+
+
+########## SQUATTING POSITION ##########
+
+def squatting_position(intensity): # function to set all legs to squatting position
+
+    ##### get intensity #####
+
+    try: # try to calculate intensity of the movement
+
+        speed, acceleration, _ = interpret_intensity(intensity) # TODO experiment with timing difference
+
+    except Exception as e: # if interpretation fails...
+
+        logging.error(f"(standing.py): Failed to interpret intensity in squatting_position(): {e}\n")
+        return
+
+    ##### move legs forward #####
+
+    try: # try to update legs to tippytoes
+
+        set_leg_squatting('FL', {'FORWARD': True}, speed, acceleration)
+        set_leg_squatting('BR', {'FORWARD': True}, speed, acceleration)
+        set_leg_squatting('FR', {'FORWARD': True}, speed, acceleration)
+        set_leg_squatting('BL', {'FORWARD': True}, speed, acceleration)
+
+    except Exception as e: # if gait update fails...
+
+        logging.error(f"(standing.py): Failed to move legs to squatting position: {e}\n")
+
+
+########## SET LEG SQUATTING ##########
+
+def set_leg_squatting(leg_id, state, speed, acceleration):
+
+    ##### gait pre-check #####
+
+    if not state.get('FORWARD', False): # if leg is moving forward...
+        return  # skip if not moving forward
+
+    ##### set variables #####
+
+    squatting_positions = {
+        'FL': config.FL_SQUATTING, 'FR': config.FR_SQUATTING, 'BL': config.BL_SQUATTING, 'BR': config.BR_SQUATTING
+    }
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+    gait_state = gait_states[leg_id]
+    current_phase = gait_state.get('phase')
+    squatting_pos = squatting_positions[leg_id]
+
+    ##### check if already squatting #####
+
+    if gait_state.get('last_position') == 'squatting':
+        return  # skip if already squatting
+
+    ##### move leg to squatting #####
+
+    try: # try to move leg to squatting position
+        move_foot_to_pos(leg_id, squatting_pos, speed, acceleration, stride_scalar=1, use_bezier=False)
+        gait_state['last_position'] = 'squatting'
+        gait_state['phase'] = 'stance'  # squatting is a grounded stance
+        gait_state['returned_to_neutral'] = False
+
+    except Exception as e: # if movement fails...
+        logging.error(f"(standing.py): Failed to move leg {leg_id} to squatting position: {e}\n")
+        return

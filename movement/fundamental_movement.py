@@ -64,7 +64,7 @@ lower_leg_servos = { # define lower leg servos
 
 def move_foot_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=False):
     if use_bezier:
-        p0 = neutral_standing_position(leg_id, stride_scalar)
+        p0 = get_neutral_positions(leg_id, stride_scalar)
         p2 = {
             'x': pos['x'] * stride_scalar,
             'y': pos['y'] * stride_scalar,
@@ -117,9 +117,9 @@ def move_leg(leg_id, x, y, z, speed, acceleration):
         initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
 
 
-########## GET NEUTRAL POSITIONS ##########
+##### GET NEUTRAL POSITIONS #####
 
-def neutral_standing_position(leg_id, stride_scalar):
+def get_neutral_positions(leg_id, stride_scalar):
 
     NEUTRAL_POSITIONS = {
         'FL': config.FL_NEUTRAL,
@@ -137,115 +137,72 @@ def neutral_standing_position(leg_id, stride_scalar):
     }
 
 
-########## SET LEG TO NEUTRAL ##########
-
-def set_leg_neutral(leg_id):
-
-    ##### set variables #####
-
-    gait_states = {
-        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
-    }
-    neutral_positions = {
-        'FL': config.FL_NEUTRAL, 'FR': config.FR_NEUTRAL, 'BL': config.BL_NEUTRAL, 'BR': config.BR_NEUTRAL
-    }
-    gait_state = gait_states[leg_id]
-    neutral_position = neutral_positions[leg_id]
-
-    ##### return legs to neutral #####
-
-    if not gait_state['returned_to_neutral']: # if leg has not returned to neutral position...
-
-        try: # try to move leg to neutral position
-
-            move_foot_to_pos(
-                leg_id,
-                pos=neutral_position,
-                speed=16383,
-                acceleration=255,
-                stride_scalar=1,
-                use_bezier=False
-            )
-
-            gait_state['returned_to_neutral'] = True
-
-        except Exception as e: # if movement fails...
-
-            logging.error(f"(manual_walking.py): Failed to reset {leg_id} leg forward gait: {e}\n")
-            return
-
-
 ########## FOOT TUNING ##########
-
-foot_position_FL = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
-foot_position_FR = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
-foot_position_BL = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
-foot_position_BR = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
 
 def adjustFL_X(forward=True, delta=0.005):
     direction = 1 if forward else -1
-    foot_position_FL['x'] += direction * delta
+    config.FL_TUNE['x'] += direction * delta
     _applyFootPosition()
 def adjustBR_X(forward=True, delta=0.005):
     direction = 1 if forward else -1
-    foot_position_BR['x'] += direction * delta
+    config.BR_TUNE['x'] += direction * delta
     _applyFootPositionBR()
 def adjustFR_X(forward=True, delta=0.005):
     direction = 1 if forward else -1
-    foot_position_FR['x'] += direction * delta
+    config.FR_TUNE['x'] += direction * delta
     _applyFootPositionFR()
 def adjustBL_X(forward=True, delta=0.005):
     direction = 1 if forward else -1
-    foot_position_BL['x'] += direction * delta
+    config.BL_TUNE['x'] += direction * delta
     _applyFootPositionBL()
 
 def adjustFL_Y(left=True, delta=0.005):
     direction = 1 if left else -1
-    foot_position_FL['y'] += direction * delta
+    config.FL_TUNE['y'] += direction * delta
     _applyFootPosition()
 def adjustBR_Y(left=True, delta=0.005):
     direction = 1 if left else -1
-    foot_position_BR['y'] += direction * delta
+    config.BR_TUNE['y'] += direction * delta
     _applyFootPositionBR()
 def adjustFR_Y(left=True, delta=0.005):
     direction = 1 if left else -1
-    foot_position_FR['y'] += direction * delta
+    config.FR_TUNE['y'] += direction * delta
     _applyFootPositionFR()
 def adjustBL_Y(left=True, delta=0.005):
     direction = 1 if left else -1
-    foot_position_BL['y'] += direction * delta
+    config.BL_TUNE['y'] += direction * delta
     _applyFootPositionBL()
 
 def adjustFL_Z(up=True, delta=0.005):
     direction = 1 if up else -1
-    foot_position_FL['z'] += direction * delta
+    config.FL_TUNE['z'] += direction * delta
     _applyFootPosition()
 def adjustBR_Z(up=True, delta=0.005):
     direction = 1 if up else -1
-    foot_position_BR['z'] += direction * delta
+    config.BR_TUNE['z'] += direction * delta
     _applyFootPositionBR()
 def adjustFR_Z(up=True, delta=0.005):
     direction = 1 if up else -1
-    foot_position_FR['z'] += direction * delta
+    config.FR_TUNE['z'] += direction * delta
     _applyFootPositionFR()
 def adjustBL_Z(up=True, delta=0.005):
     direction = 1 if up else -1
-    foot_position_BL['z'] += direction * delta
+    config.BL_TUNE['z'] += direction * delta
     _applyFootPositionBL()
 
 def _applyFootPosition():
-    x, y, z = foot_position_FL['x'], foot_position_FL['y'], foot_position_FL['z']
+    x, y, z = config.FL_TUNE['x'], config.FL_TUNE['y'], config.FL_TUNE['z']
     move_leg('FL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionBR():
-    x, y, z = foot_position_BR['x'], foot_position_BR['y'], foot_position_BR['z']
+    x, y, z = config.BR_TUNE['x'], config.BR_TUNE['y'], config.BR_TUNE['z']
     move_leg('BR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionFR():
-    x, y, z = foot_position_FR['x'], foot_position_FR['y'], foot_position_FR['z']
+    x, y, z = config.FR_TUNE['x'], config.FR_TUNE['y'], config.FR_TUNE['z']
     move_leg('FR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
 def _applyFootPositionBL():
-    x, y, z = foot_position_BL['x'], foot_position_BL['y'], foot_position_BL['z']
+    x, y, z = config.BL_TUNE['x'], config.BL_TUNE['y'], config.BL_TUNE['z']
     move_leg('BL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")

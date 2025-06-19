@@ -27,7 +27,7 @@ import logging # import logging for debugging
 
 from utilities.mathematics import interpret_intensity # import intensity interpretation function
 import utilities.config as config # import leg positions config
-import movement.fundamental_movement as fundamental_movement # import fundamental movement function to move legs to positions
+from movement.fundamental_movement import move_foot_to_pos # import fundamental movement function to move foot to pos
 
 
 
@@ -50,7 +50,7 @@ def trot_forward(intensity): # function to trot forward
 
     except Exception as e: # if interpretation fails...
 
-        logging.error(f"(manual_walking.py): Failed to interpret intensity: {e}\n")
+        logging.error(f"(forward.py): Failed to interpret intensity in trot_forward(): {e}\n")
         return
 
     ##### move legs forward #####
@@ -68,7 +68,7 @@ def trot_forward(intensity): # function to trot forward
 
     except Exception as e: # if gait update fails...
 
-        logging.error(f"(manual_walking.py): Failed to update leg gait: {e}\n")
+        logging.error(f"(forward.py): Failed to gait-cycle legs in trot_forward(): {e}\n")
 
 
 ########## UPDATE LEG GAITS ##########
@@ -98,21 +98,21 @@ def update_leg_gait(leg_id, state, speed, acceleration, stride_scalar):
     if gait_state['phase'] == 'stance': # if leg is in stance phase...
 
         try: # try to move leg to swing position
-            fundamental_movement.move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
+            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
             gait_state['phase'] = 'swing'
 
         except Exception as e: # if movement fails...
-            logging.error(f"(manual_walking.py): Failed to move leg {leg_id} to swing position: {e}\n")
+            logging.error(f"(forward.py): Failed to move leg {leg_id} to swing position: {e}\n")
             return
 
     else: # if leg is in swing phase...
 
         try: # try to move leg to stance position
-            fundamental_movement.move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False) #TODO enable bezier once fixed
+            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False) #TODO enable bezier once fixed
             gait_state['phase'] = 'stance'
 
         except Exception as e: # if movement fails...
-            logging.error(f"(manual_walking.py): Failed to move leg {leg_id} to stance position: {e}\n")
+            logging.error(f"(forward.py): Failed to move leg {leg_id} to stance position: {e}\n")
             return
 
     gait_state['returned_to_neutral'] = False # reset neutral position flag

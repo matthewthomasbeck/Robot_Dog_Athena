@@ -134,12 +134,14 @@ def runRobot():  # central function that runs the robot
 
     ##### run robotic logic #####
 
-    try: # try to put the robot in a neutral standing position
+    try: # try to run robot startup sequence
 
-        set_leg_neutral('FL')
-        set_leg_neutral('BR')
-        set_leg_neutral('FR')
-        set_leg_neutral('BL')
+        squatting_position(1)
+        time.sleep(3)
+        tippytoes_position(1)
+        time.sleep(3)
+        neutral_position(1)
+        time.sleep(3)
         IS_NEUTRAL = True # set IS_NEUTRAL to True
         time.sleep(3) # wait for 3 seconds
 
@@ -355,10 +357,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
                 if IS_NEUTRAL == False:
 
-                    set_leg_neutral('FL')
-                    set_leg_neutral('BR')
-                    set_leg_neutral('FR')
-                    set_leg_neutral('BL')
+                    neutral_position(10)
                     IS_NEUTRAL = True
 
             except Exception as e:
@@ -517,10 +516,7 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
 
         elif key == 'n':
             if not IS_NEUTRAL:
-                set_leg_neutral('FL')
-                set_leg_neutral('BR')
-                set_leg_neutral('FR')
-                set_leg_neutral('BL')
+                neutral_position(10)
                 IS_NEUTRAL = True
 
     else:  # Normal operation mode
@@ -571,10 +567,7 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
 
         elif key == 'n':  # Neutral position
             if not IS_NEUTRAL:
-                set_leg_neutral('FL')
-                set_leg_neutral('BR')
-                set_leg_neutral('FR')
-                set_leg_neutral('BL')
+                neutral_position(10)
                 IS_NEUTRAL = True
 
     return IS_NEUTRAL, CURRENT_LEG  # Return updated neutral standing state
