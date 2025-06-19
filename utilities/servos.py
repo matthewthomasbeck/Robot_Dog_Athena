@@ -25,6 +25,7 @@ import logging # import logging for debugging
 ##### import necessary functions #####
 
 from utilities.maestro import * # import maestro initialization functions
+from utilities.config import SERVO_CONFIG # import servo configuration data
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -32,37 +33,6 @@ from utilities.maestro import * # import maestro initialization functions
 ##### create maestro object #####
 
 MAESTRO = createMaestroConnection() # create maestro connection
-
-##### set dictionary of linkages and their lengths #####
-
-LINK_CONFIG = { # dictionary of leg linkages
-
-    'HIP_OFFSET': 0.0485394, # centerline to hip servo
-    'HIP_TO_LEG_PLANE': 0.0290068, # axis to leg plane
-    'FEMUR_LENGTH': 0.11, # femur length
-    'TIBIA_LENGTH': 0.125, # tibia length
-}
-
-##### set dictionary of servos and their ranges #####
-
-SERVO_CONFIG = { # dictionary of leg configurations
-
-    'FL': {'hip': {'servo': 3, 'FULL_BACK': 1236.50, 'FULL_FRONT': 1892.25, 'NEUTRAL': 1564.375, 'CUR_POS': 1564.375, 'DIR': 0, 'MOVED': False},
-           'upper': {'servo': 5, 'FULL_BACK': 1921.50, 'FULL_FRONT': 1266.00, 'NEUTRAL': 1593.75, 'CUR_POS': 1593.75, 'DIR': 0, 'MOVED': False},
-           'lower': {'servo': 4, 'FULL_BACK': 1872.75, 'FULL_FRONT': 1148.50, 'NEUTRAL': 1510.625, 'CUR_POS': 1510.625, 'DIR': 0, 'MOVED': False}},
-
-    'FR': {'hip': {'servo': 2, 'FULL_BACK': 1613.25, 'FULL_FRONT': 992.00, 'NEUTRAL': 1302.625, 'CUR_POS': 1302.625, 'DIR': 0, 'MOVED': False},
-           'upper': {'servo': 1, 'FULL_BACK': 1310.00, 'FULL_FRONT': 1921.50, 'NEUTRAL': 1615.75, 'CUR_POS': 1615.75, 'DIR': 0, 'MOVED': False},
-           'lower': {'servo': 0, 'FULL_BACK': 1231.75, 'FULL_FRONT': 2000.00, 'NEUTRAL': 1615.875, 'CUR_POS': 1615.875, 'DIR': 0, 'MOVED': False}},
-
-    'BL': {'hip': {'servo': 8, 'FULL_BACK': 1623.00, 'FULL_FRONT': 1036.00, 'NEUTRAL': 1329.5, 'CUR_POS': 1329.5, 'DIR': 0, 'MOVED': False},
-           'upper': {'servo': 7, 'FULL_BACK': 2000.00, 'FULL_FRONT': 1354.00, 'NEUTRAL': 1777.0, 'CUR_POS': 1777.0, 'DIR': 0, 'MOVED': False},
-           'lower': {'servo': 6, 'FULL_BACK': 2000.00, 'FULL_FRONT': 1138.75, 'NEUTRAL': 1569.375, 'CUR_POS': 1569.375, 'DIR': 0, 'MOVED': False}},
-
-    'BR': {'hip': {'servo': 11, 'FULL_BACK': 1261.00, 'FULL_FRONT': 1848.25, 'NEUTRAL': 1554.625, 'CUR_POS': 1554.625, 'DIR': 0, 'MOVED': False},
-           'upper': {'servo': 10, 'FULL_BACK': 1065.25, 'FULL_FRONT': 1701.50, 'NEUTRAL': 1283.375, 'CUR_POS': 1283.375, 'DIR': 0, 'MOVED': False},
-           'lower': {'servo': 9, 'FULL_BACK': 1221.75, 'FULL_FRONT': 2000.00, 'NEUTRAL': 1610.875, 'CUR_POS': 1610.875, 'DIR': 0, 'MOVED': False}},
-}
 
 
 

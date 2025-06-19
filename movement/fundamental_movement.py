@@ -23,6 +23,7 @@
 ##### import necessary functions #####
 
 import utilities.servos as initialize_servos # import servo logic functions
+from utilities.config import * # import configuration data for servos and link lengths
 from utilities.mathematics import * # import all mathematical functions
 from movement.standing.standing_inplace import neutral_standing_position # import neutral standing position function
 
@@ -31,7 +32,7 @@ from movement.standing.standing_inplace import neutral_standing_position # impor
 
 ##### initialize kinematics #####
 
-k = Kinematics(initialize_servos.LINK_CONFIG) # use link lengths to initialize kinematic functions
+k = Kinematics(LINK_CONFIG) # use link lengths to initialize kinematic functions
 
 ##### define servos #####
 
