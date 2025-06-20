@@ -154,7 +154,7 @@ def runRobot():  # central function that runs the robot
     try: # try to run the main robotic process
 
         # Detect mode and maybe start socket server
-        #MODE = detect_ssh_and_prompt_mode() # TODO comment this out whenever I don't need to tune
+        MODE = detect_ssh_and_prompt_mode() # TODO comment this out whenever I don't need to tune
 
         if MODE.startswith("ssh"):
             server = setup_unix_socket()
@@ -456,7 +456,7 @@ ADJUSTMENT_FUNCS = {
 
 ##### keyboard commands for tuning mode and normal operation #####
 
-def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode=False):
+def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=10, tune_mode=False):
 
     if tune_mode:
 
@@ -502,16 +502,6 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
         elif key == '4': # set current leg to back right
 
             CURRENT_LEG = 'BR'  # Set current leg to back right
-            IS_NEUTRAL = False
-
-        elif key == 'r': # right-leading swing
-
-
-            IS_NEUTRAL = False
-
-        elif key == 'l': # left-leading swing
-
-
             IS_NEUTRAL = False
 
         elif key == 'n':
@@ -563,6 +553,10 @@ def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode
 
         elif key == 'k':  # Tilt down
             # adjustBL_Y(left=True)
+            IS_NEUTRAL = False
+
+        elif key == ' ':  # Lie down
+            squatting_position(1)
             IS_NEUTRAL = False
 
         elif key == 'n':  # Neutral position

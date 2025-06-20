@@ -57,14 +57,12 @@ def trot_forward(intensity): # function to trot forward
 
     try: # try to update leg gait
 
-        set_leg_phase('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.06)
-        set_leg_phase('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.06)
-        set_leg_phase('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.06)
-        set_leg_phase('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
-        time.sleep(.06)
+        set_leg_phase('BR', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
+        set_leg_phase('FL', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
+        time.sleep(1)
+        set_leg_phase('BL', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
+        set_leg_phase('FR', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
+        time.sleep(1)
 
     except Exception as e: # if gait update fails...
 
@@ -108,7 +106,7 @@ def set_leg_phase(leg_id, state, speed, acceleration, stride_scalar):
     else: # if leg is in swing phase...
 
         try: # try to move leg to stance position
-            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False) #TODO enable bezier once fixed
+            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=True) #TODO enable bezier once fixed
             gait_state['phase'] = 'stance'
 
         except Exception as e: # if movement fails...
