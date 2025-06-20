@@ -57,13 +57,13 @@ def trot_forward(intensity): # function to trot forward
 
     try: # try to update leg gait
 
-        update_leg_gait('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        set_leg_phase('FL', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
-        update_leg_gait('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        set_leg_phase('BR', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
-        update_leg_gait('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        set_leg_phase('FR', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
-        update_leg_gait('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
+        set_leg_phase('BL', {'FORWARD': True}, speed, acceleration, stride_scalar)
         time.sleep(.06)
 
     except Exception as e: # if gait update fails...
@@ -71,9 +71,9 @@ def trot_forward(intensity): # function to trot forward
         logging.error(f"(forward.py): Failed to gait-cycle legs in trot_forward(): {e}\n")
 
 
-########## UPDATE LEG GAITS ##########
+########## SET LEG PHASE ##########
 
-def update_leg_gait(leg_id, state, speed, acceleration, stride_scalar):
+def set_leg_phase(leg_id, state, speed, acceleration, stride_scalar):
 
     ##### gait pre-check #####
 
