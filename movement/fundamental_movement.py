@@ -62,12 +62,12 @@ lower_leg_servos = { # define lower leg servos
 
 ########## MOVE FOOT FUNCTION ##########
 
-def move_foot_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier=False):
+def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier=False):
     if use_bezier:
-        p0 = get_neutral_positions(leg_id, stride_scalar)
+        p0 = get_neutral_positions(leg_id)
         p2 = {
-            'x': pos['x'] * stride_scalar,
-            'y': pos['y'] * stride_scalar,
+            'x': pos['x'],
+            'y': pos['y'],
             'z': pos['z']
         }
         p1 = {
@@ -90,8 +90,8 @@ def move_foot_to_pos(leg_id, pos, speed, acceleration, stride_scalar, use_bezier
     else:
         move_leg(
             leg_id,
-            x=pos['x'] * stride_scalar,
-            y=pos['y'] * stride_scalar,
+            x=pos['x'],
+            y=pos['y'],
             z=pos['z'],
             speed=speed,
             acceleration=acceleration
@@ -108,8 +108,12 @@ def move_leg(leg_id, x, y, z, speed, acceleration):
                                      [hip_angle, upper_angle, lower_angle],
                                      [hip_neutral, upper_neutral, lower_neutral]):
 
-        joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
+        # TODO uncomment this if I ever need lower servos to move more quickly
+        #joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
+        #joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
+
+        joint_speed = speed
+        joint_acceleration = acceleration
 
         servo_data = initialize_servos.SERVO_CONFIG[leg_id][joint]
         is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
@@ -119,7 +123,7 @@ def move_leg(leg_id, x, y, z, speed, acceleration):
 
 ##### GET NEUTRAL POSITIONS #####
 
-def get_neutral_positions(leg_id, stride_scalar):
+def get_neutral_positions(leg_id):
 
     NEUTRAL_POSITIONS = {
         'FL': config.FL_NEUTRAL,
@@ -131,8 +135,8 @@ def get_neutral_positions(leg_id, stride_scalar):
     neutral = NEUTRAL_POSITIONS[leg_id]
 
     return {
-        'x': neutral['x'] * stride_scalar,
-        'y': neutral['y'] * stride_scalar,
+        'x': neutral['x'],
+        'y': neutral['y'],
         'z': neutral['z']
     }
 

@@ -161,7 +161,7 @@ def runRobot():  # central function that runs the robot
             logging.info("Waiting for SSH control client to connect to socket...\n")
             conn, _ = server.accept()
             conn.setblocking(True)
-            logging.info("SSH client connected.")
+            logging.info("SSH client connected.\n")
 
         while True:
             # Read chunk of data from the camera process

@@ -46,7 +46,7 @@ def neutral_position(intensity): # function to set all legs to squatting positio
 
     try: # try to calculate intensity of the movement
 
-        speed, acceleration, _ = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
 
     except Exception as e: # if interpretation fails...
 
@@ -93,7 +93,6 @@ def set_leg_neutral(leg_id, state, speed, acceleration): # function to return le
                 neutral_position,
                 speed,
                 acceleration,
-                stride_scalar=1,
                 use_bezier=False
             )
 
@@ -113,7 +112,7 @@ def tippytoes_position(intensity): # function to set all legs to tippytoes posit
 
     try: # try to calculate intensity of the movement
 
-        speed, acceleration, _ = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
 
     except Exception as e: # if interpretation fails...
 
@@ -124,11 +123,11 @@ def tippytoes_position(intensity): # function to set all legs to tippytoes posit
 
     try: # try to update leg tippytoes
 
-        set_leg_tippytoes('FL', {'FORWARD': True}, speed, acceleration)
-        set_leg_tippytoes('FR', {'FORWARD': True}, speed, acceleration)
-        time.sleep(0.5) # set timer so it doesn't fall over
         set_leg_tippytoes('BR', {'FORWARD': True}, speed, acceleration)
         set_leg_tippytoes('BL', {'FORWARD': True}, speed, acceleration)
+        time.sleep(0.1)
+        set_leg_tippytoes('FL', {'FORWARD': True}, speed, acceleration)
+        set_leg_tippytoes('FR', {'FORWARD': True}, speed, acceleration)
 
     except Exception as e: # if gait update fails...
 
@@ -161,7 +160,6 @@ def set_leg_tippytoes(leg_id, state, speed, acceleration): # function to move le
                 tippytoes_position,
                 speed,
                 acceleration,
-                stride_scalar=1,
                 use_bezier=False
             )
 
@@ -182,7 +180,7 @@ def squatting_position(intensity): # function to set all legs to squatting posit
 
     try: # try to calculate intensity of the movement
 
-        speed, acceleration, _ = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
 
     except Exception as e: # if interpretation fails...
 
@@ -229,7 +227,6 @@ def set_leg_squatting(leg_id, state, speed, acceleration): # function to move le
                 squatting_position,
                 speed,
                 acceleration,
-                stride_scalar=1,
                 use_bezier=False
             )
 

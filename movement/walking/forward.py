@@ -46,7 +46,7 @@ def trot_forward(intensity): # function to trot forward
 
     try: # try to calculate intensity of the trot
 
-        speed, acceleration, stride_scalar = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
 
     except Exception as e: # if interpretation fails...
 
@@ -57,11 +57,10 @@ def trot_forward(intensity): # function to trot forward
 
     try: # try to update leg gait
 
-        set_leg_phase('BR', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
-        set_leg_phase('FL', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
-        time.sleep(1)
-        set_leg_phase('BL', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
-        set_leg_phase('FR', {'FORWARD': True}, speed, acceleration, stride_scalar=1)
+        set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
+        set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
+        set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
+        set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
         time.sleep(1)
 
     except Exception as e: # if gait update fails...
@@ -71,7 +70,7 @@ def trot_forward(intensity): # function to trot forward
 
 ########## SET LEG PHASE ##########
 
-def set_leg_phase(leg_id, state, speed, acceleration, stride_scalar):
+def set_leg_phase(leg_id, state, speed, acceleration):
 
     ##### gait pre-check #####
 
@@ -96,7 +95,7 @@ def set_leg_phase(leg_id, state, speed, acceleration, stride_scalar):
     if gait_state['phase'] == 'stance': # if leg is in stance phase...
 
         try: # try to move leg to swing position
-            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=False)
+            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=False)
             gait_state['phase'] = 'swing'
 
         except Exception as e: # if movement fails...
@@ -106,7 +105,7 @@ def set_leg_phase(leg_id, state, speed, acceleration, stride_scalar):
     else: # if leg is in swing phase...
 
         try: # try to move leg to stance position
-            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, stride_scalar, use_bezier=True) #TODO enable bezier once fixed
+            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=True) #TODO enable bezier once fixed
             gait_state['phase'] = 'stance'
 
         except Exception as e: # if movement fails...

@@ -91,25 +91,20 @@ def interpret_intensity(intensity): # function to interpret intensity
         if intensity == 1 or intensity == 2:
             speed = int(((16383 / 5) / 10) * intensity)
             acceleration = int(((255 / 5) / 10) * intensity)
-            stride_scalar = 0.2  # default stride scalar for high intensity
         elif intensity == 3 or intensity == 4:
             speed = int(((16383 / 4) / 10) * intensity)
             acceleration = int(((255 / 4) / 10) * intensity)
-            stride_scalar = 0.4  # default stride scalar for high intensity
         elif intensity == 5 or intensity == 6:
             speed = int(((16383 / 3) / 10) * intensity)
             acceleration = int(((255 / 3) / 10) * intensity)
-            stride_scalar = 0.6  # default stride scalar for high intensity
         elif intensity == 7 or intensity == 8:
             speed = int(((16383 / 2) / 10) * intensity)
             acceleration = int(((255 / 2) / 10) * intensity)
-            stride_scalar = 0.8  # default stride scalar for high intensity
         else:
             speed = int((16383 / 10) * intensity)
             acceleration = int((255 / 10) * intensity)
-            stride_scalar = 1.0 # default stride scalar for high intensity
 
-        return speed, acceleration, stride_scalar # return movement parameters
+        return speed, acceleration # return movement parameters
 
     except Exception as e: # if there is an error interpreting intensity...
 
