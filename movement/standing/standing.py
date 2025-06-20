@@ -136,41 +136,41 @@ def tippytoes_position(intensity): # function to set all legs to tippytoes posit
 
 ########## SET LEG TIPPYTOES ##########
 
-def set_leg_tippytoes(leg_id, state, speed, acceleration):
-
-    ##### gait pre-check #####
-
-    if not state.get('FORWARD', False): # if leg is moving forward...
-        return  # skip if not moving forward
+def set_leg_tippytoes(leg_id, state, speed, acceleration): # function to move leg to tippytoes
 
     ##### set variables #####
 
-    tippytoes_positions = {
-        'FL': config.FL_TIPPYTOES, 'FR': config.FR_TIPPYTOES, 'BL': config.BL_TIPPYTOES, 'BR': config.BR_TIPPYTOES
-    }
     gait_states = {
         'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
     }
+    tippytoes_positions = {
+        'FL': config.FL_TIPPYTOES, 'FR': config.FR_TIPPYTOES, 'BL': config.BL_TIPPYTOES, 'BR': config.BR_TIPPYTOES
+    }
     gait_state = gait_states[leg_id]
-    current_phase = gait_state.get('phase')
-    tippytoes_pos = tippytoes_positions[leg_id]
-
-    ##### check if already at tippytoes #####
-
-    if gait_state.get('last_position') == 'tippytoes':
-        return  # skip if already at tippytoes
+    tippytoes_position = tippytoes_positions[leg_id]
 
     ##### move leg to tippytoes #####
 
-    try: # try to move leg to tippytoes position
-        move_foot_to_pos(leg_id, tippytoes_pos, speed, acceleration, stride_scalar=1, use_bezier=False)
-        gait_state['last_position'] = 'tippytoes'
-        gait_state['phase'] = 'stance'  # tippytoes is a grounded stance
-        gait_state['returned_to_neutral'] = False
+    if gait_state.get('last_position') != 'tippytoes': # if leg is not already at tippytoes...
 
-    except Exception as e: # if movement fails...
-        logging.error(f"(standing.py): Failed to move leg {leg_id} to tippytoes position: {e}\n")
-        return
+        try: # try to move leg to tippytoes position
+
+            move_foot_to_pos(
+                leg_id,
+                tippytoes_position,
+                speed,
+                acceleration,
+                stride_scalar=1,
+                use_bezier=False
+            )
+
+            gait_state['last_position'] = 'tippytoes'
+            gait_state['returned_to_neutral'] = False
+
+        except Exception as e: # if movement fails...
+
+            logging.error(f"(standing.py): Failed to move leg {leg_id} to tippytoes position: {e}\n")
+            return
 
 
 ########## SQUATTING POSITION ##########
@@ -204,38 +204,38 @@ def squatting_position(intensity): # function to set all legs to squatting posit
 
 ########## SET LEG SQUATTING ##########
 
-def set_leg_squatting(leg_id, state, speed, acceleration):
-
-    ##### gait pre-check #####
-
-    if not state.get('FORWARD', False): # if leg is moving forward...
-        return  # skip if not moving forward
+def set_leg_squatting(leg_id, state, speed, acceleration): # function to move leg to squatting position
 
     ##### set variables #####
 
-    squatting_positions = {
-        'FL': config.FL_SQUATTING, 'FR': config.FR_SQUATTING, 'BL': config.BL_SQUATTING, 'BR': config.BR_SQUATTING
-    }
     gait_states = {
         'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
     }
+    squatting_positions = {
+        'FL': config.FL_SQUATTING, 'FR': config.FR_SQUATTING, 'BL': config.BL_SQUATTING, 'BR': config.BR_SQUATTING
+    }
     gait_state = gait_states[leg_id]
-    current_phase = gait_state.get('phase')
-    squatting_pos = squatting_positions[leg_id]
-
-    ##### check if already squatting #####
-
-    if gait_state.get('last_position') == 'squatting':
-        return  # skip if already squatting
+    squatting_position = squatting_positions[leg_id]
 
     ##### move leg to squatting #####
 
-    try: # try to move leg to squatting position
-        move_foot_to_pos(leg_id, squatting_pos, speed, acceleration, stride_scalar=1, use_bezier=False)
-        gait_state['last_position'] = 'squatting'
-        gait_state['phase'] = 'stance'  # squatting is a grounded stance
-        gait_state['returned_to_neutral'] = False
+    if gait_state.get('last_position') != 'squatting': # if leg is not already squatting...
 
-    except Exception as e: # if movement fails...
-        logging.error(f"(standing.py): Failed to move leg {leg_id} to squatting position: {e}\n")
-        return
+        try: # try to move leg to squatting position
+
+            move_foot_to_pos(
+                leg_id,
+                squatting_position,
+                speed,
+                acceleration,
+                stride_scalar=1,
+                use_bezier=False
+            )
+
+            gait_state['last_position'] = 'squatting'
+            gait_state['returned_to_neutral'] = False
+
+        except Exception as e: # if movement fails...
+
+            logging.error(f"(standing.py): Failed to move leg {leg_id} to squatting position: {e}\n")
+            return
