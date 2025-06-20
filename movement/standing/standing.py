@@ -46,7 +46,7 @@ def neutral_position(intensity): # function to set all legs to squatting positio
 
     try: # try to calculate intensity of the movement
 
-        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity)
 
     except Exception as e: # if interpretation fails...
 
@@ -106,13 +106,13 @@ def set_leg_neutral(leg_id, state, speed, acceleration): # function to return le
 
 ########## TIPPYTOES POSITION ##########
 
-def tippytoes_position(intensity): # function to set all legs to tippytoes position
+def tippytoes_position(intensity): # function to set all legs to tippytoes position TODO TUNE ME!
 
     ##### get intensity #####
 
     try: # try to calculate intensity of the movement
 
-        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity)
 
     except Exception as e: # if interpretation fails...
 
@@ -123,11 +123,11 @@ def tippytoes_position(intensity): # function to set all legs to tippytoes posit
 
     try: # try to update leg tippytoes
 
-        set_leg_tippytoes('BR', {'FORWARD': True}, speed, acceleration)
-        set_leg_tippytoes('BL', {'FORWARD': True}, speed, acceleration)
-        time.sleep(0.1)
         set_leg_tippytoes('FL', {'FORWARD': True}, speed, acceleration)
         set_leg_tippytoes('FR', {'FORWARD': True}, speed, acceleration)
+        time.sleep(0.5)
+        set_leg_tippytoes('BR', {'FORWARD': True}, speed, acceleration)
+        set_leg_tippytoes('BL', {'FORWARD': True}, speed, acceleration)
 
     except Exception as e: # if gait update fails...
 
@@ -180,7 +180,7 @@ def squatting_position(intensity): # function to set all legs to squatting posit
 
     try: # try to calculate intensity of the movement
 
-        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity)
 
     except Exception as e: # if interpretation fails...
 

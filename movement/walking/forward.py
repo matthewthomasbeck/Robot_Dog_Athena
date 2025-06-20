@@ -23,6 +23,7 @@
 import time # import time library for time functions
 import logging # import logging for debugging
 
+from movement.standing.standing import tippytoes_position
 ##### import necessary functions #####
 
 from utilities.mathematics import interpret_intensity # import intensity interpretation function
@@ -42,11 +43,18 @@ from movement.fundamental_movement import move_foot_to_pos # import fundamental 
 
 def trot_forward(intensity): # function to trot forward
 
+    ##### set variables #####
+
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE,
+        'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+
     ##### get intensity #####
 
     try: # try to calculate intensity of the trot
 
-        speed, acceleration = interpret_intensity(intensity) # TODO experiment with timing difference
+        speed, acceleration = interpret_intensity(intensity)
 
     except Exception as e: # if interpretation fails...
 
@@ -57,11 +65,21 @@ def trot_forward(intensity): # function to trot forward
 
     try: # try to update leg gait
 
-        set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
-        set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
-        set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
-        set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
-        time.sleep(1)
+        if gait_states['FL']['phase'] == 'swing': # if front left about to push...
+
+            set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
+
+        elif gait_states['FR']['phase'] == 'swing': # if front right about to push...
+
+            set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
+
+        time.sleep(0.05) # wait for legs to reach position
 
     except Exception as e: # if gait update fails...
 
@@ -71,45 +89,53 @@ def trot_forward(intensity): # function to trot forward
 ########## SET LEG PHASE ##########
 
 def set_leg_phase(leg_id, state, speed, acceleration):
-
-    ##### gait pre-check #####
-
-    if not state.get('FORWARD', False): # if leg is moving forward...
-        return  # skip if not moving forward
-
-    ##### set variables #####
+    if not state.get('FORWARD', False):
+        return
 
     gait_states = {
-        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE,
+        'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
     }
     swing_positions = {
-        'FL': config.FL_SWING, 'FR': config.FR_SWING, 'BL': config.BL_SWING, 'BR': config.BR_SWING
+        'FL': config.FL_SWING, 'FR': config.FR_SWING,
+        'BL': config.BL_SWING, 'BR': config.BR_SWING
+    }
+    touchdown_positions = {
+        'FL': config.FL_TOUCHDOWN, 'FR': config.FR_TOUCHDOWN,
+        'BL': config.BL_TOUCHDOWN, 'BR': config.BR_TOUCHDOWN
+    }
+    midstance_positions = {
+        'FL': config.FL_MIDSTANCE, 'FR': config.FR_MIDSTANCE,
+        'BL': config.BL_MIDSTANCE, 'BR': config.BR_MIDSTANCE
+    }
+    tippytoes_positions = {
+        'FL': config.FL_TIPPYTOES, 'FR': config.FR_TIPPYTOES,
+        'BL': config.BL_TIPPYTOES, 'BR': config.BR_TIPPYTOES
     }
     stance_positions = {
-        'FL': config.FL_STANCE, 'FR': config.FR_STANCE, 'BL': config.BL_STANCE, 'BR': config.BR_STANCE
+        'FL': config.FL_STANCE, 'FR': config.FR_STANCE,
+        'BL': config.BL_STANCE, 'BR': config.BR_STANCE
     }
+
     gait_state = gait_states[leg_id]
+    phase = gait_state['phase']
 
-    ##### update leg gait #####
-
-    if gait_state['phase'] == 'stance': # if leg is in stance phase...
-
-        try: # try to move leg to swing position
-            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=False)
+    try:
+        if phase == 'stance':
+            # Begin new cycle: lift foot into swing
+            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=True)
+            time.sleep(0.1)
+            move_foot_to_pos(leg_id, touchdown_positions[leg_id], speed, acceleration, use_bezier=True)
             gait_state['phase'] = 'swing'
 
-        except Exception as e: # if movement fails...
-            logging.error(f"(forward.py): Failed to move leg {leg_id} to swing position: {e}\n")
-            return
-
-    else: # if leg is in swing phase...
-
-        try: # try to move leg to stance position
-            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=True) #TODO enable bezier once fixed
+        elif phase == 'swing':
+            # Final phase: move foot into full stance
+            move_foot_to_pos(leg_id, midstance_positions[leg_id], speed, acceleration, use_bezier=False)
+            time.sleep(0.1)
+            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=False)
             gait_state['phase'] = 'stance'
 
-        except Exception as e: # if movement fails...
-            logging.error(f"(forward.py): Failed to move leg {leg_id} to stance position: {e}\n")
-            return
+        gait_state['returned_to_neutral'] = False
 
-    gait_state['returned_to_neutral'] = False # reset neutral position flag
+    except Exception as e:
+        logging.error(f"(forward.py): Failed gait move for {leg_id} in phase {phase}: {e}\n")

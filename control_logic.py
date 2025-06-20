@@ -138,8 +138,8 @@ def runRobot():  # central function that runs the robot
 
         squatting_position(1)
         time.sleep(3)
-        tippytoes_position(1)
-        time.sleep(3)
+        #tippytoes_position(1)
+        #time.sleep(3)
         neutral_position(1)
         time.sleep(3)
         IS_NEUTRAL = True # set IS_NEUTRAL to True

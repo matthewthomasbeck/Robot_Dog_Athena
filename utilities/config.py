@@ -88,43 +88,71 @@ BL_GAIT_STATE = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutra
 
 ########## FRONT LEFT ##########
 
-FL_SQUATTING = {'x': 0.0400, 'y': -0.0065, 'z': 0.0250}
+##### standing positions #####
+
+FL_SQUATTING = {'x': 0.0400, 'y': -0.0065, 'z': 0.0250} # x is _____, y is hip up/down, z is _____
 FL_NEUTRAL = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
 FL_TIPPYTOES = {'x': 0.0800, 'y': -0.0065, 'z': -0.1500}
-FL_SWING = {'x': 0.0300, 'y': 0.0035,'z': -0.0700} # good
-FL_STANCE = {'x': -0.0750, 'y': -0.0015, 'z': -0.1200} # TODO good
+
+##### walking positions #####
+
+FL_SWING = {'x': 0.0150, 'y': 0.0035, 'z': -0.0200} # good x=0.0150, y=0.0035, z=-0.0200
+FL_TOUCHDOWN = {'x': -0.0000, 'y': 0.0065,'z': -0.0800}
+FL_MIDSTANCE = {'x': 0.0000, 'y': -0.0165, 'z': -0.1100} # good x=0.0000, y=-0.0165, z=-0.1100
+FL_STANCE = {'x': -0.0600, 'y': -0.0065, 'z': -0.1100}
 
 
 ########## FRONT RIGHT ##########
 
+##### standing positions #####
+
 FR_SQUATTING = {'x': 0.1600, 'y': 0.0035, 'z': -0.1000}
 FR_NEUTRAL = {'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
 FR_TIPPYTOES = {'x': -0.0150, 'y': -0.0015, 'z': -0.0050}
-FR_SWING = {'x': -0.0850, 'y': -0.0015, 'z': -0.0700} # TODO good
-FR_STANCE = {'x': 0.0150, 'y': -0.0015, 'z': -0.0450} # good
+
+##### walking positions #####
+
+FR_SWING = {'x': -0.0550, 'y': -0.0815, 'z': -0.1950} # good x=-0.0550, y=-0.0815, z=-0.1950
+FR_TOUCHDOWN = {'x': -0.0600, 'y': 0.0085, 'z': -0.0900}
+FR_MIDSTANCE = {'x': -0.0350, 'y': -0.0015, 'z': -0.0600} # good x=-0.0350, y=-0.0015, z=-0.0600
+FR_STANCE = {'x': 0.0100, 'y': 0.0085, 'z': -0.0350} # x=0.0100, y=-0.0065, z=-0.0350
 
 
 ########## BACK LEFT ##########
 
+##### standing positions #####
+
 BL_SQUATTING = {'x': 0.0100, 'y': 0.0015, 'z': 0.0000}
 BL_NEUTRAL = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
 BL_TIPPYTOES = {'x': 0.0550, 'y': 0.0115, 'z': -0.1400}
-BL_SWING = {'x': 0.0250, 'y': -0.0035, 'z': -0.0650} # TODO good
-BL_STANCE = {'x': -0.1250, 'y': -0.0035, 'z': 0.0100} # good
+
+##### walking positions #####
+
+BL_SWING = {'x': 0.0150, 'y': -0.0035, 'z': -0.0300} # good x=0.0150, y=-0.0035, z=-0.0300
+BL_TOUCHDOWN = {'x': 0.0050, 'y': 0.0115, 'z': -0.0750}
+BL_MIDSTANCE = {'x': 0.0000, 'y': 0.0165, 'z': -0.1150} # good x=0.0000, y=0.0165, z=-0.1150
+BL_STANCE = {'x': -0.1300, 'y': 0.0215, 'z': 0.0100}
 
 
 ########## BACK RIGHT ##########
 
+##### standing positions #####
+
 BR_SQUATTING = {'x': 0.1950, 'y': -0.0185, 'z': -0.1150}
 BR_NEUTRAL = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
 BR_TIPPYTOES = {'x': -0.0100, 'y': 0.0015, 'z': -0.0100}
-BR_SWING = {'x': -0.0800, 'y': 0.0115, 'z': -0.0500} # good
-BR_STANCE = {'x': 0.0100, 'y': 0.0015, 'z': -0.0350} # TODO good
+
+##### walking positions #####
+
+BR_SWING = {'x': -0.0850, 'y': 0.0265, 'z': -0.1000} # good x=-0.0850, y=0.0265, z=-0.1000
+BR_TOUCHDOWN = {'x': -0.0550, 'y': -0.0135, 'z': -0.0650}
+BR_MIDSTANCE = {'x': -0.0250, 'y': -0.0085, 'z': -0.0400} # good x=-0.0250, y=-0.0085, z=-0.0400
+BR_STANCE = {'x': 0.0100, 'y': 0.0035, 'z': -0.0200}
 
 
 ########## LEG TUNE CONFIG ##########
 
-FL_TUNE = FL_SWING #{'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
-FR_TUNE = FR_STANCE #{'x': 0.0100, 'y': -0.0015, 'z': -0.1050}
-BL_TUNE = BL_STANCE #{'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
-BR_TUNE = BR_SWING #{'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
+FL_TUNE = FL_TOUCHDOWN
+FR_TUNE = FR_STANCE
+BL_TUNE = BL_STANCE
+BR_TUNE = BR_TOUCHDOWN
