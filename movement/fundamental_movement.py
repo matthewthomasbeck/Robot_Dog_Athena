@@ -109,11 +109,11 @@ def move_leg(leg_id, x, y, z, speed, acceleration):
                                      [hip_neutral, upper_neutral, lower_neutral]):
 
         # TODO uncomment this if I ever need lower servos to move more quickly
-        joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
+        #joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
+        #joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
 
-        #joint_speed = speed
-        #joint_acceleration = acceleration
+        joint_speed = speed
+        joint_acceleration = acceleration
 
         servo_data = initialize_servos.SERVO_CONFIG[leg_id][joint]
         is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
@@ -197,16 +197,16 @@ def adjustBL_Z(up=True, delta=0.005):
 def _applyFootPosition():
     x, y, z = config.FL_TUNE['x'], config.FL_TUNE['y'], config.FL_TUNE['z']
     move_leg('FL', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → FL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+    logging.info(f"TUNING → FL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
 def _applyFootPositionBR():
     x, y, z = config.BR_TUNE['x'], config.BR_TUNE['y'], config.BR_TUNE['z']
     move_leg('BR', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → BR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+    logging.info(f"TUNING → BR foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
 def _applyFootPositionFR():
     x, y, z = config.FR_TUNE['x'], config.FR_TUNE['y'], config.FR_TUNE['z']
     move_leg('FR', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → FR foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+    logging.info(f"TUNING → FR foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
 def _applyFootPositionBL():
     x, y, z = config.BL_TUNE['x'], config.BL_TUNE['y'], config.BL_TUNE['z']
     move_leg('BL', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → BL foot at: x={x:.4f}, y={y:.4f}, z={z:.4f}")
+    logging.info(f"TUNING → BL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")

@@ -96,10 +96,10 @@ FL_TIPPYTOES = {'x': 0.0800, 'y': -0.0065, 'z': -0.1500}
 
 ##### walking positions #####
 
-FL_SWING = {'x': 0.0150, 'y': 0.0035, 'z': -0.0200} # good x=0.0150, y=0.0035, z=-0.0200
-FL_TOUCHDOWN = {'x': -0.0000, 'y': 0.0065,'z': -0.0800}
-FL_MIDSTANCE = {'x': 0.0000, 'y': -0.0165, 'z': -0.1100} # good x=0.0000, y=-0.0165, z=-0.1100
-FL_STANCE = {'x': -0.0600, 'y': -0.0065, 'z': -0.1100}
+FL_SWING = {'x': 0.0150, 'y': 0.0035, 'z': -0.0200}
+FL_TOUCHDOWN = {'x': 0.0300, 'y': 0.0015, 'z': -0.0550} # TODO resolved
+FL_MIDSTANCE = {'x': 0.0000, 'y': -0.0165, 'z': -0.1100}
+FL_STANCE = {'x': -0.0300, 'y': 0.0135, 'z': -0.1050} # TODO resolved
 
 
 ########## FRONT RIGHT ##########
@@ -112,10 +112,10 @@ FR_TIPPYTOES = {'x': -0.0150, 'y': -0.0015, 'z': -0.0050}
 
 ##### walking positions #####
 
-FR_SWING = {'x': -0.0550, 'y': -0.0815, 'z': -0.1950} # good x=-0.0550, y=-0.0815, z=-0.1950
-FR_TOUCHDOWN = {'x': -0.0600, 'y': 0.0085, 'z': -0.0900}
-FR_MIDSTANCE = {'x': -0.0350, 'y': -0.0015, 'z': -0.0600} # good x=-0.0350, y=-0.0015, z=-0.0600
-FR_STANCE = {'x': 0.0100, 'y': 0.0085, 'z': -0.0350} # x=0.0100, y=-0.0065, z=-0.0350
+FR_SWING = {'x': -0.0550, 'y': -0.0815, 'z': -0.1950}
+FR_TOUCHDOWN = {'x': -0.1100, 'y': -0.0115, 'z': 0.0100} # TODO resolved
+FR_MIDSTANCE = {'x': -0.0350, 'y': -0.0015, 'z': -0.0600}
+FR_STANCE = {'x': -0.0100, 'y': -0.0115, 'z': -0.0800} # TODO resolved
 
 
 ########## BACK LEFT ##########
@@ -128,10 +128,10 @@ BL_TIPPYTOES = {'x': 0.0550, 'y': 0.0115, 'z': -0.1400}
 
 ##### walking positions #####
 
-BL_SWING = {'x': 0.0150, 'y': -0.0035, 'z': -0.0300} # good x=0.0150, y=-0.0035, z=-0.0300
-BL_TOUCHDOWN = {'x': 0.0050, 'y': 0.0115, 'z': -0.0750}
-BL_MIDSTANCE = {'x': 0.0000, 'y': 0.0165, 'z': -0.1150} # good x=0.0000, y=0.0165, z=-0.1150
-BL_STANCE = {'x': -0.1300, 'y': 0.0215, 'z': 0.0100}
+BL_SWING = {'x': 0.0150, 'y': -0.0035, 'z': -0.0300}
+BL_TOUCHDOWN = {'x': -0.0200, 'y': -0.0135, 'z': -0.0900} # TODO resolved
+BL_MIDSTANCE = {'x': 0.0000, 'y': 0.0165, 'z': -0.1150}
+BL_STANCE = {'x': -0.0800, 'y': -0.0135, 'z': -0.1100} # TODO resolved
 
 
 ########## BACK RIGHT ##########
@@ -144,15 +144,15 @@ BR_TIPPYTOES = {'x': -0.0100, 'y': 0.0015, 'z': -0.0100}
 
 ##### walking positions #####
 
-BR_SWING = {'x': -0.0850, 'y': 0.0265, 'z': -0.1000} # good x=-0.0850, y=0.0265, z=-0.1000
-BR_TOUCHDOWN = {'x': -0.0550, 'y': -0.0135, 'z': -0.0650}
-BR_MIDSTANCE = {'x': -0.0250, 'y': -0.0085, 'z': -0.0400} # good x=-0.0250, y=-0.0085, z=-0.0400
-BR_STANCE = {'x': 0.0100, 'y': 0.0035, 'z': -0.0200}
+BR_SWING = {'x': -0.0850, 'y': 0.0265, 'z': -0.1000}
+BR_TOUCHDOWN = {'x': -0.0050, 'y': 0.0115, 'z': -0.0600} # TODO resolved
+BR_MIDSTANCE = {'x': -0.0250, 'y': -0.0085, 'z': -0.0400}
+BR_STANCE = {'x': 0.0100, 'y': 0.0035, 'z': -0.0200} # TODO resolved
 
 
 ########## LEG TUNE CONFIG ##########
 
 FL_TUNE = FL_TOUCHDOWN
-FR_TUNE = FR_STANCE
-BL_TUNE = BL_STANCE
+FR_TUNE = FR_TOUCHDOWN
+BL_TUNE = BL_TOUCHDOWN
 BR_TUNE = BR_TOUCHDOWN
