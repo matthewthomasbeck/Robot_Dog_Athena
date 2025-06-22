@@ -28,12 +28,14 @@ import sys
 import termios
 import tty
 import socket
+from flask import Flask, Response # import for web server video streaming
+from threading import Thread # import to run the flask video stream in the background
 
 ##### import initialization functions #####
 
 from utilities.receiver import * # import PWMDecoder class from initialize_receiver along with functions
 from utilities.servos import * # import servo initialization functions and maestro object
-from utilities.camera import * # import camera initialization functions
+from utilities.camera import start_camera_process # import to start the camera logic
 from utilities.opencv import * # import opencv initialization functions
 from utilities.internet import * # import internet control functionality
 
@@ -49,51 +51,44 @@ from movement.fundamental_movement import * # import fundamental movement functi
 ##### initialize GPIO and pigpio #####
 
 GPIO.setmode(GPIO.BCM) # set gpio mode to bcm so pins a referred to the same way as the processor refers them
-pi = pigpio.pi() # set pigpio object to pi so it can be referred to as pi throughout the script
+PI = pigpio.pi() # set pigpio object to pi so it can be referred to as pi throughout the script
 
-##### set virtual environment path #####
+##### activate venv #####
 
-venv_path = "/home/matthewthomasbeck/.virtualenvs/openvino/bin/activate_this.py" # activate the virtual environment
+VENV_PATH = "/home/matthewthomasbeck/.virtualenvs/openvino/bin/activate_this.py" # activate the virtual environment
 
-with open(venv_path) as f: # open the virtual environment path
-
-    exec(f.read(), {'__file__': venv_path}) # execute the virtual environment path
+with open(VENV_PATH) as f: # open the virtual environment path
+    exec(f.read(), {'__file__': VENV_PATH}) # execute the virtual environment path
 
 ##### set up logging #####
 
-logFile = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"
+LOG_FILE = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"
 
-# Rename old log file *after* confirming logger setup
-if os.path.exists(logFile):
-    os.rename(logFile, f"{logFile}.bak")
+if os.path.exists(LOG_FILE): # rename old log file *after* confirming LOGGER setup
+    os.rename(LOG_FILE, f"{LOG_FILE}.bak")
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+LOGGER = logging.getLogger()
+LOGGER.setLevel(logging.DEBUG)
 
-# Remove any existing handlers
-for handler in logger.handlers[:]:
-    logger.removeHandler(handler)
+for handler in LOGGER.handlers[:]: # remove all existing handlers to avoid duplicates
+    LOGGER.removeHandler(handler)
 
-# File handler
-file_handler = logging.FileHandler(logFile, mode='w')
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-))
-logger.addHandler(file_handler)
-
-# Console handler (optional, for debugging via systemd logs)
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setFormatter(logging.Formatter('%(message)s'))
-logger.addHandler(console_handler)
-
-logger.info("Logging setup complete.\n")
-
-logging.info("Starting control_logic.py script...\n") # log the start of the script
+FILE_HANDLER = logging.FileHandler(LOG_FILE, mode='w') # create a file handler for logging
+FILE_HANDLER.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+LOGGER.addHandler(FILE_HANDLER) # add the file handler to the logger
+CONSOLE_HANDLER = logging.StreamHandler(sys.stdout) # create a console handler for logging
+CONSOLE_HANDLER.setFormatter(logging.Formatter('%(message)s')) # format console output without timestamps
+LOGGER.addHandler(CONSOLE_HANDLER) # add the console handler to logger
+LOGGER.info("Logging setup complete.\n") # log the logging setup completion
 
 ##### create different control mode #####
 
 MODE = 'radio'
+
+##### set up flask app #####
+APP = Flask(__name__) # create flask app instance for video streaming
+
+logging.info("Starting control_logic.py script...\n") # log the start of the script
 
 
 
@@ -129,7 +124,7 @@ def runRobot():  # central function that runs the robot
 
     for pin in PWM_PINS:
 
-        decoder = PWMDecoder(pi, pin, pwmCallback)
+        decoder = PWMDecoder(PI, pin, pwmCallback)
         decoders.append(decoder)
 
     ##### run robotic logic #####
@@ -238,7 +233,8 @@ def runRobot():  # central function that runs the robot
         cv2.destroyAllWindows()
 
         ##### clean up GPIO and pigpio #####
-        pi.stop()
+
+        PI.stop()
         GPIO.cleanup()
         closeMaestroConnection(MAESTRO)
 
