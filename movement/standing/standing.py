@@ -123,11 +123,14 @@ def tippytoes_position(intensity): # function to set all legs to tippytoes posit
 
     try: # try to update leg tippytoes
 
-        set_leg_tippytoes('FL', {'FORWARD': True}, speed, acceleration)
-        set_leg_tippytoes('FR', {'FORWARD': True}, speed, acceleration)
-        time.sleep(0.5)
         set_leg_tippytoes('BR', {'FORWARD': True}, speed, acceleration)
         set_leg_tippytoes('BL', {'FORWARD': True}, speed, acceleration)
+        time.sleep(0.1) # TODO figure this out once I get the robot walking
+        set_leg_tippytoes('FL', {'FORWARD': True}, speed, acceleration)
+        set_leg_tippytoes('FR', {'FORWARD': True}, speed, acceleration)
+        #time.sleep(0.5)
+        #set_leg_tippytoes('BR', {'FORWARD': True}, speed, acceleration)
+        #set_leg_tippytoes('BL', {'FORWARD': True}, speed, acceleration)
 
     except Exception as e: # if gait update fails...
 

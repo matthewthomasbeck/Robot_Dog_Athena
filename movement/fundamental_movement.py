@@ -108,12 +108,12 @@ def move_leg(leg_id, x, y, z, speed, acceleration):
                                      [hip_angle, upper_angle, lower_angle],
                                      [hip_neutral, upper_neutral, lower_neutral]):
 
-        # TODO uncomment this if I ever need lower servos to move more quickly
-        #joint_speed = max(1, speed // 6) if joint in ['upper', 'hip'] else speed
-        #joint_acceleration = max(1, acceleration // 6) if joint in ['upper', 'hip'] else acceleration
+        joint_speed = max(1, speed // 2) if joint in ['upper', 'hip'] else speed
+        joint_acceleration = max(1, acceleration // 2) if joint in ['upper', 'hip'] else acceleration
 
-        joint_speed = speed
-        joint_acceleration = acceleration
+        # TODO comment this if I ever need lower servos to move more quickly
+        #joint_speed = speed
+        #joint_acceleration = acceleration
 
         servo_data = initialize_servos.SERVO_CONFIG[leg_id][joint]
         is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']

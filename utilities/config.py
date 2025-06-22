@@ -31,7 +31,7 @@ import time # import time library for gait timing
 
 ##### set dictionary of linkages and their lengths #####
 
-LINK_CONFIG = { # dictionary of leg linkages
+LINK_CONFIG = { # dictionary of leg linkages # TODO rename anything 'hip' related to 'pelvis' for 3d object consistency
 
     'HIP_OFFSET': 0.0485394, # centerline to hip servo
     'HIP_TO_LEG_PLANE': 0.0290068, # axis to leg plane
@@ -92,13 +92,13 @@ BL_GAIT_STATE = {'phase': 'swing', 'last_time': time.time(), 'returned_to_neutra
 
 FL_SQUATTING = {'x': 0.0400, 'y': -0.0065, 'z': 0.0250} # x is _____, y is hip up/down, z is _____
 FL_NEUTRAL = {'x': -0.0450, 'y': -0.0165, 'z': -0.0750}
-FL_TIPPYTOES = {'x': 0.0800, 'y': -0.0065, 'z': -0.1500}
+FL_TIPPYTOES = {'x': 0.0800, 'y': 0.0035, 'z': -0.1500}
 
 ##### walking positions #####
 
 FL_SWING = {'x': 0.0300, 'y': 0.0165, 'z': -0.0550}
 FL_TOUCHDOWN = {'x': 0.0300, 'y': 0.0015, 'z': -0.0550}
-FL_MIDSTANCE = {'x': 0.0000, 'y': 0.0075, 'z': -0.0800} # TODO fix height
+FL_MIDSTANCE = {'x': 0.0850, 'y': 0.0025, 'z': -0.1200} # TODO fix height 'x': 0.0000, 'y': 0.0075, 'z': -0.0800
 FL_STANCE = {'x': -0.0300, 'y': 0.0135, 'z': -0.1050}
 
 
@@ -124,13 +124,13 @@ FR_STANCE = {'x': -0.0100, 'y': -0.0115, 'z': -0.0800}
 
 BL_SQUATTING = {'x': 0.0100, 'y': 0.0015, 'z': 0.0000}
 BL_NEUTRAL = {'x': -0.0250, 'y': 0.0065, 'z': -0.0600}
-BL_TIPPYTOES = {'x': 0.0550, 'y': 0.0115, 'z': -0.1400}
+BL_TIPPYTOES = {'x': 0.0800, 'y': -0.0085, 'z': -0.1450}
 
 ##### walking positions #####
 
 BL_SWING = {'x': -0.0200, 'y': -0.0385, 'z': -0.0900}
 BL_TOUCHDOWN = {'x': -0.0200, 'y': -0.0135, 'z': -0.0900}
-BL_MIDSTANCE = {'x': -0.0500, 'y': -0.0135, 'z': -0.1000} # TODO fix height
+BL_MIDSTANCE = {'x': -0.0200, 'y': -0.0135, 'z': -0.1250} # TODO fix height 'x': -0.0500, 'y': -0.0135, 'z': -0.1000
 BL_STANCE = {'x': -0.0800, 'y': -0.0135, 'z': -0.1100}
 
 
@@ -140,19 +140,19 @@ BL_STANCE = {'x': -0.0800, 'y': -0.0135, 'z': -0.1100}
 
 BR_SQUATTING = {'x': 0.1950, 'y': -0.0185, 'z': -0.1150}
 BR_NEUTRAL = {'x': 0.0000, 'y': -0.0085, 'z': -0.0850}
-BR_TIPPYTOES = {'x': -0.0100, 'y': 0.0015, 'z': -0.0100}
+BR_TIPPYTOES = {'x': -0.0100, 'y': 0.0015, 'z': -0.0050}
 
 ##### walking positions #####
 
 BR_SWING = {'x': -0.0050, 'y': 0.0315, 'z': -0.0600}
 BR_TOUCHDOWN = {'x': -0.0050, 'y': 0.0115, 'z': -0.0600}
-BR_MIDSTANCE = {'x': 0.0025, 'y': 0.0075, 'z': -0.0400} # TODO fix height
+BR_MIDSTANCE = {'x': 0.0025, 'y': 0.0025, 'z': -0.0150} # TODO fix height 'x': 0.0025, 'y': 0.0075, 'z': -0.0400
 BR_STANCE = {'x': 0.0100, 'y': 0.0035, 'z': -0.0200}
 
 
 ########## LEG TUNE CONFIG ##########
 
-FL_TUNE = FL_TOUCHDOWN
-FR_TUNE = FR_TOUCHDOWN
-BL_TUNE = BL_TOUCHDOWN
-BR_TUNE = BR_TOUCHDOWN
+FL_TUNE = FL_TIPPYTOES
+FR_TUNE = FR_TIPPYTOES
+BL_TUNE = BL_TIPPYTOES
+BR_TUNE = BR_TIPPYTOES

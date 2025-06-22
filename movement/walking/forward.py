@@ -67,8 +67,8 @@ def trot_forward(intensity): # function to trot forward
 
         if gait_states['FL']['phase'] == 'swing': # if front left about to push...
 
-            set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
             set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
             time.sleep(0.5)
             set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
             set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
@@ -80,8 +80,8 @@ def trot_forward(intensity): # function to trot forward
 
         elif gait_states['FR']['phase'] == 'swing': # if front right about to push...
 
-            set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
             set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
+            set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
             time.sleep(0.5)
             set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
             set_leg_phase('FR', {'FORWARD': True}, speed, acceleration)
@@ -91,7 +91,7 @@ def trot_forward(intensity): # function to trot forward
             #set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
             #set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
 
-        time.sleep(0.05) # wait for legs to reach position
+        time.sleep(0.1) # wait for legs to reach positions
 
     except Exception as e: # if gait update fails...
 
@@ -138,39 +138,20 @@ def set_leg_phase(leg_id, state, speed, acceleration):
 
     try:
 
-        if leg_id in ['FL', 'FR']:
+        if phase == 'stance':
 
-            if phase == 'stance':
+            # Begin new cycle: lift foot into swing
+            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=True)
+            time.sleep(0.2)
+            move_foot_to_pos(leg_id, touchdown_positions[leg_id], speed, acceleration, use_bezier=True)
+            gait_state['phase'] = 'swing'
 
-                # Begin new cycle: lift foot into swing
-                move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=True)
-                time.sleep(0.1)
-                move_foot_to_pos(leg_id, touchdown_positions[leg_id], speed, acceleration, use_bezier=True)
-                gait_state['phase'] = 'swing'
-
-            elif phase == 'swing':
-                # Final phase: move foot into full stance
-                move_foot_to_pos(leg_id, midstance_positions[leg_id], speed, acceleration, use_bezier=False)
-                time.sleep(0.1)
-                move_foot_to_pos(leg_id, midstance_positions[leg_id], speed, acceleration, use_bezier=False)
-                gait_state['phase'] = 'stance'
-
-        elif leg_id in ['BL', 'BR']:
-
-            if phase == 'stance':
-
-                # Begin new cycle: lift foot into swing
-                move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=True)
-                time.sleep(0.1)
-                move_foot_to_pos(leg_id, midstance_positions[leg_id], speed, acceleration, use_bezier=True)
-                gait_state['phase'] = 'swing'
-
-            elif phase == 'swing':
-                # Final phase: move foot into full stance
-                move_foot_to_pos(leg_id, midstance_positions[leg_id], speed, acceleration, use_bezier=False)
-                time.sleep(0.1)
-                move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=False)
-                gait_state['phase'] = 'stance'
+        elif phase == 'swing':
+            # Final phase: move foot into full stance
+            move_foot_to_pos(leg_id, tippytoes_positions[leg_id], speed, acceleration, use_bezier=False)
+            time.sleep(0.2)
+            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=False)
+            gait_state['phase'] = 'stance'
 
         gait_state['returned_to_neutral'] = False
 
