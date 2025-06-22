@@ -29,7 +29,8 @@ import termios
 import tty
 import socket
 from flask import Flask, Response # import for web server video streaming
-from threading import Thread # import to run the flask video stream in the background
+import threading # import to run the flask video stream in the background
+from collections import deque # import deque to forward MJPEG data to flask
 
 ##### import initialization functions #####
 
@@ -85,8 +86,9 @@ LOGGER.info("Logging setup complete.\n") # log the logging setup completion
 
 MODE = 'radio'
 
-##### set up flask app #####
+##### set up flask video streaming #####
 APP = Flask(__name__) # create flask app instance for video streaming
+JPEG_FRAME_QUEUE = deque(maxlen=10) # store a minimum of 10 JPEG frames in queue for video streaming
 
 logging.info("Starting control_logic.py script...\n") # log the start of the script
 
@@ -99,32 +101,43 @@ logging.info("Starting control_logic.py script...\n") # log the start of the scr
 #########################################
 
 
+#TODO MOVE ME!!! ########## MISCELLANEOUS FUNCTIONS I'LL PROBABLY MOVE LATER ##########
+
+def pwm_callback(gpio, pulseWidth): # function to set pulse width to channel data
+
+    CHANNEL_DATA[gpio] = pulseWidth # set channel data to pulse width
+
+
 ########## RUN ROBOTIC PROCESS ##########
 
-def runRobot():  # central function that runs the robot
+def run_robot():  # central function that runs the robot
 
     ##### set vairables #####
 
     global CHANNEL_DATA
-    CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
-    decoders = []  # define decoders as empty list
-    CURRENT_LEG = 'FL' # default current leg for tuning mode
-    IS_NEUTRAL = False # assume robot is not in neutral standing position until neutralStandingPosition() is called
+    CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS} # initialize with neutral values
+    is_neutral = False # assume robot is not in neutral standing position until neutralStandingPosition() is called
+    current_leg = 'FL' # default current leg for tuning mode
+    decoders = [] # define decoders as empty list
+
+    ##### start flask server for video stream #####
+
+    # TODO flask stuff might go here
 
     ##### initialize camera #####
 
-    camera_process = start_camera_process(width=640, height=480, framerate=30)
+    CAMERA_PROCESS = start_camera_process(width=640, height=480, framerate=30) # start camera process with params
 
-    if camera_process is None:
-
+    if CAMERA_PROCESS is None: # if camera process failed...
         logging.error("(control_logic.py): Failed to start camera process. Exiting...\n")
-        exit(1)
+        exit(1) # cut the program
+
+    mjpeg_buffer = b'' # initialize buffer for MJPEG frames
 
     ##### initialize PWM decoders #####
 
-    for pin in PWM_PINS:
-
-        decoder = PWMDecoder(PI, pin, pwmCallback)
+    for pin in PWM_PINS: # loop through each pin in PWM_PINS to initialize decoders
+        decoder = PWMDecoder(PI, pin, pwm_callback)
         decoders.append(decoder)
 
     ##### run robotic logic #####
@@ -133,122 +146,109 @@ def runRobot():  # central function that runs the robot
 
         squatting_position(1)
         time.sleep(3)
-        #tippytoes_position(1)
-        #time.sleep(3)
+        #tippytoes_position(1) TODO keep me commented out for now
+        #time.sleep(3) TODO me too
         neutral_position(1)
         time.sleep(3)
-        IS_NEUTRAL = True # set IS_NEUTRAL to True
+        is_neutral = True # set is_neutral to True
         time.sleep(3) # wait for 3 seconds
 
     except Exception as e: # if there is an error, log the error
 
         logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
-    mjpeg_buffer = b''  # Initialize buffer for MJPEG frames
-
     try: # try to run the main robotic process
 
-        # Detect mode and maybe start socket server
-        MODE = detect_ssh_and_prompt_mode() # TODO comment this out whenever I don't need to tune
-
-        if MODE.startswith("ssh"):
-            server = setup_unix_socket()
-            logging.info("Waiting for SSH control client to connect to socket...\n")
-            conn, _ = server.accept()
-            conn.setblocking(True)
-            logging.info("SSH client connected.\n")
+        #MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
         while True:
-            # Read chunk of data from the camera process
-            chunk = camera_process.stdout.read(4096)
-            if not chunk:
+            chunk = CAMERA_PROCESS.stdout.read(4096) # read 4096 bytes from the camera process stdout
+            if not chunk: # if camera process has stopped sending data...
                 logging.error("(control_logic.py): Camera process stopped sending data.\n")
                 break
 
-            mjpeg_buffer += chunk
+            mjpeg_buffer += chunk # append the chunk to the MJPEG buffer
+            prev_len = len(mjpeg_buffer) # attempt to decode a single frame and display
+            mjpeg_buffer = decode_and_show_frame(mjpeg_buffer) # decode and show the MJPEG frame
 
-            # Attempt to decode a single frame and display
-            prev_len = len(mjpeg_buffer)
-            mjpeg_buffer = decode_and_show_frame(mjpeg_buffer)
-
-            if mjpeg_buffer is None:
-                # If something went very wrong, stop
+            if mjpeg_buffer is None: # if no complete JPEG frame found...
                 logging.warning("(control_logic.py): decode_and_show_frame returned None. Stopping...\n")
                 break
-            elif len(mjpeg_buffer) == prev_len:
-                # Means no complete JPEG was found (incomplete frame)
-                # If the buffer grows too large, reset it
-                if len(mjpeg_buffer) > 65536:
+
+            elif len(mjpeg_buffer) == prev_len: # if buffer length didn't change and no new frame decoded...
+                if len(mjpeg_buffer) > 65536: # if buffer grows too large...
                     logging.warning("(control_logic.py): MJPEG buffer overflow. Resetting buffer.\n")
                     mjpeg_buffer = b''
 
-            # Check if 'q' was pressed in the imshow window
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if cv2.waitKey(1) & 0xFF == ord('q'): # if user wants to quit the camera feed display...
                 logging.info("Exiting camera feed display.\n")
                 break
+
+            ##### decode and execute commands #####
+
+            if MODE.startswith("ssh"):
+                server = setup_unix_socket()
+                logging.info("Waiting for SSH control client to connect to socket...\n")
+                conn, _ = server.accept()
+                conn.setblocking(True)
+                logging.info("SSH client connected.\n")
 
             # TODO OLD CODE Handle commands
             #commands = interpretCommands(CHANNEL_DATA)
             #for channel, (action, intensity) in commands.items():
-                #IS_NEUTRAL = executeRadioCommands(channel, action, intensity, IS_NEUTRAL)
+                #is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
 
-            if MODE == 'radio':
-                commands = interpretCommands(CHANNEL_DATA)
-                for channel, (action, intensity) in commands.items():
-                    IS_NEUTRAL = executeRadioCommands(channel, action, intensity, IS_NEUTRAL)
+            if MODE == 'radio': # if mode is radio...
+                commands = interpretCommands(CHANNEL_DATA) # interpret commands from CHANNEL_DATA from R/C receiver
+                for channel, (action, intensity) in commands.items(): # loop through each channel and its action
+                    is_neutral = execute_radio_commands(channel, action, intensity, is_neutral) # execute radio commands
 
-            elif MODE.startswith("ssh"):
-                try:
-                    key = conn.recv(3).decode()
-                    if not key:
+            elif MODE.startswith("ssh"): # if mode is SSH...
+                try: # attempt to read from the SSH socket connection
+                    key = conn.recv(3).decode() # read up to 3 bytes from the socket
+                    if not key: # if no data received...
                         continue
-                    if key.startswith('\x1b'):
-                        key = key[:3]  # arrow key
-                    else:
+                    if key.startswith('\x1b'): # if the key starts with escape character...
+                        key = key[:3] # arrow key
+                    else: # if some other character...
                         key = key[0]
-                    IS_NEUTRAL, CURRENT_LEG = executeKeyboardCommands(
-                        key, IS_NEUTRAL, CURRENT_LEG, intensity=5, tune_mode=(MODE == 'ssh-tune'),
+
+                    # execute keyboard commands based on the key pressed
+                    is_neutral, current_leg = execute_keyboard_commands(
+                        key, is_neutral, current_leg, intensity=10, tune_mode=(MODE == 'ssh-tune'),
                     )
-                except Exception as e:
+                except Exception as e: # if there is an error reading from the socket...
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
 
-    except KeyboardInterrupt:
+    except KeyboardInterrupt: # if user ends the program...
         logging.info("KeyboardInterrupt received. Exiting...\n")
 
-    except Exception as e:
+    except Exception as e: # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
-        exit(1)
+        exit(1) # kill the process
+
+    ##### clean up when complete #####
 
     finally:
-        ##### clean up servos and decoders #####
-        disableAllServos()
+
+        disableAllServos() # disable all servos to stop movement
         for decoder in decoders:
             decoder.cancel()
 
-        ##### close camera #####
-        if camera_process.poll() is None:
-            camera_process.terminate()
-            camera_process.wait()
+        if CAMERA_PROCESS.poll() is None: # close the camera process
+            CAMERA_PROCESS.terminate()
+            CAMERA_PROCESS.wait()
 
-        cv2.destroyAllWindows()
+        cv2.destroyAllWindows() # close all OpenCV windows
 
-        ##### clean up GPIO and pigpio #####
-
-        PI.stop()
+        PI.stop() # kill MAESTRO and PIGPIO processes
         GPIO.cleanup()
         closeMaestroConnection(MAESTRO)
 
 
-########## PWM CALLBACK ##########
-
-def pwmCallback(gpio, pulseWidth): # function to set pulse width to channel data
-
-    CHANNEL_DATA[gpio] = pulseWidth # set channel data to pulse width
-
-
 ########## INTERPRET COMMANDS ##########
 
-def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to interpret commands from channel data and do things
+def execute_radio_commands(channel, action, intensity, is_neutral): # function to interpret commands from channel data and do things
 
     ##### squat channel 2 #####
 
@@ -285,21 +285,21 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             print(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to rotate left in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
-            IS_NEUTRAL = True
+            is_neutral = True
 
         elif action == 'ROTATE RIGHT':
 
             print(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to rotate right in executeCommands: {e}\n")
@@ -313,21 +313,21 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to look down in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
-            IS_NEUTRAL = True
+            is_neutral = True
 
         elif action == 'LOOK UP':
 
             logging.info(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to look up in executeCommands: {e}\n")
@@ -342,7 +342,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
             try:
                 trot_forward(intensity)
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to move forward in executeCommands: {e}\n")
@@ -351,10 +351,10 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
             try:
 
-                if IS_NEUTRAL == False:
+                if is_neutral == False:
 
                     neutral_position(10)
-                    IS_NEUTRAL = True
+                    is_neutral = True
 
             except Exception as e:
 
@@ -365,7 +365,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to move backward in executeCommands: {e}\n")
@@ -379,21 +379,21 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
             logging.info(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to shift left in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
 
-            IS_NEUTRAL = True
+            is_neutral = True
 
         elif action == 'SHIFT RIGHT':
 
             logging.info(f"{channel}: {action}")
 
             try:
-                IS_NEUTRAL = False
+                is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to shift right in executeCommands: {e}\n")
@@ -408,7 +408,7 @@ def executeRadioCommands(channel, action, intensity, IS_NEUTRAL): # function to 
 
     ##### update is neutral standing #####
 
-    return IS_NEUTRAL # return neutral standing boolean for position awareness
+    return is_neutral # return neutral standing boolean for position awareness
 
 
 ########## EXECUTE KEYBOARD COMMANDS ##########
@@ -452,117 +452,117 @@ ADJUSTMENT_FUNCS = {
 
 ##### keyboard commands for tuning mode and normal operation #####
 
-def executeKeyboardCommands(key, IS_NEUTRAL, CURRENT_LEG, intensity=10, tune_mode=False):
+def execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_mode=False):
 
     if tune_mode:
 
         if key == 'q': # x axis positive
-            ADJUSTMENT_FUNCS[CURRENT_LEG]['x+']()
-            IS_NEUTRAL = False
+            ADJUSTMENT_FUNCS[current_leg]['x+']()
+            is_neutral = False
 
         elif key == 'a': # x axis negative
-            ADJUSTMENT_FUNCS[CURRENT_LEG]['x-']()
-            IS_NEUTRAL = False
+            ADJUSTMENT_FUNCS[current_leg]['x-']()
+            is_neutral = False
 
         elif key == 'w': # y axis positive
-            ADJUSTMENT_FUNCS[CURRENT_LEG]['y+']()
-            IS_NEUTRAL = False
+            ADJUSTMENT_FUNCS[current_leg]['y+']()
+            is_neutral = False
 
         elif key == 's': # y axis negative
-            ADJUSTMENT_FUNCS[CURRENT_LEG]['y-']()
-            IS_NEUTRAL = False
+            ADJUSTMENT_FUNCS[current_leg]['y-']()
+            is_neutral = False
 
         elif key == 'e': # z axis positive
-            ADJUSTMENT_FUNCS[CURRENT_LEG]['z+']()
-            IS_NEUTRAL = False
+            ADJUSTMENT_FUNCS[current_leg]['z+']()
+            is_neutral = False
 
         elif key == 'd': # z axis negative
-            ADJUSTMENT_FUNCS[CURRENT_LEG]['z-']()
-            IS_NEUTRAL = False
+            ADJUSTMENT_FUNCS[current_leg]['z-']()
+            is_neutral = False
 
         elif key == '1': # set current leg to front left
 
-            CURRENT_LEG = 'FL'  # Set current leg to front left
-            IS_NEUTRAL = False
+            current_leg = 'FL'  # Set current leg to front left
+            is_neutral = False
 
         elif key == '2': # set current leg to front right
 
-            CURRENT_LEG = 'FR'  # Set current leg to front right
-            IS_NEUTRAL = False
+            current_leg = 'FR'  # Set current leg to front right
+            is_neutral = False
 
         elif key == '3': # set current leg to back left
 
-            CURRENT_LEG = 'BL'  # Set current leg to back left
-            IS_NEUTRAL = False
+            current_leg = 'BL'  # Set current leg to back left
+            is_neutral = False
 
         elif key == '4': # set current leg to back right
 
-            CURRENT_LEG = 'BR'  # Set current leg to back right
-            IS_NEUTRAL = False
+            current_leg = 'BR'  # Set current leg to back right
+            is_neutral = False
 
         elif key == 'n':
-            if not IS_NEUTRAL:
+            if not is_neutral:
                 neutral_position(10)
-                IS_NEUTRAL = True
+                is_neutral = True
 
     else:  # Normal operation mode
 
         if key == 'q':
             logging.info("Exiting control logic.")
-            return IS_NEUTRAL  # Exit condition
+            return is_neutral  # Exit condition
 
         elif key == 'w':  # Move forward
             trot_forward(intensity)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == 's':  # Move backward
             # trotBackward(intensity)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == 'a':  # Shift left
             # trotLeft(intensity)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == 'd':  # Shift right
             # trotRight(intensity)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == '\x1b[C':  # Rotate right
             # rotateRight(intensity)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == '\x1b[D':  # Rotate left
             # rotateLeft(intensity)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == '\x1b[A':  # Look up
             # adjustBL_Z(up=False)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == '\x1b[B':  # Look down
             # adjustBL_Z(up=True)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == 'i':  # Tilt up
             # adjustBL_Y(left=False)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == 'k':  # Tilt down
             # adjustBL_Y(left=True)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == ' ':  # Lie down
             squatting_position(1)
-            IS_NEUTRAL = False
+            is_neutral = False
 
         elif key == 'n':  # Neutral position
-            if not IS_NEUTRAL:
+            if not is_neutral:
                 neutral_position(10)
-                IS_NEUTRAL = True
+                is_neutral = True
 
-    return IS_NEUTRAL, CURRENT_LEG  # Return updated neutral standing state
+    return is_neutral, current_leg  # Return updated neutral standing state
 
 
 ########## RUN ROBOTIC PROCESS ##########
 
-runRobot() # run the robot process
+run_robot() # run the robot process
