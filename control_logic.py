@@ -8,9 +8,6 @@
 ##################################################################################
 
 
-
-
-
 ############################################################
 ############### IMPORT / CREATE DEPENDENCIES ###############
 ############################################################
@@ -20,80 +17,79 @@
 
 ##### import necessary libraries #####
 
-import RPi.GPIO as GPIO # import GPIO library for pin control
-import pigpio # import pigpio library for PWM control
-import logging # import logging library for debugging
-import os # import os library for system commands and log files
+import RPi.GPIO as GPIO  # import GPIO library for pin control
+import pigpio  # import pigpio library for PWM control
 import sys
-import termios
-import tty
-import socket
-from flask import Flask, Response # import for web server video streaming
-import threading # import to run the flask video stream in the background
-from collections import deque # import deque to forward MJPEG data to flask
+from flask import Flask, Response  # import for web server video streaming
+from collections import deque  # import deque to forward MJPEG data to flask
 
-##### import initialization functions #####
+##### import necessary utilities #####
 
-from utilities.receiver import * # import PWMDecoder class from initialize_receiver along with functions
-from utilities.servos import * # import servo initialization functions and maestro object
-from utilities.camera import start_camera_process # import to start the camera logic
-from utilities.opencv import * # import opencv initialization functions
-from utilities.internet import * # import internet control functionality
+from utilities.receiver import *  # import PWMDecoder class from initialize_receiver along with functions
+from utilities.servos import *  # import servo initialization functions and maestro object
+from utilities.camera import start_camera_process  # import to start camera logic
+from utilities.opencv import *  # import opencv initialization functions
+from utilities.internet import *  # import internet control functionality
 
 ##### import movement functions #####
 
-from movement.standing.standing import * # import standing functions
-from movement.walking.forward import * # import walking functions
-from movement.fundamental_movement import * # import fundamental movement functions
-
+from movement.standing.standing import *  # import standing functions
+from movement.walking.forward import *  # import walking functions
+from movement.fundamental_movement import *  # import fundamental movement functions
 
 ########## CREATE DEPENDENCIES ##########
-
-##### initialize GPIO and pigpio #####
-
-GPIO.setmode(GPIO.BCM) # set gpio mode to bcm so pins a referred to the same way as the processor refers them
-PI = pigpio.pi() # set pigpio object to pi so it can be referred to as pi throughout the script
-
-##### activate venv #####
-
-VENV_PATH = "/home/matthewthomasbeck/.virtualenvs/openvino/bin/activate_this.py" # activate the virtual environment
-
-with open(VENV_PATH) as f: # open the virtual environment path
-    exec(f.read(), {'__file__': VENV_PATH}) # execute the virtual environment path
 
 ##### set up logging #####
 
 LOG_FILE = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"
 
-if os.path.exists(LOG_FILE): # rename old log file *after* confirming LOGGER setup
+if os.path.exists(LOG_FILE):  # rename old log file *after* confirming LOGGER setup
     os.rename(LOG_FILE, f"{LOG_FILE}.bak")
 
 LOGGER = logging.getLogger()
 LOGGER.setLevel(logging.DEBUG)
 
-for handler in LOGGER.handlers[:]: # remove all existing handlers to avoid duplicates
+for handler in LOGGER.handlers[:]:  # remove all existing handlers to avoid duplicates
     LOGGER.removeHandler(handler)
 
-FILE_HANDLER = logging.FileHandler(LOG_FILE, mode='w') # create a file handler for logging
+FILE_HANDLER = logging.FileHandler(LOG_FILE, mode='w')  # create a file handler for logging
 FILE_HANDLER.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
-LOGGER.addHandler(FILE_HANDLER) # add the file handler to the logger
-CONSOLE_HANDLER = logging.StreamHandler(sys.stdout) # create a console handler for logging
-CONSOLE_HANDLER.setFormatter(logging.Formatter('%(message)s')) # format console output without timestamps
-LOGGER.addHandler(CONSOLE_HANDLER) # add the console handler to logger
-LOGGER.info("Logging setup complete.\n") # log the logging setup completion
+LOGGER.addHandler(FILE_HANDLER)  # add file handler to logger
+CONSOLE_HANDLER = logging.StreamHandler(sys.stdout)  # create a console handler for logging
+CONSOLE_HANDLER.setFormatter(logging.Formatter('%(message)s'))  # format console output without timestamps
+LOGGER.addHandler(CONSOLE_HANDLER)  # add console handler to logger
+LOGGER.info("Logging setup complete.\n")  # log logging setup completion
+
+##### set up camera #####
+
+CAMERA_PROCESS = start_camera_process(width=640, height=480, framerate=30)  # start camera process with params
+
+if CAMERA_PROCESS is None:  # if camera process failed...
+    logging.error("(control_logic.py): Failed to start camera process. Exiting...\n")
+    exit(1)  # cut program
+
+##### set up inference #####
+
+MODEL_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml"
+NCS2_NAME = "MYRIAD"  # literal device name in code
+COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model(MODEL_PATH, NCS2_NAME)  # load and compile model
+test_with_dummy_input(COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER)  # test model with dummy input
+
+##### set up flask #####
+APP = Flask(__name__)  # create flask app instance for video streaming
+JPEG_FRAME_QUEUE = deque(maxlen=10)  # store a minimum of 10 JPEG frames in queue for video streaming
+
+##### initialize GPIO and pigpio #####
+
+GPIO.setmode(GPIO.BCM)  # set gpio mode to bcm so pins a referred to same way as processor refers them
+PI = pigpio.pi()  # set pigpio object to pi so it can be referred to as pi throughout script
+CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
 
 ##### create different control mode #####
 
 MODE = 'radio'
 
-##### set up flask video streaming #####
-APP = Flask(__name__) # create flask app instance for video streaming
-JPEG_FRAME_QUEUE = deque(maxlen=10) # store a minimum of 10 JPEG frames in queue for video streaming
-
-logging.info("Starting control_logic.py script...\n") # log the start of the script
-
-
-
+logging.info("Starting control_logic.py script...\n")  # log start of script
 
 
 #########################################
@@ -101,86 +97,70 @@ logging.info("Starting control_logic.py script...\n") # log the start of the scr
 #########################################
 
 
-#TODO MOVE ME!!! ########## MISCELLANEOUS FUNCTIONS I'LL PROBABLY MOVE LATER ##########
+# TODO MOVE ME!!! ########## MISCELLANEOUS FUNCTIONS I'LL PROBABLY MOVE LATER ##########
 
-def pwm_callback(gpio, pulseWidth): # function to set pulse width to channel data
+def pwm_callback(gpio, pulseWidth):  # function to set pulse width to channel data
 
-    CHANNEL_DATA[gpio] = pulseWidth # set channel data to pulse width
+    CHANNEL_DATA[gpio] = pulseWidth  # set channel data to pulse width
 
 
 ########## RUN ROBOTIC PROCESS ##########
 
-def run_robot():  # central function that runs the robot
+def run_robot():  # central function that runs robot
 
-    ##### set vairables #####
+    ##### set/initialize variables #####
 
-    global CHANNEL_DATA
-    CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS} # initialize with neutral values
-    is_neutral = False # assume robot is not in neutral standing position until neutralStandingPosition() is called
-    current_leg = 'FL' # default current leg for tuning mode
-    decoders = [] # define decoders as empty list
+    is_neutral = False  # assume robot is not in neutral standing position until neutralStandingPosition() is called
+    current_leg = 'FL'  # default current leg for tuning mode
+    decoders = []  # define decoders as empty list
+    mjpeg_buffer = b''  # initialize buffer for MJPEG frames
 
-    ##### start flask server for video stream #####
+    for pin in PWM_PINS:  # loop through each pin in PWM_PINS to initialize decoders
 
-    # TODO flask stuff might go here
-
-    ##### initialize camera #####
-
-    CAMERA_PROCESS = start_camera_process(width=640, height=480, framerate=30) # start camera process with params
-
-    if CAMERA_PROCESS is None: # if camera process failed...
-        logging.error("(control_logic.py): Failed to start camera process. Exiting...\n")
-        exit(1) # cut the program
-
-    mjpeg_buffer = b'' # initialize buffer for MJPEG frames
-
-    ##### initialize PWM decoders #####
-
-    for pin in PWM_PINS: # loop through each pin in PWM_PINS to initialize decoders
         decoder = PWMDecoder(PI, pin, pwm_callback)
         decoders.append(decoder)
 
     ##### run robotic logic #####
 
-    try: # try to run robot startup sequence
+    try:  # try to run robot startup sequence
 
         squatting_position(1)
         time.sleep(3)
-        #tippytoes_position(1) TODO keep me commented out for now
-        #time.sleep(3) TODO me too
+        # tippytoes_position(1) TODO keep me commented out for now
+        # time.sleep(3) TODO me too
         neutral_position(1)
         time.sleep(3)
-        is_neutral = True # set is_neutral to True
-        time.sleep(3) # wait for 3 seconds
+        is_neutral = True  # set is_neutral to True
+        time.sleep(3)  # wait for 3 seconds
 
-    except Exception as e: # if there is an error, log the error
+    except Exception as e:  # if there is an error, log error
 
         logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
-    try: # try to run the main robotic process
+    try:  # try to run main robotic process
 
-        #MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
+        # MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
         while True:
-            chunk = CAMERA_PROCESS.stdout.read(4096) # read 4096 bytes from the camera process stdout
-            if not chunk: # if camera process has stopped sending data...
+            chunk = CAMERA_PROCESS.stdout.read(4096)  # read 4096 bytes from camera process stdout
+            if not chunk:  # if camera process has stopped sending data...
                 logging.error("(control_logic.py): Camera process stopped sending data.\n")
                 break
 
-            mjpeg_buffer += chunk # append the chunk to the MJPEG buffer
-            prev_len = len(mjpeg_buffer) # attempt to decode a single frame and display
-            mjpeg_buffer = decode_and_show_frame(mjpeg_buffer) # decode and show the MJPEG frame
+            mjpeg_buffer += chunk  # append chunk to MJPEG buffer
+            prev_len = len(mjpeg_buffer)  # attempt to decode a single frame and display
+            mjpeg_buffer = decode_and_show_frame(mjpeg_buffer)  # decode and show MJPEG frame
 
-            if mjpeg_buffer is None: # if no complete JPEG frame found...
+            if mjpeg_buffer is None:  # if no complete JPEG frame found...
                 logging.warning("(control_logic.py): decode_and_show_frame returned None. Stopping...\n")
                 break
 
-            elif len(mjpeg_buffer) == prev_len: # if buffer length didn't change and no new frame decoded...
-                if len(mjpeg_buffer) > 65536: # if buffer grows too large...
+            elif len(mjpeg_buffer) == prev_len:  # if buffer length didn't change and no new frame decoded...
+                if len(mjpeg_buffer) > 65536:  # if buffer grows too large...
                     logging.warning("(control_logic.py): MJPEG buffer overflow. Resetting buffer.\n")
                     mjpeg_buffer = b''
 
-            if cv2.waitKey(1) & 0xFF == ord('q'): # if user wants to quit the camera feed display...
+            if cv2.waitKey(1) & 0xFF == ord('q'):  # if user wants to quit camera feed display...
                 logging.info("Exiting camera feed display.\n")
                 break
 
@@ -194,61 +174,63 @@ def run_robot():  # central function that runs the robot
                 logging.info("SSH client connected.\n")
 
             # TODO OLD CODE Handle commands
-            #commands = interpretCommands(CHANNEL_DATA)
-            #for channel, (action, intensity) in commands.items():
-                #is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
+            # commands = interpretCommands(CHANNEL_DATA)
+            # for channel, (action, intensity) in commands.items():
+            # is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
 
-            if MODE == 'radio': # if mode is radio...
-                commands = interpretCommands(CHANNEL_DATA) # interpret commands from CHANNEL_DATA from R/C receiver
-                for channel, (action, intensity) in commands.items(): # loop through each channel and its action
-                    is_neutral = execute_radio_commands(channel, action, intensity, is_neutral) # execute radio commands
+            if MODE == 'radio':  # if mode is radio...
+                commands = interpretCommands(CHANNEL_DATA)  # interpret commands from CHANNEL_DATA from R/C receiver
+                for channel, (action, intensity) in commands.items():  # loop through each channel and its action
+                    is_neutral = execute_radio_commands(channel, action, intensity,
+                                                        is_neutral)  # execute radio commands
 
-            elif MODE.startswith("ssh"): # if mode is SSH...
-                try: # attempt to read from the SSH socket connection
-                    key = conn.recv(3).decode() # read up to 3 bytes from the socket
-                    if not key: # if no data received...
+            elif MODE.startswith("ssh"):  # if mode is SSH...
+                try:  # attempt to read from SSH socket connection
+                    key = conn.recv(3).decode()  # read up to 3 bytes from socket
+                    if not key:  # if no data received...
                         continue
-                    if key.startswith('\x1b'): # if the key starts with escape character...
-                        key = key[:3] # arrow key
-                    else: # if some other character...
+                    if key.startswith('\x1b'):  # if key starts with escape character...
+                        key = key[:3]  # arrow key
+                    else:  # if some other character...
                         key = key[0]
 
-                    # execute keyboard commands based on the key pressed
+                    # execute keyboard commands based on key pressed
                     is_neutral, current_leg = execute_keyboard_commands(
                         key, is_neutral, current_leg, intensity=10, tune_mode=(MODE == 'ssh-tune'),
                     )
-                except Exception as e: # if there is an error reading from the socket...
+                except Exception as e:  # if there is an error reading from socket...
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
 
-    except KeyboardInterrupt: # if user ends the program...
+    except KeyboardInterrupt:  # if user ends program...
         logging.info("KeyboardInterrupt received. Exiting...\n")
 
-    except Exception as e: # if something breaks and only God knows what it is...
+    except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
-        exit(1) # kill the process
+        exit(1)  # kill process
 
     ##### clean up when complete #####
 
     finally:
 
-        disableAllServos() # disable all servos to stop movement
+        disableAllServos()  # disable all servos to stop movement
         for decoder in decoders:
             decoder.cancel()
 
-        if CAMERA_PROCESS.poll() is None: # close the camera process
+        if CAMERA_PROCESS.poll() is None:  # close camera process
             CAMERA_PROCESS.terminate()
             CAMERA_PROCESS.wait()
 
-        cv2.destroyAllWindows() # close all OpenCV windows
+        cv2.destroyAllWindows()  # close all OpenCV windows
 
-        PI.stop() # kill MAESTRO and PIGPIO processes
+        PI.stop()  # kill MAESTRO and PIGPIO processes
         GPIO.cleanup()
         closeMaestroConnection(MAESTRO)
 
 
 ########## INTERPRET COMMANDS ##########
 
-def execute_radio_commands(channel, action, intensity, is_neutral): # function to interpret commands from channel data and do things
+def execute_radio_commands(channel, action, intensity,
+                           is_neutral):  # function to interpret commands from channel data and do things
 
     ##### squat channel 2 #####
 
@@ -258,8 +240,8 @@ def execute_radio_commands(channel, action, intensity, is_neutral): # function t
                 pass
                 # function to squat
         elif action == 'SQUAT UP':
-                # function to neutral
-                print(f"{channel}: {action}")
+            # function to neutral
+            print(f"{channel}: {action}")
 
     ##### tilt channel 0 #####
 
@@ -352,13 +334,13 @@ def execute_radio_commands(channel, action, intensity, is_neutral): # function t
             try:
 
                 if is_neutral == False:
-
                     neutral_position(10)
                     is_neutral = True
 
             except Exception as e:
 
-                logging.error(f"(control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
+                logging.error(
+                    f"(control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
 
         elif action == 'MOVE BACKWARD':
 
@@ -408,7 +390,7 @@ def execute_radio_commands(channel, action, intensity, is_neutral): # function t
 
     ##### update is neutral standing #####
 
-    return is_neutral # return neutral standing boolean for position awareness
+    return is_neutral  # return neutral standing boolean for position awareness
 
 
 ########## EXECUTE KEYBOARD COMMANDS ##########
@@ -450,52 +432,52 @@ ADJUSTMENT_FUNCS = {
     }
 }
 
+
 ##### keyboard commands for tuning mode and normal operation #####
 
 def execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_mode=False):
-
     if tune_mode:
 
-        if key == 'q': # x axis positive
+        if key == 'q':  # x axis positive
             ADJUSTMENT_FUNCS[current_leg]['x+']()
             is_neutral = False
 
-        elif key == 'a': # x axis negative
+        elif key == 'a':  # x axis negative
             ADJUSTMENT_FUNCS[current_leg]['x-']()
             is_neutral = False
 
-        elif key == 'w': # y axis positive
+        elif key == 'w':  # y axis positive
             ADJUSTMENT_FUNCS[current_leg]['y+']()
             is_neutral = False
 
-        elif key == 's': # y axis negative
+        elif key == 's':  # y axis negative
             ADJUSTMENT_FUNCS[current_leg]['y-']()
             is_neutral = False
 
-        elif key == 'e': # z axis positive
+        elif key == 'e':  # z axis positive
             ADJUSTMENT_FUNCS[current_leg]['z+']()
             is_neutral = False
 
-        elif key == 'd': # z axis negative
+        elif key == 'd':  # z axis negative
             ADJUSTMENT_FUNCS[current_leg]['z-']()
             is_neutral = False
 
-        elif key == '1': # set current leg to front left
+        elif key == '1':  # set current leg to front left
 
             current_leg = 'FL'  # Set current leg to front left
             is_neutral = False
 
-        elif key == '2': # set current leg to front right
+        elif key == '2':  # set current leg to front right
 
             current_leg = 'FR'  # Set current leg to front right
             is_neutral = False
 
-        elif key == '3': # set current leg to back left
+        elif key == '3':  # set current leg to back left
 
             current_leg = 'BL'  # Set current leg to back left
             is_neutral = False
 
-        elif key == '4': # set current leg to back right
+        elif key == '4':  # set current leg to back right
 
             current_leg = 'BR'  # Set current leg to back right
             is_neutral = False
@@ -565,4 +547,4 @@ def execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_m
 
 ########## RUN ROBOTIC PROCESS ##########
 
-run_robot() # run the robot process
+run_robot()  # run robot process
