@@ -45,33 +45,28 @@ serialTimeout = 1 # set timeout for serial connection
 ########## ESTABLISH SERIAL CONNECTION ##########
 
 # function to establish serial connection to maestro
-def establishSerialConnection(serialPortName, serialBaudRate, serialTimeout):
+def establish_serial_connection(serial_port_name, serial_baud_rate, serial_timeout):
 
     ##### attempt to establish serial connection and return maestro object #####
 
-    logging.debug("Establishing serial connection with maestro...\n") # print initialization statement
+    logging.debug("(maestro.py): Establishing serial connection with maestro...\n")
 
     try: # try to establish serial connection
 
         maestro = serial.Serial( # set maestro connection object
 
-            serialPortName, # port to connect to
-            baudrate=serialBaudRate, # baud rate for serial connection
-            timeout=serialTimeout # amount of time to wait for response
+            serial_port_name, # port to connect to
+            baudrate=serial_baud_rate, # baud rate for serial connection
+            timeout=serial_timeout # amount of time to wait for response
         )
 
-        logging.info("Successfully established connection with maestro.\n") # print success statement
+        logging.info("(maestro.py): Successfully established connection with maestro.\n")
 
         return maestro # return maestro connection object
 
-    ##### throw error and return error code if conntection fails #####
-
-    except: # if connection failed...
-
-        # print failure statement
-        logging.error("ERROR (initialize_maestro.py): Failed to establish serial connection to maestro.\n")
-
-        return 1 # return error 1
+    except:
+        logging.error("(maestro.py): Failed to establish serial connection to maestro.\n")
+        return 1
 
 
 ########## SEND BAUD RATE ##########
@@ -80,25 +75,19 @@ def sendBaudRateIndication(maestro): # function to send baud rate indication to 
 
     ##### attempt to send baud rate indication #####
 
-    logging.debug("Sending baud rate initializer...\n") # print initialization statement
+    logging.debug("(maestro.py): Sending baud rate initializer...\n") # print initialization statement
 
     try: # try to send baud rate indication
 
         maestro.write(bytearray([0xAA])) # send 0xAA byte to indicate baud rate
-
         time.sleep(0.1) # give time for maestro to process baud rate indication
-
-        logging.info("Successfully initialized maestro with baud rate.\n") # print success statement
-
-        return 0 # return success code
-
-    ##### throw error and return error code if baud rate indication fails #####
+        logging.info("(maestro.py): Successfully initialized maestro with baud rate.\n")
+        return 0
 
     except: # if baud rate indication failed...
 
-        logging.error("ERROR (initialize_maestro.py): Failed to send baud rate indication to maestro.\n") # print failure
-
-        return 2 # return error 2
+        logging.error("(maestro.py): Failed to send baud rate indication to maestro.\n") # print failure
+        return 1
 
 
 ########## CREATE MAESTRO CONNECTION ##########
@@ -107,20 +96,20 @@ def createMaestroConnection(): # function to create maestro connection
 
     ##### establish serial connection to maestro #####
 
+    logging.debug("(maestro.py): Attempting to establish connection with maestro...\n")
+
     # establish maestro serial connection
-    MAESTRO = establishSerialConnection(serialPortName, serialBaudRate, serialTimeout)
+    MAESTRO = establish_serial_connection(serialPortName, serialBaudRate, serialTimeout)
 
     if MAESTRO == 1: # if maestro connection failed...
-
         raise SystemExit(1) # kill process
 
     ##### send baud rate indication to maestro #####
 
-    if sendBaudRateIndication(MAESTRO) == 2: # send baud rate indication to maestro to establish communication
-
+    if sendBaudRateIndication(MAESTRO) == 2: # if baud rate indication failed...
         raise SystemExit(2) # kill process
 
-    return MAESTRO # return maestro connection object
+    return MAESTRO
 
 
 ########## CLOSE MAESTRO CONNECTION ##########
@@ -129,17 +118,12 @@ def closeMaestroConnection(maestro): # function to close serial connection to ma
 
     ##### attempt to close maestro connection #####
 
-    logging.debug("Attempting to close connection with maestro...\n") # print initialization statement
+    logging.debug("(maestro.py): Attempting to close connection with maestro...\n")
 
     try: # try to close maestro connection
 
         maestro.close() # close maestro connection
+        logging.info("(maestro.py): Successfully closed connection with maestro.\n")
 
-        logging.info("Successfully closed connection with maestro.\n") # print success statement
-
-    ##### throw error and return error code if closing connection fails #####
-
-    except: # if closing connection failed...
-
-        # print failure statement
-        logging.error("ERROR (initialize_maestro.py): Failed to close serial connection to maestro.\n")
+    except:
+        logging.error("(maestro.py): Failed to close serial connection to maestro.\n")

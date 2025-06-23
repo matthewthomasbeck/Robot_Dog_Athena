@@ -18,10 +18,15 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
-##### control libraries #####
+##### import necessary libraries #####
 
 import pigpio # import pigpio library for PWM control
 import time # import time library for time functions
+import logging # import logging library for debugging
+
+##### import config #####
+
+#import utilities.config as config # import configuration data for receiver
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -89,7 +94,9 @@ PWM_PINS = [ # define PWM pins
 
 class PWMDecoder: # class to decode PWM signals
 
-    #####  initialize PWM signal decoding #####
+    ##### initialize PWM signal decoding #####
+
+    logging.debug("(receiver.py): Initializing PWM signal decoding...\n")
 
     def __init__(self, pi, gpio, callback): # function to initialize pwm signal decoding
 
@@ -103,10 +110,11 @@ class PWMDecoder: # class to decode PWM signals
 
     ##### decode PWM signal #####
 
+    logging.debug("(receiver.py): Decoding PWM signal...\n")
+
     def _cbf(self, gpio, level, tick): # function to decode pwm signal
 
         if self.last_tick is not None: # if last tick is not None...
-
             self.tick = tick # set tick
             self.callback(gpio, tick - self.last_tick) # call callback with gpio and tick - last tick
 
@@ -115,7 +123,6 @@ class PWMDecoder: # class to decode PWM signals
     ##### cancel PWM signal decoding #####
 
     def cancel(self): # function to cancel pwm signal decoding
-
         self.cb.cancel() # cancel callback
 
 
@@ -123,22 +130,34 @@ class PWMDecoder: # class to decode PWM signals
 
 def getJoystickIntensity(pulse_width, min_val, max_val): # return a value from 1-10 based on intensity
 
-    if pulse_width < min_val:
-        intensity = int(10 * (min_val - pulse_width) / (min_val - 1000))  # Scale intensity downwards
-    elif pulse_width > max_val:
-        intensity = int(10 * (pulse_width - max_val) / (2000 - max_val))  # Scale intensity upwards
-    else:
-        return 0  # Neutral position
+    ##### calculate intensity based on pulse width #####
 
-    return max(1, min(intensity, 10))  # Ensure value is between 1-10
+    logging.debug(f"(receiver.py): Calculating joystick intensity for pulse width {pulse_width}...\n")
+
+    try: # try to calculate joystick intensity
+
+        if pulse_width < min_val:
+            intensity = int(10 * (min_val - pulse_width) / (min_val - 1000)) # scale intensity downwards
+        elif pulse_width > max_val:
+            intensity = int(10 * (pulse_width - max_val) / (2000 - max_val)) # scale intensity upwards
+        else:
+            return 0 # neutral position, no intensity
+
+        return max(1, min(intensity, 10))  # Ensure value is between 1-10
+
+    except Exception as e:
+        logging.error(f"(receiver.py): Failed to calculate joystick intensity: {e}\n")
+        return 0
 
 
 ########## COMMAND INTERPRETER ##########
 
 def interpretCommands(channel_data): # function to interpret commands from PWM signal data
 
-    ##### set variables #####
+    ##### interpret commands from PWM signal data #####
 
+    logging.debug("(receiver.py): Interpreting commands from channel data...\n")
+    current_time = time.time()  # set current time to current time
     commands = { # create dictionary of commands
 
         'channel-0': ('NEUTRAL', 0), # set channel 0 to neutral for silence
@@ -146,8 +165,6 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
         'channel-2': ('NEUTRAL', 0), # set channel 2 to neutral for silence
         'channel-7': ('NEUTRAL', 0), # set channel 7 to neutral for silence
     }
-
-    current_time = time.time() # set current time to current time
 
     ##### tilt channel 0 #####
 

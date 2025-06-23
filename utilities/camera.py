@@ -38,7 +38,7 @@ def kill_existing_camera_processes(): # function to kill existing camera process
 
     try:
 
-        logging.info("Checking for existing camera processes...\n")
+        logging.debug("(camera.py): Checking for existing camera processes...\n")
 
         # use pgrep to find existing camera processes
         result = subprocess.run(["pgrep", "-f", "rpicam-jpeg|rpicam-vid|libcamera"], stdout=subprocess.PIPE, text=True)
@@ -46,14 +46,12 @@ def kill_existing_camera_processes(): # function to kill existing camera process
         pids = result.stdout.splitlines() # get the process IDs of existing camera processes
 
         if pids: # if there are any existing camera processes...
-
-            logging.warning(f"Existing camera processes found: {pids}. Terminating them.\n")
+            logging.warning(f"(camera.py): Existing camera processes found: {pids}. Terminating them.\n")
 
             for pid in pids: # iterate through each process ID and kill it
-
                 os.kill(int(pid), signal.SIGKILL)
 
-            logging.info("Successfully killed existing camera processes.\n")
+            logging.info("(camera.py): Successfully killed existing camera processes.\n")
 
     except Exception as e:
 

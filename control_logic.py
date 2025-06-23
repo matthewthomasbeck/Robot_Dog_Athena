@@ -89,7 +89,7 @@ CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
 
 MODE = 'radio'
 
-logging.info("Starting control_logic.py script...\n")  # log start of script
+logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
 
 
 #########################################
@@ -152,10 +152,10 @@ def run_robot():  # central function that runs robot
 
             if MODE.startswith("ssh"):
                 server = setup_unix_socket()
-                logging.info("Waiting for SSH control client to connect to socket...\n")
+                logging.debug("(control_logic.py): Waiting for SSH control client to connect to socket...\n")
                 conn, _ = server.accept()
                 conn.setblocking(True)
-                logging.info("SSH client connected.\n")
+                logging.info("(control_logic.py): SSH client connected.\n")
 
             # TODO OLD CODE Handle commands
             # commands = interpretCommands(CHANNEL_DATA)
@@ -186,11 +186,11 @@ def run_robot():  # central function that runs robot
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
 
     except KeyboardInterrupt:  # if user ends program...
-        logging.info("KeyboardInterrupt received. Exiting...\n")
+        logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
 
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
-        exit(1)  # kill process
+        exit(1)
 
     ##### clean up when complete #####
 
@@ -225,22 +225,22 @@ def execute_radio_commands(channel, action, intensity,
                 # function to squat
         elif action == 'SQUAT UP':
             # function to neutral
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
 
     ##### tilt channel 0 #####
 
     if channel == 'channel-0':
         if action == 'TILT DOWN':
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
         elif action == 'TILT UP':
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
 
     ##### trigger channel 1 #####
 
     elif channel == 'channel-1':
 
         if action == 'TRIGGER SHOOT':
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
 
     ##### rotation channel 3 #####
 
@@ -248,7 +248,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'ROTATE LEFT':
 
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -262,7 +262,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'ROTATE RIGHT':
 
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -276,7 +276,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'LOOK DOWN':
 
-            logging.info(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -290,7 +290,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'LOOK UP':
 
-            logging.info(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -304,7 +304,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'MOVE FORWARD':
 
-            logging.info(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}\n")
 
             try:
                 trot_forward(intensity)
@@ -328,7 +328,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'MOVE BACKWARD':
 
-            logging.info(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -342,7 +342,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'SHIFT LEFT':
 
-            logging.info(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -356,7 +356,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'SHIFT RIGHT':
 
-            logging.info(f"{channel}: {action}")
+            logging.info(f"{channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -368,9 +368,9 @@ def execute_radio_commands(channel, action, intensity,
 
     elif channel == 'channel-7':
         if action == '+':
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
         elif action == '-':
-            print(f"{channel}: {action}")
+            logging.debug(f"{channel}: {action}\n")
 
     ##### update is neutral standing #####
 
@@ -474,7 +474,7 @@ def execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_m
     else:  # Normal operation mode
 
         if key == 'q':
-            logging.info("Exiting control logic.")
+            logging.info("(control_logic.py): Exiting control logic.\n")
             return is_neutral  # Exit condition
 
         elif key == 'w':  # Move forward

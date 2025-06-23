@@ -36,6 +36,10 @@ import logging # import logging for logging messages
 
 def load_and_compile_model(model_xml_path, device_name="MYRIAD"): # function to load and compile an OpenVINO model
 
+    ##### compile model #####
+
+    logging.debug("(opencv.py): Loading and compiling model...\n")
+
     try: # try to load and compile the model
 
         ie = Core() # check for devices
@@ -44,14 +48,13 @@ def load_and_compile_model(model_xml_path, device_name="MYRIAD"): # function to 
         compiled_model = ie.compile_model(model=model, device_name=device_name) # compile model for specified device
         input_layer = compiled_model.input(0) # get input layer of compiled model
         output_layer = compiled_model.output(0) # get output layer of compiled model
-
-        logging.info(f"Model loaded and compiled on {device_name}.\n")
-        logging.info(f"Model input shape: {input_layer.shape}\n")
+        logging.info(f"(opencv.py): Model loaded and compiled on {device_name}.\n")
+        logging.info(f"(opencv.py): Model input shape: {input_layer.shape}\n")
 
         return compiled_model, input_layer, output_layer
 
     except Exception as e:
-        print(f"ERROR (initialize_opencv.py): Failed to load/compile model: {e}\n")
+        logging.error(f"(opencv.py): Failed to load/compile model: {e}\n")
         return None, None, None
 
 
@@ -60,6 +63,8 @@ def load_and_compile_model(model_xml_path, device_name="MYRIAD"): # function to 
 def test_with_dummy_input(compiled_model, input_layer, output_layer): # function to test the model with a dummy input
 
     ##### check if model/layers are properly initialized #####
+
+    logging.debug("(opencv.py): Testing model with dummy input...\n")
 
     # if model/layers not properly initialized...
     if compiled_model is None or input_layer is None or output_layer is None:
@@ -73,11 +78,9 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
         dummy_input_shape = input_layer.shape # get the shape of the input layer
         dummy_input = np.ones(dummy_input_shape, dtype=np.float32) # create a dummy input with ones
         _ = compiled_model([dummy_input])[output_layer] # run the model but don't use output
-
-        logging.info("Dummy input test passed.\n")
+        logging.info("(opencv.py): Dummy input test passed.\n")
 
     except Exception as e:
-
         logging.error(f"(opencv.py): Dummy input test failed: {e}\n")
 
 
@@ -85,12 +88,16 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
 
 def run_inference(compiled_model, input_layer, output_layer, camera_process, mjpeg_buffer, run_inference):
 
+    ##### check if model/layers are properly initialized #####
+
+    logging.debug("(opencv.py): Running inference on camera stream...\n")
+
     try: # try to run inference on the camera stream
 
         chunk = camera_process.stdout.read(4096) # read a chunk of data from camera process stdout
 
-        if not chunk:
-            logging.error("Camera process stopped sending data.")
+        if not chunk: # if no data is received...
+            logging.error("(opencv.py): Camera process stopped sending data.\n")
             return mjpeg_buffer
 
         mjpeg_buffer += chunk # append chunk to buffer
@@ -107,14 +114,19 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
                 if not run_inference:  # if inference is not to be run...
 
+                    ##### show frame without inference #####
+
                     cv2.imshow("video (standard)", frame) # show the frame in a window
                     if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
                         return mjpeg_buffer
 
                     return mjpeg_buffer
 
+                ##### run inference #####
+
                 try: # if inference is to be run...
 
+                    logging.debug("(opencv.py): Running inference on frame...\n")
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert frame to RGB format
                     input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1) # resize/transpose to match shape
                     input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32) # add batch dim and set float32

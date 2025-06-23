@@ -32,52 +32,52 @@ import logging # import logging for debugging
 
 ########## INVERSE KINEMATICS ##########
 
-class Kinematics:
-    def __init__(self, link_config):
+class Kinematics: # class to handle inverse kinematics calculations for a leg
+
+    def __init__(self, link_config): # constructor to initialize kinematics with link configuration
+
+        ##### initialize kinematics with link configuration #####
+
+        logging.debug("(mathematics.py): Initializing kinematics with link configuration...\n")
+
         self.hip_offset = link_config['HIP_OFFSET']
         self.hip_to_leg_plane = link_config['HIP_TO_LEG_PLANE']
         self.femur = link_config['FEMUR_LENGTH']
         self.tibia = link_config['TIBIA_LENGTH']
 
-    def inverse_kinematics(self, x, y, z):
+    def inverse_kinematics(self, x, y, z): # function to calculate inverse kinematics for a leg with given coordinates
 
         ##### calculate inverse kinematics #####
 
+        logging.debug(f"(mathematics.py): Calculating inverse kinematics for x={x}, y={y}, z={z}...\n")
+
         try: # attempt to calculate inverse kinematics
 
-            # Hip abduction (rotation around Z) from Y offset
-            hip_angle = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
+            # hip abduction (rotation around Z) from Y offset
+            pelvis_angle = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
 
-            # Project leg into sagittal plane (XZ), accounting for hip linkage offset
+            # project leg into sagittal plane (XZ), accounting for hip linkage offset
             hip_plane_offset = self.hip_to_leg_plane
             x_leg = x - hip_plane_offset  # adjust X
-            leg_plane_dist = math.sqrt(x_leg**2 + z**2)
+            leg_plane_dist = math.sqrt(x_leg**2 + z**2) # distance in the leg plane (XZ)
+            min_reach = abs(self.femur - self.tibia) # clamp leg distance to reachable range
+            max_reach = self.femur + self.tibia # maximum reach of the leg
+            leg_plane_dist = max(min_reach, min(max_reach, leg_plane_dist)) # clamp leg distance to reachable range
 
-            # Clamp leg distance to reachable range
-            min_reach = abs(self.femur - self.tibia)
-            max_reach = self.femur + self.tibia
-            leg_plane_dist = max(min_reach, min(max_reach, leg_plane_dist))
-
-            # Law of Cosines for knee angle (theta3)
+            # law of cosines for knee angle (theta3)
             cos_theta3 = (self.femur**2 + self.tibia**2 - leg_plane_dist**2) / (2 * self.femur * self.tibia)
-            theta3 = math.acos(cos_theta3)  # radians
+            theta3 = math.acos(cos_theta3) # radians
 
-            # Law of Cosines for shoulder angle (theta2)
+            # law of cosines for shoulder angle (theta2)
             cos_theta2 = (self.femur**2 + leg_plane_dist**2 - self.tibia**2) / (2 * self.femur * leg_plane_dist)
-            theta2_offset = math.acos(cos_theta2)  # radians
-            shoulder_to_foot_angle = math.atan2(-z, x_leg)  # radians
+            theta2_offset = math.acos(cos_theta2) # radians
+            shoulder_to_foot_angle = math.atan2(-z, x_leg) # radians
+            theta2 = shoulder_to_foot_angle - theta2_offset # final theta2
 
-            theta2 = shoulder_to_foot_angle - theta2_offset
+            return (pelvis_angle, math.degrees(theta2), math.degrees(theta3)) # return pelvis, femur, tibia angles
 
-            return (
-                hip_angle,                  # around Z (abduction/adduction)
-                math.degrees(theta2),      # upper leg
-                math.degrees(theta3)       # knee
-            )
-
-        except Exception as e: # if there is an error calculating inverse kinematics...
-
-            logging.error(f"(mathematics.py) Failed to calculate inverse kinematics for x={x}, y={y}, z={z}: {e}\n")
+        except Exception as e:
+            logging.error(f"(mathematics.py): Failed to calculate inverse kinematics for x={x}, y={y}, z={z}: {e}\n")
 
 
 ########## CALCULATE INTENSITY ##########
@@ -85,6 +85,8 @@ class Kinematics:
 def interpret_intensity(intensity): # function to interpret intensity
 
     ##### find speed, acceleration, stride_scalar #####
+
+    logging.debug("(mathematcs.py): Interpreting intensity...\n")
 
     try: # attempt to interpret intensity
 
@@ -106,20 +108,18 @@ def interpret_intensity(intensity): # function to interpret intensity
 
         return speed, acceleration # return movement parameters
 
-    except Exception as e: # if there is an error interpreting intensity...
-
-        logging.error(f"(mathematics.py) Failed to interpret intensity {intensity}: {e}\n")
+    except Exception as e:
+        logging.error(f"(mathematics.py): Failed to interpret intensity {intensity}: {e}\n")
 
 
 ########## BEZIER CURVE ##########
 
 def bezier_curve(p0, p1, p2, steps):
 
-    ##### set variables #####
-
-    curve = []
-
     ##### create bezier curve #####
+
+    logging.debug("(mathematics.py): Creating bezier curve...\n")
+    curve = []
 
     try: # attempt to create bezier curve
 
@@ -131,6 +131,5 @@ def bezier_curve(p0, p1, p2, steps):
 
         return curve
 
-    except Exception as e: # if there is an error creating bezier curve...
-
-        logging.error(f"(mathematics.py) Failed to create bezier curve: {e}\n")
+    except Exception as e:
+        logging.error(f"(mathematics.py): Failed to create bezier curve: {e}\n")
