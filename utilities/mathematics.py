@@ -86,7 +86,7 @@ def interpret_intensity(intensity): # function to interpret intensity
 
     ##### find speed, acceleration, stride_scalar #####
 
-    logging.debug("(mathematcs.py): Interpreting intensity...\n")
+    #logging.debug("(mathematcs.py): Interpreting intensity...\n") # very annoying, leave commented
 
     try: # attempt to interpret intensity
 

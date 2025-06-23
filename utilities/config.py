@@ -19,30 +19,27 @@
 ########## IMPORT DEPENDENCIES ##########
 
 import time # import time library for gait timing
-import logging
+import logging # import logging library for debugging
 
 
 
 
 
-#############################################################
-############### CREATE UTILITY CONFIGURATIONS ###############
-#############################################################
+#####################################################
+############### CREATE CONFIGURATIONS ###############
+#####################################################
 
 
-########## LOGGING CONFIG ##########
+########## UTILITY CONFIGURATIONS ##########
 
-##### declare camera parameters for video #####
+##### set logging configuration #####
 
 LOG_CONFIG = {
     'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
     'LOG_LEVEL': logging.DEBUG # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
 }
 
-
-########## CAMERA CONFIG ##########
-
-##### declare camera parameters for video #####
+##### set camera configuration #####
 
 CAMERA_CONFIG = {
     'WIDTH': 640, # width of the camera image
@@ -50,33 +47,60 @@ CAMERA_CONFIG = {
     'FRAMERATE': 30, # frames per second of the camera image
 }
 
-
-########## INFERENCE CONFIG ##########
-
-##### declare camera parameters for running AI #####
+##### set inference configuration #####
 
 INFERENCE_CONFIG = {
-
-    # path to model XML file DO NOT CHANGE
-    'MODEL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",
+    'MODEL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml", # DO NOT CHANGE
     'TPU_NAME': "MYRIAD"  # literal device name in code
 }
 
+##### declare movement channel GPIO pins #####
 
-########## LEG LINKAGE CONFIG ##########
+SIGNAL_TUNING_CONFIG = { # dictionary of signal tuning configuration for sensitivity
+    'JOYSTICK_THRESHOLD': 40, # number of times condition must be met to trigger a request on a joystick channel
+    'TOGGLE_THRESHOLD': 40, # number of times condition must be met to trigger a request on a button channel
+    'TIME_FRAME': 0.10017, # time frame for condition to be met, default: 0.100158
+    'DEADBAND_HIGH': 1600, # deadband high for PWM signal
+    'DEADBAND_LOW': 1400 # deadband low for PWM signal
+}
 
-##### set dictionary of linkages and their lengths #####
+GPIO_PINS = { # dictionary of GPIO pins for movement channels
+    'tiltUpDownChannel0': 17, # default: 17
+    'triggerShootChannel1': 27, # default: 27
+    'squatUpDownChannel2': 22, # default: 22
+    'rotateLeftRightChannel3': 5, # default: 5
+    'lookUpDownChannel4': 6, # default: 6
+    'moveForwardBackwardChannel5': 13, # default: 13
+    'shiftLeftRightChannel6': 19, # default: 19
+    'extraChannel7': 26 # default: 26
+}
+
+CHANNEL_COUNTERS = { # set channel counters to 0 for channel requests with channel intensity
+    'channel-0': 0, 'channel-1': 0, 'channel-2': 0, 'channel-3': 0,
+    'channel-4': 0, 'channel-5': 0, 'channel-6': 0, 'channel-7': 0,
+}
+
+CHANNEL_TIMESTAMPS = { # set channel timestamps to current time for channel requests
+    'channel-0': time.time(), 'channel-1': time.time(), 'channel-2': time.time(), 'channel-3': time.time(),
+    'channel-4': time.time(), 'channel-5': time.time(), 'channel-6': time.time(), 'channel-7': time.time()
+}
+
+##### set receiver configuration #####
+
+MAESTRO_CONFIG = { # dictionary of maestro configuration
+}
+
+
+########## ROBOT CONFIGURATIONS ##########
+
+##### set link configuration #####
 
 LINK_CONFIG = { # dictionary of leg linkages # TODO rename anything 'hip' related to 'pelvis' for 3d object consistency
-
     'HIP_OFFSET': 0.0485394, # centerline to hip servo
     'HIP_TO_LEG_PLANE': 0.0290068, # axis to leg plane
     'FEMUR_LENGTH': 0.11, # femur length
     'TIBIA_LENGTH': 0.125, # tibia length
 }
-
-
-########## SERVO CONFIG ##########
 
 ##### set dictionary of servos and their ranges #####
 

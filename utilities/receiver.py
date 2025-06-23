@@ -20,66 +20,22 @@
 
 ##### import necessary libraries #####
 
+import RPi.GPIO as GPIO # import RPi.GPIO library for GPIO control
 import pigpio # import pigpio library for PWM control
 import time # import time library for time functions
 import logging # import logging library for debugging
 
 ##### import config #####
 
-#import utilities.config as config # import configuration data for receiver
+import utilities.config as config # dynamically import config
 
 
 ########## CREATE DEPENDENCIES ##########
 
-##### set counters and timestamps for each channel #####
+##### set channel data #####
 
-CHANNEL_COUNTERS = { # set channel counters to 0 for channel requests with channel intensity
-
-    'channel-0': 0, 'channel-1': 0, 'channel-2': 0, 'channel-3': 0,
-    'channel-4': 0, 'channel-5': 0, 'channel-6': 0, 'channel-7': 0,
-}
-
-CHANNEL_TIMESTAMPS = { # set channel timestamps to current time for channel requests
-
-    'channel-0': time.time(), 'channel-1': time.time(), 'channel-2': time.time(), 'channel-3': time.time(),
-    'channel-4': time.time(), 'channel-5': time.time(), 'channel-6': time.time(), 'channel-7': time.time()
-}
-
-##### channel registry hyperparameters #####
-
-JOYSTICK_THRESHOLD = 40 # number of times condition must be met to trigger a request on a joystick channel
-TOGGLE_THRESHOLD = 40 # number of times condition must be met to trigger a request on a button channel
-TIME_FRAME = 0.10017 # time frame for condition to be met, default: 0.100158
-DEADBAND_HIGH = 1600 # deadband high for PWM signal
-DEADBAND_LOW = 1400 # deadband low for PWM signal
-
-##### declare movement channel GPIO pins #####
-
-tiltUpDownChannel0 = 17 # default: 17
-triggerShootChannel1 = 27 # default: 27
-squatUpDownChannel2 = 22 # default: 22
-rotateLeftRightChannel3 = 5 # default: 5
-lookUpDownChannel4 = 6 # default: 6
-moveForwardBackwardChannel5 = 13 # default: 13
-shiftLeftRightChannel6 = 19 # default: 19
-
-##### declare extra channel GPIO pins #####
-
-extraChannel7 = 26 # default: 26
-
-##### declare utilized pwm pins #####
-
-PWM_PINS = [ # define PWM pins
-
-    tiltUpDownChannel0, # default: 17
-    triggerShootChannel1, # default: 27
-    squatUpDownChannel2, # default: 22
-    rotateLeftRightChannel3, # default: 5
-    lookUpDownChannel4, # default: 6
-    moveForwardBackwardChannel5, # default: 13
-    shiftLeftRightChannel6, # default: 19
-    extraChannel7, # default: 26
-]
+# iterate through GPIO_PINS and assign neutral values of 1500
+CHANNEL_DATA = {pin: 1500 for pin in list(config.GPIO_PINS.values())}
 
 
 
@@ -126,13 +82,53 @@ class PWMDecoder: # class to decode PWM signals
         self.cb.cancel() # cancel callback
 
 
+########## INITIALIZE RECEIVER ##########
+
+def initialize_receiver(): # function to initialize receiver
+
+    ##### initialize receiver #####
+
+    logging.debug("(receiver.py): Initializing receiver...\n")
+
+    try:
+        GPIO.cleanup() # clean up GPIO to ensure no previous state affects the receiver
+        pi = pigpio.pi() # create pigpio instance
+        if not pi.connected: # if pigpio instance is not connected...
+            logging.error("(receiver.py): Failed to connect to pigpio daemon. Exiting...\n")
+            exit(1)
+
+        GPIO.setmode(GPIO.BCM) # set GPIO mode to BCM as standard
+        decoders = [] # list to hold PWM decoders
+        for pin in config.GPIO_PINS.values(): # iterate through GPIO pins
+            decoder = PWMDecoder(pi, pin, _pwm_callback) # create PWM decoder for each pin
+            decoders.append(decoder) # add decoder to list
+
+        logging.info("(receiver.py): Receiver initialized with pigpio + PWM decoders.\n")
+
+        return pi, decoders, CHANNEL_DATA # return pigpio instance, list of decoders, and channel data
+
+    except Exception as e:
+        logging.error(f"(receiver.py): Receiver initialization failed: {e}\n")
+        exit(1)
+
+
+########## PWM CALLBACK ##########
+
+def _pwm_callback(gpio, pulseWidth):  # function to set pulse width to channel data
+
+    ##### set pulse width to channel data #####
+
+    CHANNEL_DATA[gpio] = pulseWidth  # set channel data to pulse width
+
+
 ########## JOYSTICK INTENSITY ##########
 
-def getJoystickIntensity(pulse_width, min_val, max_val): # return a value from 1-10 based on intensity
+def _get_joystick_intensity(pulse_width, min_val, max_val): # return a value from 1-10 based on intensity
 
     ##### calculate intensity based on pulse width #####
 
-    logging.debug(f"(receiver.py): Calculating joystick intensity for pulse width {pulse_width}...\n")
+    # very annoying, leave commented
+    #logging.debug(f"(receiver.py): Calculating joystick intensity for pulse width {pulse_width}...\n")
 
     try: # try to calculate joystick intensity
 
@@ -152,11 +148,11 @@ def getJoystickIntensity(pulse_width, min_val, max_val): # return a value from 1
 
 ########## COMMAND INTERPRETER ##########
 
-def interpretCommands(channel_data): # function to interpret commands from PWM signal data
+def interpret_commands(channel_data): # function to interpret commands from PWM signal data
 
     ##### interpret commands from PWM signal data #####
 
-    logging.debug("(receiver.py): Interpreting commands from channel data...\n")
+    #logging.debug("(receiver.py): Interpreting commands from channel data...\n") # very annoying, leave commented
     current_time = time.time()  # set current time to current time
     commands = { # create dictionary of commands
 
@@ -168,214 +164,214 @@ def interpretCommands(channel_data): # function to interpret commands from PWM s
 
     ##### tilt channel 0 #####
 
-    if channel_data[tiltUpDownChannel0] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-0'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-0'] = 0
-        CHANNEL_COUNTERS['channel-0'] += 1
-        CHANNEL_TIMESTAMPS['channel-0'] = current_time
-        if CHANNEL_COUNTERS['channel-0'] >= TOGGLE_THRESHOLD:
+    if channel_data[config.GPIO_PINS['tiltUpDownChannel0']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-0'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-0'] = 0
+        config.CHANNEL_COUNTERS['channel-0'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-0'] = current_time
+        if config.CHANNEL_COUNTERS['channel-0'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-0'] = ('TILT DOWN', 0)
-            CHANNEL_COUNTERS['channel-0'] = 0
-    elif channel_data[tiltUpDownChannel0] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-0'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-0'] = 0
-        CHANNEL_COUNTERS['channel-0'] += 1
-        CHANNEL_TIMESTAMPS['channel-0'] = current_time
-        if CHANNEL_COUNTERS['channel-0'] >= TOGGLE_THRESHOLD:
+            config.CHANNEL_COUNTERS['channel-0'] = 0
+    elif channel_data[config.GPIO_PINS['tiltUpDownChannel0']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-0'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-0'] = 0
+        config.CHANNEL_COUNTERS['channel-0'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-0'] = current_time
+        if config.CHANNEL_COUNTERS['channel-0'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-0'] = ('TILT UP', 0)
-            CHANNEL_COUNTERS['channel-0'] = 0
+            config.CHANNEL_COUNTERS['channel-0'] = 0
 
     ##### trigger channel 1 #####
 
-    if channel_data[triggerShootChannel1] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-1'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-1'] = 0
-        CHANNEL_COUNTERS['channel-1'] += 1
-        CHANNEL_TIMESTAMPS['channel-1'] = current_time
-        if CHANNEL_COUNTERS['channel-1'] >= TOGGLE_THRESHOLD:
+    if channel_data[config.GPIO_PINS['triggerShootChannel1']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-1'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-1'] = 0
+        config.CHANNEL_COUNTERS['channel-1'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-1'] = current_time
+        if config.CHANNEL_COUNTERS['channel-1'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-1'] = ('NEUTRAL', 0)
-            CHANNEL_COUNTERS['channel-1'] = 0
-    elif channel_data[triggerShootChannel1] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-1'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-1'] = 0
-        CHANNEL_COUNTERS['channel-1'] += 1
-        CHANNEL_TIMESTAMPS['channel-1'] = current_time
-        if CHANNEL_COUNTERS['channel-1'] >= TOGGLE_THRESHOLD:
+            config.CHANNEL_COUNTERS['channel-1'] = 0
+    elif channel_data[config.GPIO_PINS['triggerShootChannel1']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-1'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-1'] = 0
+        config.CHANNEL_COUNTERS['channel-1'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-1'] = current_time
+        if config.CHANNEL_COUNTERS['channel-1'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-1'] = ('TRIGGER SHOOT', 0)
-            CHANNEL_COUNTERS['channel-1'] = 0
+            config.CHANNEL_COUNTERS['channel-1'] = 0
 
     ##### squat channel 2 #####
 
-    if channel_data[squatUpDownChannel2] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-2'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-2'] = 0
-        CHANNEL_COUNTERS['channel-2'] += 1
-        CHANNEL_TIMESTAMPS['channel-2'] = current_time
-        if CHANNEL_COUNTERS['channel-2'] >= TOGGLE_THRESHOLD:
+    if channel_data[config.GPIO_PINS['squatUpDownChannel2']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-2'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-2'] = 0
+        config.CHANNEL_COUNTERS['channel-2'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-2'] = current_time
+        if config.CHANNEL_COUNTERS['channel-2'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-2'] = ('SQUAT DOWN', 0)
-            CHANNEL_COUNTERS['channel-2'] = 0
-    elif channel_data[squatUpDownChannel2] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-2'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-2'] = 0
-        CHANNEL_COUNTERS['channel-2'] += 1
-        CHANNEL_TIMESTAMPS['channel-2'] = current_time
-        if CHANNEL_COUNTERS['channel-2'] >= TOGGLE_THRESHOLD:
+            config.CHANNEL_COUNTERS['channel-2'] = 0
+    elif channel_data[config.GPIO_PINS['squatUpDownChannel2']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-2'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-2'] = 0
+        config.CHANNEL_COUNTERS['channel-2'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-2'] = current_time
+        if config.CHANNEL_COUNTERS['channel-2'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-2'] = ('SQUAT UP', 0)
-            CHANNEL_COUNTERS['channel-2'] = 0
+            config.CHANNEL_COUNTERS['channel-2'] = 0
 
     ##### rotation channel 3 #####
 
-    if channel_data[rotateLeftRightChannel3] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-3'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-3'] = 0
-        CHANNEL_COUNTERS['channel-3'] += 1
-        CHANNEL_TIMESTAMPS['channel-3'] = current_time
+    if channel_data[config.GPIO_PINS['rotateLeftRightChannel3']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-3'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-3'] = 0
+        config.CHANNEL_COUNTERS['channel-3'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-3'] = current_time
 
-        if CHANNEL_COUNTERS['channel-3'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[rotateLeftRightChannel3], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-3'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['rotateLeftRightChannel3']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-3'] = ('ROTATE LEFT', intensity)
-            CHANNEL_COUNTERS['channel-3'] = 0
+            config.CHANNEL_COUNTERS['channel-3'] = 0
 
-    elif DEADBAND_LOW <= channel_data[rotateLeftRightChannel3] <= DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-3'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-3'] = 0
-        CHANNEL_COUNTERS['channel-3'] += 1
-        CHANNEL_TIMESTAMPS['channel-3'] = current_time
+    elif config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'] <= channel_data[config.GPIO_PINS['rotateLeftRightChannel3']] <= config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-3'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-3'] = 0
+        config.CHANNEL_COUNTERS['channel-3'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-3'] = current_time
 
-        if CHANNEL_COUNTERS['channel-3'] >= JOYSTICK_THRESHOLD:
+        if config.CHANNEL_COUNTERS['channel-3'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
             commands['channel-3'] = ('NEUTRAL', 0)
-            CHANNEL_COUNTERS['channel-3'] = 0
+            config.CHANNEL_COUNTERS['channel-3'] = 0
 
-    elif channel_data[rotateLeftRightChannel3] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-3'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-3'] = 0
-        CHANNEL_COUNTERS['channel-3'] += 1
-        CHANNEL_TIMESTAMPS['channel-3'] = current_time
+    elif channel_data[config.GPIO_PINS['rotateLeftRightChannel3']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-3'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-3'] = 0
+        config.CHANNEL_COUNTERS['channel-3'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-3'] = current_time
 
-        if CHANNEL_COUNTERS['channel-3'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[rotateLeftRightChannel3], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-3'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['rotateLeftRightChannel3']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-3'] = ('ROTATE RIGHT', intensity)
-            CHANNEL_COUNTERS['channel-3'] = 0
+            config.CHANNEL_COUNTERS['channel-3'] = 0
 
     ##### look channel 4 #####
 
-    if channel_data[lookUpDownChannel4] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-4'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-4'] = 0
-        CHANNEL_COUNTERS['channel-4'] += 1
-        CHANNEL_TIMESTAMPS['channel-4'] = current_time
+    if channel_data[config.GPIO_PINS['lookUpDownChannel4']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-4'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-4'] = 0
+        config.CHANNEL_COUNTERS['channel-4'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-4'] = current_time
 
-        if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[lookUpDownChannel4], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-4'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['lookUpDownChannel4']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-4'] = ('LOOK DOWN', intensity)
-            CHANNEL_COUNTERS['channel-4'] = 0
+            config.CHANNEL_COUNTERS['channel-4'] = 0
 
-    elif DEADBAND_LOW <= channel_data[lookUpDownChannel4] <= DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-4'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-4'] = 0
-        CHANNEL_COUNTERS['channel-4'] += 1
-        CHANNEL_TIMESTAMPS['channel-4'] = current_time
+    elif config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'] <= channel_data[config.GPIO_PINS['lookUpDownChannel4']] <= config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-4'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-4'] = 0
+        config.CHANNEL_COUNTERS['channel-4'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-4'] = current_time
 
-        if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
+        if config.CHANNEL_COUNTERS['channel-4'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
             commands['channel-4'] = ('NEUTRAL', 0)
-            CHANNEL_COUNTERS['channel-4'] = 0
+            config.CHANNEL_COUNTERS['channel-4'] = 0
 
-    elif channel_data[lookUpDownChannel4] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-4'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-4'] = 0
-        CHANNEL_COUNTERS['channel-4'] += 1
-        CHANNEL_TIMESTAMPS['channel-4'] = current_time
+    elif channel_data[config.GPIO_PINS['lookUpDownChannel4']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-4'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-4'] = 0
+        config.CHANNEL_COUNTERS['channel-4'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-4'] = current_time
 
-        if CHANNEL_COUNTERS['channel-4'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[lookUpDownChannel4], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-4'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['lookUpDownChannel4']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-4'] = ('LOOK UP', intensity)
-            CHANNEL_COUNTERS['channel-4'] = 0
+            config.CHANNEL_COUNTERS['channel-4'] = 0
 
     ##### move channel 5 #####
 
-    if channel_data[moveForwardBackwardChannel5] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-5'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-5'] = 0
-        CHANNEL_COUNTERS['channel-5'] += 1
-        CHANNEL_TIMESTAMPS['channel-5'] = current_time
+    if channel_data[config.GPIO_PINS['moveForwardBackwardChannel5']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-5'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-5'] = 0
+        config.CHANNEL_COUNTERS['channel-5'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-5'] = current_time
 
-        if CHANNEL_COUNTERS['channel-5'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[moveForwardBackwardChannel5], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-5'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['moveForwardBackwardChannel5']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-5'] = ('MOVE FORWARD', intensity)
-            CHANNEL_COUNTERS['channel-5'] = 0
+            config.CHANNEL_COUNTERS['channel-5'] = 0
 
-    elif DEADBAND_LOW <= channel_data[moveForwardBackwardChannel5] <= DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-5'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-5'] = 0
-        CHANNEL_COUNTERS['channel-5'] += 1
-        CHANNEL_TIMESTAMPS['channel-5'] = current_time
+    elif config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'] <= channel_data[config.GPIO_PINS['moveForwardBackwardChannel5']] <= config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-5'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-5'] = 0
+        config.CHANNEL_COUNTERS['channel-5'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-5'] = current_time
 
-        if CHANNEL_COUNTERS['channel-5'] >= JOYSTICK_THRESHOLD:
+        if config.CHANNEL_COUNTERS['channel-5'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
             commands['channel-5'] = ('NEUTRAL', 0)
-            CHANNEL_COUNTERS['channel-5'] = 0
+            config.CHANNEL_COUNTERS['channel-5'] = 0
 
-    elif channel_data[moveForwardBackwardChannel5] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-5'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-5'] = 0
-        CHANNEL_COUNTERS['channel-5'] += 1
-        CHANNEL_TIMESTAMPS['channel-5'] = current_time
+    elif channel_data[config.GPIO_PINS['moveForwardBackwardChannel5']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-5'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-5'] = 0
+        config.CHANNEL_COUNTERS['channel-5'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-5'] = current_time
 
-        if CHANNEL_COUNTERS['channel-5'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[moveForwardBackwardChannel5], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-5'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['moveForwardBackwardChannel5']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-5'] = ('MOVE BACKWARD', intensity)
-            CHANNEL_COUNTERS['channel-5'] = 0
+            config.CHANNEL_COUNTERS['channel-5'] = 0
 
     ##### shift channel 6 #####
 
-    if channel_data[shiftLeftRightChannel6] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-6'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-6'] = 0
-        CHANNEL_COUNTERS['channel-6'] += 1
-        CHANNEL_TIMESTAMPS['channel-6'] = current_time
+    if channel_data[config.GPIO_PINS['shiftLeftRightChannel6']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-6'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-6'] = 0
+        config.CHANNEL_COUNTERS['channel-6'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-6'] = current_time
 
-        if CHANNEL_COUNTERS['channel-6'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[shiftLeftRightChannel6], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-6'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['shiftLeftRightChannel6']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-6'] = ('SHIFT LEFT', intensity)
-            CHANNEL_COUNTERS['channel-6'] = 0
+            config.CHANNEL_COUNTERS['channel-6'] = 0
 
-    elif DEADBAND_LOW <= channel_data[shiftLeftRightChannel6] <= DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-6'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-6'] = 0
-        CHANNEL_COUNTERS['channel-6'] += 1
-        CHANNEL_TIMESTAMPS['channel-6'] = current_time
+    elif config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'] <= channel_data[config.GPIO_PINS['shiftLeftRightChannel6']] <= config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-6'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-6'] = 0
+        config.CHANNEL_COUNTERS['channel-6'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-6'] = current_time
 
-        if CHANNEL_COUNTERS['channel-6'] >= JOYSTICK_THRESHOLD:
+        if config.CHANNEL_COUNTERS['channel-6'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
             commands['channel-6'] = ('NEUTRAL', 0)
-            CHANNEL_COUNTERS['channel-6'] = 0
+            config.CHANNEL_COUNTERS['channel-6'] = 0
 
-    elif channel_data[shiftLeftRightChannel6] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-6'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-6'] = 0
-        CHANNEL_COUNTERS['channel-6'] += 1
-        CHANNEL_TIMESTAMPS['channel-6'] = current_time
+    elif channel_data[config.GPIO_PINS['shiftLeftRightChannel6']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-6'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-6'] = 0
+        config.CHANNEL_COUNTERS['channel-6'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-6'] = current_time
 
-        if CHANNEL_COUNTERS['channel-6'] >= JOYSTICK_THRESHOLD:
-            intensity = getJoystickIntensity(channel_data[shiftLeftRightChannel6], DEADBAND_LOW, DEADBAND_HIGH)
+        if config.CHANNEL_COUNTERS['channel-6'] >= config.SIGNAL_TUNING_CONFIG['JOYSTICK_THRESHOLD']:
+            intensity = _get_joystick_intensity(channel_data[config.GPIO_PINS['shiftLeftRightChannel6']], config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW'], config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH'])
             commands['channel-6'] = ('SHIFT RIGHT', intensity)
-            CHANNEL_COUNTERS['channel-6'] = 0
+            config.CHANNEL_COUNTERS['channel-6'] = 0
 
     ##### extra channel 7 #####
 
-    if channel_data[extraChannel7] < DEADBAND_LOW:
-        if current_time - CHANNEL_TIMESTAMPS['channel-7'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-7'] = 0
-        CHANNEL_COUNTERS['channel-7'] += 1
-        CHANNEL_TIMESTAMPS['channel-7'] = current_time
-        if CHANNEL_COUNTERS['channel-7'] >= TOGGLE_THRESHOLD:
+    if channel_data[config.GPIO_PINS['extraChannel7']] < config.SIGNAL_TUNING_CONFIG['DEADBAND_LOW']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-7'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-7'] = 0
+        config.CHANNEL_COUNTERS['channel-7'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-7'] = current_time
+        if config.CHANNEL_COUNTERS['channel-7'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-7'] = ('+', 0)
-            CHANNEL_COUNTERS['channel-7'] = 0
-    elif channel_data[extraChannel7] > DEADBAND_HIGH:
-        if current_time - CHANNEL_TIMESTAMPS['channel-7'] > TIME_FRAME:
-            CHANNEL_COUNTERS['channel-7'] = 0
-        CHANNEL_COUNTERS['channel-7'] += 1
-        CHANNEL_TIMESTAMPS['channel-7'] = current_time
-        if CHANNEL_COUNTERS['channel-7'] >= TOGGLE_THRESHOLD:
+            config.CHANNEL_COUNTERS['channel-7'] = 0
+    elif channel_data[config.GPIO_PINS['extraChannel7']] > config.SIGNAL_TUNING_CONFIG['DEADBAND_HIGH']:
+        if current_time - config.CHANNEL_TIMESTAMPS['channel-7'] > config.SIGNAL_TUNING_CONFIG['TIME_FRAME']:
+            config.CHANNEL_COUNTERS['channel-7'] = 0
+        config.CHANNEL_COUNTERS['channel-7'] += 1
+        config.CHANNEL_TIMESTAMPS['channel-7'] = current_time
+        if config.CHANNEL_COUNTERS['channel-7'] >= config.SIGNAL_TUNING_CONFIG['TOGGLE_THRESHOLD']:
             commands['channel-7'] = ('-', 0)
-            CHANNEL_COUNTERS['channel-7'] = 0
+            config.CHANNEL_COUNTERS['channel-7'] = 0
 
     return commands # return channel requests

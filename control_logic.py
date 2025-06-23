@@ -17,15 +17,13 @@
 
 ##### import necessary libraries #####
 
-import RPi.GPIO as GPIO  # import GPIO library for pin control
-import pigpio  # import pigpio library for PWM control
 from flask import Flask, Response  # import for web server video streaming
 from collections import deque  # import deque to forward MJPEG data to flask
 
 ##### import necessary utilities #####
 
 from utilities.log import initialize_logging  # import logging setup
-from utilities.receiver import *  # import PWMDecoder class from initialize_receiver along with functions
+from utilities.receiver import initialize_receiver, interpret_commands # import receiver initialization functions
 from utilities.servos import *  # import servo initialization functions and maestro object
 from utilities.camera import initialize_camera  # import to start camera logic
 from utilities.opencv import *  # import opencv initialization functions
@@ -42,18 +40,13 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 ##### initialize all utilities #####
 
 LOGGER = initialize_logging() # set up logging
-CAMERA_PROCESS = initialize_camera()  # initialize camera process
+CAMERA_PROCESS = initialize_camera()  # create camera process
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
+PI, decoders, CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 
 ##### set up flask #####
 APP = Flask(__name__)  # create flask app instance for video streaming
 JPEG_FRAME_QUEUE = deque(maxlen=10)  # store a minimum of 10 JPEG frames in queue for video streaming
-
-##### initialize GPIO and pigpio #####
-
-GPIO.setmode(GPIO.BCM)  # set gpio mode to bcm so pins a referred to same way as processor refers them
-PI = pigpio.pi()  # set pigpio object to pi so it can be referred to as pi throughout script
-CHANNEL_DATA = {pin: 1500 for pin in PWM_PINS}  # initialize with neutral values
 
 ##### create different control mode #####
 
@@ -67,28 +60,21 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 #########################################
 
 
-# TODO MOVE ME!!! ########## MISCELLANEOUS FUNCTIONS I'LL PROBABLY MOVE LATER ##########
-
-def pwm_callback(gpio, pulseWidth):  # function to set pulse width to channel data
-
-    CHANNEL_DATA[gpio] = pulseWidth  # set channel data to pulse width
-
-
 ########## RUN ROBOTIC PROCESS ##########
 
-def _run_robot():  # central function that runs robot
+def _run_robot(PI, decoders, CHANNEL_DATA):  # central function that runs robot
 
     ##### set/initialize variables #####
 
     is_neutral = False  # assume robot is not in neutral standing position until neutralStandingPosition() is called
     current_leg = 'FL'  # default current leg for tuning mode
-    decoders = []  # define decoders as empty list
+    #decoders = []  # define decoders as empty list
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
 
-    for pin in PWM_PINS:  # loop through each pin in PWM_PINS to initialize decoders
+    #for pin in PWM_PINS:  # loop through each pin in PWM_PINS to initialize decoders
 
-        decoder = PWMDecoder(PI, pin, pwm_callback)
-        decoders.append(decoder)
+        #decoder = PWMDecoder(PI, pin, pwm_callback)
+        #decoders.append(decoder)
 
     ##### run robotic logic #####
 
@@ -128,12 +114,12 @@ def _run_robot():  # central function that runs robot
                 logging.info("(control_logic.py): SSH client connected.\n")
 
             # TODO OLD CODE Handle commands
-            # commands = interpretCommands(CHANNEL_DATA)
+            # commands = interpret_commands(CHANNEL_DATA)
             # for channel, (action, intensity) in commands.items():
             # is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
 
             if MODE == 'radio':  # if mode is radio...
-                commands = interpretCommands(CHANNEL_DATA)  # interpret commands from CHANNEL_DATA from R/C receiver
+                commands = interpret_commands(CHANNEL_DATA)  # interpret commands from CHANNEL_DATA from R/C receiver
                 for channel, (action, intensity) in commands.items():  # loop through each channel and its action
                     is_neutral = _execute_radio_commands(channel, action, intensity,
                                                          is_neutral)  # execute radio commands
@@ -495,4 +481,4 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_
 
 ########## RUN ROBOTIC PROCESS ##########
 
-_run_robot()  # run robot process
+_run_robot(PI, decoders, CHANNEL_DATA)  # run robot process

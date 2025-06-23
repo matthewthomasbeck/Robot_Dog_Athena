@@ -112,7 +112,7 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
     ##### check if model/layers are properly initialized #####
 
-    logging.debug("(opencv.py): Running inference on camera stream...\n")
+    #logging.debug("(opencv.py): Running inference on camera stream...\n") # very annoying, leave commented
 
     try: # try to run inference on the camera stream
 
@@ -148,7 +148,7 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
                 try: # if inference is to be run...
 
-                    logging.debug("(opencv.py): Running inference on frame...\n")
+                    #logging.debug("(opencv.py): Running inference on frame...\n") # very annoying, leave commented
                     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert frame to RGB format
                     input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1) # resize/transpose to match shape
                     input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32) # add batch dim and set float32
