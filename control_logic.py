@@ -225,22 +225,22 @@ def execute_radio_commands(channel, action, intensity,
                 # function to squat
         elif action == 'SQUAT UP':
             # function to neutral
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
 
     ##### tilt channel 0 #####
 
     if channel == 'channel-0':
         if action == 'TILT DOWN':
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
         elif action == 'TILT UP':
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
 
     ##### trigger channel 1 #####
 
     elif channel == 'channel-1':
 
         if action == 'TRIGGER SHOOT':
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
 
     ##### rotation channel 3 #####
 
@@ -248,7 +248,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'ROTATE LEFT':
 
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -262,7 +262,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'ROTATE RIGHT':
 
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -276,7 +276,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'LOOK DOWN':
 
-            logging.info(f"{channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -290,7 +290,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'LOOK UP':
 
-            logging.info(f"{channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -304,7 +304,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'MOVE FORWARD':
 
-            logging.info(f"{channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 trot_forward(intensity)
@@ -328,7 +328,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'MOVE BACKWARD':
 
-            logging.info(f"{channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -342,7 +342,7 @@ def execute_radio_commands(channel, action, intensity,
 
         if action == 'SHIFT LEFT':
 
-            logging.info(f"{channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -356,7 +356,7 @@ def execute_radio_commands(channel, action, intensity,
 
         elif action == 'SHIFT RIGHT':
 
-            logging.info(f"{channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}: {action}\n")
 
             try:
                 is_neutral = False
@@ -368,9 +368,9 @@ def execute_radio_commands(channel, action, intensity,
 
     elif channel == 'channel-7':
         if action == '+':
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
         elif action == '-':
-            logging.debug(f"{channel}: {action}\n")
+            logging.debug(f"(control_logic.py): {channel}: {action}\n")
 
     ##### update is neutral standing #####
 
