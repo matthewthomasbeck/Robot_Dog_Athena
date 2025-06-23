@@ -142,27 +142,11 @@ def run_robot():  # central function that runs robot
         # MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
         while True:
-            chunk = CAMERA_PROCESS.stdout.read(4096)  # read 4096 bytes from camera process stdout
-            if not chunk:  # if camera process has stopped sending data...
-                logging.error("(control_logic.py): Camera process stopped sending data.\n")
-                break
 
-            mjpeg_buffer += chunk  # append chunk to MJPEG buffer
-            prev_len = len(mjpeg_buffer)  # attempt to decode a single frame and display
-            mjpeg_buffer = decode_and_show_frame(mjpeg_buffer)  # decode and show MJPEG frame
+            ##### run inference #####
 
-            if mjpeg_buffer is None:  # if no complete JPEG frame found...
-                logging.warning("(control_logic.py): decode_and_show_frame returned None. Stopping...\n")
-                break
-
-            elif len(mjpeg_buffer) == prev_len:  # if buffer length didn't change and no new frame decoded...
-                if len(mjpeg_buffer) > 65536:  # if buffer grows too large...
-                    logging.warning("(control_logic.py): MJPEG buffer overflow. Resetting buffer.\n")
-                    mjpeg_buffer = b''
-
-            if cv2.waitKey(1) & 0xFF == ord('q'):  # if user wants to quit camera feed display...
-                logging.info("Exiting camera feed display.\n")
-                break
+            # let run_inference be true or false if I want to avoid running inference or not (it's laggy as hell)
+            mjpeg_buffer = run_inference(COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER, CAMERA_PROCESS, mjpeg_buffer, run_inference=True)
 
             ##### decode and execute commands #####
 

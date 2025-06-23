@@ -63,9 +63,7 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
 
     # if model/layers not properly initialized...
     if compiled_model is None or input_layer is None or output_layer is None:
-
-        print("ERROR (initialize_opencv.py): Model is not properly initialized.\n")
-
+        logging.error("(opencv.py): Model is not properly initialized.\n")
         return
 
     ##### run dummy input through the model #####
@@ -85,32 +83,84 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
 
 ########## RUN MODEL AND SHOW FRAME ##########
 
-def decode_and_show_frame(mjpeg_buffer): # function to run model and show a frame from an MJPEG buffer
+def run_inference(compiled_model, input_layer, output_layer, camera_process, mjpeg_buffer, run_inference):
 
-    ##### find JPEG markers #####
+    try: # try to run inference on the camera stream
 
-    start_idx = mjpeg_buffer.find(b'\xff\xd8') # JPEG start
-    end_idx = mjpeg_buffer.find(b'\xff\xd9') # JPEG end
+        chunk = camera_process.stdout.read(4096) # read a chunk of data from camera process stdout
 
-    ##### process frame if valid indices found #####
+        if not chunk:
+            logging.error("Camera process stopped sending data.")
+            return mjpeg_buffer
 
-    if start_idx != -1 and end_idx != -1 and end_idx > start_idx: # if indices are valid...
+        mjpeg_buffer += chunk # append chunk to buffer
+        start_idx = mjpeg_buffer.find(b'\xff\xd8') # start of JPEG frame
+        end_idx = mjpeg_buffer.find(b'\xff\xd9') # end of JPEG frame
 
-        frame_data = mjpeg_buffer[start_idx:end_idx + 2] # extract JPEG data
-        updated_buffer = mjpeg_buffer[end_idx + 2:] # remove processed frame
-        frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR) # decode JPEG data
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx: # if valid JPEG frame found...
 
-        if frame is not None: # if decoding was successful...
+            frame_data = mjpeg_buffer[start_idx:end_idx + 2] # extract frame data
+            mjpeg_buffer = mjpeg_buffer[end_idx + 2:] # remove processed frame from buffer
+            frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR) # decode frame from buffer
 
-            cv2.imshow("Robot Camera", frame) # show the frame
+            if frame is not None: # if frame is successfully decoded...
 
-            return updated_buffer
+                if not run_inference:  # if inference is not to be run...
 
-        else:  # if decoding failed...
+                    cv2.imshow("video (standard)", frame) # show the frame in a window
+                    if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
+                        return mjpeg_buffer
 
-            print("WARNING (initialize_opencv.py): Failed to decode frame.")
+                    return mjpeg_buffer
 
-            return updated_buffer
-    else:
+                try: # if inference is to be run...
 
-        return mjpeg_buffer # if no valid JPEG markers found, return buffer unchanged
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert frame to RGB format
+                    input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1) # resize/transpose to match shape
+                    input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32) # add batch dim and set float32
+                    results = compiled_model([input_blob])[output_layer] # collect inference results
+
+                    for detection in results[0][0]: # iterate through detections
+
+                        confidence = detection[2] # get confidence score
+
+                        if confidence > 0.5: # if confidence is above threshold...
+
+                            xmin, ymin, xmax, ymax = map( # convert coordinates to integers
+                                int, detection[3:7] * [
+                                    frame.shape[1], frame.shape[0],
+                                    frame.shape[1], frame.shape[0]
+                                ]
+                            )
+                            label = f"ID {int(detection[1])}: {confidence:.2f}"
+                            cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2) # draw bounding box
+                            cv2.putText( # put label on frame
+                                frame,
+                                label,
+                                (xmin, ymin - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX,
+                                0.5,
+                                (0, 255, 0),
+                                2
+                            )
+
+                    cv2.imshow("video (inference)", frame) # show frame with detections in a window
+                    if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
+                        return mjpeg_buffer
+
+                except Exception as e:
+                    logging.error(f"(opencv.py): Inference error: {e}\n")
+
+            else:
+                logging.error("(opencv.py): Failed to decode frame.\n")
+
+        else:
+
+            if len(mjpeg_buffer) > 65536: # if buffer is too large...
+                logging.warning("(opencv.py): MJPEG buffer overflow, resetting...\n")
+                mjpeg_buffer = b''
+
+    except Exception as err: # catch any unexpected errors
+        logging.error(f"(opencv.py): Unexpected error in inference loop: {err}\n")
+
+    return mjpeg_buffer
