@@ -43,13 +43,7 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 
 LOGGER = initialize_logging() # set up logging
 CAMERA_PROCESS = initialize_camera()  # initialize camera process
-
-##### set up inference #####
-
-MODEL_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml"
-NCS2_NAME = "MYRIAD"  # literal device name in code
-COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model(MODEL_PATH, NCS2_NAME)  # load and compile model
-test_with_dummy_input(COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER)  # test model with dummy input
+COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 
 ##### set up flask #####
 APP = Flask(__name__)  # create flask app instance for video streaming
@@ -175,8 +169,6 @@ def _run_robot():  # central function that runs robot
         disableAllServos()  # disable all servos to stop movement
         for decoder in decoders:
             decoder.cancel()
-
-        cv2.destroyAllWindows()  # close all OpenCV windows
 
         PI.stop()  # kill MAESTRO and PIGPIO processes
         GPIO.cleanup()

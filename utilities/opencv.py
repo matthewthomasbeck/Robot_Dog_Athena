@@ -23,6 +23,8 @@ import numpy as np # import NumPy for array manipulation
 import cv2 # import OpenCV for image processing
 import logging # import logging for logging messages
 
+from utilities.config import INFERENCE_CONFIG
+
 
 
 
@@ -34,7 +36,20 @@ import logging # import logging for logging messages
 
 ########## LOAD AND COMPILE MODEL ##########
 
-def load_and_compile_model(model_xml_path, device_name="MYRIAD"): # function to load and compile an OpenVINO model
+# function to load and compile an OpenVINO model
+def load_and_compile_model(
+        model_xml_path=INFERENCE_CONFIG['MODEL_PATH'], # path to model XML file
+        device_name=INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD", etc.)
+):
+
+    ##### clean up OpenCV windows from last run #####
+
+    try: # try to destroy any lingering OpenCV windows from previous runs
+        cv2.destroyAllWindows()
+        logging.info("(opencv.py): Closed lingering OpenCV windows.\n")
+
+    except Exception as e:
+        logging.warning(f"(opencv.py): Failed to destroy OpenCV windows: {e}\n")
 
     ##### compile model #####
 
@@ -50,6 +65,13 @@ def load_and_compile_model(model_xml_path, device_name="MYRIAD"): # function to 
         output_layer = compiled_model.output(0) # get output layer of compiled model
         logging.info(f"(opencv.py): Model loaded and compiled on {device_name}.\n")
         logging.debug(f"(opencv.py): Model input shape: {input_layer.shape}\n")
+
+        try: # try to test model with dummy input
+
+            test_with_dummy_input(compiled_model, input_layer, output_layer) # test model with dummy input
+        except Exception as e: # if dummy input test fails...
+            logging.warning(f"(opencv.py): Dummy input test failed: {e}\n")
+            return None, None, None
 
         return compiled_model, input_layer, output_layer
 

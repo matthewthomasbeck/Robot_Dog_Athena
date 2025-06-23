@@ -25,26 +25,22 @@ import logging
 
 
 
-#####################################################
-############### CREATE LOGGING CONFIG ###############
-#####################################################
+#############################################################
+############### CREATE UTILITY CONFIGURATIONS ###############
+#############################################################
 
+
+########## LOGGING CONFIG ##########
 
 ##### declare camera parameters for video #####
 
 LOG_CONFIG = {
     'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
-    'LOG_LEVEL': logging.INFO # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
+    'LOG_LEVEL': logging.DEBUG # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
 }
 
 
-
-
-
-####################################################
-############### CREATE CAMERA CONFIG ###############
-####################################################
-
+########## CAMERA CONFIG ##########
 
 ##### declare camera parameters for video #####
 
@@ -55,13 +51,19 @@ CAMERA_CONFIG = {
 }
 
 
+########## INFERENCE CONFIG ##########
+
+##### declare camera parameters for running AI #####
+
+INFERENCE_CONFIG = {
+
+    # path to model XML file DO NOT CHANGE
+    'MODEL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",
+    'TPU_NAME': "MYRIAD"  # literal device name in code
+}
 
 
-
-###################################################
-############### CREATE SERVO CONFIG ###############
-###################################################
-
+########## LEG LINKAGE CONFIG ##########
 
 ##### set dictionary of linkages and their lengths #####
 
@@ -74,13 +76,7 @@ LINK_CONFIG = { # dictionary of leg linkages # TODO rename anything 'hip' relate
 }
 
 
-
-
-
-######################################################
-############### CREATE LEG LINK PARAMS ###############
-######################################################
-
+########## SERVO CONFIG ##########
 
 ##### set dictionary of servos and their ranges #####
 
