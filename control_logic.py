@@ -19,12 +19,13 @@
 
 import RPi.GPIO as GPIO  # import GPIO library for pin control
 import pigpio  # import pigpio library for PWM control
-import sys
 from flask import Flask, Response  # import for web server video streaming
 from collections import deque  # import deque to forward MJPEG data to flask
+import logging # import logging for logging messages
 
 ##### import necessary utilities #####
 
+from utilities.log import *  # import logging setup
 from utilities.receiver import *  # import PWMDecoder class from initialize_receiver along with functions
 from utilities.servos import *  # import servo initialization functions and maestro object
 from utilities.camera import start_camera_process  # import to start camera logic
@@ -41,29 +42,13 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 
 ##### set up logging #####
 
-LOG_FILE = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"
-
-if os.path.exists(LOG_FILE):  # rename old log file *after* confirming LOGGER setup
-    os.rename(LOG_FILE, f"{LOG_FILE}.bak")
-
-LOGGER = logging.getLogger()
-LOGGER.setLevel(logging.DEBUG)
-
-for handler in LOGGER.handlers[:]:  # remove all existing handlers to avoid duplicates
-    LOGGER.removeHandler(handler)
-
-FILE_HANDLER = logging.FileHandler(LOG_FILE, mode='w')  # create a file handler for logging
-FILE_HANDLER.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
-LOGGER.addHandler(FILE_HANDLER)  # add file handler to logger
-CONSOLE_HANDLER = logging.StreamHandler(sys.stdout)  # create a console handler for logging
-CONSOLE_HANDLER.setFormatter(logging.Formatter('%(message)s'))  # format console output without timestamps
-LOGGER.addHandler(CONSOLE_HANDLER)  # add console handler to logger
-LOGGER.info("Logging setup complete.\n")  # log logging setup completion
+LOG_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"  # path to log file
+log_level = logging.INFO  # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
+LOGGER = initialize_logging(LOG_PATH, log_level) # set up logging
 
 ##### set up camera #####
 
 CAMERA_PROCESS = start_camera_process(width=640, height=480, framerate=30)  # start camera process with params
-
 if CAMERA_PROCESS is None:  # if camera process failed...
     logging.error("(control_logic.py): Failed to start camera process. Exiting...\n")
     exit(1)  # cut program

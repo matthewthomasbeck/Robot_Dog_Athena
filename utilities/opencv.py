@@ -49,7 +49,7 @@ def load_and_compile_model(model_xml_path, device_name="MYRIAD"): # function to 
         input_layer = compiled_model.input(0) # get input layer of compiled model
         output_layer = compiled_model.output(0) # get output layer of compiled model
         logging.info(f"(opencv.py): Model loaded and compiled on {device_name}.\n")
-        logging.info(f"(opencv.py): Model input shape: {input_layer.shape}\n")
+        logging.debug(f"(opencv.py): Model input shape: {input_layer.shape}\n")
 
         return compiled_model, input_layer, output_layer
 
