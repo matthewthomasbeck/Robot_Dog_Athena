@@ -92,12 +92,23 @@ def initialize_receiver(): # function to initialize receiver
 
     try:
         GPIO.cleanup() # clean up GPIO to ensure no previous state affects the receiver
-        pi = pigpio.pi() # create pigpio instance
+        GPIO.setmode(GPIO.BCM) # set GPIO mode to BCM as standard
+
+        try: # try to clean up any old pigpio session
+
+            temp_pi = pigpio.pi() # create temporary pigpio instance
+            if temp_pi.connected: # if pigpio instance is connected...
+                temp_pi.stop() # stop any old pigpio instance
+                logging.debug("(receiver.py): Cleaned up old pigpio instance.\n")
+
+        except Exception as e:
+            logging.warning(f"(receiver.py): No previous pigpio instance to stop: {e}\n")
+
+        pi = pigpio.pi() # create a fresh pigpio instance
         if not pi.connected: # if pigpio instance is not connected...
             logging.error("(receiver.py): Failed to connect to pigpio daemon. Exiting...\n")
             exit(1)
 
-        GPIO.setmode(GPIO.BCM) # set GPIO mode to BCM as standard
         decoders = [] # list to hold PWM decoders
         for channel in config.RECEIVER_CHANNELS.values(): # iterate through channels in config
             decoder = PWMDecoder(pi, channel['gpio_pin'], _pwm_callback) # create PWM decoder for each channel

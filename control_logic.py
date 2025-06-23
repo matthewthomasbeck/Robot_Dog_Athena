@@ -472,6 +472,6 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_
     return is_neutral, current_leg  # Return updated neutral standing state
 
 
-########## RUN ROBOTIC PROCESS ##########
+##### run robotic process #####
 
 _run_robot(PI, CHANNEL_DATA)  # run robot process
