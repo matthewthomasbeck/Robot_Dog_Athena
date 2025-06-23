@@ -19,6 +19,40 @@
 ########## IMPORT DEPENDENCIES ##########
 
 import time # import time library for gait timing
+import logging
+
+
+
+
+
+#####################################################
+############### CREATE LOGGING CONFIG ###############
+#####################################################
+
+
+##### declare camera parameters for video #####
+
+LOG_CONFIG = {
+    'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
+    'LOG_LEVEL': logging.INFO # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
+}
+
+
+
+
+
+####################################################
+############### CREATE CAMERA CONFIG ###############
+####################################################
+
+
+##### declare camera parameters for video #####
+
+CAMERA_CONFIG = {
+    'WIDTH': 640, # width of the camera image
+    'HEIGHT': 480, # height of the camera image
+    'FRAMERATE': 30, # frames per second of the camera image
+}
 
 
 

@@ -18,10 +18,16 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import necessary libraries #####
+
 import subprocess # import subprocess to run rpicam command
 import os # import os to check if rpicam instances exists
 import signal # import signal to send signals to processes
 import logging # import logging for logging messages
+
+##### import config #####
+
+from utilities.config import CAMERA_CONFIG # import config to get camera settings
 
 
 
@@ -32,9 +38,32 @@ import logging # import logging for logging messages
 #################################################
 
 
+########## INITIALIZE CAMERA ##########
+
+# function to initialize camera
+def initialize_camera(
+        width=CAMERA_CONFIG['WIDTH'],
+        height=CAMERA_CONFIG['HEIGHT'],
+        framerate=CAMERA_CONFIG['FRAMERATE']
+):
+
+    ##### initialize camera by killing old processes and starting a new one #####
+
+    logging.debug("(camera.py): Initializing camera...\n")
+    _kill_existing_camera_processes() # kill existing camera processes
+    camera_process = _start_camera_process(width, height, framerate) # start new camera process
+
+    if camera_process is None: # if camera process failed to start...
+        logging.error("(camera.py): Camera initialization failed, no camera process started.\n")
+
+    else: # if camera process started successfully...
+        logging.info(f"(camera.py): Camera initialized successfully with PID {camera_process.pid}.\n")
+        return camera_process
+
+
 ########## TERMINATE EXISTING CAMERA PIPELINES ##########
 
-def kill_existing_camera_processes(): # function to kill existing camera processes if they exist
+def _kill_existing_camera_processes(): # function to kill existing camera processes if they exist
 
     try:
 
@@ -60,7 +89,7 @@ def kill_existing_camera_processes(): # function to kill existing camera process
 
 ########## CREATE CAMERA PIPELINE ##########
 
-def start_camera_process(width=640, height=480, framerate=30): # function to start camera process for opencv
+def _start_camera_process(width, height, framerate): # function to start camera process for opencv
 
     try:
 

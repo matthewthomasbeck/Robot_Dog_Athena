@@ -15,9 +15,15 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import necessary libraries #####
+
 import os # import os to check if log file exists and to rename it
 import sys # import sys to output logs to console
 import logging # import logging for logging messages
+
+##### import config #####
+
+from utilities.config import LOG_CONFIG # import config to get logging settings
 
 
 
@@ -31,7 +37,10 @@ import logging # import logging for logging messages
 ########## SET UP LOGGING ##########
 
 # function to set up logging for entire system
-def initialize_logging(log_path, log_level):
+def initialize_logging(
+        log_path=LOG_CONFIG['LOG_PATH'],
+        log_level=LOG_CONFIG['LOG_LEVEL']
+):
 
     ##### set old log file to backup #####
 

@@ -21,14 +21,13 @@ import RPi.GPIO as GPIO  # import GPIO library for pin control
 import pigpio  # import pigpio library for PWM control
 from flask import Flask, Response  # import for web server video streaming
 from collections import deque  # import deque to forward MJPEG data to flask
-import logging # import logging for logging messages
 
 ##### import necessary utilities #####
 
-from utilities.log import *  # import logging setup
+from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import *  # import PWMDecoder class from initialize_receiver along with functions
 from utilities.servos import *  # import servo initialization functions and maestro object
-from utilities.camera import start_camera_process  # import to start camera logic
+from utilities.camera import initialize_camera  # import to start camera logic
 from utilities.opencv import *  # import opencv initialization functions
 from utilities.internet import *  # import internet control functionality
 
@@ -40,18 +39,10 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 
 ########## CREATE DEPENDENCIES ##########
 
-##### set up logging #####
+##### initialize all utilities #####
 
-LOG_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log"  # path to log file
-log_level = logging.INFO  # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
-LOGGER = initialize_logging(LOG_PATH, log_level) # set up logging
-
-##### set up camera #####
-
-CAMERA_PROCESS = start_camera_process(width=640, height=480, framerate=30)  # start camera process with params
-if CAMERA_PROCESS is None:  # if camera process failed...
-    logging.error("(control_logic.py): Failed to start camera process. Exiting...\n")
-    exit(1)  # cut program
+LOGGER = initialize_logging() # set up logging
+CAMERA_PROCESS = initialize_camera()  # initialize camera process
 
 ##### set up inference #####
 
@@ -91,7 +82,7 @@ def pwm_callback(gpio, pulseWidth):  # function to set pulse width to channel da
 
 ########## RUN ROBOTIC PROCESS ##########
 
-def run_robot():  # central function that runs robot
+def _run_robot():  # central function that runs robot
 
     ##### set/initialize variables #####
 
@@ -150,8 +141,8 @@ def run_robot():  # central function that runs robot
             if MODE == 'radio':  # if mode is radio...
                 commands = interpretCommands(CHANNEL_DATA)  # interpret commands from CHANNEL_DATA from R/C receiver
                 for channel, (action, intensity) in commands.items():  # loop through each channel and its action
-                    is_neutral = execute_radio_commands(channel, action, intensity,
-                                                        is_neutral)  # execute radio commands
+                    is_neutral = _execute_radio_commands(channel, action, intensity,
+                                                         is_neutral)  # execute radio commands
 
             elif MODE.startswith("ssh"):  # if mode is SSH...
                 try:  # attempt to read from SSH socket connection
@@ -164,7 +155,7 @@ def run_robot():  # central function that runs robot
                         key = key[0]
 
                     # execute keyboard commands based on key pressed
-                    is_neutral, current_leg = execute_keyboard_commands(
+                    is_neutral, current_leg = _execute_keyboard_commands(
                         key, is_neutral, current_leg, intensity=10, tune_mode=(MODE == 'ssh-tune'),
                     )
                 except Exception as e:  # if there is an error reading from socket...
@@ -185,10 +176,6 @@ def run_robot():  # central function that runs robot
         for decoder in decoders:
             decoder.cancel()
 
-        if CAMERA_PROCESS.poll() is None:  # close camera process
-            CAMERA_PROCESS.terminate()
-            CAMERA_PROCESS.wait()
-
         cv2.destroyAllWindows()  # close all OpenCV windows
 
         PI.stop()  # kill MAESTRO and PIGPIO processes
@@ -198,8 +185,8 @@ def run_robot():  # central function that runs robot
 
 ########## INTERPRET COMMANDS ##########
 
-def execute_radio_commands(channel, action, intensity,
-                           is_neutral):  # function to interpret commands from channel data and do things
+# function to interpret commands from channel data and do things
+def _execute_radio_commands(channel, action, intensity, is_neutral):
 
     ##### squat channel 2 #####
 
@@ -404,7 +391,7 @@ ADJUSTMENT_FUNCS = {
 
 ##### keyboard commands for tuning mode and normal operation #####
 
-def execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_mode=False):
+def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_mode=False):
     if tune_mode:
 
         if key == 'q':  # x axis positive
@@ -516,4 +503,4 @@ def execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_m
 
 ########## RUN ROBOTIC PROCESS ##########
 
-run_robot()  # run robot process
+_run_robot()  # run robot process
