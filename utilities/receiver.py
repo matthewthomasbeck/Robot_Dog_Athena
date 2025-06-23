@@ -105,7 +105,7 @@ def initialize_receiver(): # function to initialize receiver
 
         logging.info("(receiver.py): Receiver initialized with pigpio + PWM decoders.\n")
 
-        return pi, decoders, CHANNEL_DATA # return pigpio instance, list of decoders, and channel data
+        return pi, CHANNEL_DATA # return pigpio instance, list of decoders, and channel data
 
     except Exception as e:
         logging.error(f"(receiver.py): Receiver initialization failed: {e}\n")

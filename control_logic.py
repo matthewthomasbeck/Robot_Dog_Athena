@@ -42,7 +42,7 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 LOGGER = initialize_logging() # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
-PI, decoders, CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
+PI, CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 
 ##### set up flask #####
 APP = Flask(__name__)  # create flask app instance for video streaming
@@ -62,7 +62,7 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 
 ########## RUN ROBOTIC PROCESS ##########
 
-def _run_robot(PI, decoders, CHANNEL_DATA):  # central function that runs robot
+def _run_robot(PI, CHANNEL_DATA):  # central function that runs robot
 
     ##### set/initialize variables #####
 
@@ -150,11 +150,7 @@ def _run_robot(PI, decoders, CHANNEL_DATA):  # central function that runs robot
     finally:
 
         disableAllServos()  # disable all servos to stop movement
-        for decoder in decoders:
-            decoder.cancel()
-
         PI.stop()  # kill MAESTRO and PIGPIO processes
-        GPIO.cleanup()
         closeMaestroConnection(MAESTRO)
 
 
@@ -478,4 +474,4 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_
 
 ########## RUN ROBOTIC PROCESS ##########
 
-_run_robot(PI, decoders, CHANNEL_DATA)  # run robot process
+_run_robot(PI, CHANNEL_DATA)  # run robot process
