@@ -75,14 +75,15 @@ GPIO_PINS = { # dictionary of GPIO pins for movement channels
     'extraChannel7': 26 # default: 26
 }
 
-CHANNEL_COUNTERS = { # set channel counters to 0 for channel requests with channel intensity
-    'channel-0': 0, 'channel-1': 0, 'channel-2': 0, 'channel-3': 0,
-    'channel-4': 0, 'channel-5': 0, 'channel-6': 0, 'channel-7': 0,
-}
-
-CHANNEL_TIMESTAMPS = { # set channel timestamps to current time for channel requests
-    'channel-0': time.time(), 'channel-1': time.time(), 'channel-2': time.time(), 'channel-3': time.time(),
-    'channel-4': time.time(), 'channel-5': time.time(), 'channel-6': time.time(), 'channel-7': time.time()
+CHANNEL_STATE = {
+    'channel-0': {'counter': 0, 'timestamp': time.time()},
+    'channel-1': {'counter': 0, 'timestamp': time.time()},
+    'channel-2': {'counter': 0, 'timestamp': time.time()},
+    'channel-3': {'counter': 0, 'timestamp': time.time()},
+    'channel-4': {'counter': 0, 'timestamp': time.time()},
+    'channel-5': {'counter': 0, 'timestamp': time.time()},
+    'channel-6': {'counter': 0, 'timestamp': time.time()},
+    'channel-7': {'counter': 0, 'timestamp': time.time()},
 }
 
 ##### set receiver configuration #####
