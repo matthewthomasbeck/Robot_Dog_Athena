@@ -24,10 +24,9 @@ from collections import deque  # import deque to forward MJPEG data to flask
 
 from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands # import receiver initialization functions
-from utilities.servos import *  # import servo initialization functions and maestro object
 from utilities.camera import initialize_camera  # import to start camera logic
-from utilities.opencv import *  # import opencv initialization functions
-from utilities.internet import *  # import internet control functionality
+from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
+from utilities.internet import setup_unix_socket  # import socket setup for SSH control
 
 ##### import movement functions #####
 
@@ -42,7 +41,7 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 LOGGER = initialize_logging() # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
-PI, CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
+CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 
 ##### set up flask #####
 APP = Flask(__name__)  # create flask app instance for video streaming
@@ -62,7 +61,7 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 
 ########## RUN ROBOTIC PROCESS ##########
 
-def _run_robot(PI, CHANNEL_DATA):  # central function that runs robot
+def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
     ##### set/initialize variables #####
 
@@ -144,14 +143,6 @@ def _run_robot(PI, CHANNEL_DATA):  # central function that runs robot
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
         exit(1)
-
-    ##### clean up when complete #####
-
-    finally:
-
-        disableAllServos()  # disable all servos to stop movement
-        PI.stop()  # kill MAESTRO and PIGPIO processes
-        closeMaestroConnection(MAESTRO)
 
 
 ########## INTERPRET COMMANDS ##########
@@ -474,4 +465,4 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_
 
 ##### run robotic process #####
 
-_run_robot(PI, CHANNEL_DATA)  # run robot process
+_run_robot(CHANNEL_DATA)  # run robot process

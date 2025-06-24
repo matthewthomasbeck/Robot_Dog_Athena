@@ -23,15 +23,13 @@
 import time # import time library for time functions
 import serial # import serial for maestro control
 import logging # import logging library for debugging
+import subprocess
+import os
+import signal
 
+##### import config #####
 
-########## CREATE DEPENDENCIES ##########
-
-##### set serial connection #####
-
-serialPortName = '/dev/serial0' # set serial port name to first available
-serialBaudRate = 9600 # set baud rate for serial connection
-serialTimeout = 1 # set timeout for serial connection
+from utilities.config import MAESTRO_CONFIG # import servo configuration data
 
 
 
@@ -42,10 +40,35 @@ serialTimeout = 1 # set timeout for serial connection
 ##################################################
 
 
+########## INITIALIZE MAESTRO ##########
+
+def initialize_maestro( # function to initialize maestro serial connection
+        serial_path=MAESTRO_CONFIG['SERIAL_PATH'],
+        serial_baud_rate=MAESTRO_CONFIG['SERIAL_BAUD_RATE'],
+        serial_timeout=MAESTRO_CONFIG['SERIAL_TIMEOUT']
+):
+
+    ##### cleanup attempt #####
+
+    _attempt_serial_cleanup(serial_path) # attempt to clean up serial port before establishing connection
+
+    ##### establish serial connection to maestro #####
+
+    logging.debug("(maestro.py): Attempting to establish connection with maestro...\n")
+    MAESTRO = _establish_serial_connection(serial_path, serial_baud_rate, serial_timeout) # establish serial connection
+    _send_baud_rate_indication(MAESTRO) # send baud rate indication to maestro to establish communication
+
+    ##### disable servos to clear old state #####
+
+    _disable_all_servos(MAESTRO)
+
+    return MAESTRO
+
+
 ########## ESTABLISH SERIAL CONNECTION ##########
 
 # function to establish serial connection to maestro
-def establish_serial_connection(serial_port_name, serial_baud_rate, serial_timeout):
+def _establish_serial_connection(serial_port_name, serial_baud_rate, serial_timeout):
 
     ##### attempt to establish serial connection and return maestro object #####
 
@@ -71,7 +94,7 @@ def establish_serial_connection(serial_port_name, serial_baud_rate, serial_timeo
 
 ########## SEND BAUD RATE ##########
 
-def sendBaudRateIndication(maestro): # function to send baud rate indication to Maestro to establish communication
+def _send_baud_rate_indication(maestro): # function to send baud rate indication to Maestro to establish communication
 
     ##### attempt to send baud rate indication #####
 
@@ -90,40 +113,43 @@ def sendBaudRateIndication(maestro): # function to send baud rate indication to 
         return 1
 
 
-########## CREATE MAESTRO CONNECTION ##########
+########## DISABLE ALL SERVOS ##########
 
-def createMaestroConnection(): # function to create maestro connection
+def _disable_all_servos(maestro): # function to disable all servos at startup
 
-    ##### establish serial connection to maestro #####
+    ##### attempt to disable all servos #####
 
-    logging.debug("(maestro.py): Attempting to establish connection with maestro...\n")
+    logging.debug("(maestro.py): Disabling all servos at startup...\n")
 
-    # establish maestro serial connection
-    MAESTRO = establish_serial_connection(serialPortName, serialBaudRate, serialTimeout)
+    try:
 
-    if MAESTRO == 1: # if maestro connection failed...
-        raise SystemExit(1) # kill process
+        for channel in range(12): # iterate through all servo channels (0-11)
+            maestro.write(bytearray([0x84, channel, 0, 0])) # send command to set target position to 0 (disabled)
 
-    ##### send baud rate indication to maestro #####
+        logging.info("(maestro.py): Disabled all servos at startup.\n")
 
-    if sendBaudRateIndication(MAESTRO) == 2: # if baud rate indication failed...
-        raise SystemExit(2) # kill process
-
-    return MAESTRO
+    except Exception as e:
+        logging.warning(f"(maestro.py): Failed to disable servos at startup: {e}")
 
 
-########## CLOSE MAESTRO CONNECTION ##########
+########## ATTEMPT SERIAL CLEANUP ##########
 
-def closeMaestroConnection(maestro): # function to close serial connection to maestro
+def _attempt_serial_cleanup(serial_path): # function to attempt cleanup of serial port before establishing connection
 
-    ##### attempt to close maestro connection #####
+    ##### attempt to kill any processes using the serial port #####
 
-    logging.debug("(maestro.py): Attempting to close connection with maestro...\n")
+    logging.debug(f"(maestro.py): Attempting to clean up serial port {serial_path}...\n")
 
-    try: # try to close maestro connection
+    try: # try to find and kill processes using the serial port
 
-        maestro.close() # close maestro connection
-        logging.info("(maestro.py): Successfully closed connection with maestro.\n")
+        # run lsof command to find processes using the serial port
+        result = subprocess.run(['lsof', '-t', serial_path], stdout=subprocess.PIPE, text=True)
+        pids = result.stdout.strip().split('\n') # get list of process IDs using the serial port
 
-    except:
-        logging.error("(maestro.py): Failed to close serial connection to maestro.\n")
+        for pid in pids: # iterate through each process ID
+            if pid.isdigit(): # if process ID is a digit...
+                os.kill(int(pid), signal.SIGTERM) # kill the process
+                logging.warning(f"(maestro.py): Killed process {pid} holding {serial_path}")
+
+    except Exception as e:
+        logging.warning(f"(maestro.py): Serial cleanup failed: {e}")

@@ -18,6 +18,8 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import necessary libraries #####
+
 import time # import time library for gait timing
 import logging # import logging library for debugging
 
@@ -36,7 +38,7 @@ import logging # import logging library for debugging
 
 LOG_CONFIG = {
     'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
-    'LOG_LEVEL': logging.DEBUG # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
+    'LOG_LEVEL': logging.INFO # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
 }
 
 ##### set camera configuration #####
@@ -77,11 +79,14 @@ RECEIVER_CHANNELS = { # dictionary of receiver channels' names, GPIO pins, and s
 
 ##### set receiver configuration #####
 
-MAESTRO_CONFIG = { # dictionary of maestro configuration
+MAESTRO_CONFIG = {
+    'SERIAL_PATH': "/dev/serial0", # set serial port name to first available
+    'SERIAL_BAUD_RATE': 9600, # set baud rate for serial connection
+    'SERIAL_TIMEOUT': 1 # set timeout for serial connection
 }
 
 
-########## ROBOT CONFIGURATIONS ##########
+########## PHYSICAL CONFIGURATION ##########
 
 ##### set link configuration #####
 

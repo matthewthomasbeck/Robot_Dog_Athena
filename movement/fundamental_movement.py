@@ -18,11 +18,9 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
-##### import necessary libraries #####
-
 ##### import necessary functions #####
 
-import utilities.servos as initialize_servos # import servo logic functions
+from utilities.servos import map_angle_to_servo_position, set_target # import servo mapping functions
 import utilities.config as config # import configuration data for servos and link lengths
 from utilities.mathematics import * # import all mathematical functions
 
@@ -37,18 +35,18 @@ k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic fu
 
 upper_leg_servos = { # define upper leg servos
 
-    "FL": initialize_servos.SERVO_CONFIG['FL']['upper'],  # front left
-    "FR": initialize_servos.SERVO_CONFIG['FR']['upper'],  # front right
-    "BL": initialize_servos.SERVO_CONFIG['BL']['upper'],  # back left
-    "BR": initialize_servos.SERVO_CONFIG['BR']['upper'],  # back right
+    "FL": config.SERVO_CONFIG['FL']['upper'],  # front left
+    "FR": config.SERVO_CONFIG['FR']['upper'],  # front right
+    "BL": config.SERVO_CONFIG['BL']['upper'],  # back left
+    "BR": config.SERVO_CONFIG['BR']['upper'],  # back right
 }
 
 lower_leg_servos = { # define lower leg servos
 
-    "FL": initialize_servos.SERVO_CONFIG['FL']['lower'],  # front left
-    "FR": initialize_servos.SERVO_CONFIG['FR']['lower'],  # front right
-    "BL": initialize_servos.SERVO_CONFIG['BL']['lower'],  # back left
-    "BR": initialize_servos.SERVO_CONFIG['BR']['lower'],  # back right
+    "FL": config.SERVO_CONFIG['FL']['lower'],  # front left
+    "FR": config.SERVO_CONFIG['FR']['lower'],  # front right
+    "BL": config.SERVO_CONFIG['BL']['lower'],  # back left
+    "BR": config.SERVO_CONFIG['BR']['lower'],  # back right
 }
 
 
@@ -115,10 +113,10 @@ def move_leg(leg_id, x, y, z, speed, acceleration):
         #joint_speed = speed
         #joint_acceleration = acceleration
 
-        servo_data = initialize_servos.SERVO_CONFIG[leg_id][joint]
+        servo_data = config.SERVO_CONFIG[leg_id][joint]
         is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-        pwm = initialize_servos.map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
-        initialize_servos.setTarget(servo_data['servo'], pwm, joint_speed, joint_acceleration)
+        pwm = map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
+        set_target(servo_data['servo'], pwm, joint_speed, joint_acceleration)
 
 
 ##### GET NEUTRAL POSITIONS #####

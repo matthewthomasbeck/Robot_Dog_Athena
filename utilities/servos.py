@@ -24,15 +24,14 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
-from utilities.maestro import * # import maestro initialization functions
-from utilities.config import SERVO_CONFIG # import servo configuration data
+from utilities.maestro import initialize_maestro # import maestro initialization functions
 
 
 ########## CREATE DEPENDENCIES ##########
 
 ##### create maestro object #####
 
-MAESTRO = createMaestroConnection() # create maestro connection
+MAESTRO = initialize_maestro() # create maestro object
 
 
 
@@ -45,7 +44,7 @@ MAESTRO = createMaestroConnection() # create maestro connection
 
 ########## MOVE A SINGLE SERVO ##########
 
-def setTarget(channel, target, speed, acceleration): # function to set target position of a singular servo
+def set_target(channel, target, speed, acceleration): # function to set target position of a singular servo
 
     ##### move a servo to a desired position using its number and said position #####
 
@@ -85,34 +84,3 @@ def map_angle_to_servo_position(angle, joint_data, angle_neutral, is_inverted=Fa
     pulse = neutral_pulse + direction * ((angle - angle_neutral) / 90) * pulse_range # pulse width based on angle
 
     return int(round(pulse)) # return calculated pulse width
-
-
-
-
-
-####################################################
-############### DESTROY DEPENDENCIES ###############
-####################################################
-
-
-########## DISABLE ALL SERVOS ##########
-
-def disableAllServos(): # function to disable servos via code
-
-    ##### make all servos go limp for easy reinitialization #####
-
-    logging.debug("(servos.py): Attempting to disable all servos...\n")
-
-    try: # attempt to disable all servos
-
-        for leg, joints in SERVO_CONFIG.items(): # loop through each leg
-
-            for joint, config in joints.items(): # loop through each joint
-                servo = config['servo'] # get the servo number
-                setTarget(servo, 0) # set target to 0 to disable the servo
-                logging.info(f"(servos.py) Disabled servo {servo} ({leg} - {joint}).\n")
-
-        logging.info("(servos.py): Successfully disabled all servos.\n")
-
-    except:
-        logging.error("(servos.py): Failed to disable servo(s).\n")
