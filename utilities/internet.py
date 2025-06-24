@@ -18,18 +18,27 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
-##### import libraries #####
+##### import necessary libraries #####
 
 import os  # import os for file operations
 import socket  # import socket for Unix socket communication
 import logging  # import logging for debugging
+import subprocess  # import subprocess for running shell commands
+import threading  # import threading for running Flask in a separate thread
+import time  # import time for flask waiting
+from flask import Flask, Response  # import for web server video streaming
+from collections import deque  # import deque to forward MJPEG data to flask
+
+##### import config #####
+
+from utilities.config import INTERNET_CONFIG  # import logging configuration from config module
 
 
 ########## CREATE DEPENDENCIES ##########
 
-##### define necessary paths #####
-
-SOCKET_PATH = '/tmp/robot.sock'
+##### create flask objects #####
+APP = Flask(__name__)  # create flask app instance for video streaming
+JPEG_FRAME_QUEUE = deque(maxlen=10)  # store a minimum of 10 JPEG frames in queue for video streaming
 
 
 
@@ -40,17 +49,77 @@ SOCKET_PATH = '/tmp/robot.sock'
 ##############################################################
 
 
-########## SET UP SOCKET FOR USE ##########
+########## INITIALIZE FLASK ##########
 
-def setup_unix_socket(): # function to set up a Unix socket for communication
+def initialize_flask():
+    kill_lingering_flask()
+    JPEG_FRAME_QUEUE.clear()
+    flask_thread = threading.Thread(target=start_flask, daemon=True)
+    flask_thread.start()
+    logging.debug("(internet.py): Flask initialized and started.")
 
-    if os.path.exists(SOCKET_PATH): # if socket already exists...
-        os.remove(SOCKET_PATH)
+
+########## KILL LINGERING FLASK SERVER ##########
+
+def kill_lingering_flask_OLD():
+
+    try:
+
+        # aggressively shut down any lingering flask processes
+        result = subprocess.run(["pgrep", "-f", "flask"], stdout=subprocess.PIPE, text=True)
+        for pid in result.stdout.splitlines():
+            subprocess.run(["kill", "-9", pid])
+        logging.debug("(internet.py): Killed lingering Flask processes.")
+    except Exception as e:
+        logging.warning(f"(internet.py): Could not kill Flask processes: {e}")
+
+
+def kill_lingering_flask():
+    try:
+        result = subprocess.run(
+            ["pgrep", "-f", "control_logic.py"], stdout=subprocess.PIPE, text=True
+        )
+        for pid in result.stdout.splitlines():
+            if str(os.getpid()) != pid:  # don't kill yourself
+                kill_result = subprocess.run(["kill", "-9", pid])
+                if kill_result.returncode != 0:
+                    logging.warning(f"(internet.py): Failed to kill PID {pid}")
+        logging.debug("(internet.py): Cleaned up old Flask processes.")
+    except Exception as e:
+        logging.warning(f"(internet.py): Could not clean up Flask processes: {e}")
+
+
+########## SET UP VIDEO FEED ##########
+@APP.route("/video_feed")
+def video_feed():
+    def stream():
+        while True:
+            if JPEG_FRAME_QUEUE:
+                frame = JPEG_FRAME_QUEUE[-1]
+                yield (b"--frame\r\n"
+                       b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+            else:
+                time.sleep(0.01)
+    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+########## START FLASK ##########
+
+def start_flask():
+    APP.run(host="0.0.0.0", port=5000)
+
+
+########## INITIALIZE SOCKET ##########
+
+def initialize_socket(): # function to set up a Unix socket for SSH communication
+
+    if os.path.exists(INTERNET_CONFIG['SSH_SOCKET_PATH']): # if socket already exists...
+        os.remove(INTERNET_CONFIG['SSH_SOCKET_PATH'])
 
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) # create a Unix socket
-    server.bind(SOCKET_PATH) # bind socket to specified path
+    server.bind(INTERNET_CONFIG['SSH_SOCKET_PATH']) # bind socket to specified path
     server.listen(1) # listen for incoming connections
-    os.chmod(SOCKET_PATH, 0o666) # set permissions to allow read/write for all users
+    os.chmod(INTERNET_CONFIG['SSH_SOCKET_PATH'], 0o666) # set permissions to allow read/write for all users
 
     return server
 

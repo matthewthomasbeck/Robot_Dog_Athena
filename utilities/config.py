@@ -85,6 +85,12 @@ MAESTRO_CONFIG = {
     'SERIAL_TIMEOUT': 1 # set timeout for serial connection
 }
 
+##### set internet connectivity configuration #####
+
+INTERNET_CONFIG = {
+    'SSH_SOCKET_PATH': "/tmp/robot.sock" # path to unix socket for SSH communication
+}
+
 
 ########## PHYSICAL CONFIGURATION ##########
 

@@ -8,6 +8,9 @@
 ##################################################################################
 
 
+
+
+
 ############################################################
 ############### IMPORT / CREATE DEPENDENCIES ###############
 ############################################################
@@ -15,18 +18,13 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
-##### import necessary libraries #####
-
-from flask import Flask, Response  # import for web server video streaming
-from collections import deque  # import deque to forward MJPEG data to flask
-
 ##### import necessary utilities #####
 
 from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands # import receiver initialization functions
 from utilities.camera import initialize_camera  # import to start camera logic
 from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
-from utilities.internet import setup_unix_socket  # import socket setup for SSH control
+from utilities.internet import initialize_flask, JPEG_FRAME_QUEUE, initialize_socket  # import flask and SSH functions
 
 ##### import movement functions #####
 
@@ -40,18 +38,17 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 
 LOGGER = initialize_logging() # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
+initialize_flask() # initialize Flask app for video streaming
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 
-##### set up flask #####
-APP = Flask(__name__)  # create flask app instance for video streaming
-JPEG_FRAME_QUEUE = deque(maxlen=10)  # store a minimum of 10 JPEG frames in queue for video streaming
-
 ##### create different control mode #####
 
-MODE = 'radio'
-
+MODE = 'radio' # default mode is radio control, can be changed to 'ssh' or 'ssh-tune' for SSH control
 logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
+
+
+
 
 
 #########################################
@@ -88,19 +85,27 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
     try:  # try to run main robotic process
 
-        # MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
+        #MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
         while True:
 
-            ##### run inference #####
+            ##### run inference and stream video #####
 
             # let run_inference be true or false if I want to avoid running inference or not (it's laggy as hell)
-            mjpeg_buffer = run_inference(COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER, CAMERA_PROCESS, mjpeg_buffer, run_inference=True)
+            mjpeg_buffer, frame_data = run_inference(
+                COMPILED_MODEL,
+                INPUT_LAYER,
+                OUTPUT_LAYER,
+                CAMERA_PROCESS,
+                mjpeg_buffer, run_inference=False
+            )
+
+            JPEG_FRAME_QUEUE.append(frame_data)  # put MJPEG buffer into queue for streaming
 
             ##### decode and execute commands #####
 
             if MODE.startswith("ssh"):
-                server = setup_unix_socket()
+                server = initialize_socket()
                 logging.debug("(control_logic.py): Waiting for SSH control client to connect to socket...\n")
                 conn, _ = server.accept()
                 conn.setblocking(True)
@@ -112,13 +117,10 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
             # is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
 
             if MODE == 'radio':  # if mode is radio...
-
                 commands = interpret_commands(CHANNEL_DATA)  # interpret commands from CHANNEL_DATA from R/C receiver
 
                 for channel, (action, intensity) in commands.items():  # loop through each channel and its action
-
-                    # execute radio commands
-                    is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
+                    is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)  # run radio commands
 
             elif MODE.startswith("ssh"):  # if mode is SSH...
                 try:  # attempt to read from SSH socket connection
@@ -130,10 +132,14 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                     else:  # if some other character...
                         key = key[0]
 
-                    # execute keyboard commands based on key pressed
-                    is_neutral, current_leg = _execute_keyboard_commands(
-                        key, is_neutral, current_leg, intensity=10, tune_mode=(MODE == 'ssh-tune'),
+                    is_neutral, current_leg = _execute_keyboard_commands( # use keys to execute commands
+                        key,
+                        is_neutral,
+                        current_leg,
+                        intensity=10,
+                        tune_mode=(MODE == 'ssh-tune'),
                     )
+
                 except Exception as e:  # if there is an error reading from socket...
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
 

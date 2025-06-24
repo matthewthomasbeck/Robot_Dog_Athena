@@ -120,7 +120,7 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
         if not chunk: # if no data is received...
             logging.error("(opencv.py): Camera process stopped sending data.\n")
-            return mjpeg_buffer
+            return mjpeg_buffer, None
 
         mjpeg_buffer += chunk # append chunk to buffer
         start_idx = mjpeg_buffer.find(b'\xff\xd8') # start of JPEG frame
@@ -142,7 +142,7 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
                     if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
                         return mjpeg_buffer
 
-                    return mjpeg_buffer
+                    return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
 
                 ##### run inference #####
 
@@ -180,7 +180,7 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
                     cv2.imshow("video (inference)", frame) # show frame with detections in a window
                     if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
-                        return mjpeg_buffer
+                        return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
 
                 except Exception as e:
                     logging.error(f"(opencv.py): Inference error: {e}\n")
@@ -197,4 +197,4 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
     except Exception as err: # catch any unexpected errors
         logging.error(f"(opencv.py): Unexpected error in inference loop: {err}\n")
 
-    return mjpeg_buffer
+    return mjpeg_buffer, None

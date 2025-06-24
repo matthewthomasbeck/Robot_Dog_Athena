@@ -151,5 +151,7 @@ def _attempt_serial_cleanup(serial_path): # function to attempt cleanup of seria
                 os.kill(int(pid), signal.SIGTERM) # kill the process
                 logging.warning(f"(maestro.py): Killed process {pid} holding {serial_path}")
 
+        time.sleep(0.2) # give the operating system some time to release the port
+
     except Exception as e:
         logging.warning(f"(maestro.py): Serial cleanup failed: {e}")

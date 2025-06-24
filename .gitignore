@@ -1,0 +1,15 @@
+# ignore pycache
+__pycache__/
+*.pyc
+
+# ignore virtual environment
+venv/
+
+# ignore log files
+*.log
+
+# ignore os files
+.DS_Store
+
+# ignore service files
+*.service
