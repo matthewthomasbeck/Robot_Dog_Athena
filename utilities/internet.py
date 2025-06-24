@@ -123,8 +123,6 @@ def video_feed(): # route to serve video feed from the camera
             else: # if there are no frames in the queue...
                 time.sleep(0.01) # wait for some more
 
-            time.sleep(1/LOOP_RATE_HZ) # throttle stream to match camera and robot actions per second
-
     return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame') # return video stream as a response
 
 
