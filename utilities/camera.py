@@ -27,7 +27,7 @@ import logging # import logging for logging messages
 
 ##### import config #####
 
-from utilities.config import CAMERA_CONFIG # import config to get camera settings
+from utilities.config import LOOP_RATE_HZ, CAMERA_CONFIG # import config to get camera settings
 
 
 
@@ -44,14 +44,14 @@ from utilities.config import CAMERA_CONFIG # import config to get camera setting
 def initialize_camera(
         width=CAMERA_CONFIG['WIDTH'],
         height=CAMERA_CONFIG['HEIGHT'],
-        framerate=CAMERA_CONFIG['FRAMERATE']
+        frame_rate=LOOP_RATE_HZ
 ):
 
     ##### initialize camera by killing old processes and starting a new one #####
 
     logging.debug("(camera.py): Initializing camera...\n")
     _kill_existing_camera_processes() # kill existing camera processes
-    camera_process = _start_camera_process(width, height, framerate) # start new camera process
+    camera_process = _start_camera_process(width, height, frame_rate) # start new camera process
 
     if camera_process is None: # if camera process failed to start...
         logging.error("(camera.py): Camera initialization failed, no camera process started.\n")
@@ -89,7 +89,7 @@ def _kill_existing_camera_processes(): # function to kill existing camera proces
 
 ########## CREATE CAMERA PIPELINE ##########
 
-def _start_camera_process(width, height, framerate): # function to start camera process for opencv
+def _start_camera_process(width, height, frame_rate): # function to start camera process for opencv
 
     try:
 
@@ -98,7 +98,7 @@ def _start_camera_process(width, height, framerate): # function to start camera 
                 "rpicam-vid",
                 "--width", str(width),
                 "--height", str(height),
-                "--framerate", str(framerate),
+                "--framerate", str(frame_rate),
                 "--timeout", "0",
                 "--output", "-",
                 "--codec", "mjpeg",

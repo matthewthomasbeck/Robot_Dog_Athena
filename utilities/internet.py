@@ -31,14 +31,14 @@ from collections import deque  # import deque to forward MJPEG data to flask
 
 ##### import config #####
 
-from utilities.config import INTERNET_CONFIG  # import logging configuration from config module
+from utilities.config import LOOP_RATE_HZ, INTERNET_CONFIG  # import logging configuration from config module
 
 
 ########## CREATE DEPENDENCIES ##########
 
 ##### create flask objects #####
 APP = Flask(__name__)  # create flask app instance for video streaming
-JPEG_FRAME_QUEUE = deque(maxlen=10)  # store a minimum of 10 JPEG frames in queue for video streaming
+JPEG_FRAME_QUEUE = deque(maxlen=5)  # store a minimum of 10 JPEG frames in queue for video streaming
 
 
 
@@ -51,62 +51,98 @@ JPEG_FRAME_QUEUE = deque(maxlen=10)  # store a minimum of 10 JPEG frames in queu
 
 ########## INITIALIZE FLASK ##########
 
-def initialize_flask():
-    kill_lingering_flask()
-    JPEG_FRAME_QUEUE.clear()
-    flask_thread = threading.Thread(target=start_flask, daemon=True)
-    flask_thread.start()
-    logging.debug("(internet.py): Flask initialized and started.")
+def initialize_flask(): # function to initialize flask server for video streaming
 
+    ##### destroy any lingering flask processes #####
 
-########## KILL LINGERING FLASK SERVER ##########
-
-def kill_lingering_flask_OLD():
+    logging.debug("(internet.py): Initializing Flask server...\n")  # log initializing Flask server
 
     try:
+        _kill_lingering_flask() # kill old flask servers
+        JPEG_FRAME_QUEUE.clear() # clear the JPEG frame queue
+        logging.info("(internet.py): Cleaned up old Flask processes and cleared JPEG frame queue.\n")
 
-        # aggressively shut down any lingering flask processes
-        result = subprocess.run(["pgrep", "-f", "flask"], stdout=subprocess.PIPE, text=True)
-        for pid in result.stdout.splitlines():
-            subprocess.run(["kill", "-9", pid])
-        logging.debug("(internet.py): Killed lingering Flask processes.")
     except Exception as e:
-        logging.warning(f"(internet.py): Could not kill Flask processes: {e}")
+        logging.warning(f"(internet.py): Failed to clean up old flask processes or queue: {e}\n")
 
+    ##### start flask server #####
 
-def kill_lingering_flask():
     try:
-        result = subprocess.run(
-            ["pgrep", "-f", "control_logic.py"], stdout=subprocess.PIPE, text=True
-        )
-        for pid in result.stdout.splitlines():
-            if str(os.getpid()) != pid:  # don't kill yourself
-                kill_result = subprocess.run(["kill", "-9", pid])
-                if kill_result.returncode != 0:
-                    logging.warning(f"(internet.py): Failed to kill PID {pid}")
-        logging.debug("(internet.py): Cleaned up old Flask processes.")
+        flask_thread = threading.Thread(target=_start_flask, daemon=True) # create a thread to run flask server
+        flask_thread.start() # start the flask server
+        logging.info("(internet.py): Flask initialized and started.\n")
+        logging.info(f"(internet.py): JPEG_FRAME_QUEUE id in internet.py: {id(JPEG_FRAME_QUEUE)}\n")
+
     except Exception as e:
-        logging.warning(f"(internet.py): Could not clean up Flask processes: {e}")
+        logging.error(f"(internet.py): Failed to start Flask server: {e}\n")
+        return False
+
+
+########## KILL LINGERING FLASK PROCESSES ##########
+
+def _kill_lingering_flask(): # function to kill any lingering flask processes
+
+    ##### kill old flask processes #####
+
+    logging.debug("(internet.py): Killing any lingering Flask processes...\n")  # log killing old Flask processes
+
+    try:
+        # use pgrep to find all processes running control_logic.py
+        result = subprocess.run(["pgrep", "-f", "control_logic.py"], stdout=subprocess.PIPE, text=True)
+
+        for pid in result.stdout.splitlines(): # iterate through each PID found
+            if str(os.getpid()) != pid: # ensure not to kill itself
+                kill_result = subprocess.run(["kill", "-9", pid]) # kill the process with SIGKILL
+                if kill_result.returncode != 0:  # check if kill command was successful
+                    logging.warning(f"(internet.py): Failed to kill PID {pid}\n")
+
+        logging.info("(internet.py): Cleaned up old Flask processes.\n")
+
+    except Exception as e:
+        logging.warning(f"(internet.py): Could not clean up Flask processes: {e}\n")
 
 
 ########## SET UP VIDEO FEED ##########
+
 @APP.route("/video_feed")
-def video_feed():
-    def stream():
+def video_feed(): # route to serve video feed from the camera
+
+    def stream(): # generator function to stream video frames
+
         while True:
-            if JPEG_FRAME_QUEUE:
-                frame = JPEG_FRAME_QUEUE[-1]
-                yield (b"--frame\r\n"
-                       b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
-            else:
-                time.sleep(0.01)
-    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+            if JPEG_FRAME_QUEUE: # if there are frames in the queue...
+                frame = JPEG_FRAME_QUEUE[-1] # get the last frame in the queue
+                yield (
+                        b"--frame\r\n"  # MJPEG boundary delimiter
+                        b"Content-Type: image/jpeg\r\n\r\n"  # MIME header for the frame
+                        + frame  # actual JPEG binary data
+                        + b"\r\n"  # end of the frame block
+                )
+
+            else: # if there are no frames in the queue...
+                time.sleep(0.01) # wait for some more
+
+            time.sleep(1/LOOP_RATE_HZ) # throttle stream to match camera and robot actions per second
+
+    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame') # return video stream as a response
 
 
 ########## START FLASK ##########
 
-def start_flask():
-    APP.run(host="0.0.0.0", port=5000)
+def _start_flask(): # function to start flask server in a separate thread
+
+    ##### start flask server #####
+
+    logging.debug("(internet.py): Starting Flask server...\n")  # log starting Flask server
+
+    try:
+        APP.run(host="0.0.0.0", port=5000) # run flask app on all interfaces at port 5000
+
+    except Exception as e:
+        logging.error(f"(internet.py): Failed to start Flask server: {e}\n")
+
+    logging.info("(internet.py): Flask server started.\n")  # log starting Flask server
 
 
 ########## INITIALIZE SOCKET ##########

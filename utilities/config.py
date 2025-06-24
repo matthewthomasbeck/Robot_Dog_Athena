@@ -34,6 +34,10 @@ import logging # import logging library for debugging
 
 ########## UTILITY CONFIGURATIONS ##########
 
+##### set global fps to be used by all modules #####
+
+LOOP_RATE_HZ = 30 # actions per second for all modules, default: 30
+
 ##### set logging configuration #####
 
 LOG_CONFIG = {
@@ -45,8 +49,7 @@ LOG_CONFIG = {
 
 CAMERA_CONFIG = {
     'WIDTH': 640, # width of the camera image
-    'HEIGHT': 480, # height of the camera image
-    'FRAMERATE': 30, # frames per second of the camera image
+    'HEIGHT': 480 # height of the camera image
 }
 
 ##### set inference configuration #####

@@ -24,7 +24,7 @@ from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands # import receiver initialization functions
 from utilities.camera import initialize_camera  # import to start camera logic
 from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
-from utilities.internet import initialize_flask, JPEG_FRAME_QUEUE, initialize_socket  # import flask and SSH functions
+import utilities.internet as internet # dynamically import internet utilities to be constantly updated
 
 ##### import movement functions #####
 
@@ -32,13 +32,18 @@ from movement.standing.standing import *  # import standing functions
 from movement.walking.forward import *  # import walking functions
 from movement.fundamental_movement import *  # import fundamental movement functions
 
+##### import config #####
+
+from utilities.config import LOOP_RATE_HZ  # import loop rate for actions per second
+
+
 ########## CREATE DEPENDENCIES ##########
 
 ##### initialize all utilities #####
 
 LOGGER = initialize_logging() # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
-initialize_flask() # initialize Flask app for video streaming
+internet.initialize_flask() # initialize Flask app for video streaming
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 
@@ -65,6 +70,7 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
     is_neutral = False  # assume robot is not in neutral standing position until neutralStandingPosition() is called
     current_leg = 'FL'  # default current leg for tuning mode
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
+    LOOP_RATE = LOOP_RATE_HZ * 3  # calculate frame interval based on loop rate times 3 to keep up with camera
 
     ##### run robotic logic #####
 
@@ -87,9 +93,14 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
         #MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
+        # flask sanity check
+        logging.info(f"(control_logic.py): JPEG_FRAME_QUEUE id in control_logic.py: {id(internet.JPEG_FRAME_QUEUE)}\n")
+
+        ##### stream video, run inference, and control the robot #####
+
         while True:
 
-            ##### run inference and stream video #####
+            start_time = time.time()  # start time to measure actions per second
 
             # let run_inference be true or false if I want to avoid running inference or not (it's laggy as hell)
             mjpeg_buffer, frame_data = run_inference(
@@ -97,15 +108,17 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                 INPUT_LAYER,
                 OUTPUT_LAYER,
                 CAMERA_PROCESS,
-                mjpeg_buffer, run_inference=False
+                mjpeg_buffer,
+                run_inference=False
             )
 
-            JPEG_FRAME_QUEUE.append(frame_data)  # put MJPEG buffer into queue for streaming
+            if frame_data is not None: # if frame_data is not none...
+                internet.JPEG_FRAME_QUEUE.append(frame_data) # append frame to queue
 
             ##### decode and execute commands #####
 
             if MODE.startswith("ssh"):
-                server = initialize_socket()
+                server = internet.initialize_socket()
                 logging.debug("(control_logic.py): Waiting for SSH control client to connect to socket...\n")
                 conn, _ = server.accept()
                 conn.setblocking(True)
@@ -142,6 +155,14 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
                 except Exception as e:  # if there is an error reading from socket...
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
+
+            ##### wait to maintain global action rate and not outpace the camera #####
+
+            # TODO get rid of these lines if delay unbearable
+            elapsed = time.time() - start_time # calculate elapsed time for actions
+            sleep_time = max(0, (1 / LOOP_RATE) - elapsed) # calculate time to sleep to maintain loop rate
+            if sleep_time > 0:  # if sleep time is greater than 0...
+                time.sleep(sleep_time) # only sleep if outpacing the camera
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
