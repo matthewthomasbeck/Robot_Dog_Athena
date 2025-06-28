@@ -139,7 +139,7 @@ def _get_joystick_intensity(pulse_width, min_val, max_val): # return a value fro
     ##### calculate intensity based on pulse width #####
 
     # very annoying, leave commented
-    #logging.debug(f"(receiver.py): Calculating joystick intensity for pulse width {pulse_width}...\n")
+    logging.debug(f"(receiver.py): Calculating joystick intensity for pulse width {pulse_width}...\n")
 
     try: # try to calculate joystick intensity
 

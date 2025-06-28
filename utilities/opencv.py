@@ -112,7 +112,7 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
     ##### check if model/layers are properly initialized #####
 
-    #logging.debug("(opencv.py): Running inference on camera stream...\n") # very annoying, leave commented
+    logging.debug("(opencv.py): Running inference on camera stream...\n") # very annoying, leave commented
 
     try: # try to run inference on the camera stream
 

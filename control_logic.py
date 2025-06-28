@@ -159,10 +159,10 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
             ##### wait to maintain global action rate and not outpace the camera #####
 
             # TODO get rid of these lines if delay unbearable
-            elapsed = time.time() - start_time # calculate elapsed time for actions
-            sleep_time = max(0, (1 / LOOP_RATE) - elapsed) # calculate time to sleep to maintain loop rate
-            if sleep_time > 0:  # if sleep time is greater than 0...
-                time.sleep(sleep_time) # only sleep if outpacing the camera
+            #elapsed = time.time() - start_time # calculate elapsed time for actions
+            #sleep_time = max(0, (1 / LOOP_RATE) - elapsed) # calculate time to sleep to maintain loop rate
+            #if sleep_time > 0:  # if sleep time is greater than 0...
+                #time.sleep(sleep_time) # only sleep if outpacing the camera
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
