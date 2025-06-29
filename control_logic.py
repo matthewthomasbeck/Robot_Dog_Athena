@@ -18,13 +18,17 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import necessary libraries #####
+
+import time  # import time library for gait timing
+
 ##### import necessary utilities #####
 
 from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands # import receiver initialization functions
 from utilities.camera import initialize_camera  # import to start camera logic
 from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
-import utilities.internet as internet # dynamically import internet utilities to be constantly updated
+import utilities.internet as internet # dynamically import internet utilities to be constantly updated (sending frames)
 
 ##### import movement functions #####
 
@@ -43,13 +47,14 @@ from utilities.config import LOOP_RATE_HZ  # import loop rate for actions per se
 
 LOGGER = initialize_logging() # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
-internet.initialize_flask() # initialize Flask app for video streaming
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
+SOCK = internet.initialize_ec2_socket()  # initialize EC2 socket connection
+COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
 
 ##### create different control mode #####
 
-MODE = 'radio' # default mode is radio control, can be changed to 'ssh' or 'ssh-tune' for SSH control
+MODE = 'web' # default mode is radio control, can be changed to 'ssh' or 'ssh-tune' for SSH control
 logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
 
 
@@ -93,14 +98,12 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
         #MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
-        # flask sanity check
-        logging.info(f"(control_logic.py): JPEG_FRAME_QUEUE id in control_logic.py: {id(internet.JPEG_FRAME_QUEUE)}\n")
-
         ##### stream video, run inference, and control the robot #####
 
         while True:
 
-            start_time = time.time()  # start time to measure actions per second
+            # TODO get rid of these lines if delay unbearable
+            #start_time = time.time()  # start time to measure actions per second
 
             # let run_inference be true or false if I want to avoid running inference or not (it's laggy as hell)
             mjpeg_buffer, frame_data = run_inference(
@@ -112,8 +115,7 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                 run_inference=False
             )
 
-            if frame_data is not None: # if frame_data is not none...
-                internet.JPEG_FRAME_QUEUE.append(frame_data) # append frame to queue
+            internet.stream_to_ec2(SOCK, frame_data)  # stream frame data to ec2 instance
 
             ##### decode and execute commands #####
 
@@ -155,6 +157,11 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
                 except Exception as e:  # if there is an error reading from socket...
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
+
+            elif MODE == 'web':
+                if not COMMAND_QUEUE.empty():
+                    command = COMMAND_QUEUE.get()
+                    logging.info(f"(control_logic.py): Received command from web: {command}\n")
 
             ##### wait to maintain global action rate and not outpace the camera #####
 

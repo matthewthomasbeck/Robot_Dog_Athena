@@ -23,11 +23,8 @@
 import os  # import os for file operations
 import socket  # import socket for Unix socket communication
 import logging  # import logging for debugging
-import subprocess  # import subprocess for running shell commands
-import threading  # import threading for running Flask in a separate thread
-import time  # import time for flask waiting
-from flask import Flask, Response  # import for web server video streaming
-from collections import deque  # import deque to forward MJPEG data to flask
+import threading  # import threading for concurrent operations
+from queue import Queue  # import Queue for command queue management
 
 ##### import config #####
 
@@ -36,9 +33,10 @@ from utilities.config import LOOP_RATE_HZ, INTERNET_CONFIG  # import logging con
 
 ########## CREATE DEPENDENCIES ##########
 
-##### create flask objects #####
-APP = Flask(__name__)  # create flask app instance for video streaming
-JPEG_FRAME_QUEUE = deque(maxlen=5)  # store a minimum of 10 JPEG frames in queue for video streaming
+##### create global variables #####
+
+sock = None  # global socket variable for EC2 connection, initialized to None
+_send_lock = threading.Lock()  # lock for sending data to EC2, initialized to a new threading lock
 
 
 
@@ -48,99 +46,86 @@ JPEG_FRAME_QUEUE = deque(maxlen=5)  # store a minimum of 10 JPEG frames in queue
 ############### INTERNET CONNECTIVITY FUNCTION ###############
 ##############################################################
 
+########## CONNECT TO EC2 ##########
 
-########## INITIALIZE FLASK ##########
+def initialize_ec2_socket(): # function to connect to EC2 instance via socket
 
-def initialize_flask(): # function to initialize flask server for video streaming
+    ##### initialize global socket #####
 
-    ##### destroy any lingering flask processes #####
+    logging.debug("(internet.py): Initializing EC2 socket...\n")
 
-    logging.debug("(internet.py): Initializing Flask server...\n")  # log initializing Flask server
+    global sock
 
-    try:
-        _kill_lingering_flask() # kill old flask servers
-        JPEG_FRAME_QUEUE.clear() # clear the JPEG frame queue
-        logging.info("(internet.py): Cleaned up old Flask processes and cleared JPEG frame queue.\n")
+    if not sock: # if sock is not already initialized...
+        sock = socket.socket() # create a new socket object
 
-    except Exception as e:
-        logging.warning(f"(internet.py): Failed to clean up old flask processes or queue: {e}\n")
+        try:
+            sock.connect((INTERNET_CONFIG['EC2_PUBLIC_IP'], INTERNET_CONFIG['EC2_PORT']))
+            logging.info("Connected to EC2 instance.\n")
+            return sock
 
-    ##### start flask server #####
-
-    try:
-        flask_thread = threading.Thread(target=_start_flask, daemon=True) # create a thread to run flask server
-        flask_thread.start() # start the flask server
-        logging.info("(internet.py): Flask initialized and started.\n")
-        logging.info(f"(internet.py): JPEG_FRAME_QUEUE id in internet.py: {id(JPEG_FRAME_QUEUE)}\n")
-
-    except Exception as e:
-        logging.error(f"(internet.py): Failed to start Flask server: {e}\n")
-        return False
+        except Exception as e:
+            logging.error(f"(internet.py): Failed to connect to EC2: {e}\n")
+            sock = None
+            return None
 
 
-########## KILL LINGERING FLASK PROCESSES ##########
+########## STREAM FRAME DATA TO EC2 ##########
 
-def _kill_lingering_flask(): # function to kill any lingering flask processes
+def stream_to_ec2(sock, frame_data): # function to send frame data to EC2 instance
 
-    ##### kill old flask processes #####
+    ##### send frame data to EC2 #####
 
-    logging.debug("(internet.py): Killing any lingering Flask processes...\n")  # log killing old Flask processes
+    logging.debug("(internet.py): Streaming frame data to EC2...\n")
 
-    try:
-        # use pgrep to find all processes running control_logic.py
-        result = subprocess.run(["pgrep", "-f", "control_logic.py"], stdout=subprocess.PIPE, text=True)
+    if frame_data is not None:
+        try:
+            with _send_lock:
+                sock.sendall(len(frame_data).to_bytes(4, 'big')) # send frame length first
+                sock.sendall(frame_data) # send frame data to EC2 instance
+                logging.info("Frame data sent to EC2 successfully.\n")
 
-        for pid in result.stdout.splitlines(): # iterate through each PID found
-            if str(os.getpid()) != pid: # ensure not to kill itself
-                kill_result = subprocess.run(["kill", "-9", pid]) # kill the process with SIGKILL
-                if kill_result.returncode != 0:  # check if kill command was successful
-                    logging.warning(f"(internet.py): Failed to kill PID {pid}\n")
+        except Exception as e:
+            logging.error(f"(internet.py): Error sending data to EC2: {e}\n")
 
-        logging.info("(internet.py): Cleaned up old Flask processes.\n")
-
-    except Exception as e:
-        logging.warning(f"(internet.py): Could not clean up Flask processes: {e}\n")
+    else:
+        logging.warning("(internet.py): No frame data to send.\n")
 
 
-########## SET UP VIDEO FEED ##########
+########## INITIALIZE COMMAND QUEUE ##########
 
-@APP.route("/video_feed")
-def video_feed(): # route to serve video feed from the camera
+def initialize_command_queue(SOCK): # function to create a command queue for receiving commands from EC2 instance
 
-    def stream(): # generator function to stream video frames
+    logging.debug("(internet.py): Initializing command queue...\n") # log initialization of command queue
 
-        while True:
-
-            if JPEG_FRAME_QUEUE: # if there are frames in the queue...
-                frame = JPEG_FRAME_QUEUE[-1] # get the last frame in the queue
-                yield (
-                        b"--frame\r\n"  # MJPEG boundary delimiter
-                        b"Content-Type: image/jpeg\r\n\r\n"  # MIME header for the frame
-                        + frame  # actual JPEG binary data
-                        + b"\r\n"  # end of the frame block
-                )
-
-            else: # if there are no frames in the queue...
-                time.sleep(0.01) # wait for some more
-
-    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame') # return video stream as a response
-
-
-########## START FLASK ##########
-
-def _start_flask(): # function to start flask server in a separate thread
-
-    ##### start flask server #####
-
-    logging.debug("(internet.py): Starting Flask server...\n")  # log starting Flask server
+    if SOCK is None:
+        logging.error("(internet.py): No EC2 socket—command queue not started.")
+        return None
 
     try:
-        APP.run(host="0.0.0.0", port=5000) # run flask app on all interfaces at port 5000
+        command_queue = Queue() # create a new command queue
+        threading.Thread(target=listen_for_commands, args=(SOCK, command_queue), daemon=True).start()
+        logging.info("Command queue initialized successfully.\n")
+        return command_queue # return the command queue for further processing
 
     except Exception as e:
-        logging.error(f"(internet.py): Failed to start Flask server: {e}\n")
+        logging.error(f"(internet.py): Failed to initialize command queue: {e}\n")
+        return None
 
-    logging.info("(internet.py): Flask server started.\n")  # log starting Flask server
+
+########## RECEIVE COMMANDS FROM EC2 ##########
+
+def listen_for_commands(sock, command_queue): # function to listen for commands from EC2 instance
+    while True:
+        try:
+            length_bytes = sock.recv(4)
+            if not length_bytes:
+                continue
+            length = int.from_bytes(length_bytes, 'big')
+            command = sock.recv(length).decode()
+            command_queue.put(command)
+        except Exception as e:
+            logging.error(f"(internet.py): Error receiving command from EC2: {e}")
 
 
 ########## INITIALIZE SOCKET ##########

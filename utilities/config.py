@@ -76,7 +76,7 @@ RECEIVER_CHANNELS = { # dictionary of receiver channels' names, GPIO pins, and s
     'channel_3': {'name': 'rotate_left_right', 'gpio_pin': 5, 'counter': 0, 'timestamp': time.time()},
     'channel_4': {'name': 'look_up_down', 'gpio_pin': 6, 'counter': 0, 'timestamp': time.time()},
     'channel_5': {'name': 'move_forward_backward', 'gpio_pin': 13, 'counter': 0, 'timestamp': time.time()},
-    'channel_6': { 'name': 'shift_left_right', 'gpio_pin': 19, 'counter': 0, 'timestamp': time.time()},
+    'channel_6': {'name': 'shift_left_right', 'gpio_pin': 19, 'counter': 0, 'timestamp': time.time()},
     'channel_7': {'name': 'extra_channel', 'gpio_pin': 26, 'counter': 0, 'timestamp': time.time()},
 }
 
@@ -91,6 +91,9 @@ MAESTRO_CONFIG = {
 ##### set internet connectivity configuration #####
 
 INTERNET_CONFIG = {
+    'EC2_API_URL': "https://api.matthewthomasbeck.com", # URL of the EC2 API endpoint
+    'EC2_PUBLIC_IP': "18.188.23.76", # public IP address of the EC2 instance
+    'EC2_PORT': 3000, # port number for the EC2 instance
     'SSH_SOCKET_PATH': "/tmp/robot.sock" # path to unix socket for SSH communication
 }
 

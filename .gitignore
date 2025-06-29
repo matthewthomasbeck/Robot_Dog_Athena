@@ -13,3 +13,7 @@ venv/
 
 # ignore service files
 *.service
+
+# ignore config
+
+utilities/config.py
