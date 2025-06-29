@@ -72,24 +72,38 @@ def initialize_ec2_socket(): # function to connect to EC2 instance via socket
 
 ########## STREAM FRAME DATA TO EC2 ##########
 
-def stream_to_ec2(sock, frame_data): # function to send frame data to EC2 instance
+def stream_to_ec2(socket_param, frame_data): # function to send frame data to EC2 instance
 
     ##### send frame data to EC2 #####
 
     logging.debug("(internet.py): Streaming frame data to EC2...\n")
 
-    if frame_data is not None:
+    if frame_data is not None and socket_param is not None:
         try:
             with _send_lock:
-                sock.sendall(len(frame_data).to_bytes(4, 'big')) # send frame length first
-                sock.sendall(frame_data) # send frame data to EC2 instance
-                logging.info("Frame data sent to EC2 successfully.\n")
+                # Send frame length first (4 bytes)
+                frame_length = len(frame_data)
+                socket_param.sendall(frame_length.to_bytes(4, 'big'))
+                # Send frame data
+                socket_param.sendall(frame_data)
+                logging.info(f"Frame data sent to EC2 successfully. Frame size: {frame_length} bytes\n")
 
         except Exception as e:
             logging.error(f"(internet.py): Error sending data to EC2: {e}\n")
+            # Try to reconnect if connection is lost
+            try:
+                socket_param.close()
+                global sock
+                sock = None
+                sock = initialize_ec2_socket()
+            except Exception as reconnect_error:
+                logging.error(f"(internet.py): Failed to reconnect: {reconnect_error}\n")
 
     else:
-        logging.warning("(internet.py): No frame data to send.\n")
+        if frame_data is None:
+            logging.warning("(internet.py): No frame data to send.\n")
+        if socket_param is None:
+            logging.warning("(internet.py): No socket connection to EC2.\n")
 
 
 ########## INITIALIZE COMMAND QUEUE ##########

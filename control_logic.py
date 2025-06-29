@@ -8,9 +8,6 @@
 ##################################################################################
 
 
-
-
-
 ############################################################
 ############### IMPORT / CREATE DEPENDENCIES ###############
 ############################################################
@@ -25,10 +22,10 @@ import time  # import time library for gait timing
 ##### import necessary utilities #####
 
 from utilities.log import initialize_logging  # import logging setup
-from utilities.receiver import initialize_receiver, interpret_commands # import receiver initialization functions
+from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
 from utilities.camera import initialize_camera  # import to start camera logic
 from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
-import utilities.internet as internet # dynamically import internet utilities to be constantly updated (sending frames)
+import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
 
 ##### import movement functions #####
 
@@ -40,12 +37,11 @@ from movement.fundamental_movement import *  # import fundamental movement funct
 
 from utilities.config import LOOP_RATE_HZ  # import loop rate for actions per second
 
-
 ########## CREATE DEPENDENCIES ##########
 
 ##### initialize all utilities #####
 
-LOGGER = initialize_logging() # set up logging
+LOGGER = initialize_logging()  # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
@@ -54,11 +50,8 @@ COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command qu
 
 ##### create different control mode #####
 
-MODE = 'web' # default mode is radio control, can be changed to 'ssh' or 'ssh-tune' for SSH control
+MODE = 'web'  # default mode is radio control, can be changed to 'ssh' or 'ssh-tune' for SSH control
 logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
-
-
-
 
 
 #########################################
@@ -96,14 +89,14 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
     try:  # try to run main robotic process
 
-        #MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
+        # MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
         ##### stream video, run inference, and control the robot #####
 
         while True:
 
             # TODO get rid of these lines if delay unbearable
-            #start_time = time.time()  # start time to measure actions per second
+            # start_time = time.time()  # start time to measure actions per second
 
             # let run_inference be true or false if I want to avoid running inference or not (it's laggy as hell)
             mjpeg_buffer, frame_data = run_inference(
@@ -147,7 +140,7 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                     else:  # if some other character...
                         key = key[0]
 
-                    is_neutral, current_leg = _execute_keyboard_commands( # use keys to execute commands
+                    is_neutral, current_leg = _execute_keyboard_commands(  # use keys to execute commands
                         key,
                         is_neutral,
                         current_leg,
@@ -163,13 +156,22 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                     command = COMMAND_QUEUE.get()
                     logging.info(f"(control_logic.py): Received command from web: {command}\n")
 
+                    # Execute the command using existing keyboard command logic
+                    #is_neutral, current_leg = _execute_keyboard_commands(
+                        #command.strip(),  # Remove any whitespace/newlines
+                        #is_neutral,
+                        #current_leg,
+                        #intensity=10,
+                        #tune_mode=False
+                    #)
+
             ##### wait to maintain global action rate and not outpace the camera #####
 
             # TODO get rid of these lines if delay unbearable
-            #elapsed = time.time() - start_time # calculate elapsed time for actions
-            #sleep_time = max(0, (1 / LOOP_RATE) - elapsed) # calculate time to sleep to maintain loop rate
-            #if sleep_time > 0:  # if sleep time is greater than 0...
-                #time.sleep(sleep_time) # only sleep if outpacing the camera
+            # elapsed = time.time() - start_time # calculate elapsed time for actions
+            # sleep_time = max(0, (1 / LOOP_RATE) - elapsed) # calculate time to sleep to maintain loop rate
+            # if sleep_time > 0:  # if sleep time is greater than 0...
+            # time.sleep(sleep_time) # only sleep if outpacing the camera
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -183,7 +185,6 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
 # function to interpret commands from channel data and do things
 def _execute_radio_commands(channel, action, intensity, is_neutral):
-
     ##### squat channel 2 #####
 
     if channel == 'channel_2':
