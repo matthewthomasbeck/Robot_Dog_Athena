@@ -44,7 +44,7 @@ from utilities.config import LOOP_RATE_HZ, CAMERA_CONFIG # import config to get 
 def initialize_camera(
         width=CAMERA_CONFIG['WIDTH'],
         height=CAMERA_CONFIG['HEIGHT'],
-        frame_rate=30 #LOOP_RATE_HZ TODO removed to see if camera bug
+        frame_rate=LOOP_RATE_HZ
 ):
 
     ##### initialize camera by killing old processes and starting a new one #####
