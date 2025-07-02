@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Spoiler alert: changing servos didn't work" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Edited backend connection to new self-hosted backend" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -94,6 +94,7 @@
       <workItem from="1751246747707" duration="857000" />
       <workItem from="1751303018930" duration="531000" />
       <workItem from="1751383060379" duration="180000" />
+      <workItem from="1751468638953" duration="371000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -235,7 +236,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Edited backend connection to new self-hosted backend">
+      <option name="closed" value="true" />
+      <created>1751469004112</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1751469004112</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -268,7 +277,8 @@
     <MESSAGE value="Added servo debug to help see why front left leg is lagging" />
     <MESSAGE value="Switched servos 3 and 4, will hopefully resolve lag issues" />
     <MESSAGE value="Spoiler alert: changing servos didn't work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Spoiler alert: changing servos didn't work" />
+    <MESSAGE value="Edited backend connection to new self-hosted backend" />
+    <option name="LAST_COMMIT_MESSAGE" value="Edited backend connection to new self-hosted backend" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
