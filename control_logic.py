@@ -45,7 +45,7 @@ LOGGER = initialize_logging()  # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
 COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
-SOCK = internet.initialize_ec2_socket()  # initialize EC2 socket connection
+SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
 COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
 
 ##### create different control mode #####
@@ -108,7 +108,7 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                 run_inference=False
             )
 
-            internet.stream_to_ec2(SOCK, frame_data)  # stream frame data to ec2 instance
+            internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
 
             ##### decode and execute commands #####
 

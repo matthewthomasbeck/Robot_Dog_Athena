@@ -35,8 +35,8 @@ from utilities.config import LOOP_RATE_HZ, INTERNET_CONFIG  # import logging con
 
 ##### create global variables #####
 
-sock = None  # global socket variable for EC2 connection, initialized to None
-_send_lock = threading.Lock()  # lock for sending data to EC2, initialized to a new threading lock
+sock = None  # global socket variable for backend connection, initialized to None
+_send_lock = threading.Lock()  # lock for sending data to backend, initialized to a new threading lock
 
 
 
@@ -46,13 +46,13 @@ _send_lock = threading.Lock()  # lock for sending data to EC2, initialized to a 
 ############### INTERNET CONNECTIVITY FUNCTION ###############
 ##############################################################
 
-########## CONNECT TO EC2 ##########
+########## CONNECT TO BACKEND ##########
 
-def initialize_ec2_socket(): # function to connect to EC2 instance via socket
+def initialize_backend_socket(): # function to connect to backend via socket
 
     ##### initialize global socket #####
 
-    logging.debug("(internet.py): Initializing EC2 socket...\n")
+    logging.debug("(internet.py): Initializing backend socket...\n")
 
     global sock
 
@@ -60,23 +60,23 @@ def initialize_ec2_socket(): # function to connect to EC2 instance via socket
         sock = socket.socket() # create a new socket object
 
         try:
-            sock.connect((INTERNET_CONFIG['EC2_PUBLIC_IP'], INTERNET_CONFIG['EC2_PORT']))
-            logging.info("Connected to EC2 instance.\n")
+            sock.connect((INTERNET_CONFIG['BACKEND_PUBLIC_IP'], INTERNET_CONFIG['BACKEND_PORT']))
+            logging.info("Connected to website backend.\n")
             return sock
 
         except Exception as e:
-            logging.error(f"(internet.py): Failed to connect to EC2: {e}\n")
+            logging.error(f"(internet.py): Failed to connect to website backend: {e}\n")
             sock = None
             return None
 
 
-########## STREAM FRAME DATA TO EC2 ##########
+########## STREAM FRAME DATA TO BACKEND ##########
 
-def stream_to_ec2(socket_param, frame_data): # function to send frame data to EC2 instance
+def stream_to_backend(socket_param, frame_data): # function to send frame data to backend
 
-    ##### send frame data to EC2 #####
+    ##### send frame data to backend #####
 
-    logging.debug("(internet.py): Streaming frame data to EC2...\n")
+    logging.debug("(internet.py): Streaming frame data to website backend...\n")
 
     if frame_data is not None and socket_param is not None:
         try:
@@ -86,16 +86,16 @@ def stream_to_ec2(socket_param, frame_data): # function to send frame data to EC
                 socket_param.sendall(frame_length.to_bytes(4, 'big'))
                 # Send frame data
                 socket_param.sendall(frame_data)
-                logging.info(f"Frame data sent to EC2 successfully. Frame size: {frame_length} bytes\n")
+                logging.info(f"Frame data sent to website backend successfully. Frame size: {frame_length} bytes\n")
 
         except Exception as e:
-            logging.error(f"(internet.py): Error sending data to EC2: {e}\n")
+            logging.error(f"(internet.py): Error sending data to website backend: {e}\n")
             # Try to reconnect if connection is lost
             try:
                 socket_param.close()
                 global sock
                 sock = None
-                sock = initialize_ec2_socket()
+                sock = initialize_backend_socket()
             except Exception as reconnect_error:
                 logging.error(f"(internet.py): Failed to reconnect: {reconnect_error}\n")
 
@@ -108,12 +108,12 @@ def stream_to_ec2(socket_param, frame_data): # function to send frame data to EC
 
 ########## INITIALIZE COMMAND QUEUE ##########
 
-def initialize_command_queue(SOCK): # function to create a command queue for receiving commands from EC2 instance
+def initialize_command_queue(SOCK): # function to create a command queue for receiving commands from backend
 
     logging.debug("(internet.py): Initializing command queue...\n") # log initialization of command queue
 
     if SOCK is None:
-        logging.error("(internet.py): No EC2 socket—command queue not started.")
+        logging.error("(internet.py): No website backend socket—command queue not started.")
         return None
 
     try:
@@ -127,9 +127,9 @@ def initialize_command_queue(SOCK): # function to create a command queue for rec
         return None
 
 
-########## RECEIVE COMMANDS FROM EC2 ##########
+########## RECEIVE COMMANDS FROM BACKEND ##########
 
-def listen_for_commands(sock, command_queue): # function to listen for commands from EC2 instance
+def listen_for_commands(sock, command_queue): # function to listen for commands from backend
     while True:
         try:
             length_bytes = sock.recv(4)
@@ -139,7 +139,7 @@ def listen_for_commands(sock, command_queue): # function to listen for commands 
             command = sock.recv(length).decode()
             command_queue.put(command)
         except Exception as e:
-            logging.error(f"(internet.py): Error receiving command from EC2: {e}")
+            logging.error(f"(internet.py): Error receiving command from website backend: {e}")
 
 
 ########## INITIALIZE SOCKET ##########

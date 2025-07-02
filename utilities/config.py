@@ -91,9 +91,9 @@ MAESTRO_CONFIG = {
 ##### set internet connectivity configuration #####
 
 INTERNET_CONFIG = {
-    'EC2_API_URL': "https://api.matthewthomasbeck.com", # URL of the EC2 API endpoint
-    'EC2_PUBLIC_IP': "18.188.23.76", # public IP address of the EC2 instance
-    'EC2_PORT': 3000, # port number for the EC2 instance
+    'BACKEND_API_URL': "https://api.matthewthomasbeck.com", # URL of the backend API endpoint
+    'BACKEND_PUBLIC_IP': "72.177.232.19", # public IP address of backend
+    'BACKED_PORT': 3000, # port number for backend
     'SSH_SOCKET_PATH': "/tmp/robot.sock" # path to unix socket for SSH communication
 }
 
