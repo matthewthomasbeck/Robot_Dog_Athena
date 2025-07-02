@@ -93,7 +93,7 @@ MAESTRO_CONFIG = {
 INTERNET_CONFIG = {
     'BACKEND_API_URL': "https://api.matthewthomasbeck.com", # URL of the backend API endpoint
     'BACKEND_PUBLIC_IP': "72.177.232.19", # public IP address of backend
-    'BACKED_PORT': 3000, # port number for backend
+    'BACKEND_PORT': 3000, # port number for backend (fixed typo from 'BACKED_PORT')
     'SSH_SOCKET_PATH': "/tmp/robot.sock" # path to unix socket for SSH communication
 }
 

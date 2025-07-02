@@ -152,7 +152,7 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                     logging.error(f"(control_logic.py): Socket read error: {e}\n")
 
             elif MODE == 'web':
-                if not COMMAND_QUEUE.empty():
+                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
                     command = COMMAND_QUEUE.get()
                     logging.info(f"(control_logic.py): Received command from web: {command}\n")
 
