@@ -129,17 +129,27 @@ def initialize_command_queue(SOCK): # function to create a command queue for rec
 
 ########## RECEIVE COMMANDS FROM BACKEND ##########
 
-def listen_for_commands(sock, command_queue): # function to listen for commands from backend
+def listen_for_commands(sock, command_queue):
+
+    logging.debug("(internet.py): Listening for commands from website backend...\n") # log listening for commands
+
     while True:
         try:
-            length_bytes = sock.recv(4)
+            length_bytes = sock.recv(4) # receive first 4 bytes for length of command
             if not length_bytes:
                 continue
-            length = int.from_bytes(length_bytes, 'big')
-            command = sock.recv(length).decode()
-            command_queue.put(command)
+            length = int.from_bytes(length_bytes, 'big') # convert bytes to integer length
+            command = sock.recv(length).decode() # receive command data based on length
+            command_queue.put(command) # put command into the queue for processing
+
         except Exception as e:
-            logging.error(f"(internet.py): Error receiving command from website backend: {e}")
+            logging.error(f"(internet.py): Error receiving command from website backend: {e}\n")
+
+            if isinstance(e, OSError) and e.errno == 9: # if socket is bad...
+
+                logging.error("(internet.py): Socket is bad, exiting command listener thread.\n")
+                break # exit thread
+            break
 
 
 ########## INITIALIZE SOCKET ##########

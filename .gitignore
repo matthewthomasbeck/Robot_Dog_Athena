@@ -15,5 +15,7 @@ venv/
 *.service
 
 # ignore config
-
 utilities/config.py
+
+# ignore workspace xml files
+*.xml
