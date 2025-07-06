@@ -24,6 +24,7 @@ import subprocess # import subprocess to run rpicam command
 import os # import os to check if rpicam instances exists
 import signal # import signal to send signals to processes
 import logging # import logging for logging messages
+import time # <-- add this import
 
 ##### import config #####
 
@@ -69,18 +70,12 @@ def _kill_existing_camera_processes(): # function to kill existing camera proces
 
         logging.debug("(camera.py): Checking for existing camera processes...\n")
 
-        # use pgrep to find existing camera processes
-        result = subprocess.run(["pgrep", "-f", "rpicam-jpeg|rpicam-vid|libcamera"], stdout=subprocess.PIPE, text=True)
-
-        pids = result.stdout.splitlines() # get the process IDs of existing camera processes
-
-        if pids: # if there are any existing camera processes...
-            logging.warning(f"(camera.py): Existing camera processes found: {pids}. Terminating them.\n")
-
-            for pid in pids: # iterate through each process ID and kill it
-                os.kill(int(pid), signal.SIGKILL)
-
-            logging.info("(camera.py): Successfully killed existing camera processes.\n")
+        # Use pkill for each process type
+        subprocess.run(["pkill", "-9", "-f", "rpicam-vid"])
+        subprocess.run(["pkill", "-9", "-f", "rpicam-jpeg"])
+        subprocess.run(["pkill", "-9", "-f", "libcamera"])
+        logging.info("(camera.py): Successfully killed existing camera processes.\n")
+        time.sleep(0.5)  # Give time for processes to exit
 
     except Exception as e:
 
@@ -108,7 +103,13 @@ def _start_camera_process(width, height, frame_rate): # function to start camera
             stderr=subprocess.PIPE,
             bufsize=0
         )
-
+        # Optionally, check if process started successfully
+        time.sleep(0.2)
+        if camera_process.poll() is not None:
+            # Process exited immediately
+            stderr = camera_process.stderr.read().decode()
+            logging.error(f"(camera.py): Camera process failed to start. Stderr: {stderr}\n")
+            return None
         return camera_process
 
     except Exception as e:
