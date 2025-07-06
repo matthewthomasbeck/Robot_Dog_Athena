@@ -39,7 +39,8 @@ from utilities.config import INFERENCE_CONFIG
 # function to load and compile an OpenVINO model
 def load_and_compile_model(
         model_xml_path=INFERENCE_CONFIG['MODEL_PATH'], # path to model XML file
-        device_name=INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD", etc.)
+        device_name=INFERENCE_CONFIG['TPU_NAME'], # device name for inference (e.g., "CPU", "GPU", "MYRIAD", etc.)
+        enable_inference=True # <-- new argument
 ):
 
     ##### clean up OpenCV windows from last run #####
@@ -54,6 +55,9 @@ def load_and_compile_model(
     ##### compile model #####
 
     logging.debug("(opencv.py): Loading and compiling model...\n")
+
+    if not enable_inference:
+        return None, None, None
 
     try: # try to load and compile the model
 
@@ -144,46 +148,46 @@ def run_inference(compiled_model, input_layer, output_layer, camera_process, mjp
 
                     return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
 
-                ##### run inference #####
+                # Only run inference if enabled and model is loaded
+                if compiled_model is not None and input_layer is not None and output_layer is not None:
+                    try:
+                        #logging.debug("(opencv.py): Running inference on frame...\n") # very annoying, leave commented
+                        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert frame to RGB format
+                        input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1) # resize/transpose to match shape
+                        input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32) # add batch dim and set float32
+                        results = compiled_model([input_blob])[output_layer] # collect inference results
 
-                try: # if inference is to be run...
+                        for detection in results[0][0]: # iterate through detections
 
-                    #logging.debug("(opencv.py): Running inference on frame...\n") # very annoying, leave commented
-                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert frame to RGB format
-                    input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1) # resize/transpose to match shape
-                    input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32) # add batch dim and set float32
-                    results = compiled_model([input_blob])[output_layer] # collect inference results
+                            confidence = detection[2] # get confidence score
 
-                    for detection in results[0][0]: # iterate through detections
+                            if confidence > 0.5: # if confidence is above threshold...
 
-                        confidence = detection[2] # get confidence score
+                                xmin, ymin, xmax, ymax = map( # convert coordinates to integers
+                                    int, detection[3:7] * [
+                                        frame.shape[1], frame.shape[0],
+                                        frame.shape[1], frame.shape[0]
+                                    ]
+                                )
+                                label = f"ID {int(detection[1])}: {confidence:.2f}"
+                                cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2) # draw bounding box
+                                cv2.putText( # put label on frame
+                                    frame,
+                                    label,
+                                    (xmin, ymin - 10),
+                                    cv2.FONT_HERSHEY_SIMPLEX,
+                                    0.5,
+                                    (0, 255, 0),
+                                    2
+                                )
 
-                        if confidence > 0.5: # if confidence is above threshold...
-
-                            xmin, ymin, xmax, ymax = map( # convert coordinates to integers
-                                int, detection[3:7] * [
-                                    frame.shape[1], frame.shape[0],
-                                    frame.shape[1], frame.shape[0]
-                                ]
-                            )
-                            label = f"ID {int(detection[1])}: {confidence:.2f}"
-                            cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2) # draw bounding box
-                            cv2.putText( # put label on frame
-                                frame,
-                                label,
-                                (xmin, ymin - 10),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.5,
-                                (0, 255, 0),
-                                2
-                            )
-
-                    cv2.imshow("video (inference)", frame) # show frame with detections in a window
-                    if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
-                        return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
-
-                except Exception as e:
-                    logging.error(f"(opencv.py): Inference error: {e}\n")
+                        cv2.imshow("video (inference)", frame) # show frame with detections in a window
+                        if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
+                            return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
+                    except Exception as e:
+                        logging.error(f"(opencv.py): Inference error: {e}\n")
+                else:
+                    logging.warning("(opencv.py): Inference requested but model is not loaded.\n")
 
             else:
                 logging.error("(opencv.py): Failed to decode frame.\n")
