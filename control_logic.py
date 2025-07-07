@@ -18,6 +18,8 @@
 ##### import necessary libraries #####
 
 import time  # import time library for gait timing
+import threading
+import queue
 
 ##### import necessary utilities #####
 
@@ -47,6 +49,7 @@ COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
 COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+FRAME_QUEUE = queue.Queue(maxsize=1)
 
 ##### create different control mode #####
 
@@ -59,9 +62,67 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 #########################################
 
 
+########## MOVEMENT LOOP ##########
+
+def _worker_loop():
+    """
+    Worker thread: waits for latest frame, runs inference, handles commands, and executes movement.
+    """
+    is_neutral = False
+    current_leg = 'FL'
+    while True:
+        frame = FRAME_QUEUE.get()  # Wait for the latest frame
+
+        # Run inference if desired
+        run_inference(
+            COMPILED_MODEL,
+            INPUT_LAYER,
+            OUTPUT_LAYER,
+            frame,
+            run_inference=True  # Actually run inference in the worker
+        )
+
+        # Handle commands and movement
+        if MODE == 'radio':
+            commands = interpret_commands(CHANNEL_DATA)
+            for channel, (action, intensity) in commands.items():
+                is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
+
+        elif MODE.startswith("ssh"):
+            try:
+                key = conn.recv(3).decode()
+                if not key:
+                    continue
+                if key.startswith('\x1b'):
+                    key = key[:3]
+                else:
+                    key = key[0]
+                is_neutral, current_leg = _execute_keyboard_commands(
+                    key,
+                    is_neutral,
+                    current_leg,
+                    intensity=10,
+                    tune_mode=(MODE == 'ssh-tune'),
+                )
+            except Exception as e:
+                logging.error(f"(control_logic.py): Socket read error: {e}\n")
+
+        elif MODE == 'web':
+            if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
+                command = COMMAND_QUEUE.get()
+                logging.info(f"(control_logic.py): Received command from web: {command}\n")
+                is_neutral, current_leg = _execute_keyboard_commands(
+                    command.strip(),
+                    is_neutral,
+                    current_leg,
+                    intensity=10,
+                    tune_mode=False
+                )
+
+
 ########## RUN ROBOTIC PROCESS ##########
 
-def _run_robot(CHANNEL_DATA):  # central function that runs robot
+def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
     ##### set/initialize variables #####
 
@@ -69,6 +130,11 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
     current_leg = 'FL'  # default current leg for tuning mode
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
     LOOP_RATE = LOOP_RATE_HZ * 3  # calculate frame interval based on loop rate times 3 to keep up with camera
+
+    ##### start worker thread #####
+
+    worker_thread = threading.Thread(target=_worker_loop, daemon=True)
+    worker_thread.start()
 
     ##### run robotic logic #####
 
@@ -102,14 +168,6 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
 
             internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
 
-            run_inference(
-                COMPILED_MODEL,
-                INPUT_LAYER,
-                OUTPUT_LAYER,
-                frame,
-                run_inference=False  # or True, as needed
-            )
-
             ##### decode and execute commands #####
 
             if MODE.startswith("ssh"):
@@ -123,47 +181,6 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
             # commands = interpret_commands(CHANNEL_DATA)
             # for channel, (action, intensity) in commands.items():
             # is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
-
-            if MODE == 'radio':  # if mode is radio...
-                commands = interpret_commands(CHANNEL_DATA)  # interpret commands from CHANNEL_DATA from R/C receiver
-
-                for channel, (action, intensity) in commands.items():  # loop through each channel and its action
-                    is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)  # run radio commands
-
-            elif MODE.startswith("ssh"):  # if mode is SSH...
-                try:  # attempt to read from SSH socket connection
-                    key = conn.recv(3).decode()  # read up to 3 bytes from socket
-                    if not key:  # if no data received...
-                        continue
-                    if key.startswith('\x1b'):  # if key starts with escape character...
-                        key = key[:3]  # arrow key
-                    else:  # if some other character...
-                        key = key[0]
-
-                    is_neutral, current_leg = _execute_keyboard_commands(  # use keys to execute commands
-                        key,
-                        is_neutral,
-                        current_leg,
-                        intensity=10,
-                        tune_mode=(MODE == 'ssh-tune'),
-                    )
-
-                except Exception as e:  # if there is an error reading from socket...
-                    logging.error(f"(control_logic.py): Socket read error: {e}\n")
-
-            elif MODE == 'web':
-                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
-                    command = COMMAND_QUEUE.get()
-                    logging.info(f"(control_logic.py): Received command from web: {command}\n")
-
-                    # Execute the command using existing keyboard command logic
-                    is_neutral, current_leg = _execute_keyboard_commands(
-                        command.strip(),  # Remove any whitespace/newlines
-                        is_neutral,
-                        current_leg,
-                        intensity=10,
-                        tune_mode=False
-                    )
 
             ##### wait to maintain global action rate and not outpace the camera #####
 
@@ -500,4 +517,4 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_
 
 ##### run robotic process #####
 
-_run_robot(CHANNEL_DATA)  # run robot process
+_perception_loop(CHANNEL_DATA)  # run robot process

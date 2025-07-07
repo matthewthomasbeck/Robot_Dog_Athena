@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to start key logic from website" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Adjusted run_inference to separate inference and frame decoding, moving decoding logic to camera.py; adjusted control_logic.py from camera-&gt;cv2-&gt;stream to camera-&gt;stream-&gt;cv2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -99,6 +99,7 @@
       <workItem from="1751501885178" duration="1654000" />
       <workItem from="1751574141048" duration="547000" />
       <workItem from="1751810042754" duration="519000" />
+      <workItem from="1751902726180" duration="85000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -296,7 +297,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751853255270</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Adjusted run_inference to separate inference and frame decoding, moving decoding logic to camera.py; adjusted control_logic.py from camera-&gt;cv2-&gt;stream to camera-&gt;stream-&gt;cv2">
+      <option name="closed" value="true" />
+      <created>1751902805292</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1751902805292</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -334,7 +343,8 @@
     <MESSAGE value="adjusted internet to close bad sockets" />
     <MESSAGE value="Changing debug level to info" />
     <MESSAGE value="Going to start key logic from website" />
-    <option name="LAST_COMMIT_MESSAGE" value="Going to start key logic from website" />
+    <MESSAGE value="Adjusted run_inference to separate inference and frame decoding, moving decoding logic to camera.py; adjusted control_logic.py from camera-&gt;cv2-&gt;stream to camera-&gt;stream-&gt;cv2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adjusted run_inference to separate inference and frame decoding, moving decoding logic to camera.py; adjusted control_logic.py from camera-&gt;cv2-&gt;stream to camera-&gt;stream-&gt;cv2" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
