@@ -24,7 +24,9 @@ import subprocess # import subprocess to run rpicam command
 import os # import os to check if rpicam instances exists
 import signal # import signal to send signals to processes
 import logging # import logging for logging messages
-import time # <-- add this import
+import time # add time for waiting
+import numpy # add numpy for decoding frames
+import cv2  # add cv2 for decoding frames
 
 ##### import config #####
 
@@ -117,3 +119,31 @@ def _start_camera_process(width, height, frame_rate): # function to start camera
         logging.error(f"(camera.py): Failed to start camera process: {e}\n")
 
         return None
+
+
+########## DECODE FRAME ##########
+
+def decode_frame(camera_process, mjpeg_buffer):
+
+    try:
+        chunk = camera_process.stdout.read(4096)
+        if not chunk:
+            return mjpeg_buffer, None, None
+
+        mjpeg_buffer += chunk
+        start_idx = mjpeg_buffer.find(b'\xff\xd8')
+        end_idx = mjpeg_buffer.find(b'\xff\xd9')
+
+        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+            frame_data = mjpeg_buffer[start_idx:end_idx + 2]
+            mjpeg_buffer = mjpeg_buffer[end_idx + 2:]
+            frame = cv2.imdecode(numpy.frombuffer(frame_data, dtype=numpy.uint8), cv2.IMREAD_COLOR)
+            return mjpeg_buffer, frame_data, frame
+
+        if len(mjpeg_buffer) > 65536: # if buffer overflow...
+            mjpeg_buffer = b''
+        return mjpeg_buffer, None, None
+
+    except Exception as e:
+        logging.error(f"(camera.py): Failed to decode frame: {e}\n")
+        return mjpeg_buffer, None, None

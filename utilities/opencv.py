@@ -112,93 +112,50 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
 
 ########## RUN MODEL AND SHOW FRAME ##########
 
-def run_inference(compiled_model, input_layer, output_layer, camera_process, mjpeg_buffer, run_inference):
+def run_inference(compiled_model, input_layer, output_layer, frame, run_inference):
+    """
+    Runs inference on a decoded frame if requested, otherwise just displays it.
+    """
+    if frame is None:
+        return
 
-    ##### check if model/layers are properly initialized #####
+    try:
+        if not run_inference:
+            cv2.imshow("video (standard)", frame)
+            cv2.waitKey(1)
+            return
 
-    logging.debug("(opencv.py): Running inference on camera stream...\n") # very annoying, leave commented
+        if compiled_model is not None and input_layer is not None and output_layer is not None:
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1)
+            input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32)
+            results = compiled_model([input_blob])[output_layer]
 
-    try: # try to run inference on the camera stream
-
-        chunk = camera_process.stdout.read(4096) # read a chunk of data from camera process stdout
-
-        if not chunk: # if no data is received...
-            logging.error("(opencv.py): Camera process stopped sending data.\n")
-            return mjpeg_buffer, None
-
-        mjpeg_buffer += chunk # append chunk to buffer
-        start_idx = mjpeg_buffer.find(b'\xff\xd8') # start of JPEG frame
-        end_idx = mjpeg_buffer.find(b'\xff\xd9') # end of JPEG frame
-
-        if start_idx != -1 and end_idx != -1 and end_idx > start_idx: # if valid JPEG frame found...
-
-            frame_data = mjpeg_buffer[start_idx:end_idx + 2] # extract frame data
-            mjpeg_buffer = mjpeg_buffer[end_idx + 2:] # remove processed frame from buffer
-            frame = cv2.imdecode(np.frombuffer(frame_data, dtype=np.uint8), cv2.IMREAD_COLOR) # decode frame from buffer
-
-            if frame is not None: # if frame is successfully decoded...
-
-                if not run_inference:  # if inference is not to be run...
-
-                    ##### show frame without inference #####
-
-                    cv2.imshow("video (standard)", frame) # show the frame in a window
-                    if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
-                        return mjpeg_buffer
-
-                    return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
-
-                # Only run inference if enabled and model is loaded
-                if compiled_model is not None and input_layer is not None and output_layer is not None:
-                    try:
-                        #logging.debug("(opencv.py): Running inference on frame...\n") # very annoying, leave commented
-                        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) # convert frame to RGB format
-                        input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1) # resize/transpose to match shape
-                        input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32) # add batch dim and set float32
-                        results = compiled_model([input_blob])[output_layer] # collect inference results
-
-                        for detection in results[0][0]: # iterate through detections
-
-                            confidence = detection[2] # get confidence score
-
-                            if confidence > 0.5: # if confidence is above threshold...
-
-                                xmin, ymin, xmax, ymax = map( # convert coordinates to integers
-                                    int, detection[3:7] * [
-                                        frame.shape[1], frame.shape[0],
-                                        frame.shape[1], frame.shape[0]
-                                    ]
-                                )
-                                label = f"ID {int(detection[1])}: {confidence:.2f}"
-                                cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2) # draw bounding box
-                                cv2.putText( # put label on frame
-                                    frame,
-                                    label,
-                                    (xmin, ymin - 10),
-                                    cv2.FONT_HERSHEY_SIMPLEX,
-                                    0.5,
-                                    (0, 255, 0),
-                                    2
-                                )
-
-                        cv2.imshow("video (inference)", frame) # show frame with detections in a window
-                        if cv2.waitKey(1) & 0xFF == ord('q'): # exit on 'q' key press
-                            return mjpeg_buffer, frame_data # return frame_data and not frame to avoid re-encoding
-                    except Exception as e:
-                        logging.error(f"(opencv.py): Inference error: {e}\n")
-                else:
-                    logging.warning("(opencv.py): Inference requested but model is not loaded.\n")
-
-            else:
-                logging.error("(opencv.py): Failed to decode frame.\n")
-
+            for detection in results[0][0]:
+                confidence = detection[2]
+                if confidence > 0.5:
+                    xmin, ymin, xmax, ymax = map(
+                        int, detection[3:7] * [
+                            frame.shape[1], frame.shape[0],
+                            frame.shape[1], frame.shape[0]
+                        ]
+                    )
+                    label = f"ID {int(detection[1])}: {confidence:.2f}"
+                    cv2.rectangle(frame, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
+                    cv2.putText(
+                        frame,
+                        label,
+                        (xmin, ymin - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        (0, 255, 0),
+                        2
+                    )
+            cv2.imshow("video (inference)", frame)
+            cv2.waitKey(1)
+            
         else:
+            logging.warning("(opencv.py): Inference requested but model is not loaded.\n")
 
-            if len(mjpeg_buffer) > 65536: # if buffer is too large...
-                logging.warning("(opencv.py): MJPEG buffer overflow, resetting...\n")
-                mjpeg_buffer = b''
-
-    except Exception as err: # catch any unexpected errors
-        logging.error(f"(opencv.py): Unexpected error in inference loop: {err}\n")
-
-    return mjpeg_buffer, None
+    except Exception as e:
+        logging.error(f"(opencv.py): Inference error: {e}\n")

@@ -23,7 +23,7 @@ import time  # import time library for gait timing
 
 from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
-from utilities.camera import initialize_camera  # import to start camera logic
+from utilities.camera import initialize_camera, decode_frame  # import to start camera logic
 from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
 import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
 
@@ -98,17 +98,17 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
             # TODO get rid of these lines if delay unbearable
             # start_time = time.time()  # start time to measure actions per second
 
-            # let run_inference be true or false if I want to avoid running inference or not (it's laggy as hell)
-            mjpeg_buffer, frame_data = run_inference(
+            mjpeg_buffer, frame_data, frame = decode_frame(CAMERA_PROCESS, mjpeg_buffer)
+
+            internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
+
+            run_inference(
                 COMPILED_MODEL,
                 INPUT_LAYER,
                 OUTPUT_LAYER,
-                CAMERA_PROCESS,
-                mjpeg_buffer,
-                run_inference=False
+                frame,
+                run_inference=False  # or True, as needed
             )
-
-            internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
 
             ##### decode and execute commands #####
 
