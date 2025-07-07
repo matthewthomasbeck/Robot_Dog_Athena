@@ -157,13 +157,13 @@ def _run_robot(CHANNEL_DATA):  # central function that runs robot
                     logging.info(f"(control_logic.py): Received command from web: {command}\n")
 
                     # Execute the command using existing keyboard command logic
-                    #is_neutral, current_leg = _execute_keyboard_commands(
-                        #command.strip(),  # Remove any whitespace/newlines
-                        #is_neutral,
-                        #current_leg,
-                        #intensity=10,
-                        #tune_mode=False
-                    #)
+                    is_neutral, current_leg = _execute_keyboard_commands(
+                        command.strip(),  # Remove any whitespace/newlines
+                        is_neutral,
+                        current_leg,
+                        intensity=10,
+                        tune_mode=False
+                    )
 
             ##### wait to maintain global action rate and not outpace the camera #####
 
