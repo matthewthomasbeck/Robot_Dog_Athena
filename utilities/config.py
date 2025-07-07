@@ -42,7 +42,7 @@ LOOP_RATE_HZ = 30 # actions per second for all modules, default: 30
 
 LOG_CONFIG = {
     'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
-    'LOG_LEVEL': logging.DEBUG # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
+    'LOG_LEVEL': logging.INFO # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
 }
 
 ##### set camera configuration #####
