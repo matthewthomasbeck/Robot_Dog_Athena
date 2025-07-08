@@ -135,7 +135,7 @@ def listen_for_commands(sock, command_queue):
     while True:
         try:
             length_bytes = sock.recv(4)
-            logging.info(f"(internet.py): Received length_bytes: {length_bytes}\n")
+            logging.debug(f"(internet.py): Received length_bytes: {length_bytes}\n")
             if not length_bytes:
                 logging.warning("(internet.py): Socket closed or no data received for length. Exiting thread.\n")
                 break
@@ -151,10 +151,10 @@ def listen_for_commands(sock, command_queue):
                 break  # Exit if we didn't get the full command
             command = command_bytes.decode()
             command_queue.put(command)
-            logging.info(f"(internet.py): Received command: {command}\n")
+            logging.debug(f"(internet.py): Received command: {command}\n")
         except Exception as e:
             logging.error(f"(internet.py): Error receiving command from website backend: {e}\n")
             break
         finally:
-            logging.error("(internet.py): listen_for_commands thread exiting!\n")
+            logging.debug("(internet.py): listen_for_commands thread exiting!\n")
             pass
