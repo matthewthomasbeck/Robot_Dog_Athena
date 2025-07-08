@@ -152,14 +152,17 @@ def _handle_command(command, frame):
 
     if command != 'n': # dont waste energy running inference for neutral command
 
-        run_inference( # TODO dont run inference for now
-            COMPILED_MODEL,
-            INPUT_LAYER,
-            OUTPUT_LAYER,
-            frame,
-            run_inference=False
-        )
-        logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
+        try:
+            run_inference( # TODO dont run inference for now
+                COMPILED_MODEL,
+                INPUT_LAYER,
+                OUTPUT_LAYER,
+                frame,
+                run_inference=False
+            )
+            logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
+        except Exception as e:
+            logging.error(f"(control_logic.py): Failed to run inference for command: {e}\n")
 
     if MODE == 'radio':
         try:
@@ -198,6 +201,9 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
     if not tune_mode:  # normal operation mode
 
         if key == 'w':  # Move forward
+
+            logging.info(f"(control_logic.py): Executing forward command...\n")
+
             trot_forward(intensity)
             is_neutral = False
 
@@ -238,6 +244,7 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
             is_neutral = False
 
         elif key == 'n':
+            logging.info(f"(control_logic.py): Executing neutral command...\n")
             neutral_position(10)
             is_neutral = True
 
@@ -245,6 +252,8 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
             squatting_position(1)
             is_neutral = False
 
+        else:
+            logging.warning(f"(control_logic.py): Invalid command: {key}\n")
     else:
 
         if key == 'q':  # x axis positive
@@ -295,6 +304,9 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
             if not is_neutral:
                 neutral_position(10)
                 is_neutral = True
+
+        else:
+            logging.warning(f"(control_logic.py): Invalid command: {key}\n")
 
     return is_neutral, current_leg  # Return updated neutral standing state
 

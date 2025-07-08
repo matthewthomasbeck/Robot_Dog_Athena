@@ -117,15 +117,20 @@ def run_inference(compiled_model, input_layer, output_layer, frame, run_inferenc
     Runs inference on a decoded frame if requested, otherwise just displays it.
     """
     if frame is None:
+        logging.warning("(opencv.py): Frame is None.\n")
         return
 
     try:
         if not run_inference:
-            cv2.imshow("video (standard)", frame)
-            cv2.waitKey(1)
+
+            logging.debug("(opencv.py): Not running inference, passing...\n")
+            #cv2.imshow("video (standard)", frame)
+            #cv2.waitKey(1)
             return
 
         if compiled_model is not None and input_layer is not None and output_layer is not None:
+
+            logging.debug("(opencv.py): Running inference...\n")
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             input_blob = cv2.resize(frame_rgb, (256, 256)).transpose(2, 0, 1)
             input_blob = np.expand_dims(input_blob, axis=0).astype(np.float32)
@@ -151,8 +156,10 @@ def run_inference(compiled_model, input_layer, output_layer, frame, run_inferenc
                         (0, 255, 0),
                         2
                     )
-            cv2.imshow("video (inference)", frame)
-            cv2.waitKey(1)
+
+            logging.info("(opencv.py): Inference complete.\n")
+            #cv2.imshow("video (inference)", frame)
+            #cv2.waitKey(1)
             
         else:
             logging.warning("(opencv.py): Inference requested but model is not loaded.\n")

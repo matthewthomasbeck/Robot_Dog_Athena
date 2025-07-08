@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="better logging for moving forward">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Hugely improved logging for movement, about to figure out why movement stops after only 1 command is listened to">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
     </list>
@@ -104,7 +104,7 @@
       <workItem from="1751810042754" duration="519000" />
       <workItem from="1751902726180" duration="85000" />
       <workItem from="1751918338216" duration="86000" />
-      <workItem from="1751935504054" duration="5190000" />
+      <workItem from="1751935504054" duration="6368000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -350,7 +350,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751993018406</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Hugely improved logging for movement, about to figure out why movement stops after only 1 command is listened to">
+      <option name="closed" value="true" />
+      <created>1752002463146</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1752002463146</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -365,7 +373,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="CV2 camera integration fully complete" />
     <MESSAGE value="Got a good resolution with the camera, 1280x720p" />
     <MESSAGE value="COntinued model testing" />
     <MESSAGE value="Full pipeline completely working" />
@@ -390,7 +397,8 @@
     <MESSAGE value="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
     <MESSAGE value="Made logging a little less annoying" />
     <MESSAGE value="better logging for moving forward" />
-    <option name="LAST_COMMIT_MESSAGE" value="better logging for moving forward" />
+    <MESSAGE value="Hugely improved logging for movement, about to figure out why movement stops after only 1 command is listened to" />
+    <option name="LAST_COMMIT_MESSAGE" value="Hugely improved logging for movement, about to figure out why movement stops after only 1 command is listened to" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
