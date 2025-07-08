@@ -54,8 +54,10 @@ FRAME_QUEUE = queue.Queue(maxsize=1)
 ##### create different control mode #####
 
 MODE = 'web'  # default mode is radio control, can be changed to 'radio' or 'web' for variable control
+IS_COMPLETE = True
 IS_NEUTRAL = False  # set global neutral standing boolean
 CURRENT_LEG = 'FL'  # set global current leg
+logging.info(f"(control_logic.py): IS_COMPLETE set to true.\n")
 logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
 
 
@@ -68,7 +70,7 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 
 def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
-    global IS_NEUTRAL, CURRENT_LEG
+    global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
 
     ##### set/initialize variables #####
 
@@ -108,7 +110,10 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             if MODE == 'web' and COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
                 command = COMMAND_QUEUE.get()
 
-                logging.info(f"(control_logic.py): Received command '{command}' from queue.\n")
+                if IS_COMPLETE: # if movement is complete, run command
+                    logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
+                else:
+                    logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL BLOCK).\n")
 
             # LEGACY RADIO COMMAND CODE, UNDER NO CIRCUMSTANCES REMOVE WHATSOEVER (I will get around to renewing radio support for override)
             #if MODE == 'radio':
@@ -116,11 +121,15 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 #for channel, (action, intensity) in commands.items():
                     #is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
 
-            if command and IS_NEUTRAL:
+            if command and IS_COMPLETE: # if command presend and movement complete...
 
-                logging.info(f"(control_logic.py): Running command: {command}...\n")
-                IS_NEUTRAL = False  # block new commands until movement is complete and neutral standing is true
+                logging.debug(f"(control_logic.py): Running command: {command}...\n")
                 threading.Thread(target=_handle_command, args=(command, frame), daemon=True).start()
+
+            elif not command and IS_COMPLETE and not IS_NEUTRAL: # if no command and movement complete and not neutral...
+
+                logging.info(f"(control_logic.py): No command received, returning to neutral position...\n")
+                threading.Thread(target=_handle_command, args=('n', frame), daemon=True).start()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -136,27 +145,32 @@ def _handle_command(command, frame):
 
     logging.debug(f"(control_logic.py): Threading command: {command}...\n")
 
-    global IS_NEUTRAL, CURRENT_LEG
+    global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
 
-    run_inference( # dont run inference for now
-        COMPILED_MODEL,
-        INPUT_LAYER,
-        OUTPUT_LAYER,
-        frame,
-        run_inference=False
-    )
+    IS_COMPLETE = False  # block new commands until movement is complete
+    logging.info(f"(control_logic.py): IS_COMPLETE set to false.\n")
 
-    logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
+    if command != 'n': # dont waste energy running inference for neutral command
+
+        run_inference( # TODO dont run inference for now
+            COMPILED_MODEL,
+            INPUT_LAYER,
+            OUTPUT_LAYER,
+            frame,
+            run_inference=False
+        )
+        logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
 
     if MODE == 'radio':
         try:
             logging.debug(f"(control_logic.py): Executing radio command: {command}...\n")
             logging.info(f"(control_logic.py): Executed radio command: {command}\n")
-
+            IS_NEUTRAL = False # TODO this is temporary, replace with actual radio command later
+            IS_COMPLETE = True
         except Exception as e:
             logging.error(f"(control_logic.py): Failed to execute radio command: {e}\n")
-
-        pass
+            IS_NEUTRAL = False
+            IS_COMPLETE = True
 
     elif MODE == 'web':
         try:
@@ -169,11 +183,120 @@ def _handle_command(command, frame):
                 tune_mode=False
             )
             logging.info(f"(control_logic.py): Executed keyboard command: {command}\n")
-
+            IS_COMPLETE = True
         except Exception as e:
             logging.error(f"(control_logic.py): Failed to execute keyboard command: {e}\n")
+            IS_NEUTRAL = False
+            IS_COMPLETE = True
 
-    IS_NEUTRAL = True
+    logging.info(f"(control_logic.py): IS_COMPLETE set to true.\n")
+
+##### keyboard commands for tuning mode and normal operation #####
+
+def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mode):
+
+    if not tune_mode:  # normal operation mode
+
+        if key == 'w':  # Move forward
+            trot_forward(intensity)
+            is_neutral = False
+
+        elif key == 's':  # Move backward
+            # trotBackward(intensity)
+            is_neutral = False
+
+        elif key == 'a':  # Shift left
+            # trotLeft(intensity)
+            is_neutral = False
+
+        elif key == 'd':  # Shift right
+            # trotRight(intensity)
+            is_neutral = False
+
+        elif key == '\x1b[C':  # Rotate right
+            # rotateRight(intensity)
+            is_neutral = False
+
+        elif key == '\x1b[D':  # Rotate left
+            # rotateLeft(intensity)
+            is_neutral = False
+
+        elif key == '\x1b[A':  # Look up
+            # adjustBL_Z(up=False)
+            is_neutral = False
+
+        elif key == '\x1b[B':  # Look down
+            # adjustBL_Z(up=True)
+            is_neutral = False
+
+        elif key == 'i':  # Tilt up
+            # adjustBL_Y(left=False)
+            is_neutral = False
+
+        elif key == 'k':  # Tilt down
+            # adjustBL_Y(left=True)
+            is_neutral = False
+
+        elif key == 'n':
+            neutral_position(10)
+            is_neutral = True
+
+        elif key == ' ':  # Lie down
+            squatting_position(1)
+            is_neutral = False
+
+    else:
+
+        if key == 'q':  # x axis positive
+            ADJUSTMENT_FUNCS[current_leg]['x+']()
+            is_neutral = False
+
+        elif key == 'a':  # x axis negative
+            ADJUSTMENT_FUNCS[current_leg]['x-']()
+            is_neutral = False
+
+        elif key == 'w':  # y axis positive
+            ADJUSTMENT_FUNCS[current_leg]['y+']()
+            is_neutral = False
+
+        elif key == 's':  # y axis negative
+            ADJUSTMENT_FUNCS[current_leg]['y-']()
+            is_neutral = False
+
+        elif key == 'e':  # z axis positive
+            ADJUSTMENT_FUNCS[current_leg]['z+']()
+            is_neutral = False
+
+        elif key == 'd':  # z axis negative
+            ADJUSTMENT_FUNCS[current_leg]['z-']()
+            is_neutral = False
+
+        elif key == '1':  # set current leg to front left
+
+            current_leg = 'FL'  # Set current leg to front left
+            is_neutral = False
+
+        elif key == '2':  # set current leg to front right
+
+            current_leg = 'FR'  # Set current leg to front right
+            is_neutral = False
+
+        elif key == '3':  # set current leg to back left
+
+            current_leg = 'BL'  # Set current leg to back left
+            is_neutral = False
+
+        elif key == '4':  # set current leg to back right
+
+            current_leg = 'BR'  # Set current leg to back right
+            is_neutral = False
+
+        elif key == 'n':
+            if not is_neutral:
+                neutral_position(10)
+                is_neutral = True
+
+    return is_neutral, current_leg  # Return updated neutral standing state
 
 
 ########## INTERPRET COMMANDS ##########
@@ -380,118 +503,6 @@ ADJUSTMENT_FUNCS = {
         'z-': lambda: adjustBR_Z(up=False),
     }
 }
-
-
-##### keyboard commands for tuning mode and normal operation #####
-
-def _execute_keyboard_commands(key, is_neutral, current_leg, intensity=10, tune_mode=False):
-    if tune_mode:
-
-        if key == 'q':  # x axis positive
-            ADJUSTMENT_FUNCS[current_leg]['x+']()
-            is_neutral = False
-
-        elif key == 'a':  # x axis negative
-            ADJUSTMENT_FUNCS[current_leg]['x-']()
-            is_neutral = False
-
-        elif key == 'w':  # y axis positive
-            ADJUSTMENT_FUNCS[current_leg]['y+']()
-            is_neutral = False
-
-        elif key == 's':  # y axis negative
-            ADJUSTMENT_FUNCS[current_leg]['y-']()
-            is_neutral = False
-
-        elif key == 'e':  # z axis positive
-            ADJUSTMENT_FUNCS[current_leg]['z+']()
-            is_neutral = False
-
-        elif key == 'd':  # z axis negative
-            ADJUSTMENT_FUNCS[current_leg]['z-']()
-            is_neutral = False
-
-        elif key == '1':  # set current leg to front left
-
-            current_leg = 'FL'  # Set current leg to front left
-            is_neutral = False
-
-        elif key == '2':  # set current leg to front right
-
-            current_leg = 'FR'  # Set current leg to front right
-            is_neutral = False
-
-        elif key == '3':  # set current leg to back left
-
-            current_leg = 'BL'  # Set current leg to back left
-            is_neutral = False
-
-        elif key == '4':  # set current leg to back right
-
-            current_leg = 'BR'  # Set current leg to back right
-            is_neutral = False
-
-        elif key == 'n':
-            if not is_neutral:
-                neutral_position(10)
-                is_neutral = True
-
-    else:  # Normal operation mode
-
-        if key == 'q':
-            logging.info("(control_logic.py): Exiting control logic.\n")
-            return is_neutral  # Exit condition
-
-        elif key == 'w':  # Move forward
-            trot_forward(intensity)
-            is_neutral = False
-
-        elif key == 's':  # Move backward
-            # trotBackward(intensity)
-            is_neutral = False
-
-        elif key == 'a':  # Shift left
-            # trotLeft(intensity)
-            is_neutral = False
-
-        elif key == 'd':  # Shift right
-            # trotRight(intensity)
-            is_neutral = False
-
-        elif key == '\x1b[C':  # Rotate right
-            # rotateRight(intensity)
-            is_neutral = False
-
-        elif key == '\x1b[D':  # Rotate left
-            # rotateLeft(intensity)
-            is_neutral = False
-
-        elif key == '\x1b[A':  # Look up
-            # adjustBL_Z(up=False)
-            is_neutral = False
-
-        elif key == '\x1b[B':  # Look down
-            # adjustBL_Z(up=True)
-            is_neutral = False
-
-        elif key == 'i':  # Tilt up
-            # adjustBL_Y(left=False)
-            is_neutral = False
-
-        elif key == 'k':  # Tilt down
-            # adjustBL_Y(left=True)
-            is_neutral = False
-
-        elif key == ' ':  # Lie down
-            squatting_position(1)
-            is_neutral = False
-
-        elif key == 'n':  # Neutral position
-            if not is_neutral:
-                neutral_position(10)
-                is_neutral = True
-
-    return is_neutral, current_leg  # Return updated neutral standing state
 
 
 ##### run robotic process #####
