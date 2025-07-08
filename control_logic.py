@@ -54,8 +54,8 @@ FRAME_QUEUE = queue.Queue(maxsize=1)
 ##### create different control mode #####
 
 MODE = 'web'  # default mode is radio control, can be changed to 'radio' or 'web' for variable control
-#IS_NEUTRAL = False  # set global neutral standing boolean
-#CURRENT_LEG = 'FL'  # set global current leg
+IS_NEUTRAL = False  # set global neutral standing boolean
+CURRENT_LEG = 'FL'  # set global current leg
 logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
 
 
@@ -67,6 +67,7 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 ########## RUN ROBOTIC PROCESS ##########
 
 def _perception_loop(CHANNEL_DATA):  # central function that runs robot
+
     global IS_NEUTRAL, CURRENT_LEG
 
     ##### set/initialize variables #####
@@ -107,6 +108,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             if MODE == 'web' and COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
                 command = COMMAND_QUEUE.get()
 
+                logging.info(f"(control_logic.py): Received command '{command}' from queue.\n")
+
             # LEGACY RADIO COMMAND CODE, UNDER NO CIRCUMSTANCES REMOVE WHATSOEVER (I will get around to renewing radio support for override)
             #if MODE == 'radio':
                 #commands = interpret_commands(CHANNEL_DATA)
@@ -114,6 +117,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     #is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
 
             if command and IS_NEUTRAL:
+
+                logging.info(f"(control_logic.py): Running command: {command}...\n")
                 IS_NEUTRAL = False  # block new commands until movement is complete and neutral standing is true
                 threading.Thread(target=_handle_command, args=(command, frame), daemon=True).start()
 
@@ -129,27 +134,44 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
 def _handle_command(command, frame):
 
+    logging.debug(f"(control_logic.py): Threading command: {command}...\n")
+
     global IS_NEUTRAL, CURRENT_LEG
 
-    run_inference(
+    run_inference( # dont run inference for now
         COMPILED_MODEL,
         INPUT_LAYER,
         OUTPUT_LAYER,
         frame,
-        run_inference=True
+        run_inference=False
     )
 
+    logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
+
     if MODE == 'radio':
+        try:
+            logging.debug(f"(control_logic.py): Executing radio command: {command}...\n")
+            logging.info(f"(control_logic.py): Executed radio command: {command}\n")
+
+        except Exception as e:
+            logging.error(f"(control_logic.py): Failed to execute radio command: {e}\n")
+
         pass
 
     elif MODE == 'web':
-        IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
-            command.strip(),
-            IS_NEUTRAL,
-            CURRENT_LEG,
-            intensity=10,
-            tune_mode=False
-        )
+        try:
+            logging.debug(f"(control_logic.py): Executing keyboard command: {command}...\n")
+            IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
+                command.strip(),
+                IS_NEUTRAL,
+                CURRENT_LEG,
+                intensity=10,
+                tune_mode=False
+            )
+            logging.info(f"(control_logic.py): Executed keyboard command: {command}\n")
+
+        except Exception as e:
+            logging.error(f"(control_logic.py): Failed to execute keyboard command: {e}\n")
 
     IS_NEUTRAL = True
 
