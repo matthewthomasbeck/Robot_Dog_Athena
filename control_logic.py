@@ -53,7 +53,9 @@ FRAME_QUEUE = queue.Queue(maxsize=1)
 
 ##### create different control mode #####
 
-MODE = 'web'  # default mode is radio control, can be changed to 'ssh' or 'ssh-tune' for SSH control
+MODE = 'web'  # default mode is radio control, can be changed to 'radio' or 'web' for variable control
+#IS_NEUTRAL = False  # set global neutral standing boolean
+#CURRENT_LEG = 'FL'  # set global current leg
 logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
 
 
@@ -62,79 +64,15 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 #########################################
 
 
-########## MOVEMENT LOOP ##########
-
-def _worker_loop():
-    """
-    Worker thread: waits for latest frame, runs inference, handles commands, and executes movement.
-    """
-    is_neutral = False
-    current_leg = 'FL'
-    while True:
-        frame = FRAME_QUEUE.get()  # Wait for the latest frame
-
-        # Run inference if desired
-        run_inference(
-            COMPILED_MODEL,
-            INPUT_LAYER,
-            OUTPUT_LAYER,
-            frame,
-            run_inference=True  # Actually run inference in the worker
-        )
-
-        # Handle commands and movement
-        if MODE == 'radio':
-            commands = interpret_commands(CHANNEL_DATA)
-            for channel, (action, intensity) in commands.items():
-                is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
-
-        elif MODE.startswith("ssh"):
-            try:
-                key = conn.recv(3).decode()
-                if not key:
-                    continue
-                if key.startswith('\x1b'):
-                    key = key[:3]
-                else:
-                    key = key[0]
-                is_neutral, current_leg = _execute_keyboard_commands(
-                    key,
-                    is_neutral,
-                    current_leg,
-                    intensity=10,
-                    tune_mode=(MODE == 'ssh-tune'),
-                )
-            except Exception as e:
-                logging.error(f"(control_logic.py): Socket read error: {e}\n")
-
-        elif MODE == 'web':
-            if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
-                command = COMMAND_QUEUE.get()
-                logging.info(f"(control_logic.py): Received command from web: {command}\n")
-                is_neutral, current_leg = _execute_keyboard_commands(
-                    command.strip(),
-                    is_neutral,
-                    current_leg,
-                    intensity=10,
-                    tune_mode=False
-                )
-
-
 ########## RUN ROBOTIC PROCESS ##########
 
 def _perception_loop(CHANNEL_DATA):  # central function that runs robot
+    global IS_NEUTRAL, CURRENT_LEG
 
     ##### set/initialize variables #####
 
-    is_neutral = False  # assume robot is not in neutral standing position until neutralStandingPosition() is called
-    current_leg = 'FL'  # default current leg for tuning mode
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
     LOOP_RATE = LOOP_RATE_HZ * 3  # calculate frame interval based on loop rate times 3 to keep up with camera
-
-    ##### start worker thread #####
-
-    worker_thread = threading.Thread(target=_worker_loop, daemon=True)
-    worker_thread.start()
 
     ##### run robotic logic #####
 
@@ -146,7 +84,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
         # time.sleep(3) TODO me too
         neutral_position(1)
         time.sleep(3)
-        is_neutral = True  # set is_neutral to True
+        IS_NEUTRAL = True  # set is_neutral to True
         time.sleep(3)  # wait for 3 seconds
 
     except Exception as e:  # if there is an error, log error
@@ -154,8 +92,6 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
         logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
     try:  # try to run main robotic process
-
-        # MODE = detect_ssh_and_prompt_mode() # detect mode to possibly start socket server TODO comment this out whenever I don't need to tune
 
         ##### stream video, run inference, and control the robot #####
 
@@ -165,30 +101,21 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             # start_time = time.time()  # start time to measure actions per second
 
             mjpeg_buffer, frame_data, frame = decode_frame(CAMERA_PROCESS, mjpeg_buffer)
-
             internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
+            command = None
 
-            ##### decode and execute commands #####
+            if MODE == 'web' and COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
+                command = COMMAND_QUEUE.get()
 
-            if MODE.startswith("ssh"):
-                server = internet.initialize_socket()
-                logging.debug("(control_logic.py): Waiting for SSH control client to connect to socket...\n")
-                conn, _ = server.accept()
-                conn.setblocking(True)
-                logging.info("(control_logic.py): SSH client connected.\n")
+            # LEGACY RADIO COMMAND CODE, UNDER NO CIRCUMSTANCES REMOVE WHATSOEVER (I will get around to renewing radio support for override)
+            #if MODE == 'radio':
+                #commands = interpret_commands(CHANNEL_DATA)
+                #for channel, (action, intensity) in commands.items():
+                    #is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
 
-            # TODO OLD CODE Handle commands
-            # commands = interpret_commands(CHANNEL_DATA)
-            # for channel, (action, intensity) in commands.items():
-            # is_neutral = executeRadioCommands(channel, action, intensity, is_neutral)
-
-            ##### wait to maintain global action rate and not outpace the camera #####
-
-            # TODO get rid of these lines if delay unbearable
-            # elapsed = time.time() - start_time # calculate elapsed time for actions
-            # sleep_time = max(0, (1 / LOOP_RATE) - elapsed) # calculate time to sleep to maintain loop rate
-            # if sleep_time > 0:  # if sleep time is greater than 0...
-            # time.sleep(sleep_time) # only sleep if outpacing the camera
+            if command and IS_NEUTRAL:
+                IS_NEUTRAL = False  # block new commands until movement is complete and neutral standing is true
+                threading.Thread(target=_handle_command, args=(command, frame), daemon=True).start()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -198,10 +125,40 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
         exit(1)
 
 
+########## HANDLE COMMANDS ##########
+
+def _handle_command(command, frame):
+
+    global IS_NEUTRAL, CURRENT_LEG
+
+    run_inference(
+        COMPILED_MODEL,
+        INPUT_LAYER,
+        OUTPUT_LAYER,
+        frame,
+        run_inference=True
+    )
+
+    if MODE == 'radio':
+        pass
+
+    elif MODE == 'web':
+        IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
+            command.strip(),
+            IS_NEUTRAL,
+            CURRENT_LEG,
+            intensity=10,
+            tune_mode=False
+        )
+
+    IS_NEUTRAL = True
+
+
 ########## INTERPRET COMMANDS ##########
 
 # function to interpret commands from channel data and do things
 def _execute_radio_commands(channel, action, intensity, is_neutral):
+
     ##### squat channel 2 #####
 
     if channel == 'channel_2':
