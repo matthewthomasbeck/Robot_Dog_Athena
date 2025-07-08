@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made logging a little less annoying" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -101,7 +101,7 @@
       <workItem from="1751810042754" duration="519000" />
       <workItem from="1751902726180" duration="85000" />
       <workItem from="1751918338216" duration="86000" />
-      <workItem from="1751935504054" duration="2941000" />
+      <workItem from="1751935504054" duration="3269000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -331,7 +331,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751991947445</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Made logging a little less annoying">
+      <option name="closed" value="true" />
+      <created>1751992378228</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1751992378228</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -346,7 +354,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added camera input with rpicam-jpeg" />
     <MESSAGE value="Camera successfully streams to opencv (for the most part, still model testing)" />
     <MESSAGE value="CV2 camera integration fully complete" />
     <MESSAGE value="Got a good resolution with the camera, 1280x720p" />
@@ -371,7 +378,8 @@
     <MESSAGE value="Added threading to separate camera to streaming pipeline from inference and movement" />
     <MESSAGE value="Adjusted code to thread out inference and movement only when a command is detected (both to reduce lag and save electrical power from un-needed inference)" />
     <MESSAGE value="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
-    <option name="LAST_COMMIT_MESSAGE" value="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
+    <MESSAGE value="Made logging a little less annoying" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made logging a little less annoying" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

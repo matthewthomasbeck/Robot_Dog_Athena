@@ -43,6 +43,8 @@ from movement.fundamental_movement import move_foot_to_pos # import fundamental 
 
 def trot_forward(intensity): # function to trot forward
 
+    logging.debug(f"(forward.py): Running trot_forward() with intensity: {intensity}...\n")
+
     ##### set variables #####
 
     gait_states = {
@@ -90,6 +92,8 @@ def trot_forward(intensity): # function to trot forward
             #set_leg_phase('BL', {'FORWARD': True}, speed, acceleration)
             #set_leg_phase('FL', {'FORWARD': True}, speed, acceleration)
             #set_leg_phase('BR', {'FORWARD': True}, speed, acceleration)
+
+            logging.info(f"(forward.py): Executed trot_forward() with intensity: {intensity}\n")
 
         time.sleep(0.1) # wait for legs to reach positions
 
