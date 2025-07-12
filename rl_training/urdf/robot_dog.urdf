@@ -774,7 +774,7 @@
   <joint name="FL_hip" type="revolute">
     <parent link="front-left-pelvis-servo"/>
     <child link="front-left-pelvis-disc"/>
-    <origin xyz="0 -0.00995 0.04605" rpy="0 0 0.349066"/>
+    <origin xyz="0 -0.00995 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
@@ -823,11 +823,13 @@
 
   <!--##### front-left-femur-servo/disc joint TODO (FL_upper) #####-->
 
-  <joint name="FL_upper" type="continuous">
+  <joint name="FL_upper" type="revolute">
     <parent link="front-left-femur-servo"/>
     <child link="front-left-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
+    <limit lower="-0.654" upper="0.654" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### front-left-femur-disc/femur joint #####-->
@@ -840,10 +842,13 @@
 
   <!--##### front-left-femur-femur/front-left-shin-shin joint TODO (FL_lower) #####-->
 
-  <joint name="FL_lower" type="continuous">
+  <joint name="FL_lower" type="revolute">
     <parent link="front-left-femur-femur"/>
     <child link="front-left-shin-shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.698" upper="0.698" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### front-left-shin-shin/front-left-foot joint #####-->
@@ -1181,7 +1186,7 @@
   <joint name="FR_hip" type="revolute">
     <parent link="front-right-pelvis-servo"/>
     <child link="front-right-pelvis-disc"/>
-    <origin xyz="0 -0.0106 0.04605" rpy="0 0 -0.349066"/>
+    <origin xyz="0 -0.0106 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
@@ -1230,11 +1235,13 @@
 
   <!--##### front-right-femur-servo/disc joint TODO (FR_upper) #####-->
 
-  <joint name="FR_upper" type="continuous">
+  <joint name="FR_upper" type="revolute">
     <parent link="front-right-femur-servo"/>
     <child link="front-right-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
+    <limit lower="-0.654" upper="0.654" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### front-right-femur-disc/femur joint #####-->
@@ -1247,10 +1254,13 @@
 
   <!--##### front-right-femur-femur/front-right-shin-shin joint TODO (FR_lower) #####-->
 
-  <joint name="FR_lower" type="continuous">
+  <joint name="FR_lower" type="revolute">
     <parent link="front-right-femur-femur"/>
     <child link="front-right-shin-shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.698" upper="0.698" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### front-right-shin-shin/front-right-foot joint #####-->
@@ -1588,7 +1598,7 @@
   <joint name="BL_hip" type="revolute">
     <parent link="back-left-pelvis-servo"/>
     <child link="back-left-pelvis-disc"/>
-    <origin xyz="0 -0.00995 0.04605" rpy="0 0 -0.349066"/>
+    <origin xyz="0 -0.00995 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
@@ -1637,11 +1647,13 @@
 
   <!--##### back-left-femur-servo/disc joint TODO (BL_upper) #####-->
 
-  <joint name="BL_upper" type="continuous">
+  <joint name="BL_upper" type="revolute">
     <parent link="back-left-femur-servo"/>
     <child link="back-left-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
+    <limit lower="-0.654" upper="0.654" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### back-left-femur-disc/femur joint #####-->
@@ -1654,10 +1666,13 @@
 
   <!--##### back-left-femur-femur/back-left-shin-shin joint TODO (BL_lower) #####-->
 
-  <joint name="BL_lower" type="continuous">
+  <joint name="BL_lower" type="revolute">
     <parent link="back-left-femur-femur"/>
     <child link="back-left-shin-shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.698" upper="0.698" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### back-left-shin-shin/back-left-foot joint #####-->
@@ -1995,7 +2010,7 @@
   <joint name="BR_hip" type="revolute">
     <parent link="back-right-pelvis-servo"/>
     <child link="back-right-pelvis-disc"/>
-    <origin xyz="0 -0.0106 0.04605" rpy="0 0 0.349066"/>
+    <origin xyz="0 -0.0106 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
@@ -2049,6 +2064,8 @@
     <child link="back-right-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
+    <limit lower="-0.654" upper="0.654" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### back-right-femur-disc/femur joint #####-->
@@ -2065,6 +2082,9 @@
     <parent link="back-right-femur-femur"/>
     <child link="back-right-shin-shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.698" upper="0.698" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
   <!--##### back-right-shin-shin/back-right-foot joint #####-->

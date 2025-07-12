@@ -5,13 +5,21 @@ import os
 import math
 
 # --- CONFIG ---
-ANGLE_STEP = 0.05  # radians per button press
+ANGLE_STEP = 0.01  # radians per button press
 
 # --- SETUP ---
 p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 p.loadURDF("plane.urdf", [0, 0, 0])
 p.setGravity(0, 0, 0)
+
+# Camera sliders
+cam_yaw_slider = p.addUserDebugParameter("Camera Yaw", -180, 180, 45)
+cam_pitch_slider = p.addUserDebugParameter("Camera Pitch", -89, 89, -30)
+cam_dist_slider = p.addUserDebugParameter("Camera Distance", 0, 5, 2)
+cam_target_x_slider = p.addUserDebugParameter("Camera Target X", -1, 1, 0)
+cam_target_y_slider = p.addUserDebugParameter("Camera Target Y", -1, 1, 0)
+cam_target_z_slider = p.addUserDebugParameter("Camera Target Z", 0, 2, 1)
 
 urdf_path = "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Training/urdf/robot_dog.urdf"
 if not os.path.isfile(urdf_path):
@@ -21,7 +29,8 @@ if not os.path.isfile(urdf_path):
 robot_id = p.loadURDF(
     urdf_path,
     basePosition=[0, 0, 1],
-    baseOrientation=p.getQuaternionFromEuler([0, 0, 0])
+    baseOrientation=p.getQuaternionFromEuler([0, 0, 0]),
+    useFixedBase=True  # <--- This keeps the base absolutely fixed
 )
 print(f"Robot ID: {robot_id}")
 
@@ -59,27 +68,57 @@ for j in joint_info:
         joint_map[(parts[0], parts[1])] = j['index']
 
 # --- UI ELEMENTS ---
-leg_dropdown = p.addUserDebugParameter("Leg", 0, len(leg_names)-1, 0)
-joint_dropdown = p.addUserDebugParameter("Joint", 0, len(joint_types)-1, 0)
-plus_button = p.addUserDebugParameter("+ (Increase Angle)", 0, 1, 0)
-minus_button = p.addUserDebugParameter("- (Decrease Angle)", 0, 1, 0)
+LEG_LABELS = ['FL', 'FR', 'BL', 'BR']
+JOINT_LABELS = ['hip', 'upper', 'lower']
+leg_slider = p.addUserDebugParameter("LEG (1=FL, 2=FR, 3=BL, 4=BR)", 1, 4, 1)
+joint_slider = p.addUserDebugParameter("JOINT (1=hip, 2=upper, 3=lower)", 1, 3, 1)
+
+# Define FULL_FRONT/BACK angles (dummy values, replace with your calibration)
+FULL_FRONT = 0.35
+FULL_BACK = -0.35
 
 # Track state
 current_angle = 0.0
 last_leg_idx = -1
 last_joint_idx = -1
-last_plus = 0
-last_minus = 0
+
+print("\nAvailable leg/type joints:")
+for (leg, jt), idx in joint_map.items():
+    print(f"  {leg}_{jt}: index {idx}")
+
+print("\nKeyboard Controls:")
+print("  Legs: 1=FL, 2=FR, 3=BL, 4=BR")
+print("  Joints: h=hip, u=upper, l=lower")
+print("  Angle: e=+, d=-, space=zero, f=FULL_FRONT, b=FULL_BACK")
 
 while True:
-    leg_idx = int(p.readUserDebugParameter(leg_dropdown))
-    joint_idx = int(p.readUserDebugParameter(joint_dropdown))
-    leg = leg_names[leg_idx]
-    joint_type = joint_types[joint_idx]
-    joint_key = (leg, joint_type)
-    joint_index = joint_map.get(joint_key, None)
+    # --- Camera controls ---
+    cam_yaw = p.readUserDebugParameter(cam_yaw_slider)
+    cam_pitch = p.readUserDebugParameter(cam_pitch_slider)
+    cam_dist = p.readUserDebugParameter(cam_dist_slider)
+    cam_target_x = p.readUserDebugParameter(cam_target_x_slider)
+    cam_target_y = p.readUserDebugParameter(cam_target_y_slider)
+    cam_target_z = p.readUserDebugParameter(cam_target_z_slider)
+    p.resetDebugVisualizerCamera(
+        cameraDistance=cam_dist,
+        cameraYaw=cam_yaw,
+        cameraPitch=cam_pitch,
+        cameraTargetPosition=[cam_target_x, cam_target_y, cam_target_z]
+    )
+
+    # --- Leg/joint selection and control ---
+    leg_idx = int(p.readUserDebugParameter(leg_slider)) - 1  # 0-based
+    joint_idx = int(p.readUserDebugParameter(joint_slider)) - 1  # 0-based
+    if 0 <= leg_idx < 4 and 0 <= joint_idx < 3:
+        leg = LEG_LABELS[leg_idx]
+        joint_type = JOINT_LABELS[joint_idx]
+        joint_key = (leg, joint_type)
+        joint_index = joint_map.get(joint_key, None)
+    else:
+        joint_index = None
+
     if joint_index is None:
-        p.addUserDebugText(f"No joint: {leg}_{joint_type}", [0,0,1.5], textColorRGB=[1,0,0], replaceItemUniqueId=0)
+        p.addUserDebugText(f"No joint: {leg}_{joint_type}", [0, 0, 1.5], textColorRGB=[1, 0, 0], replaceItemUniqueId=0)
         time.sleep(0.05)
         continue
 
@@ -90,19 +129,51 @@ while True:
         last_joint_idx = joint_idx
         print(f"Selected joint: {leg}_{joint_type} (index {joint_index})")
         print(f"Current angle: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
+        print(f"Joint limits: {joint_info[joint_index]['lower']:.3f} to {joint_info[joint_index]['upper']:.3f} rad")
 
-    # Read button states
-    plus_val = p.readUserDebugParameter(plus_button)
-    minus_val = p.readUserDebugParameter(minus_button)
-    # Button logic: only increment when pressed (value goes from 0 to 1)
-    if plus_val > 0.5 and last_plus <= 0.5:
+    # --- Keyboard control ---
+    keys = p.getKeyboardEvents()
+
+    # Leg selection: 1, 2, 3, 4
+    if ord('1') in keys and keys[ord('1')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(leg_slider)
+        leg_slider = p.addUserDebugParameter("LEG (1=FL, 2=FR, 3=BL, 4=BR)", 1, 4, 1)
+    if ord('2') in keys and keys[ord('2')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(leg_slider)
+        leg_slider = p.addUserDebugParameter("LEG (1=FL, 2=FR, 3=BL, 4=BR)", 1, 4, 2)
+    if ord('3') in keys and keys[ord('3')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(leg_slider)
+        leg_slider = p.addUserDebugParameter("LEG (1=FL, 2=FR, 3=BL, 4=BR)", 1, 4, 3)
+    if ord('4') in keys and keys[ord('4')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(leg_slider)
+        leg_slider = p.addUserDebugParameter("LEG (1=FL, 2=FR, 3=BL, 4=BR)", 1, 4, 4)
+
+    # Joint selection: h, u, l
+    if ord('h') in keys and keys[ord('h')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(joint_slider)
+        joint_slider = p.addUserDebugParameter("JOINT (1=hip, 2=upper, 3=lower)", 1, 3, 1)
+    if ord('u') in keys and keys[ord('u')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(joint_slider)
+        joint_slider = p.addUserDebugParameter("JOINT (1=hip, 2=upper, 3=lower)", 1, 3, 2)
+    if ord('l') in keys and keys[ord('l')] & p.KEY_WAS_TRIGGERED:
+        p.removeUserDebugItem(joint_slider)
+        joint_slider = p.addUserDebugParameter("JOINT (1=hip, 2=upper, 3=lower)", 1, 3, 3)
+
+    # Angle control: e, d
+    if ord('e') in keys and keys[ord('e')] & p.KEY_IS_DOWN:
         current_angle += ANGLE_STEP
-        print(f"[+] {leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
-    if minus_val > 0.5 and last_minus <= 0.5:
+    if ord('d') in keys and keys[ord('d')] & p.KEY_IS_DOWN:
         current_angle -= ANGLE_STEP
-        print(f"[-] {leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
-    last_plus = plus_val
-    last_minus = minus_val
+
+    # Spacebar to reset to zero
+    if p.B3G_SPACE in keys and keys[p.B3G_SPACE] & p.KEY_WAS_TRIGGERED:
+        current_angle = 0.0
+    # F to set FULL_FRONT
+    if ord('f') in keys and keys[ord('f')] & p.KEY_WAS_TRIGGERED:
+        current_angle = FULL_FRONT
+    # B to set FULL_BACK
+    if ord('b') in keys and keys[ord('b')] & p.KEY_WAS_TRIGGERED:
+        current_angle = FULL_BACK
 
     # Clamp to joint limits
     lower = joint_info[joint_index]['lower']
@@ -122,7 +193,9 @@ while True:
     )
 
     # Display current angle
-    p.addUserDebugText(f"{leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)", [0,0,1.5], textColorRGB=[0,0,1], replaceItemUniqueId=1)
+    p.addUserDebugText(
+        f"{leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)\n[1-4: legs | h/u/l: joints | e/d: +/- | space: zero | f/b: FULL_FRONT/BACK]",
+        [0, 0, 1.5], textColorRGB=[0, 0, 1], replaceItemUniqueId=1)
 
     p.stepSimulation()
     time.sleep(1.0 / 240.0)
