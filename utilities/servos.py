@@ -84,3 +84,21 @@ def map_angle_to_servo_position(angle, joint_data, angle_neutral, is_inverted=Fa
     pulse = neutral_pulse + direction * ((angle - angle_neutral) / 90) * pulse_range # pulse width based on angle
 
     return int(round(pulse)) # return calculated pulse width
+
+
+def pwm_to_angle(pwm, joint_data):
+    """
+    Map a PWM value to a servo angle in radians using the joint's config.
+    Args:
+        pwm (float): The PWM value (microseconds)
+        joint_data (dict): The joint's config dict, must include FULL_FRONT, FULL_BACK, FULL_FRONT_ANGLE, FULL_BACK_ANGLE
+    Returns:
+        float: The angle in radians corresponding to the PWM value
+    """
+    full_front_pwm = joint_data['FULL_FRONT']
+    full_back_pwm = joint_data['FULL_BACK']
+    full_front_angle = joint_data.get('FULL_FRONT_ANGLE', 0)
+    full_back_angle = joint_data.get('FULL_BACK_ANGLE', 0)
+    # Linear interpolation
+    angle = full_front_angle + (full_back_angle - full_front_angle) * ((pwm - full_front_pwm) / (full_back_pwm - full_front_pwm))
+    return angle

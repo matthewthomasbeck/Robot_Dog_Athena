@@ -213,10 +213,12 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
 
         elif key == 'a':  # Shift left
             # trotLeft(intensity)
+            move_all_joints_full_front(1)
             is_neutral = False
 
         elif key == 'd':  # Shift right
             # trotRight(intensity)
+            move_all_joints_full_back(1)
             is_neutral = False
 
         elif key == '\x1b[C':  # Rotate right

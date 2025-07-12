@@ -240,3 +240,31 @@ def set_leg_squatting(leg_id, state, speed, acceleration): # function to move le
 
             logging.error(f"(standing.py): Failed to move leg {leg_id} to squatting position: {e}\n")
             return
+
+
+def move_all_joints_full_front(intensity):
+    """
+    Move all joints of all legs to their FULL_FRONT positions for calibration.
+    """
+    import utilities.config as config
+    from utilities.servos import set_target
+    speed, acceleration = interpret_intensity(intensity)
+    for leg in config.SERVO_CONFIG:
+        for joint in config.SERVO_CONFIG[leg]:
+            servo_data = config.SERVO_CONFIG[leg][joint]
+            set_target(servo_data['servo'], servo_data['FULL_FRONT'], speed, acceleration)
+    logging.info("(standing.py): All joints moved to FULL_FRONT for calibration.\n")
+
+
+def move_all_joints_full_back(intensity):
+    """
+    Move all joints of all legs to their FULL_BACK positions for calibration.
+    """
+    import utilities.config as config
+    from utilities.servos import set_target
+    speed, acceleration = interpret_intensity(intensity)
+    for leg in config.SERVO_CONFIG:
+        for joint in config.SERVO_CONFIG[leg]:
+            servo_data = config.SERVO_CONFIG[leg][joint]
+            set_target(servo_data['servo'], servo_data['FULL_BACK'], speed, acceleration)
+    logging.info("(standing.py): All joints moved to FULL_BACK for calibration.\n")
