@@ -1,0 +1,2077 @@
+<?xml version="1.0"?>
+<robot name="robot_dog">
+
+
+  <!--########## MIDSECTION OBJECTS ##########-->
+
+  <!--##### midsection-bottom (base link) #####-->
+
+  <link name="midsection-bottom">
+    <visual>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-bottom_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-bottom_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/> <!-- Adjust mass if necessary -->
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### midsection-top #####-->
+
+  <link name="midsection-top">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/athena_midsection-top_1.1.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/athena_midsection-top_1.1.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### midsection-connectorplate #####-->
+
+  <link name="midsection-connectorplate">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/athena_midsection-connectorplate_1.2.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/athena_midsection-connectorplate_1.2.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### midsection-batteryplate #####-->
+
+  <link name="midsection-batteryplate">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-batteryplate_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-batteryplate_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### midsection-side-left #####-->
+
+  <link name="midsection-side-left">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-side_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-side_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### midsection-side-right #####-->
+
+  <link name="midsection-side-right">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-side_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/midsection/ares_midsection-side_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## MIDSECTION JOINTS ##########-->
+
+  <!--##### midsection-bottom/top joint #####-->
+
+  <joint name="midsection-bottom/top" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="midsection-top"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### midsection-bottom/connectorplate joint #####-->
+
+  <joint name="midsection-bottom/connectorplate" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="midsection-connectorplate"/>
+    <origin xyz="0.002 0.2 0.008" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### midsection-top/batteryplate joint #####-->
+
+  <joint name="midsection-top/batteryplate" type="fixed">
+    <parent link="midsection-top"/>
+    <child link="midsection-batteryplate"/>
+    <origin xyz="-0.056 0.057 0.09855" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### midsection-bottom/side-left joint #####-->
+
+  <joint name="midsection-bottom/side-left" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="midsection-side-left"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### midsection-bottom/side-right joint #####-->
+
+  <joint name="midsection-bottom/side-right" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="midsection-side-right"/>
+    <origin xyz="-0.09705 0.1283 0" rpy="0 0 3.14"/>
+  </joint>
+
+
+  <!--########## FRONT OBJECTS ##########-->
+
+  <!--##### front-face #####-->
+
+  <link name="front-face">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+          <mesh filename="../meshes/front/athena_front-face_1.1.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+          <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+          <mesh filename="../meshes/front/athena_front-face_1.1.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-top #####-->
+
+  <link name="front-top">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/front/athena_front-top_1.1.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+          <mesh filename="../meshes/front/athena_front-top_1.1.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## FRONT JOINTS ##########-->
+
+  <!--##### midsection-bottom/front-bottom joint #####-->
+
+  <joint name="midsection-bottom/front-face" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="front-face"/>
+    <origin xyz="0.514 -0.043 -0.0794" rpy="0 0 3.14"/>
+  </joint>
+
+  <!--##### front-face/top joint #####-->
+
+  <joint name="front-face/top" type="fixed">
+    <parent link="front-face"/>
+    <child link="front-top"/>
+    <origin xyz="0.514 -0.042 0.07945" rpy="0 0 3.14"/>
+  </joint>
+
+
+  <!--########## BACK OBJECTS ##########-->
+
+  <!--##### back-butt #####-->
+
+  <link name="back-butt">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/back/athena_back-butt_1.2.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+          <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/back/athena_back-butt_1.2.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-top #####-->
+
+  <link name="back-top">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/back/athena_back-top_1.2.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+          <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/back/athena_back-top_1.2.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## BACK JOINTS ##########-->
+
+  <!--##### midsection-bottom/back-butt joint #####-->
+
+  <joint name="midsection-bottom/back-butt" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="back-butt"/>
+    <origin xyz="-0.117 -0.394 -0.026" rpy="0 0 3.14"/>
+  </joint>
+
+  <!--##### back-butt/back-top joint #####-->
+
+  <joint name="back-butt/back-top" type="fixed">
+    <parent link="back-butt"/>
+    <child link="back-top"/>
+    <origin xyz="-0.0097 -1.118 -0.6045" rpy="0 0 3.14"/>
+  </joint>
+
+
+  <!--########## ELECTRONICS OBJECTS ##########-->
+
+  <!--##### ai_module-mock #####-->
+
+  <link name="ai_module-mock">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/ai_module-mock_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Blue">
+        <color rgba="0 0 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/ai_module-mock_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### battery ######-->
+
+  <link name="battery">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/2s 6200mah LiPo battery.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Yellow">
+        <color rgba="1 1 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/2s 6200mah LiPo battery.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## ELECTRONICS JOINTS ##########-->
+
+  <!--##### ai_module/midsection-connectorplate joint #####-->
+
+  <joint name="ai_module/midsection-connectorplate" type="fixed">
+    <parent link="midsection-connectorplate"/>
+    <child link="ai_module-mock"/>
+    <origin xyz="-0.00726 -0.074 0.0162" rpy="0 0 3.14"/>
+  </joint>
+
+  <!--##### battery/midsection-connectorplate joint #####-->
+
+  <joint name="battery/midsection-batteryplate" type="fixed">
+    <parent link="midsection-batteryplate"/>
+    <child link="battery"/>
+    <origin xyz="0.007 0.077 -0.0012" rpy="1.5708 0 0"/>
+  </joint>
+
+
+  <!--########## FRONT LEFT LEG OBJECTS ##########-->
+
+  <!--##### front-left-pelvis-servo ######-->
+
+  <link name="front-left-pelvis-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-pelvis-disc ######-->
+
+  <link name="front-left-pelvis-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-pelvis-pelvis #####-->
+
+  <link name="front-left-pelvis-pelvis">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreleft-hindright_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreleft-hindright_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-shin-servo #####-->
+
+  <link name="front-left-shin-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-shin-horn #####-->
+
+  <link name="front-left-shin-horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-shin-shin #####-->
+
+  <link name="front-left-shin-shin">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-foot #####-->
+
+  <link name="front-left-foot">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-femur-servo #####-->
+
+  <link name="front-left-femur-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-hip #####-->
+
+  <link name="front-left-hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-femur-disc #####-->
+
+  <link name="front-left-femur-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-femur-femur #####-->
+
+  <link name="front-left-femur-femur">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## TODO FRONT LEFT LEG JOINTS ##########-->
+
+  <!--##### midsection-bottom/front-left-pelvis-servo joint #####-->
+
+  <joint name="midsection-bottom/front-left-pelvis-servo" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="front-left-pelvis-servo"/>
+    <origin xyz="0.0005 0.05 0.0333" rpy="1.5708 3.14 0"/>
+  </joint>
+
+  <!--##### front-left-pelvis-servo/disc joint #####-->
+
+  <joint name="front-left-pelvis-servo/disc" type="revolute">
+    <parent link="front-left-pelvis-servo"/>
+    <child link="front-left-pelvis-disc"/>
+    <origin xyz="0 -0.00995 0.04605" rpy="0 0 0.349066"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
+  </joint>
+
+  <!--##### front-left-pelvis-disc/pelvis joint #####-->
+
+  <joint name="front-left-pelvis-disc/pelvis" type="fixed">
+    <parent link="front-left-pelvis-disc"/>
+    <child link="front-left-pelvis-pelvis"/>
+    <origin xyz="0 0.0425 0.00413" rpy="-1.5708 0 3.14"/>
+  </joint>
+
+  <!--##### front-left-pelvis-pelvis/front-left-shin-servo joint #####-->
+
+  <joint name="front-left-pelvis-pelvis/front-left-shin-servo" type="fixed">
+    <parent link="front-left-pelvis-pelvis"/>
+    <child link="front-left-shin-servo"/>
+    <origin xyz="-0.0175 -0.0271 0.0231" rpy="-1.5708 1.5708 -1.5708"/>
+  </joint>
+
+  <!--##### front-left-shin-servo/horn joint #####-->
+
+  <joint name="front-left-shin-servo/horn" type="continuous">
+    <parent link="front-left-shin-servo"/>
+    <child link="front-left-shin-horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 0.785398"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### front-left-pelvis-pelvis/front-left-femur-servo joint #####-->
+
+  <joint name="front-left-pelvis-pelvis/front-left-femur-servo" type="fixed">
+    <parent link="front-left-pelvis-pelvis"/>
+    <child link="front-left-femur-servo"/>
+    <origin xyz="-0.0175 -0.0271 0.0431" rpy="0 -1.5708 -3.14"/>
+  </joint>
+
+  <!--##### front-left-femur-servo/front-left-hip joint #####-->
+
+  <joint name="front-left-femur-servo/front-left-hip" type="continuous">
+    <parent link="front-left-femur-servo"/>
+    <child link="front-left-hip"/>
+    <origin xyz="0 -0.01 0.0409" rpy="0 -1.5708 3.14"/>
+  </joint>
+
+  <!--##### front-left-femur-servo/disc joint #####-->
+
+  <joint name="front-left-femur-servo/disc" type="continuous">
+    <parent link="front-left-femur-servo"/>
+    <child link="front-left-femur-disc"/>
+    <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### front-left-femur-disc/femur joint #####-->
+
+  <joint name="front-left-femur-disc/femur" type="fixed">
+    <parent link="front-left-femur-disc"/>
+    <child link="front-left-femur-femur"/>
+    <origin xyz="0 0 0" rpy="0 -1.5708 3.14"/>
+  </joint>
+
+  <!--##### front-left-femur-femur/front-left-shin-shin joint #####-->
+
+  <joint name="front-left-femur-femur/front-left-shin-shin" type="continuous">
+    <parent link="front-left-femur-femur"/>
+    <child link="front-left-shin-shin"/>
+    <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### front-left-shin-shin/front-left-foot joint #####-->
+
+  <joint name="front-left-shin-shin/front-left-foot" type="fixed">
+    <parent link="front-left-shin-shin"/>
+    <child link="front-left-foot"/>
+    <origin xyz="-0.0367 -0.06 0.035" rpy="0 0 0"/>
+  </joint>
+
+
+  <!--########## FRONT RIGHT LEG OBJECTS ##########-->
+
+  <!--##### front-right-pelvis-servo ######-->
+
+  <link name="front-right-pelvis-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-pelvis-disc joint #####-->
+
+  <link name="front-right-pelvis-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-pelvis-pelvis ######-->
+
+  <link name="front-right-pelvis-pelvis">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreright-hindleft_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreright-hindleft_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-shin-servo #####-->
+
+  <link name="front-right-shin-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-shin-horn #####-->
+
+  <link name="front-right-shin-horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-shin-shin #####-->
+
+  <link name="front-right-shin-shin">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-foot #####-->
+
+  <link name="front-right-foot">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-femur-servo ######-->
+
+  <link name="front-right-femur-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-hip #####-->
+
+  <link name="front-right-hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-femur-disc #####-->
+
+  <link name="front-right-femur-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-femur-femur #####-->
+
+  <link name="front-right-femur-femur">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-femur-femur/front-right-shin-shin joint #####-->
+
+  <joint name="front-right-femur-femur/front-right-shin-shin" type="continuous">
+    <parent link="front-right-femur-femur"/>
+    <child link="front-right-shin-shin"/>
+    <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### front-right-shin-shin/front-right-foot joint #####-->
+
+  <joint name="front-right-shin-shin/front-right-foot" type="fixed">
+    <parent link="front-right-shin-shin"/>
+    <child link="front-right-foot"/>
+    <origin xyz="-0.04258 -0.06 0.035" rpy="0 0 0"/>
+  </joint>
+
+
+  <!--########## TODO FRONT RIGHT LEG JOINTS ##########-->
+
+  <!--##### midsection-bottom/front-right-pelvis-servo joint #####-->
+
+  <joint name="midsection-bottom/front-right-pelvis-servo" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="front-right-pelvis-servo"/>
+    <origin xyz="-0.0975 0.05 0.0333" rpy="1.5708 3.14 0"/>
+  </joint>
+
+  <!--##### front-right-pelvis-servo/disc joint #####-->
+
+  <joint name="front-right-pelvis-servo/disc" type="revolute">
+    <parent link="front-right-pelvis-servo"/>
+    <child link="front-right-pelvis-disc"/>
+    <origin xyz="0 -0.0106 0.04605" rpy="0 0 -0.349066"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
+  </joint>
+
+  <!--##### front-right-pelvis-disc/pelvis joint #####-->
+
+  <joint name="front-right-pelvis-disc/pelvis" type="fixed">
+    <parent link="front-right-pelvis-disc"/>
+    <child link="front-right-pelvis-pelvis"/>
+    <origin xyz="0 0.0425 0.00413" rpy="-1.5708 0 0"/>
+  </joint>
+
+  <!--##### front-right-pelvis-pelvis/front-right-shin-servo joint #####-->
+
+  <joint name="front-right-pelvis-pelvis/front-right-shin-servo" type="fixed">
+    <parent link="front-right-pelvis-pelvis"/>
+    <child link="front-right-shin-servo"/>
+    <origin xyz="-0.0175 -0.0271 -0.0231" rpy="1.5708 1.5708 1.5708"/>
+  </joint>
+
+  <!--##### front-right-shin-servo/horn joint #####-->
+
+  <joint name="front-right-shin-servo/horn" type="continuous">
+    <parent link="front-right-shin-servo"/>
+    <child link="front-right-shin-horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 2.356198"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### front-right-pelvis-pelvis/front-right-femur-servo joint #####-->
+
+  <joint name="front-right-pelvis-pelvis/front-right-femur-servo" type="fixed">
+    <parent link="front-right-pelvis-pelvis"/>
+    <child link="front-right-femur-servo"/>
+    <origin xyz="-0.0175 -0.0271 -0.0431" rpy="0 -1.5708 -3.14"/>
+  </joint>
+
+  <!--##### front-right-femur-servo/front-right-hip joint #####-->
+
+  <joint name="front-right-femur-servo/front-right-hip" type="continuous">
+    <parent link="front-right-femur-servo"/>
+    <child link="front-right-hip"/>
+    <origin xyz="0 -0.01 0.0468" rpy="0 1.5708 3.14"/>
+  </joint>
+
+  <!--##### front-right-femur-servo/disc joint #####-->
+
+  <joint name="front-right-femur-servo/disc" type="continuous">
+    <parent link="front-right-femur-servo"/>
+    <child link="front-right-femur-disc"/>
+    <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### front-right-femur-disc/femur joint #####-->
+
+  <joint name="front-right-femur-disc/femur" type="fixed">
+    <parent link="front-right-femur-disc"/>
+    <child link="front-right-femur-femur"/>
+    <origin xyz="0 0 0" rpy="0 1.5708 3.14"/>
+  </joint>
+
+
+  <!--########## BACK LEFT LEG OBJECTS ##########-->
+
+  <!--##### back-left-pelvis-servo ######-->
+
+  <link name="back-left-pelvis-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-pelvis-disc joint #####-->
+
+  <link name="back-left-pelvis-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-pelvis-pelvis ######-->
+
+    <link name="back-left-pelvis-pelvis">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreright-hindleft_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreright-hindleft_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-shin-servo #####-->
+
+  <link name="back-left-shin-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-shin-horn #####-->
+
+  <link name="back-left-shin-horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-shin-shin #####-->
+
+  <link name="back-left-shin-shin">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-foot #####-->
+
+  <link name="back-left-foot">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-femur-servo #####-->
+
+  <link name="back-left-femur-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-hip #####-->
+
+  <link name="back-left-hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-femur-disc #####-->
+
+  <link name="back-left-femur-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-femur-femur #####-->
+
+  <link name="back-left-femur-femur">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-left_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## TODO BACK LEFT LEG JOINTS ##########-->
+
+  <!--##### midsection-bottom/back-left-pelvis-servo joint #####-->
+
+  <joint name="midsection-bottom/back-left-pelvis-servo" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="back-left-pelvis-servo"/>
+    <origin xyz="0.0005 0.0785 0.0333" rpy="1.5708 3.14 3.14"/>
+  </joint>
+
+  <!--##### back-left-pelvis-servo/disc joint #####-->
+
+  <joint name="back-left-pelvis-servo/disc" type="revolute">
+    <parent link="back-left-pelvis-servo"/>
+    <child link="back-left-pelvis-disc"/>
+    <origin xyz="0 -0.00995 0.04605" rpy="0 0 -0.349066"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
+  </joint>
+
+  <!--##### back-left-pelvis-disc/pelvis joint #####-->
+
+  <joint name="back-left-pelvis-disc/pelvis" type="fixed">
+    <parent link="back-left-pelvis-disc"/>
+    <child link="back-left-pelvis-pelvis"/>
+    <origin xyz="0 0.0425 0.00413" rpy="-1.5708 0 0"/>
+  </joint>
+
+  <!--##### back-left-pelvis-pelvis/back-left-shin-servo joint #####-->
+
+  <joint name="back-left-pelvis-pelvis/back-left-shin-servo" type="fixed">
+    <parent link="back-left-pelvis-pelvis"/>
+    <child link="back-left-shin-servo"/>
+    <origin xyz="-0.0175 -0.0271 -0.0231" rpy="1.5708 -1.5708 1.5708"/>
+  </joint>
+
+  <!--##### back-left-shin-servo/horn joint #####-->
+
+  <joint name="back-left-shin-servo/horn" type="continuous">
+    <parent link="back-left-shin-servo"/>
+    <child link="back-left-shin-horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 0.785398"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### back-left-pelvis-pelvis/back-left-femur-servo joint #####-->
+
+  <joint name="back-left-pelvis-pelvis/back-left-femur-servo" type="fixed">
+    <parent link="back-left-pelvis-pelvis"/>
+    <child link="back-left-femur-servo"/>
+    <origin xyz="-0.0175 -0.0271 -0.0431" rpy="1.5708 1.5708 1.5708"/>
+  </joint>
+
+  <!--##### back-left-femur-servo/back-left-hip joint #####-->
+
+  <joint name="back-left-femur-servo/front-left-hip" type="continuous">
+    <parent link="back-left-femur-servo"/>
+    <child link="back-left-hip"/>
+    <origin xyz="0 -0.01 0.0409" rpy="0 -1.5708 3.14"/>
+  </joint>
+
+  <!--##### back-left-femur-servo/disc joint #####-->
+
+  <joint name="back-left-femur-servo/disc" type="continuous">
+    <parent link="back-left-femur-servo"/>
+    <child link="back-left-femur-disc"/>
+    <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### back-left-femur-disc/femur joint #####-->
+
+  <joint name="back-left-femur-disc/femur" type="fixed">
+    <parent link="back-left-femur-disc"/>
+    <child link="back-left-femur-femur"/>
+    <origin xyz="0 0 0" rpy="0 -1.5708 3.14"/>
+  </joint>
+
+  <!--##### back-left-femur-femur/back-left-shin-shin joint #####-->
+
+  <joint name="back-left-femur-femur/back-left-shin-shin" type="continuous">
+    <parent link="back-left-femur-femur"/>
+    <child link="back-left-shin-shin"/>
+    <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### back-left-shin-shin/back-left-foot joint #####-->
+
+  <joint name="back-left-shin-shin/back-left-foot" type="fixed">
+    <parent link="back-left-shin-shin"/>
+    <child link="back-left-foot"/>
+    <origin xyz="-0.0367 -0.06 0.035" rpy="0 0 0"/>
+  </joint>
+
+
+  <!--########## BACK RIGHT LEG OBJECTS ##########-->
+
+  <!--##### back-right-pelvis-servo ######-->
+
+  <link name="back-right-pelvis-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-pelvis-disc joint #####-->
+
+  <link name="back-right-pelvis-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-pelvis-pelvis #####-->
+
+  <link name="back-right-pelvis-pelvis">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreleft-hindright_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis/ares_pelvis-foreleft-hindright_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-shin-servo #####-->
+
+  <link name="back-right-shin-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-shin-horn #####-->
+
+  <link name="back-right-shin-horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-shin-shin #####-->
+
+  <link name="back-right-shin-shin">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/tibias/ares_tibias-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-foot #####-->
+
+  <link name="back-right-foot">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/feet/ares_feet-foot_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-femur-servo ######-->
+
+  <link name="back-right-femur-servo">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-hip #####-->
+
+  <link name="back-right-hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/pelvis_blades/ares_pelvis_blades-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-femur-disc #####-->
+
+  <link name="back-right-femur-disc">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/hardware/25T Disc Servo Horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-femur-femur #####-->
+
+  <link name="back-right-femur-femur">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="../meshes/femurs/ares_femurs-right_1.0.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+
+  <!--########## TODO BACK RIGHT LEG JOINTS ##########-->
+
+  <!--##### midsection-bottom/back-right-pelvis-servo joint #####-->
+
+  <joint name="midsection-bottom/back-right-pelvis-servo" type="fixed">
+    <parent link="midsection-bottom"/>
+    <child link="back-right-pelvis-servo"/>
+    <origin xyz="-0.0975 0.0785 0.0333" rpy="1.5708 3.14 3.14"/>
+  </joint>
+
+  <!--##### back-right-pelvis-servo/disc joint #####-->
+
+  <joint name="back-right-pelvis-servo/disc" type="revolute">
+    <parent link="back-right-pelvis-servo"/>
+    <child link="back-right-pelvis-disc"/>
+    <origin xyz="0 -0.0106 0.04605" rpy="0 0 0.349066"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.349066" upper="0.349066" effort="5.0" velocity="9.52"/>
+    <dynamics friction="0.1" damping="0.005"/>
+  </joint>
+
+  <!--##### back-right-pelvis-disc/pelvis joint #####-->
+
+  <joint name="back-right-pelvis-disc/pelvis" type="fixed">
+    <parent link="back-right-pelvis-disc"/>
+    <child link="back-right-pelvis-pelvis"/>
+    <origin xyz="0 0.0425 0.00413" rpy="-1.5708 0 3.14"/>
+  </joint>
+
+    <!--##### back-right-pelvis-pelvis/back-right-shin-servo joint #####-->
+
+  <joint name="back-right-pelvis-pelvis/back-right-shin-servo" type="fixed">
+    <parent link="back-right-pelvis-pelvis"/>
+    <child link="back-right-shin-servo"/>
+    <origin xyz="-0.0175 -0.0271 0.0231" rpy="1.5708 -1.5708 1.5708"/>
+  </joint>
+
+  <!--##### back-right-shin-servo/horn joint #####-->
+
+  <joint name="back-right-shin-servo/horn" type="continuous">
+    <parent link="back-right-shin-servo"/>
+    <child link="back-right-shin-horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 2.356198"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### back-right-pelvis-pelvis/back-right-femur-servo joint #####-->
+
+  <joint name="back-right-pelvis-pelvis/back-right-femur-servo" type="fixed">
+    <parent link="back-right-pelvis-pelvis"/>
+    <child link="back-right-femur-servo"/>
+    <origin xyz="-0.0175 -0.0271 0.0431" rpy="1.5708 1.5708 1.5708"/>
+  </joint>
+
+  <!--##### back-right-femur-servo/back-right-hip joint #####-->
+
+  <joint name="back-right-femur-servo/back-right-hip" type="continuous">
+    <parent link="back-right-femur-servo"/>
+    <child link="back-right-hip"/>
+    <origin xyz="0 -0.01 0.0468" rpy="0 1.5708 3.14"/>
+  </joint>
+
+  <!--##### back-right-femur-servo/disc joint #####-->
+
+  <joint name="back-right-femur-servo/disc" type="continuous">
+    <parent link="back-right-femur-servo"/>
+    <child link="back-right-femur-disc"/>
+    <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!--##### back-right-femur-disc/femur joint #####-->
+
+  <joint name="back-right-femur-disc/femur" type="fixed">
+    <parent link="back-right-femur-disc"/>
+    <child link="back-right-femur-femur"/>
+    <origin xyz="0 0 0" rpy="0 1.5708 3.14"/>
+  </joint>
+
+  <!--##### back-right-femur-femur/back-right-shin-shin joint #####-->
+
+  <joint name="back-right-femur-femur/back-right-shin-shin" type="continuous">
+    <parent link="back-right-femur-femur"/>
+    <child link="back-right-shin-shin"/>
+    <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### back-right-shin-shin/back-right-foot joint #####-->
+
+    <joint name="back-right-shin-shin/back-right-foot" type="fixed">
+    <parent link="back-right-shin-shin"/>
+    <child link="back-right-foot"/>
+    <origin xyz="-0.04258 -0.06 0.035" rpy="0 0 0"/>
+  </joint>
+</robot>
