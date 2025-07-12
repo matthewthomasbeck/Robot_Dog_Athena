@@ -769,9 +769,9 @@
     <origin xyz="0.0005 0.05 0.0333" rpy="1.5708 3.14 0"/>
   </joint>
 
-  <!--##### front-left-pelvis-servo/disc joint #####-->
+  <!--##### front-left-pelvis-servo/disc joint TODO (FL_hip) #####-->
 
-  <joint name="front-left-pelvis-servo/disc" type="revolute">
+  <joint name="FL_hip" type="revolute">
     <parent link="front-left-pelvis-servo"/>
     <child link="front-left-pelvis-disc"/>
     <origin xyz="0 -0.00995 0.04605" rpy="0 0 0.349066"/>
@@ -821,9 +821,9 @@
     <origin xyz="0 -0.01 0.0409" rpy="0 -1.5708 3.14"/>
   </joint>
 
-  <!--##### front-left-femur-servo/disc joint #####-->
+  <!--##### front-left-femur-servo/disc joint TODO (FL_upper) #####-->
 
-  <joint name="front-left-femur-servo/disc" type="continuous">
+  <joint name="FL_upper" type="continuous">
     <parent link="front-left-femur-servo"/>
     <child link="front-left-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
@@ -838,9 +838,9 @@
     <origin xyz="0 0 0" rpy="0 -1.5708 3.14"/>
   </joint>
 
-  <!--##### front-left-femur-femur/front-left-shin-shin joint #####-->
+  <!--##### front-left-femur-femur/front-left-shin-shin joint TODO (FL_lower) #####-->
 
-  <joint name="front-left-femur-femur/front-left-shin-shin" type="continuous">
+  <joint name="FL_lower" type="continuous">
     <parent link="front-left-femur-femur"/>
     <child link="front-left-shin-shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
@@ -1165,22 +1165,6 @@
     </inertial>
   </link>
 
-  <!--##### front-right-femur-femur/front-right-shin-shin joint #####-->
-
-  <joint name="front-right-femur-femur/front-right-shin-shin" type="continuous">
-    <parent link="front-right-femur-femur"/>
-    <child link="front-right-shin-shin"/>
-    <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
-  </joint>
-
-  <!--##### front-right-shin-shin/front-right-foot joint #####-->
-
-  <joint name="front-right-shin-shin/front-right-foot" type="fixed">
-    <parent link="front-right-shin-shin"/>
-    <child link="front-right-foot"/>
-    <origin xyz="-0.04258 -0.06 0.035" rpy="0 0 0"/>
-  </joint>
-
 
   <!--########## TODO FRONT RIGHT LEG JOINTS ##########-->
 
@@ -1192,9 +1176,9 @@
     <origin xyz="-0.0975 0.05 0.0333" rpy="1.5708 3.14 0"/>
   </joint>
 
-  <!--##### front-right-pelvis-servo/disc joint #####-->
+  <!--##### front-right-pelvis-servo/disc joint TODO (FR_hip) #####-->
 
-  <joint name="front-right-pelvis-servo/disc" type="revolute">
+  <joint name="FR_hip" type="revolute">
     <parent link="front-right-pelvis-servo"/>
     <child link="front-right-pelvis-disc"/>
     <origin xyz="0 -0.0106 0.04605" rpy="0 0 -0.349066"/>
@@ -1244,9 +1228,9 @@
     <origin xyz="0 -0.01 0.0468" rpy="0 1.5708 3.14"/>
   </joint>
 
-  <!--##### front-right-femur-servo/disc joint #####-->
+  <!--##### front-right-femur-servo/disc joint TODO (FR_upper) #####-->
 
-  <joint name="front-right-femur-servo/disc" type="continuous">
+  <joint name="FR_upper" type="continuous">
     <parent link="front-right-femur-servo"/>
     <child link="front-right-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
@@ -1259,6 +1243,22 @@
     <parent link="front-right-femur-disc"/>
     <child link="front-right-femur-femur"/>
     <origin xyz="0 0 0" rpy="0 1.5708 3.14"/>
+  </joint>
+
+  <!--##### front-right-femur-femur/front-right-shin-shin joint TODO (FR_lower) #####-->
+
+  <joint name="FR_lower" type="continuous">
+    <parent link="front-right-femur-femur"/>
+    <child link="front-right-shin-shin"/>
+    <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
+  </joint>
+
+  <!--##### front-right-shin-shin/front-right-foot joint #####-->
+
+    <joint name="front-right-shin-shin/front-right-foot" type="fixed">
+    <parent link="front-right-shin-shin"/>
+    <child link="front-right-foot"/>
+    <origin xyz="-0.04258 -0.06 0.035" rpy="0 0 0"/>
   </joint>
 
 
@@ -1583,9 +1583,9 @@
     <origin xyz="0.0005 0.0785 0.0333" rpy="1.5708 3.14 3.14"/>
   </joint>
 
-  <!--##### back-left-pelvis-servo/disc joint #####-->
+  <!--##### back-left-pelvis-servo/disc joint TODO (BL_hip) #####-->
 
-  <joint name="back-left-pelvis-servo/disc" type="revolute">
+  <joint name="BL_hip" type="revolute">
     <parent link="back-left-pelvis-servo"/>
     <child link="back-left-pelvis-disc"/>
     <origin xyz="0 -0.00995 0.04605" rpy="0 0 -0.349066"/>
@@ -1629,15 +1629,15 @@
 
   <!--##### back-left-femur-servo/back-left-hip joint #####-->
 
-  <joint name="back-left-femur-servo/front-left-hip" type="continuous">
+  <joint name="back-left-femur-servo/back-left-hip" type="continuous">
     <parent link="back-left-femur-servo"/>
     <child link="back-left-hip"/>
     <origin xyz="0 -0.01 0.0409" rpy="0 -1.5708 3.14"/>
   </joint>
 
-  <!--##### back-left-femur-servo/disc joint #####-->
+  <!--##### back-left-femur-servo/disc joint TODO (BL_upper) #####-->
 
-  <joint name="back-left-femur-servo/disc" type="continuous">
+  <joint name="BL_upper" type="continuous">
     <parent link="back-left-femur-servo"/>
     <child link="back-left-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
@@ -1652,9 +1652,9 @@
     <origin xyz="0 0 0" rpy="0 -1.5708 3.14"/>
   </joint>
 
-  <!--##### back-left-femur-femur/back-left-shin-shin joint #####-->
+  <!--##### back-left-femur-femur/back-left-shin-shin joint TODO (BL_lower) #####-->
 
-  <joint name="back-left-femur-femur/back-left-shin-shin" type="continuous">
+  <joint name="BL_lower" type="continuous">
     <parent link="back-left-femur-femur"/>
     <child link="back-left-shin-shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
@@ -1990,9 +1990,9 @@
     <origin xyz="-0.0975 0.0785 0.0333" rpy="1.5708 3.14 3.14"/>
   </joint>
 
-  <!--##### back-right-pelvis-servo/disc joint #####-->
+  <!--##### back-right-pelvis-servo/disc joint TODO (BR_hip) #####-->
 
-  <joint name="back-right-pelvis-servo/disc" type="revolute">
+  <joint name="BR_hip" type="revolute">
     <parent link="back-right-pelvis-servo"/>
     <child link="back-right-pelvis-disc"/>
     <origin xyz="0 -0.0106 0.04605" rpy="0 0 0.349066"/>
@@ -2042,9 +2042,9 @@
     <origin xyz="0 -0.01 0.0468" rpy="0 1.5708 3.14"/>
   </joint>
 
-  <!--##### back-right-femur-servo/disc joint #####-->
+  <!--##### back-right-femur-servo/disc joint TODO (BR_upper) #####-->
 
-  <joint name="back-right-femur-servo/disc" type="continuous">
+  <joint name="BR_upper" type="continuous">
     <parent link="back-right-femur-servo"/>
     <child link="back-right-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
@@ -2059,9 +2059,9 @@
     <origin xyz="0 0 0" rpy="0 1.5708 3.14"/>
   </joint>
 
-  <!--##### back-right-femur-femur/back-right-shin-shin joint #####-->
+  <!--##### back-right-femur-femur/back-right-shin-shin joint TODO (BR_lower) #####-->
 
-  <joint name="back-right-femur-femur/back-right-shin-shin" type="continuous">
+  <joint name="BR_lower" type="continuous">
     <parent link="back-right-femur-femur"/>
     <child link="back-right-shin-shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>

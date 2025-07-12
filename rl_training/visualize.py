@@ -2,26 +2,22 @@ import pybullet as p
 import pybullet_data
 import time
 import os
+import math
 
-# Connect to PyBullet
+# --- CONFIG ---
+ANGLE_STEP = 0.05  # radians per button press
+
+# --- SETUP ---
 p.connect(p.GUI)
-
-# (Optional) Set PyBullet's default search path
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
-
-# 1. Load a plane
-plane_id = p.loadURDF("plane.urdf", [0, 0, 0])
-
-# 2. Gravity
+p.loadURDF("plane.urdf", [0, 0, 0])
 p.setGravity(0, 0, 0)
 
-# Absolute path to URDF
 urdf_path = "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Training/urdf/robot_dog.urdf"
 if not os.path.isfile(urdf_path):
     print(f"URDF file not found at: {urdf_path}")
     exit()
 
-# 3. Load the robot
 robot_id = p.loadURDF(
     urdf_path,
     basePosition=[0, 0, 1],
@@ -29,73 +25,104 @@ robot_id = p.loadURDF(
 )
 print(f"Robot ID: {robot_id}")
 
-# Identify all continuous joints
 num_joints = p.getNumJoints(robot_id)
-continuous_joint_indices = []
+joint_info = []
+leg_names = set()
+joint_types = set()
 
+# Parse joint names and build mapping
 for i in range(num_joints):
     info = p.getJointInfo(robot_id, i)
     joint_name = info[1].decode("utf-8")
     joint_type = info[2]
-    # Check if it's a continuous joint
-    # (PyBullet uses 0 for REVOLUTE, 1 for PRISMATIC, 2 for SPHERICAL,
-    #  3 for PLANAR, 4 for FIXED; 'continuous' also is 0 in some versions
-    #  but we'll check the 'jointUpperLimit < jointLowerLimit' if needed.)
-    if joint_type == p.JOINT_REVOLUTE and info[8] < info[9]:
-        # This indicates it might be a limited revolute joint
-        pass
-    elif joint_type == p.JOINT_REVOLUTE and info[8] > info[9]:
-        # This condition is sometimes used to indicate a continuous joint
-        continuous_joint_indices.append(i)
-    print(f"Joint index {i} | name: {joint_name} | type: {joint_type}")
+    joint_info.append({
+        'index': i,
+        'name': joint_name,
+        'type': joint_type,
+        'lower': info[8],
+        'upper': info[9],
+    })
+    # Expecting names like FL_hip, FR_upper, etc.
+    parts = joint_name.split('_')
+    if len(parts) >= 2:
+        leg_names.add(parts[0])
+        joint_types.add(parts[1])
 
-# If we didn't find any continuous joints, let's just warn and exit
-if not continuous_joint_indices:
-    print("No continuous joints found in the robot!")
-    exit()
+leg_names = sorted(list(leg_names))
+joint_types = sorted(list(joint_types))
 
-# --- CREATE SLIDERS ---
-# Slider to toggle continuous joint rotation on/off
-toggle_id = p.addUserDebugParameter("Enable Continuous Joints", 0, 1, 0)
+# Build a mapping: (leg, joint_type) -> joint_index
+joint_map = {}
+for j in joint_info:
+    parts = j['name'].split('_')
+    if len(parts) >= 2:
+        joint_map[(parts[0], parts[1])] = j['index']
 
-# Three sliders for camera settings
-yaw_id = p.addUserDebugParameter("Camera Yaw", -180, 180, 90.947)
-pitch_id = p.addUserDebugParameter("Camera Pitch", -90, 90, 10.421)
-zoom_id = p.addUserDebugParameter("Camera Zoom", 0, 1, 0.221)
+# --- UI ELEMENTS ---
+leg_dropdown = p.addUserDebugParameter("Leg", 0, len(leg_names)-1, 0)
+joint_dropdown = p.addUserDebugParameter("Joint", 0, len(joint_types)-1, 0)
+plus_button = p.addUserDebugParameter("+ (Increase Angle)", 0, 1, 0)
+minus_button = p.addUserDebugParameter("- (Decrease Angle)", 0, 1, 0)
 
-# Main simulation loop
-try:
-    while True:
-        # 1) Check the continuous joints toggle
-        toggle_val = p.readUserDebugParameter(toggle_id)
+# Track state
+current_angle = 0.0
+last_leg_idx = -1
+last_joint_idx = -1
+last_plus = 0
+last_minus = 0
 
-        # If ON => spin at 1 rad/s, else set velocity = 0
-        target_vel = 1.0 if toggle_val > 0.5 else 0.0
+while True:
+    leg_idx = int(p.readUserDebugParameter(leg_dropdown))
+    joint_idx = int(p.readUserDebugParameter(joint_dropdown))
+    leg = leg_names[leg_idx]
+    joint_type = joint_types[joint_idx]
+    joint_key = (leg, joint_type)
+    joint_index = joint_map.get(joint_key, None)
+    if joint_index is None:
+        p.addUserDebugText(f"No joint: {leg}_{joint_type}", [0,0,1.5], textColorRGB=[1,0,0], replaceItemUniqueId=0)
+        time.sleep(0.05)
+        continue
 
-        # Apply control to all continuous joints
-        for joint_index in continuous_joint_indices:
-            p.setJointMotorControl2(
-                bodyUniqueId=robot_id,
-                jointIndex=joint_index,
-                controlMode=p.VELOCITY_CONTROL,
-                targetVelocity=target_vel,
-                force=4.41
-            )
+    # If leg/joint changed, reset angle to current joint position
+    if leg_idx != last_leg_idx or joint_idx != last_joint_idx:
+        current_angle = p.getJointState(robot_id, joint_index)[0]
+        last_leg_idx = leg_idx
+        last_joint_idx = joint_idx
+        print(f"Selected joint: {leg}_{joint_type} (index {joint_index})")
+        print(f"Current angle: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
 
-        # 2) Read camera sliders and update the camera
-        yaw_val = p.readUserDebugParameter(yaw_id)
-        pitch_val = p.readUserDebugParameter(pitch_id)
-        zoom_val = p.readUserDebugParameter(zoom_id)
+    # Read button states
+    plus_val = p.readUserDebugParameter(plus_button)
+    minus_val = p.readUserDebugParameter(minus_button)
+    # Button logic: only increment when pressed (value goes from 0 to 1)
+    if plus_val > 0.5 and last_plus <= 0.5:
+        current_angle += ANGLE_STEP
+        print(f"[+] {leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
+    if minus_val > 0.5 and last_minus <= 0.5:
+        current_angle -= ANGLE_STEP
+        print(f"[-] {leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
+    last_plus = plus_val
+    last_minus = minus_val
 
-        p.resetDebugVisualizerCamera(
-            cameraDistance=zoom_val,
-            cameraYaw=yaw_val,
-            cameraPitch=pitch_val,
-            cameraTargetPosition=[0, 0, 1]
-        )
+    # Clamp to joint limits
+    lower = joint_info[joint_index]['lower']
+    upper = joint_info[joint_index]['upper']
+    if current_angle < lower:
+        current_angle = lower
+    if current_angle > upper:
+        current_angle = upper
 
-        p.stepSimulation()
-        time.sleep(1.0 / 240.0)
+    # Set joint position
+    p.setJointMotorControl2(
+        bodyUniqueId=robot_id,
+        jointIndex=joint_index,
+        controlMode=p.POSITION_CONTROL,
+        targetPosition=current_angle,
+        force=4.41
+    )
 
-except KeyboardInterrupt:
-    p.disconnect()
+    # Display current angle
+    p.addUserDebugText(f"{leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)", [0,0,1.5], textColorRGB=[0,0,1], replaceItemUniqueId=1)
+
+    p.stepSimulation()
+    time.sleep(1.0 / 240.0)

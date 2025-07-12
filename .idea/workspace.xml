@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to start RL setup while I wait for the GPU (greedy bastards are playing games with me, buyer beware of Gandis Goods)">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added functions to help me tune the robot in pybullet via mapping full front and back positions for joints in the physical world to the virtual world">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/standing/standing.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/standing/standing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/servos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rl_training/urdf/robot_dog.urdf" beforeDir="false" afterPath="$PROJECT_DIR$/rl_training/urdf/robot_dog.urdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rl_training/visualize.py" beforeDir="false" afterPath="$PROJECT_DIR$/rl_training/visualize.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,16 +37,19 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.control_logic.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/rl_training/urdf"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/rl_training/urdf" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/utilities" />
     </key>
@@ -112,6 +114,7 @@
       <workItem from="1752336495711" duration="157000" />
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
+      <workItem from="1752343933383" duration="1147000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -381,7 +384,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752336559937</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Added functions to help me tune the robot in pybullet via mapping full front and back positions for joints in the physical world to the virtual world">
+      <option name="closed" value="true" />
+      <created>1752344090786</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1752344090786</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -396,7 +407,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Full pipeline completely working" />
     <MESSAGE value="basic output text file for quick work" />
     <MESSAGE value="Adjusted signal tolorances" />
     <MESSAGE value="Removed shit from control_logic.py" />
@@ -421,7 +431,18 @@
     <MESSAGE value="Hugely improved logging for movement, about to figure out why movement stops after only 1 command is listened to" />
     <MESSAGE value="Threading and movement now completely works, issue was poor error trapping in run_inference" />
     <MESSAGE value="Going to start RL setup while I wait for the GPU (greedy bastards are playing games with me, buyer beware of Gandis Goods)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Going to start RL setup while I wait for the GPU (greedy bastards are playing games with me, buyer beware of Gandis Goods)" />
+    <MESSAGE value="Added functions to help me tune the robot in pybullet via mapping full front and back positions for joints in the physical world to the virtual world" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added functions to help me tune the robot in pybullet via mapping full front and back positions for joints in the physical world to the virtual world" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/rl_training/visualize.py</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
