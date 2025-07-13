@@ -110,18 +110,18 @@ def move_direction(direction, frame, intensity): # function to trot forward
     try: # try to update leg gait
 
         if gait_states['FL']['phase'] == 'swing': # if front left about to push...
-            set_leg_phase('BL', {'FORWARD': True}, frame, speed, acceleration)
-            set_leg_phase('FR', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('BL', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('FR', {'FORWARD': True}, frame, speed, acceleration)
             time.sleep(0.5)
-            set_leg_phase('BR', {'FORWARD': True}, frame, speed, acceleration)
-            set_leg_phase('FL', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('BR', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('FL', {'FORWARD': True}, frame, speed, acceleration)
 
         elif gait_states['FR']['phase'] == 'swing': # if front right about to push...
-            set_leg_phase('BR', {'FORWARD': True}, frame, speed, acceleration)
-            set_leg_phase('FL', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('BR', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('FL', {'FORWARD': True}, frame, speed, acceleration)
             time.sleep(0.5)
-            set_leg_phase('BL', {'FORWARD': True}, frame, speed, acceleration)
-            set_leg_phase('FR', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('BL', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase_NEW('FR', {'FORWARD': True}, frame, speed, acceleration)
 
         logging.info(f"(fundamental_movement.py): Executed move_direction() with intensity: {intensity}\n")
 
@@ -134,7 +134,7 @@ def move_direction(direction, frame, intensity): # function to trot forward
 
 ########## SET LEG PHASE ##########
 
-def set_leg_phase(leg_id, state, frame, speed, acceleration):
+def set_leg_phase_NEW(leg_id, state, frame, speed, acceleration):
 
     if not state.get('FORWARD', False):
         return
