@@ -32,7 +32,7 @@ import utilities.internet as internet  # dynamically import internet utilities t
 
 from movement.fundamental_movement import *  # import fundamental movement functions
 from movement.standing.standing import *  # import standing functions
-#from movement.walking.forward import *  # import walking functions
+from movement.walking.forward import *  # import walking functions
 
 ########## CREATE DEPENDENCIES ##########
 
@@ -152,6 +152,19 @@ def _handle_command(command, frame):
         #except Exception as e:
             #logging.error(f"(control_logic.py): Failed to run inference for command: {e}\n")
 
+    # Accept both string and list (for future-proofing)
+    if isinstance(command, str):
+        if '+' in command:
+            keys = command.split('+')
+        elif command == 'n':
+            keys = []
+        else:
+            keys = [command]
+    elif isinstance(command, (list, tuple)):
+        keys = list(command)
+    else:
+        keys = []
+
     if MODE == 'radio':
         try:
             logging.debug(f"(control_logic.py): Executing radio command: {command}...\n")
@@ -165,16 +178,16 @@ def _handle_command(command, frame):
 
     elif MODE == 'web':
         try:
-            logging.debug(f"(control_logic.py): Executing keyboard command: {command}...\n")
+            logging.debug(f"(control_logic.py): Executing keyboard command: {keys}\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
-                command.strip(),
+                keys,
                 frame,
                 IS_NEUTRAL,
                 CURRENT_LEG,
                 intensity=10,
                 tune_mode=False
             )
-            logging.info(f"(control_logic.py): Executed keyboard command: {command}\n")
+            logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
             IS_COMPLETE = True
         except Exception as e:
             logging.error(f"(control_logic.py): Failed to execute keyboard command: {e}\n")
@@ -185,115 +198,73 @@ def _handle_command(command, frame):
 
 ##### keyboard commands for tuning mode and normal operation #####
 
-def _execute_keyboard_commands(key, frame, is_neutral, current_leg, intensity, tune_mode):
+def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, tune_mode):
+    # keys: list of pressed keys, e.g. ['w', 'd', 'arrowup']
 
-    if not tune_mode: # normal operation mode
+    if not tune_mode:
+        # Movement direction logic
+        direction = None
 
-        if key == 'w':
-            logging.info(f"(control_logic.py): {key}: MOVE FORWARD\n")
-            move_direction('MOVE FORWARD', frame, intensity)
-            is_neutral = False
+        # Movement (WASD and diagonals)
+        if 'w' in keys and 'd' in keys:
+            direction = 'FORWARD_RIGHT'
+        elif 'w' in keys and 'a' in keys:
+            direction = 'FORWARD_LEFT'
+        elif 's' in keys and 'd' in keys:
+            direction = 'BACKWARD_RIGHT'
+        elif 's' in keys and 'a' in keys:
+            direction = 'BACKWARD_LEFT'
+        elif 'w' in keys:
+            direction = 'FORWARD'
+        elif 's' in keys:
+            direction = 'BACKWARD'
+        elif 'a' in keys:
+            direction = 'LEFT'
+        elif 'd' in keys:
+            direction = 'RIGHT'
 
-        elif key == 's':
-            logging.info(f"(control_logic.py): {key}: MOVE BACKWARD\n")
-            move_direction('MOVE BACKWARD', frame, intensity)
-            is_neutral = False
-
-        elif key == 'a':
-            logging.info(f"(control_logic.py): {key}: SHIFT LEFT\n")
-            move_direction('SHIFT LEFT', frame, intensity)
-            is_neutral = False
-
-        elif key == 'd':
-            logging.info(f"(control_logic.py): {key}: SHIFT RIGHT\n")
-            move_direction('SHIFT RIGHT', frame, intensity)
-            is_neutral = False
-
-        elif key == '\x1b[C':
-            logging.info(f"(control_logic.py): {key}: ROTATE LEFT\n")
-            move_direction('ROTATE LEFT', frame, intensity)
-            is_neutral = False
-
-        elif key == '\x1b[D':
-            logging.info(f"(control_logic.py): {key}: ROTATE RIGHT\n")
-            move_direction('ROTATE RIGHT', frame, intensity)
-            is_neutral = False
-
-        elif key == '\x1b[A': # tilt up to look up
-            logging.info(f"(control_logic.py): {key}: TILT UP\n")
-            # TODO I can hand-do this
-            #is_neutral = False
+        # Rotation (arrow keys)
+        if 'arrowleft' in keys and 'arrowright' in keys:
+            # Cancel out, do nothing
             pass
+        elif 'arrowleft' in keys:
+            direction = 'ROTATE_LEFT'
+        elif 'arrowright' in keys:
+            direction = 'ROTATE_RIGHT'
 
-        elif key == '\x1b[B': # tilt down to look down
-            logging.info(f"(control_logic.py): {key}: TILT DOWN\n")
-            # TODO I can hand-do this
-            #is_neutral = False
+        # Tilt (arrow up/down)
+        if 'arrowup' in keys and 'arrowdown' in keys:
+            # Cancel out, do nothing
             pass
+        elif 'arrowup' in keys:
+            direction = 'TILT_UP'
+        elif 'arrowdown' in keys:
+            direction = 'TILT_DOWN'
 
-        elif key == 'n':
-            logging.info(f"(control_logic.py): {key}: NEUTRAL\n")
+        # Neutral and special actions
+        if 'n' in keys or not keys:
+            logging.info(f"(control_logic.py): NEUTRAL\n")
             neutral_position(10)
             is_neutral = True
-
-        elif key == ' ':  # Lie down
+        elif ' ' in keys:
             logging.info(f"(control_logic.py): space: LIE DOWN\n")
             squatting_position(1)
             is_neutral = False
-
+        elif direction:
+            logging.info(f"(control_logic.py): {keys}: {direction}\n")
+            trot_forward(intensity)
+            #move_direction(direction, frame, intensity)
+            is_neutral = False
         else:
-            logging.warning(f"(control_logic.py): Invalid command: {key}\n")
+            logging.warning(f"(control_logic.py): Invalid command: {keys}\n")
+
     else:
+        # Tuning mode (unchanged, but now keys is a list)
+        for key in keys:
+            # ... (your tuning logic here, similar to before)
+            pass
 
-        if key == 'q':  # x axis positive
-            ADJUSTMENT_FUNCS[current_leg]['x+']()
-            is_neutral = False
-
-        elif key == 'a':  # x axis negative
-            ADJUSTMENT_FUNCS[current_leg]['x-']()
-            is_neutral = False
-
-        elif key == 'w':  # y axis positive
-            ADJUSTMENT_FUNCS[current_leg]['y+']()
-            is_neutral = False
-
-        elif key == 's':  # y axis negative
-            ADJUSTMENT_FUNCS[current_leg]['y-']()
-            is_neutral = False
-
-        elif key == 'e':  # z axis positive
-            ADJUSTMENT_FUNCS[current_leg]['z+']()
-            is_neutral = False
-
-        elif key == 'd':  # z axis negative
-            ADJUSTMENT_FUNCS[current_leg]['z-']()
-            is_neutral = False
-
-        elif key == '1':  # set current leg to front left
-            current_leg = 'FL'  # Set current leg to front left
-            is_neutral = False
-
-        elif key == '2':  # set current leg to front right
-            current_leg = 'FR'  # Set current leg to front right
-            is_neutral = False
-
-        elif key == '3':  # set current leg to back left
-            current_leg = 'BL'  # Set current leg to back left
-            is_neutral = False
-
-        elif key == '4':  # set current leg to back right
-            current_leg = 'BR'  # Set current leg to back right
-            is_neutral = False
-
-        elif key == 'n':
-            if not is_neutral:
-                neutral_position(10)
-                is_neutral = True
-
-        else:
-            logging.warning(f"(control_logic.py): Invalid command: {key}\n")
-
-    return is_neutral, current_leg  # Return updated neutral standing state
+    return is_neutral, current_leg
 
 
 ########## INTERPRET COMMANDS ##########

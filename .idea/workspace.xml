@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got visualization working, going to try to set up environment tomorrow">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly">
+      <change afterPath="$PROJECT_DIR$/backend_to_frontend/controller.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/receiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/receiver.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,18 +36,19 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/training&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.control_logic.executor": "Run",
+    "Python.visualize.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/backend_to_frontend"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend_to_frontend" />
       <recent name="$PROJECT_DIR$/training" />
       <recent name="$PROJECT_DIR$/rl_training/urdf" />
       <recent name="$PROJECT_DIR$/rl_training" />
@@ -119,7 +118,7 @@
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
-      <workItem from="1752411561255" duration="5062000" />
+      <workItem from="1752411561255" duration="6681000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -453,7 +452,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752372792851</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly">
+      <option name="closed" value="true" />
+      <created>1752432179832</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1752432179832</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -468,8 +475,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added servo debug to help see why front left leg is lagging" />
-    <MESSAGE value="Switched servos 3 and 4, will hopefully resolve lag issues" />
     <MESSAGE value="Spoiler alert: changing servos didn't work" />
     <MESSAGE value="Edited backend connection to new self-hosted backend" />
     <MESSAGE value="Typo in config, added better queue startup in control_logic" />
@@ -493,7 +498,9 @@
     <MESSAGE value="Adjusted config to reflect angles and changes" />
     <MESSAGE value="Cleaned up training space, I have to do it here because of context" />
     <MESSAGE value="Got visualization working, going to try to set up environment tomorrow" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got visualization working, going to try to set up environment tomorrow" />
+    <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick" />
+    <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
