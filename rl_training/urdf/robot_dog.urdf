@@ -1252,13 +1252,13 @@
     <origin xyz="0 0 0" rpy="0 1.5708 3.14"/>
   </joint>
 
-  <!--##### front-right-femur-femur/front-right-shin-shin joint TODO (FR_lower) #####-->
+  <!--##### front-right-femur-femur/front-right-shin-shin joint TODO (FR_lower) FLIPPED ROTATION DIRECTION #####-->
 
   <joint name="FR_lower" type="revolute">
     <parent link="front-right-femur-femur"/>
     <child link="front-right-shin-shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
+    <axis xyz="-1 0 0"/>
     <limit lower="-0.698" upper="0.698" effort="5.0" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
@@ -2059,7 +2059,7 @@
 
   <!--##### back-right-femur-servo/disc joint TODO (BR_upper) #####-->
 
-  <joint name="BR_upper" type="continuous">
+  <joint name="BR_upper" type="revolute">
     <parent link="back-right-femur-servo"/>
     <child link="back-right-femur-disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
@@ -2076,13 +2076,13 @@
     <origin xyz="0 0 0" rpy="0 1.5708 3.14"/>
   </joint>
 
-  <!--##### back-right-femur-femur/back-right-shin-shin joint TODO (BR_lower) #####-->
+  <!--##### back-right-femur-femur/back-right-shin-shin joint TODO (BR_lower) FLIPPED ROTATION DIRECTION #####-->
 
-  <joint name="BR_lower" type="continuous">
+  <joint name="BR_lower" type="revolute">
     <parent link="back-right-femur-femur"/>
     <child link="back-right-shin-shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
-    <axis xyz="1 0 0"/>
+    <axis xyz="-1 0 0"/>
     <limit lower="-0.698" upper="0.698" effort="5.0" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>

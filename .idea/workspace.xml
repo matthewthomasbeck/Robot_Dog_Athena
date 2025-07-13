@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed URDF to use &lt;LEG&gt;_&lt;SERVO&gt; naming convention for important joints, adjusted visualize.py">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got rid of useless crap in config">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/rl_training/urdf/robot_dog.urdf" beforeDir="false" afterPath="$PROJECT_DIR$/rl_training/urdf/robot_dog.urdf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/rl_training/visualize.py" beforeDir="false" afterPath="$PROJECT_DIR$/rl_training/visualize.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -114,7 +115,7 @@
       <workItem from="1752336495711" duration="157000" />
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
-      <workItem from="1752343933383" duration="4525000" />
+      <workItem from="1752343933383" duration="5937000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -400,7 +401,23 @@
       <option name="project" value="LOCAL" />
       <updated>1752348794159</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Made accurate ranges for all relevant joints">
+      <option name="closed" value="true" />
+      <created>1752363324368</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1752363324368</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Got rid of useless crap in config">
+      <option name="closed" value="true" />
+      <created>1752363451302</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1752363451302</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -415,8 +432,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adjusted signal tolorances" />
-    <MESSAGE value="Removed shit from control_logic.py" />
     <MESSAGE value="Final full working test" />
     <MESSAGE value="Solved weird import error" />
     <MESSAGE value="Commit" />
@@ -440,7 +455,9 @@
     <MESSAGE value="Going to start RL setup while I wait for the GPU (greedy bastards are playing games with me, buyer beware of Gandis Goods)" />
     <MESSAGE value="Added functions to help me tune the robot in pybullet via mapping full front and back positions for joints in the physical world to the virtual world" />
     <MESSAGE value="Fixed URDF to use &lt;LEG&gt;_&lt;SERVO&gt; naming convention for important joints, adjusted visualize.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed URDF to use &lt;LEG&gt;_&lt;SERVO&gt; naming convention for important joints, adjusted visualize.py" />
+    <MESSAGE value="Made accurate ranges for all relevant joints" />
+    <MESSAGE value="Got rid of useless crap in config" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got rid of useless crap in config" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
