@@ -3,6 +3,13 @@ import pybullet_data
 import time
 import os
 import math
+from training.calibration import (
+    angle_to_servo_value, 
+    foot_position_to_joint_angles,
+    get_joint_limits,
+    get_neutral_foot_position,
+    validate_foot_position
+)
 
 # --- CONFIG ---
 ANGLE_STEP = 0.01  # radians per button press
@@ -21,7 +28,7 @@ cam_target_x_slider = p.addUserDebugParameter("Camera Target X", -1, 1, 0)
 cam_target_y_slider = p.addUserDebugParameter("Camera Target Y", -1, 1, 0)
 cam_target_z_slider = p.addUserDebugParameter("Camera Target Z", 0, 2, 1)
 
-urdf_path = "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Training/urdf/robot_dog.urdf"
+urdf_path = "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/training/urdf/robot_dog.urdf"
 if not os.path.isfile(urdf_path):
     print(f"URDF file not found at: {urdf_path}")
     exit()
@@ -73,10 +80,6 @@ JOINT_LABELS = ['hip', 'upper', 'lower']
 leg_slider = p.addUserDebugParameter("LEG (1=FL, 2=FR, 3=BL, 4=BR)", 1, 4, 1)
 joint_slider = p.addUserDebugParameter("JOINT (1=hip, 2=upper, 3=lower)", 1, 3, 1)
 
-# Define FULL_FRONT/BACK angles (dummy values, replace with your calibration)
-FULL_FRONT = 0.35
-FULL_BACK = -0.35
-
 # Track state
 current_angle = 0.0
 last_leg_idx = -1
@@ -89,7 +92,8 @@ for (leg, jt), idx in joint_map.items():
 print("\nKeyboard Controls:")
 print("  Legs: 1=FL, 2=FR, 3=BL, 4=BR")
 print("  Joints: h=hip, u=upper, l=lower")
-print("  Angle: e=+, d=-, space=zero, f=FULL_FRONT, b=FULL_BACK")
+print("  Angle: e=+, d=-, space=zero, f/b: FULL_FRONT/BACK")
+print("  Test: t=test foot position to joint angles")
 
 while True:
     # --- Camera controls ---
@@ -129,7 +133,10 @@ while True:
         last_joint_idx = joint_idx
         print(f"Selected joint: {leg}_{joint_type} (index {joint_index})")
         print(f"Current angle: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)")
-        print(f"Joint limits: {joint_info[joint_index]['lower']:.3f} to {joint_info[joint_index]['upper']:.3f} rad")
+        
+        # Get joint limits from calibration
+        lower_limit, upper_limit = get_joint_limits(leg, joint_type)
+        print(f"Calibrated limits: {lower_limit:.3f} to {upper_limit:.3f} rad")
 
     # --- Keyboard control ---
     keys = p.getKeyboardEvents()
@@ -168,12 +175,39 @@ while True:
     # Spacebar to reset to zero
     if p.B3G_SPACE in keys and keys[p.B3G_SPACE] & p.KEY_WAS_TRIGGERED:
         current_angle = 0.0
-    # F to set FULL_FRONT
+    
+    # F/B to set FULL_FRONT/BACK using calibrated values
     if ord('f') in keys and keys[ord('f')] & p.KEY_WAS_TRIGGERED:
-        current_angle = FULL_FRONT
-    # B to set FULL_BACK
+        lower_limit, upper_limit = get_joint_limits(leg, joint_type)
+        current_angle = lower_limit
     if ord('b') in keys and keys[ord('b')] & p.KEY_WAS_TRIGGERED:
-        current_angle = FULL_BACK
+        lower_limit, upper_limit = get_joint_limits(leg, joint_type)
+        current_angle = upper_limit
+    
+    # T to test foot position to joint angles
+    if ord('t') in keys and keys[ord('t')] & p.KEY_WAS_TRIGGERED:
+        # Test with neutral foot position
+        neutral_pos = get_neutral_foot_position(leg)
+        print(f"\n=== Testing {leg} foot position to joint angles ===")
+        print(f"Neutral foot position: {neutral_pos}")
+        
+        try:
+            hip_rad, upper_rad, lower_rad = foot_position_to_joint_angles(
+                neutral_pos['x'], neutral_pos['y'], neutral_pos['z'], leg
+            )
+            print(f"Calculated joint angles:")
+            print(f"  Hip: {hip_rad:.3f} rad ({math.degrees(hip_rad):.1f}°)")
+            print(f"  Upper: {upper_rad:.3f} rad ({math.degrees(upper_rad):.1f}°)")
+            print(f"  Lower: {lower_rad:.3f} rad ({math.degrees(lower_rad):.1f}°)")
+            
+            # Convert to servo values
+            hip_servo = angle_to_servo_value(hip_rad, leg, 'hip')
+            upper_servo = angle_to_servo_value(upper_rad, leg, 'upper')
+            lower_servo = angle_to_servo_value(lower_rad, leg, 'lower')
+            print(f"Servo values: Hip={hip_servo}, Upper={upper_servo}, Lower={lower_servo}")
+            
+        except Exception as e:
+            print(f"Error: {e}")
 
     # Clamp to joint limits
     lower = joint_info[joint_index]['lower']
@@ -192,9 +226,10 @@ while True:
         force=4.41
     )
 
-    # Display current angle
+    # Display current angle and servo value
+    servo_value = angle_to_servo_value(current_angle, leg, joint_type)
     p.addUserDebugText(
-        f"{leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.2f} deg)\n[1-4: legs | h/u/l: joints | e/d: +/- | space: zero | f/b: FULL_FRONT/BACK]",
+        f"{leg}_{joint_type}: {current_angle:.3f} rad ({math.degrees(current_angle):.1f}°) | Servo: {servo_value}\n[1-4: legs | h/u/l: joints | e/d: +/- | space: zero | f/b: limits | t: test IK]",
         [0, 0, 1.5], textColorRGB=[0, 0, 1], replaceItemUniqueId=1)
 
     p.stepSimulation()

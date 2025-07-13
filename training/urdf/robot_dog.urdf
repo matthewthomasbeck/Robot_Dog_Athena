@@ -9,7 +9,7 @@
   <link name="midsection-bottom">
     <visual>
       <geometry>
-        <mesh filename="../meshes/midsection/ares_midsection-bottom_1.0.dae" scale="1 1 1"/>
+        <mesh filename="meshes/midsection/ares_midsection-bottom_1.0.dae" scale="1 1 1"/>
       </geometry>
 
       <material name="Grey">
@@ -19,7 +19,7 @@
 
     <collision>
       <geometry>
-        <mesh filename="../meshes/midsection/ares_midsection-bottom_1.0.dae" scale="1 1 1"/>
+        <mesh filename="meshes/midsection/ares_midsection-bottom_1.0.dae" scale="1 1 1"/>
       </geometry>
     </collision>
 
