@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got rid of useless crap in config">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rl_training/urdf/robot_dog.urdf" beforeDir="false" afterPath="$PROJECT_DIR$/rl_training/urdf/robot_dog.urdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/rl_training/visualize.py" beforeDir="false" afterPath="$PROJECT_DIR$/rl_training/visualize.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Finished URDF" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -115,7 +111,7 @@
       <workItem from="1752336495711" duration="157000" />
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
-      <workItem from="1752343933383" duration="5937000" />
+      <workItem from="1752343933383" duration="6230000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -417,7 +413,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752363451302</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Finished URDF">
+      <option name="closed" value="true" />
+      <created>1752368774588</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1752368774588</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -432,7 +436,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Final full working test" />
     <MESSAGE value="Solved weird import error" />
     <MESSAGE value="Commit" />
     <MESSAGE value="Added full foreward position" />
@@ -457,7 +460,8 @@
     <MESSAGE value="Fixed URDF to use &lt;LEG&gt;_&lt;SERVO&gt; naming convention for important joints, adjusted visualize.py" />
     <MESSAGE value="Made accurate ranges for all relevant joints" />
     <MESSAGE value="Got rid of useless crap in config" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got rid of useless crap in config" />
+    <MESSAGE value="Finished URDF" />
+    <option name="LAST_COMMIT_MESSAGE" value="Finished URDF" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
