@@ -26,18 +26,13 @@ import queue
 from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
 from utilities.camera import initialize_camera, decode_frame  # import to start camera logic
-from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
 import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
 
 ##### import movement functions #####
 
-from movement.standing.standing import *  # import standing functions
-from movement.walking.forward import *  # import walking functions
 from movement.fundamental_movement import *  # import fundamental movement functions
-
-##### import config #####
-
-from utilities.config import LOOP_RATE_HZ  # import loop rate for actions per second
+from movement.standing.standing import *  # import standing functions
+#from movement.walking.forward import *  # import walking functions
 
 ########## CREATE DEPENDENCIES ##########
 
@@ -45,7 +40,6 @@ from utilities.config import LOOP_RATE_HZ  # import loop rate for actions per se
 
 LOGGER = initialize_logging()  # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
-COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
 SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
 COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
@@ -75,7 +69,6 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
     ##### set/initialize variables #####
 
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
-    LOOP_RATE = LOOP_RATE_HZ * 3  # calculate frame interval based on loop rate times 3 to keep up with camera
 
     ##### run robotic logic #####
 
@@ -99,23 +92,18 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
         ##### stream video, run inference, and control the robot #####
 
         while True:
-
-            # TODO get rid of these lines if delay unbearable
-            # start_time = time.time()  # start time to measure actions per second
-
             mjpeg_buffer, frame_data, frame = decode_frame(CAMERA_PROCESS, mjpeg_buffer)
             internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
             command = None
 
             if MODE == 'web' and COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
                 command = COMMAND_QUEUE.get()
-
                 if IS_COMPLETE: # if movement is complete, run command
                     logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
                 else:
                     logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL BLOCK).\n")
 
-            # LEGACY RADIO COMMAND CODE, UNDER NO CIRCUMSTANCES REMOVE WHATSOEVER (I will get around to renewing radio support for override)
+            # LEGACY RADIO COMMAND CODE, UNDER NO CIRCUMSTANCES REMOVE WHATSOEVER (I will get around to renewing radio support for override system)
             #if MODE == 'radio':
                 #commands = interpret_commands(CHANNEL_DATA)
                 #for channel, (action, intensity) in commands.items():
@@ -150,19 +138,19 @@ def _handle_command(command, frame):
     IS_COMPLETE = False  # block new commands until movement is complete
     logging.info(f"(control_logic.py): IS_COMPLETE set to false.\n")
 
-    if command != 'n': # dont waste energy running inference for neutral command
-
-        try:
-            run_inference( # TODO dont run inference for now
-                COMPILED_MODEL,
-                INPUT_LAYER,
-                OUTPUT_LAYER,
-                frame,
-                run_inference=False
-            )
-            logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
-        except Exception as e:
-            logging.error(f"(control_logic.py): Failed to run inference for command: {e}\n")
+    # TODO deprecated CNN-based inference model
+    #if command != 'n': # don't waste energy running inference for neutral command
+        #try:
+            #run_inference(
+                #COMPILED_MODEL,
+                #INPUT_LAYER,
+                #OUTPUT_LAYER,
+                #frame,
+                #run_inference=False
+            #)
+            #logging.info(f"(control_logic.py): Ran inference for command: {command}\n")
+        #except Exception as e:
+            #logging.error(f"(control_logic.py): Failed to run inference for command: {e}\n")
 
     if MODE == 'radio':
         try:
@@ -180,6 +168,7 @@ def _handle_command(command, frame):
             logging.debug(f"(control_logic.py): Executing keyboard command: {command}...\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
                 command.strip(),
+                frame,
                 IS_NEUTRAL,
                 CURRENT_LEG,
                 intensity=10,
@@ -196,61 +185,59 @@ def _handle_command(command, frame):
 
 ##### keyboard commands for tuning mode and normal operation #####
 
-def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mode):
+def _execute_keyboard_commands(key, frame, is_neutral, current_leg, intensity, tune_mode):
 
-    if not tune_mode:  # normal operation mode
+    if not tune_mode: # normal operation mode
 
-        if key == 'w':  # Move forward
-
-            logging.info(f"(control_logic.py): Executing forward command...\n")
-
-            trot_forward(intensity)
+        if key == 'w':
+            logging.info(f"(control_logic.py): {key}: MOVE FORWARD\n")
+            move_direction('MOVE FORWARD', frame, intensity)
             is_neutral = False
 
-        elif key == 's':  # Move backward
-            # trotBackward(intensity)
+        elif key == 's':
+            logging.info(f"(control_logic.py): {key}: MOVE BACKWARD\n")
+            move_direction('MOVE BACKWARD', frame, intensity)
             is_neutral = False
 
-        elif key == 'a':  # Shift left
-            # trotLeft(intensity)
-            move_all_joints_full_front(1)
+        elif key == 'a':
+            logging.info(f"(control_logic.py): {key}: SHIFT LEFT\n")
+            move_direction('SHIFT LEFT', frame, intensity)
             is_neutral = False
 
-        elif key == 'd':  # Shift right
-            # trotRight(intensity)
-            move_all_joints_full_back(1)
+        elif key == 'd':
+            logging.info(f"(control_logic.py): {key}: SHIFT RIGHT\n")
+            move_direction('SHIFT RIGHT', frame, intensity)
             is_neutral = False
 
-        elif key == '\x1b[C':  # Rotate right
-            # rotateRight(intensity)
+        elif key == '\x1b[C':
+            logging.info(f"(control_logic.py): {key}: ROTATE LEFT\n")
+            move_direction('ROTATE LEFT', frame, intensity)
             is_neutral = False
 
-        elif key == '\x1b[D':  # Rotate left
-            # rotateLeft(intensity)
+        elif key == '\x1b[D':
+            logging.info(f"(control_logic.py): {key}: ROTATE RIGHT\n")
+            move_direction('ROTATE RIGHT', frame, intensity)
             is_neutral = False
 
-        elif key == '\x1b[A':  # Look up
-            # adjustBL_Z(up=False)
-            is_neutral = False
+        elif key == '\x1b[A': # tilt up to look up
+            logging.info(f"(control_logic.py): {key}: TILT UP\n")
+            # TODO I can hand-do this
+            #is_neutral = False
+            pass
 
-        elif key == '\x1b[B':  # Look down
-            # adjustBL_Z(up=True)
-            is_neutral = False
-
-        elif key == 'i':  # Tilt up
-            # adjustBL_Y(left=False)
-            is_neutral = False
-
-        elif key == 'k':  # Tilt down
-            # adjustBL_Y(left=True)
-            is_neutral = False
+        elif key == '\x1b[B': # tilt down to look down
+            logging.info(f"(control_logic.py): {key}: TILT DOWN\n")
+            # TODO I can hand-do this
+            #is_neutral = False
+            pass
 
         elif key == 'n':
-            logging.info(f"(control_logic.py): Executing neutral command...\n")
+            logging.info(f"(control_logic.py): {key}: NEUTRAL\n")
             neutral_position(10)
             is_neutral = True
 
         elif key == ' ':  # Lie down
+            logging.info(f"(control_logic.py): space: LIE DOWN\n")
             squatting_position(1)
             is_neutral = False
 
@@ -283,22 +270,18 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
             is_neutral = False
 
         elif key == '1':  # set current leg to front left
-
             current_leg = 'FL'  # Set current leg to front left
             is_neutral = False
 
         elif key == '2':  # set current leg to front right
-
             current_leg = 'FR'  # Set current leg to front right
             is_neutral = False
 
         elif key == '3':  # set current leg to back left
-
             current_leg = 'BL'  # Set current leg to back left
             is_neutral = False
 
         elif key == '4':  # set current leg to back right
-
             current_leg = 'BR'  # Set current leg to back right
             is_neutral = False
 
@@ -316,59 +299,59 @@ def _execute_keyboard_commands(key, is_neutral, current_leg, intensity, tune_mod
 ########## INTERPRET COMMANDS ##########
 
 # function to interpret commands from channel data and do things
-def _execute_radio_commands(channel, action, intensity, is_neutral):
+def _execute_radio_commands(channel, action, frame, intensity, is_neutral):
 
     ##### squat channel 2 #####
 
     if channel == 'channel_2':
         if action == 'NEUTRAL' or action == 'SQUAT DOWN':
             if action == 'SQUAT DOWN':
+                # TODO I can hand-do this
                 pass
-                # function to squat
-        elif action == 'SQUAT UP':
-            # function to neutral
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
+        elif action == 'SQUAT UP': # returns to neutral
+            # TODO I can hand-do this
+            pass
 
     ##### tilt channel 0 #####
 
     if channel == 'channel_0':
-        if action == 'TILT DOWN':
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-        elif action == 'TILT UP':
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
+        if action == 'LOOK DOWN':
+            # logging.info(f"(control_logic.py): {channel}:{action}\n")
+            # TODO I can hand-do this
+            pass
+        elif action == 'LOOK UP':
+            # logging.info(f"(control_logic.py): {channel}:{action}\n")
+            # TODO I can hand-do this
+            pass
 
     ##### trigger channel 1 #####
 
     elif channel == 'channel_1':
-
         if action == 'TRIGGER SHOOT':
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
+            # logging.info(f"(control_logic.py): {channel}:{action}\n")
+            # TODO no hardware support for this yet
+            pass
 
     ##### rotation channel 3 #####
 
     elif channel == 'channel_3':
 
         if action == 'ROTATE LEFT':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('ROTATE LEFT', frame, intensity)
                 is_neutral = False
-
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to rotate left in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
-
             is_neutral = True
 
         elif action == 'ROTATE RIGHT':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('ROTATE RIGHT', frame, intensity)
                 is_neutral = False
-
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to rotate right in executeCommands: {e}\n")
 
@@ -376,27 +359,25 @@ def _execute_radio_commands(channel, action, intensity, is_neutral):
 
     elif channel == 'channel_4':
 
-        if action == 'LOOK DOWN':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+        if action == 'TILT DOWN':
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('TILT DOWN', frame, intensity)
                 is_neutral = False
-
+                pass
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to look down in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
-
             is_neutral = True
+            pass
 
-        elif action == 'LOOK UP':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+        elif action == 'TILT UP':
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('TILT UP', frame, intensity)
                 is_neutral = False
-
+                pass
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to look up in executeCommands: {e}\n")
 
@@ -405,36 +386,28 @@ def _execute_radio_commands(channel, action, intensity, is_neutral):
     elif channel == 'channel_5':
 
         if action == 'MOVE FORWARD':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
-                trot_forward(intensity)
+                move_direction('MOVE FORWARD', frame, intensity)
                 is_neutral = False
 
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to move forward in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
-
             try:
-
                 if is_neutral == False:
                     neutral_position(10)
                     is_neutral = True
-
             except Exception as e:
-
                 logging.error(
                     f"(control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
 
         elif action == 'MOVE BACKWARD':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('MOVE BACKWARD', frame, intensity)
                 is_neutral = False
-
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to move backward in executeCommands: {e}\n")
 
@@ -443,26 +416,21 @@ def _execute_radio_commands(channel, action, intensity, is_neutral):
     elif channel == 'channel_6':
 
         if action == 'SHIFT LEFT':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('SHIFT LEFT', frame, intensity)
                 is_neutral = False
-
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to shift left in executeCommands: {e}\n")
 
         elif action == 'NEUTRAL':
-
             is_neutral = True
 
         elif action == 'SHIFT RIGHT':
-
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
-
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
             try:
+                move_direction('SHIFT RIGHT', frame, intensity)
                 is_neutral = False
-
             except Exception as e:
                 logging.error(f"(control_logic.py): Failed to shift right in executeCommands: {e}\n")
 
@@ -470,9 +438,9 @@ def _execute_radio_commands(channel, action, intensity, is_neutral):
 
     elif channel == 'channel_7':
         if action == '+':
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
         elif action == '-':
-            logging.info(f"(control_logic.py): {channel}: {action}\n")
+            logging.info(f"(control_logic.py): {channel}:{action}\n")
 
     ##### update is neutral standing #####
 

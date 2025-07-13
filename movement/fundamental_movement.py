@@ -23,6 +23,11 @@
 from utilities.servos import map_angle_to_servo_position, set_target # import servo mapping functions
 import utilities.config as config # import configuration data for servos and link lengths
 from utilities.mathematics import * # import all mathematical functions
+from utilities.opencv import load_and_compile_model, run_inference  # load inference functions
+
+##### import necessary libraries #####
+
+import time # import time for proper leg sequencing
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -30,6 +35,10 @@ from utilities.mathematics import * # import all mathematical functions
 ##### initialize kinematics #####
 
 k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic functions
+
+##### load reinforcement learning model #####
+
+COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
 
 ##### define servos #####
 
@@ -56,6 +65,133 @@ lower_leg_servos = { # define lower leg servos
 ##############################################################
 ############### FUNDAMENTAL MOVEMENT FUNCTIONS ###############
 ##############################################################
+
+
+########## GAIT FUNCTION ##########
+
+def move_direction(direction, frame, intensity): # function to trot forward
+
+    ##### set variables #####
+
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE,
+        'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+
+    ##### get intensity #####
+
+    try: # try to calculate intensity of the trot
+
+        speed, acceleration = interpret_intensity(intensity)
+
+    except Exception as e: # if interpretation fails...
+
+        logging.error(f"(fundamental_movement.py): Failed to interpret intensity in move_direction(): {e}\n")
+        return
+
+    ##### run inference before moving ###
+
+    logging.debug(f"(fundamental_movement.py): Running inference for command: {direction}:{intensity}...\n")
+
+    try:
+        run_inference(
+            COMPILED_MODEL,
+            INPUT_LAYER,
+            OUTPUT_LAYER,
+            frame,
+            run_inference=False
+        )
+        logging.info(f"(fundamental_movement.py): Ran inference for command: {direction}:{intensity}\n")
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to run inference for command: {e}\n")
+
+    ##### move legs forward #####
+
+    try: # try to update leg gait
+
+        if gait_states['FL']['phase'] == 'swing': # if front left about to push...
+            set_leg_phase('BL', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase('FR', {'FORWARD': True}, frame, speed, acceleration)
+            time.sleep(0.5)
+            set_leg_phase('BR', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase('FL', {'FORWARD': True}, frame, speed, acceleration)
+
+        elif gait_states['FR']['phase'] == 'swing': # if front right about to push...
+            set_leg_phase('BR', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase('FL', {'FORWARD': True}, frame, speed, acceleration)
+            time.sleep(0.5)
+            set_leg_phase('BL', {'FORWARD': True}, frame, speed, acceleration)
+            set_leg_phase('FR', {'FORWARD': True}, frame, speed, acceleration)
+
+        logging.info(f"(fundamental_movement.py): Executed move_direction() with intensity: {intensity}\n")
+
+        time.sleep(0.1) # wait for legs to reach positions
+
+    except Exception as e: # if gait update fails...
+
+        logging.error(f"(fundamental_movement.py): Failed to gait-cycle legs in move_direction(): {e}\n")
+
+
+########## SET LEG PHASE ##########
+
+def set_leg_phase(leg_id, state, frame, speed, acceleration):
+
+    if not state.get('FORWARD', False):
+        return
+
+    gait_states = {
+        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE,
+        'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
+    }
+    swing_positions = {
+        'FL': config.FL_SWING, 'FR': config.FR_SWING,
+        'BL': config.BL_SWING, 'BR': config.BR_SWING
+    }
+    touchdown_positions = {
+        'FL': config.FL_TOUCHDOWN, 'FR': config.FR_TOUCHDOWN,
+        'BL': config.BL_TOUCHDOWN, 'BR': config.BR_TOUCHDOWN
+    }
+    midstance_positions = {
+        'FL': config.FL_MIDSTANCE, 'FR': config.FR_MIDSTANCE,
+        'BL': config.BL_MIDSTANCE, 'BR': config.BR_MIDSTANCE
+    }
+    neutral_positions = {
+        'FL': config.FL_NEUTRAL, 'FR': config.FR_NEUTRAL,
+        'BL': config.BL_NEUTRAL, 'BR': config.BR_NEUTRAL
+    }
+    tippytoes_positions = {
+        'FL': config.FL_TIPPYTOES, 'FR': config.FR_TIPPYTOES,
+        'BL': config.BL_TIPPYTOES, 'BR': config.BR_TIPPYTOES
+    }
+    stance_positions = {
+        'FL': config.FL_STANCE, 'FR': config.FR_STANCE,
+        'BL': config.BL_STANCE, 'BR': config.BR_STANCE
+    }
+
+    gait_state = gait_states[leg_id]
+    phase = gait_state['phase']
+
+    try:
+
+        if phase == 'stance':
+
+            # Begin new cycle: lift foot into swing
+            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=True)
+            time.sleep(0.2)
+            move_foot_to_pos(leg_id, touchdown_positions[leg_id], speed, acceleration, use_bezier=True)
+            gait_state['phase'] = 'swing'
+
+        elif phase == 'swing':
+            # Final phase: move foot into full stance
+            move_foot_to_pos(leg_id, tippytoes_positions[leg_id], speed, acceleration, use_bezier=False)
+            time.sleep(0.2)
+            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=False)
+            gait_state['phase'] = 'stance'
+
+        gait_state['returned_to_neutral'] = False
+
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed gait move for {leg_id} in phase {phase}: {e}\n")
 
 
 ########## MOVE FOOT FUNCTION ##########
