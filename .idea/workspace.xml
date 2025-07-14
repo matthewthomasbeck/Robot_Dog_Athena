@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/opencv.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +121,7 @@
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
-      <workItem from="1752411561255" duration="31866000" />
+      <workItem from="1752411561255" duration="33480000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -261,14 +262,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00025" summary="adjusted internet to close bad sockets">
-      <option name="closed" value="true" />
-      <created>1751502353689</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1751502353689</updated>
     </task>
     <task id="LOCAL-00026" summary="Changing debug level to info">
       <option name="closed" value="true" />
@@ -494,7 +487,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752515024013</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running">
+      <option name="closed" value="true" />
+      <created>1752517128709</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1752517128709</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -509,7 +510,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added threading to separate camera to streaming pipeline from inference and movement" />
     <MESSAGE value="Adjusted code to thread out inference and movement only when a command is detected (both to reduce lag and save electrical power from un-needed inference)" />
     <MESSAGE value="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
     <MESSAGE value="Made logging a little less annoying" />
@@ -534,7 +534,8 @@
     <MESSAGE value="Multi-part commands now working for both radio and keyboard commands" />
     <MESSAGE value="Complex commands now implemented" />
     <MESSAGE value="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work" />
+    <MESSAGE value="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running" />
+    <option name="LAST_COMMIT_MESSAGE" value="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

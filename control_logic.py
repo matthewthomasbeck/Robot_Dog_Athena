@@ -37,7 +37,7 @@ from movement.standing.standing import *  # import standing functions
 
 ##### set global variables #####
 
-IMAGELESS_GAIT = True  # set global variable for image-less gait
+IMAGELESS_GAIT = True  # set global variable for imageless gait
 IS_COMPLETE = True  # boolean that tracks if the robot is done moving, independent of it being neutral or not
 IS_NEUTRAL = False  # set global neutral standing boolean
 CURRENT_LEG = 'FL'  # set global current leg

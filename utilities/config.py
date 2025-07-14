@@ -38,7 +38,7 @@ import logging # import logging library for debugging
 
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
 CONTROL_MODE = 'web' # current control mode of the robot (web or radio)
-RL_NOT_CNN: False  # boolean to switch between testing and RL models (true is RL, false is testing)
+RL_NOT_CNN = False  # boolean to switch between testing and RL models (true is RL, false is testing)
 DEFAULT_INTENSITY = 7 # default intensity for keyboard commands (1 to 10)
 
 ##### set logging configuration #####
@@ -63,7 +63,8 @@ CAMERA_CONFIG = { # TODO BE VERY CAREFUL WITH OUTPUT WIDTHxHEIGHT! Remember, the
 
 INFERENCE_CONFIG = {
     'TPU_NAME': "MYRIAD",  # literal device name in code
-    'RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/", # in-house RL model(s)
+    'STANDARD_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/standard", # standard all terrain RL model
+    'BLIND_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/blind", # speedy imageless RL model
     'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
 

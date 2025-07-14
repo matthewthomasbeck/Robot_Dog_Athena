@@ -27,17 +27,9 @@ import logging # import logging for logging messages
 
 ##### import config #####
 
-from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG
+from utilities.config import INFERENCE_CONFIG
 
 
-########## CREATE DEPENDENCIES ##########
-
-##### set model path #####
-
-if RL_NOT_CNN: # if using RL model (production)...
-    MODEL_PATH = INFERENCE_CONFIG['RL_PATH'] # path to gait adjustment model
-else: # if using CNN model (testing)...
-    MODEL_PATH = INFERENCE_CONFIG['CNN_PATH'] # path to person detection model
 
 
 
@@ -50,8 +42,8 @@ else: # if using CNN model (testing)...
 
 # function to load and compile an OpenVINO model
 def load_and_compile_model(
-        device_name=INFERENCE_CONFIG['TPU_NAME'], # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
-        enable_inference=True
+        model_path, # path to the model file
+        device_name=INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
 ):
 
     ##### clean up OpenCV windows from last run #####
@@ -67,14 +59,11 @@ def load_and_compile_model(
 
     logging.debug("(opencv.py): Loading and compiling model...\n")
 
-    if not enable_inference:
-        return None, None, None
-
     try: # try to load and compile the model
 
         ie = Core() # check for devices
-        #model_bin_path = MODEL_PATH.replace(".xml", ".bin") # get binary path from XML path (incase needed)
-        model = ie.read_model(model=MODEL_PATH) # read model from XML file
+        #model_bin_path = model_path.replace(".xml", ".bin") # get binary path from XML path (incase needed)
+        model = ie.read_model(model=model_path) # read model from XML file
         compiled_model = ie.compile_model(model=model, device_name=device_name) # compile model for specified device
         input_layer = compiled_model.input(0) # get input layer of compiled model
         output_layer = compiled_model.output(0) # get output layer of compiled model

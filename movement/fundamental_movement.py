@@ -32,18 +32,19 @@ import time # import time for proper leg sequencing
 
 ##### import from config #####
 
-from utilities.config import RL_NOT_CNN # import whether to use RL or CNN model
+from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG # import whether to use RL or CNN model
 
 
 ########## CREATE DEPENDENCIES ##########
 
-##### initialize kinematics #####
+##### initialize variables for kinematics and neural processing #####
 
 k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic functions
-
-##### load reinforcement learning model #####
-
-COMPILED_MODEL, INPUT_LAYER, OUTPUT_LAYER = load_and_compile_model()  # load and compile model
+if RL_NOT_CNN:
+    STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['STANDARD_RL_PATH'])
+    BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['BLIND_RL_PATH'])
+elif not RL_NOT_CNN:
+    CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['CNN_PATH'])
 
 ##### define servos #####
 
@@ -104,9 +105,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
             if not imageless_gait: # if not using imageless gait adjustment...
 
                 target_positions, mid_positions = run_gait_adjustment_standard(
-                    COMPILED_MODEL,
-                    INPUT_LAYER,
-                    OUTPUT_LAYER,
+                    STANDARD_RL_MODEL,
+                    STANDARD_INPUT_LAYER,
+                    STANDARD_OUTPUT_LAYER,
                     commands,
                     frame,
                     speed,
@@ -117,9 +118,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
             else: # if using imageless gait adjustment...
 
                 target_positions, mid_positions = run_gait_adjustment_blind(
-                    COMPILED_MODEL,
-                    INPUT_LAYER,
-                    OUTPUT_LAYER,
+                    BLIND_RL_MODEL,
+                    BLIND_INPUT_LAYER,
+                    BLIND_OUTPUT_LAYER,
                     commands,
                     speed,
                     acceleration,
@@ -128,9 +129,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
         else: # if running person detection (testing)...
             run_person_detection(
-                COMPILED_MODEL,
-                INPUT_LAYER,
-                OUTPUT_LAYER,
+                CNN_MODEL,
+                CNN_INPUT_LAYER,
+                CNN_OUTPUT_LAYER,
                 frame,
                 run_inference=False
             )
