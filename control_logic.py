@@ -126,7 +126,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
             if MODE == 'radio':
                 commands = interpret_commands(CHANNEL_DATA)
-                if commands is not None:
+                if commands is not None and IS_COMPLETE:
                     threading.Thread(
                         target=_handle_command,
                         args=(None, commands, frame, None),
