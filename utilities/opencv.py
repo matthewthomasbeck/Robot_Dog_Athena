@@ -30,12 +30,44 @@ import logging # import logging for logging messages
 from utilities.config import INFERENCE_CONFIG
 
 
+########## CREATE DEPENDENCIES ##########
+
+##### all commands #####
+
+# used to encode commands as a fixed-length vector
+ALL_COMMANDS = ['a', 'd', 's', 'w', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright']
+
+
 
 
 
 ############################################################
 ############### IMPORT / CREATE DEPENDENCIES ###############
 ############################################################
+
+
+########## HELPER FUNCTIONS ##########
+
+def encode_commands(commands):
+    """Multi-hot encode commands as a fixed-length vector."""
+    vec = np.zeros(len(ALL_COMMANDS), dtype=np.float32)
+    for i, cmd in enumerate(ALL_COMMANDS):
+        if cmd in commands:
+            vec[i] = 1.0
+    return vec
+
+def normalize_scalar(value, min_val, max_val):
+    """Normalize a scalar to [0, 1]."""
+    return (value - min_val) / (max_val - min_val)
+
+def normalize_feet_positions(feet_dict, min_xyz, max_xyz):
+    """Flatten and normalize all foot positions."""
+    arr = []
+    for leg in ['FL', 'FR', 'BL', 'BR']:
+        for axis in ['x', 'y', 'z']:
+            v = feet_dict[leg][axis]
+            arr.append(normalize_scalar(v, min_xyz[axis], max_xyz[axis]))
+    return np.array(arr, dtype=np.float32)
 
 
 ########## LOAD AND COMPILE MODEL ##########
@@ -113,7 +145,7 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
 ########## RUN GAIT ADJUSTMENT RL MODEL STANDARD ##########
 
 def run_gait_adjustment_standard(  # function to run gait adjustment RL model without images for all terrain
-        compiled_model,
+        model,
         input_layer,
         output_layer,
         commands,
@@ -122,14 +154,49 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
         acceleration,
         current_feet_positions
 ):
+    """
+    Run RL model with vision.
+    - model: OpenVINO compiled model
+    - input_layer, output_layer: OpenVINO layers
+    - commands: list of str
+    - frame: preprocessed np.ndarray (H, W) or (H, W, 1)
+    - speed, acceleration: scalars
+    - current_feet_positions: dict of dicts
+    Returns: target_positions, mid_positions
+    """
+    # --- Normalize/encode inputs ---
+    cmd_vec = encode_commands(commands)
+    speed_norm = normalize_scalar(speed, 0, 10)  # adjust min/max as needed
+    accel_norm = normalize_scalar(acceleration, 0, 255)  # adjust as needed
+    feet_vec = normalize_feet_positions(current_feet_positions, {'x':-0.2,'y':-0.2,'z':-0.2}, {'x':0.2,'y':0.2,'z':0.2})  # adjust min/max as needed
 
-    return None, None # placeholders for target_positions, mid_positions
+    # Flatten frame and normalize to [0,1]
+    frame_flat = frame.astype(np.float32) / 255.0
+    frame_flat = frame_flat.flatten()
+
+    # --- Assemble input ---
+    input_vec = np.concatenate([cmd_vec, [speed_norm, accel_norm], feet_vec, frame_flat])
+    input_vec = input_vec.reshape(1, -1)  # batch dimension
+
+    # --- Run inference ---
+    result = model([input_vec])[output_layer]
+    # Assume result shape: (1, 24) for 4 legs * 2 points * 3 coords
+
+    # --- Parse output ---
+    result = result.reshape(4, 2, 3)  # (leg, point, xyz)
+    legs = ['FL', 'FR', 'BL', 'BR']
+    target_positions = {}
+    mid_positions = {}
+    for i, leg in enumerate(legs):
+        mid_positions[leg] = {'x': result[i,0,0], 'y': result[i,0,1], 'z': result[i,0,2]}
+        target_positions[leg] = {'x': result[i,1,0], 'y': result[i,1,1], 'z': result[i,1,2]}
+    return target_positions, mid_positions
 
 
 ########## RUN GAIT ADJUSTMENT RL MODEL WITHOUT IMAGES ##########
 
 def run_gait_adjustment_blind( # function to run gait adjustment RL model without images for speedy processing
-        compiled_model,
+        model,
         input_layer,
         output_layer,
         commands,
@@ -137,8 +204,26 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         acceleration,
         current_feet_positions
 ):
+    """
+    Run RL model without vision.
+    """
+    cmd_vec = encode_commands(commands)
+    speed_norm = normalize_scalar(speed, 0, 10)
+    accel_norm = normalize_scalar(acceleration, 0, 255)
+    feet_vec = normalize_feet_positions(current_feet_positions, {'x':-0.2,'y':-0.2,'z':-0.2}, {'x':0.2,'y':0.2,'z':0.2})
 
-    return None, None # placeholders for target_positions, mid_positions
+    input_vec = np.concatenate([cmd_vec, [speed_norm, accel_norm], feet_vec])
+    input_vec = input_vec.reshape(1, -1)
+
+    result = model([input_vec])[output_layer]
+    result = result.reshape(4, 2, 3)
+    legs = ['FL', 'FR', 'BL', 'BR']
+    target_positions = {}
+    mid_positions = {}
+    for i, leg in enumerate(legs):
+        mid_positions[leg] = {'x': result[i,0,0], 'y': result[i,0,1], 'z': result[i,0,2]}
+        target_positions[leg] = {'x': result[i,1,0], 'y': result[i,1,1], 'z': result[i,1,2]}
+    return target_positions, mid_positions
 
 
 ########## RUN PERSON DETECTION CNN MODEL AND SHOW FRAME ##########

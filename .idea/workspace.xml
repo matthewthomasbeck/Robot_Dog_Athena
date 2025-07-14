@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made dummy functions for RL processing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/opencv.py" afterDir="false" />
@@ -121,7 +120,7 @@
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
-      <workItem from="1752411561255" duration="33480000" />
+      <workItem from="1752411561255" duration="37342000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -262,14 +261,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Changing debug level to info">
-      <option name="closed" value="true" />
-      <created>1751853050449</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1751853050449</updated>
     </task>
     <task id="LOCAL-00027" summary="Going to start key logic from website">
       <option name="closed" value="true" />
@@ -495,7 +486,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752517128709</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="Made dummy functions for RL processing">
+      <option name="closed" value="true" />
+      <created>1752518589714</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1752518589715</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -510,7 +509,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adjusted code to thread out inference and movement only when a command is detected (both to reduce lag and save electrical power from un-needed inference)" />
     <MESSAGE value="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
     <MESSAGE value="Made logging a little less annoying" />
     <MESSAGE value="better logging for moving forward" />
@@ -535,7 +533,8 @@
     <MESSAGE value="Complex commands now implemented" />
     <MESSAGE value="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work" />
     <MESSAGE value="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running" />
-    <option name="LAST_COMMIT_MESSAGE" value="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running" />
+    <MESSAGE value="Made dummy functions for RL processing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made dummy functions for RL processing" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

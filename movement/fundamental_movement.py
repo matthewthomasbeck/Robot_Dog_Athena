@@ -29,6 +29,7 @@ from utilities.mathematics import * # import all mathematical functions
 ##### import necessary libraries #####
 
 import time # import time for proper leg sequencing
+import threading # import threading for thread management
 
 ##### import from config #####
 
@@ -41,6 +42,7 @@ from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG # import whether to us
 
 k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic functions
 if RL_NOT_CNN:
+    # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
     STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['STANDARD_RL_PATH'])
     BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['BLIND_RL_PATH'])
 elif not RL_NOT_CNN:
@@ -102,9 +104,11 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
         if RL_NOT_CNN: # if running gait adjustment (production)...
 
+            ##### run RL model(s) #####
+
             if not imageless_gait: # if not using imageless gait adjustment...
 
-                target_positions, mid_positions = run_gait_adjustment_standard(
+                target_positions, mid_positions = run_gait_adjustment_standard( # use RL model with image support
                     STANDARD_RL_MODEL,
                     STANDARD_INPUT_LAYER,
                     STANDARD_OUTPUT_LAYER,
@@ -117,7 +121,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
             else: # if using imageless gait adjustment...
 
-                target_positions, mid_positions = run_gait_adjustment_blind(
+                target_positions, mid_positions = run_gait_adjustment_blind( # use blind RL model for speedy processing
                     BLIND_RL_MODEL,
                     BLIND_INPUT_LAYER,
                     BLIND_OUTPUT_LAYER,
@@ -126,6 +130,20 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                     acceleration,
                     config.CURRENT_FEET_POSITIONS,
                 )
+
+            ##### move legs #####
+
+            leg_threads = []
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                t = threading.Thread(target=swing_leg, args=(leg_id, target_positions[leg_id], mid_positions[leg_id], speed, acceleration))
+                leg_threads.append(t)
+                t.start()
+            for t in leg_threads:
+                t.join()  # Wait for all legs to finish
+
+            # Now all legs are done, update CURRENT_FEET_POSITIONS
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                config.CURRENT_FEET_POSITIONS[leg_id] = target_positions[leg_id].copy()
 
         else: # if running person detection (testing)...
             run_person_detection(
@@ -153,69 +171,21 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
 ########## SET LEG PHASE ##########
 
-def set_leg_phase_NEW(leg_id, state, speed, acceleration):
-
-    if not state.get('FORWARD', False):
-        return
-
-    gait_states = {
-        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE,
-        'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
-    }
-    swing_positions = {
-        'FL': config.FL_SWING, 'FR': config.FR_SWING,
-        'BL': config.BL_SWING, 'BR': config.BR_SWING
-    }
-    touchdown_positions = {
-        'FL': config.FL_TOUCHDOWN, 'FR': config.FR_TOUCHDOWN,
-        'BL': config.BL_TOUCHDOWN, 'BR': config.BR_TOUCHDOWN
-    }
-    midstance_positions = {
-        'FL': config.FL_MIDSTANCE, 'FR': config.FR_MIDSTANCE,
-        'BL': config.BL_MIDSTANCE, 'BR': config.BR_MIDSTANCE
-    }
-    neutral_positions = {
-        'FL': config.FL_NEUTRAL, 'FR': config.FR_NEUTRAL,
-        'BL': config.BL_NEUTRAL, 'BR': config.BR_NEUTRAL
-    }
-    tippytoes_positions = {
-        'FL': config.FL_TIPPYTOES, 'FR': config.FR_TIPPYTOES,
-        'BL': config.BL_TIPPYTOES, 'BR': config.BR_TIPPYTOES
-    }
-    stance_positions = {
-        'FL': config.FL_STANCE, 'FR': config.FR_STANCE,
-        'BL': config.BL_STANCE, 'BR': config.BR_STANCE
-    }
-
-    gait_state = gait_states[leg_id]
-    phase = gait_state['phase']
+def swing_leg(leg_id, target_point, mid_point, speed, acceleration):
 
     try:
-
-        if phase == 'stance':
-
-            # Begin new cycle: lift foot into swing
-            move_foot_to_pos(leg_id, swing_positions[leg_id], speed, acceleration, use_bezier=True)
-            time.sleep(0.2)
-            move_foot_to_pos(leg_id, touchdown_positions[leg_id], speed, acceleration, use_bezier=True)
-            gait_state['phase'] = 'swing'
-
-        elif phase == 'swing':
-            # Final phase: move foot into full stance
-            move_foot_to_pos(leg_id, tippytoes_positions[leg_id], speed, acceleration, use_bezier=False)
-            time.sleep(0.2)
-            move_foot_to_pos(leg_id, stance_positions[leg_id], speed, acceleration, use_bezier=False)
-            gait_state['phase'] = 'stance'
-
-        gait_state['returned_to_neutral'] = False
+        move_foot_to_pos(leg_id, mid_point, speed, acceleration, use_bezier=True)
+        time.sleep(0.2)
+        move_foot_to_pos(leg_id, target_point, speed, acceleration, use_bezier=True)
+        time.sleep(0.2)
 
     except Exception as e:
-        logging.error(f"(fundamental_movement.py): Failed gait move for {leg_id} in phase {phase}: {e}\n")
+        logging.error(f"(fundamental_movement.py): Failed to swing leg: {e}\n")
 
 
 ########## MOVE FOOT FUNCTION ##########
 
-def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier=False):
+def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier):
     if use_bezier:
         p0 = get_neutral_positions(leg_id)
         p2 = {
@@ -237,11 +207,11 @@ def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier=False):
         )
 
         for x, y, z in curve:
-            move_leg(leg_id, x, y, z, speed, acceleration)
+            move_foot(leg_id, x, y, z, speed, acceleration)
             # TODO: test adding time.sleep here
 
     else:
-        move_leg(
+        move_foot(
             leg_id,
             x=pos['x'],
             y=pos['y'],
@@ -253,7 +223,7 @@ def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier=False):
 
 ########## MOVE LEG FUNCTION ##########
 
-def move_leg(leg_id, x, y, z, speed, acceleration):
+def move_foot(leg_id, x, y, z, speed, acceleration):
     hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
     hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
 
@@ -349,17 +319,17 @@ def adjustBL_Z(up=True, delta=0.005):
 
 def _applyFootPosition():
     x, y, z = config.FL_TUNE['x'], config.FL_TUNE['y'], config.FL_TUNE['z']
-    move_leg('FL', x, y, z, speed=16383, acceleration=255)
+    move_foot('FL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
 def _applyFootPositionBR():
     x, y, z = config.BR_TUNE['x'], config.BR_TUNE['y'], config.BR_TUNE['z']
-    move_leg('BR', x, y, z, speed=16383, acceleration=255)
+    move_foot('BR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BR foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
 def _applyFootPositionFR():
     x, y, z = config.FR_TUNE['x'], config.FR_TUNE['y'], config.FR_TUNE['z']
-    move_leg('FR', x, y, z, speed=16383, acceleration=255)
+    move_foot('FR', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → FR foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
 def _applyFootPositionBL():
     x, y, z = config.BL_TUNE['x'], config.BL_TUNE['y'], config.BL_TUNE['z']
-    move_leg('BL', x, y, z, speed=16383, acceleration=255)
+    move_foot('BL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
