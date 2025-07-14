@@ -517,19 +517,26 @@ function sendRobotCommand(command) {
 }
 
 // --- KEYBOARD CONTROL: Track all pressed keys and send as a set ---
-
 let pressedKeys = new Set();
+let keyInterval = null;
+
+function sendCurrentKeys() {
+  if (robotConnected && isActiveController) {
+    if (pressedKeys.size > 0) {
+      sendRobotCommand(Array.from(pressedKeys).join('+'));
+    } else {
+      sendRobotCommand('n');
+    }
+  }
+}
 
 document.addEventListener('keydown', function(event) {
   if (!robotConnected || !isActiveController) return;
   const key = event.key.toLowerCase();
-  // Only track relevant keys
   if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' '].includes(key)) {
-    const beforeSize = pressedKeys.size;
     pressedKeys.add(key);
-    // Only send if the set changed (prevents spamming on key repeat)
-    if (pressedKeys.size !== beforeSize) {
-      sendRobotCommand(Array.from(pressedKeys).join('+'));
+    if (!keyInterval) {
+      keyInterval = setInterval(sendCurrentKeys, 100); // Send every 100ms while keys are held
     }
     event.preventDefault();
   }
@@ -542,8 +549,8 @@ document.addEventListener('keyup', function(event) {
     pressedKeys.delete(key);
     if (pressedKeys.size === 0) {
       sendRobotCommand('n');
-    } else {
-      sendRobotCommand(Array.from(pressedKeys).join('+'));
+      clearInterval(keyInterval);
+      keyInterval = null;
     }
   }
 });

@@ -91,7 +91,9 @@ def move_direction(direction, frame, intensity): # function to trot forward
 
     ##### run inference before moving ###
 
-    logging.debug(f"(fundamental_movement.py): Running inference for command: {direction}:{intensity}...\n")
+    logging.debug(
+        f"(fundamental_movement.py): Running inference for command {direction} with intensity {intensity}...\n"
+    )
 
     try:
         run_inference(
@@ -101,7 +103,7 @@ def move_direction(direction, frame, intensity): # function to trot forward
             frame,
             run_inference=False
         )
-        logging.info(f"(fundamental_movement.py): Ran inference for command: {direction}:{intensity}\n")
+        logging.info(f"(fundamental_movement.py): Ran inference for command {direction} with intensity {intensity}\n")
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to run inference for command: {e}\n")
 
