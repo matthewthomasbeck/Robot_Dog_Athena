@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got radio commands reintegrated (but still need to fix the invisible command queue bug)">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Adding IS_COMPLETE to solve 'ghost queue' bug">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +119,7 @@
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
-      <workItem from="1752411561255" duration="15896000" />
+      <workItem from="1752411561255" duration="16579000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -258,14 +260,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00021" summary="Edited backend connection to new self-hosted backend">
-      <option name="closed" value="true" />
-      <created>1751469004112</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1751469004112</updated>
     </task>
     <task id="LOCAL-00022" summary="Edited backend connection to new self-hosted backend">
       <option name="closed" value="true" />
@@ -491,7 +485,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752451543522</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Adding IS_COMPLETE to solve 'ghost queue' bug">
+      <option name="closed" value="true" />
+      <created>1752452306482</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1752452306483</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -506,7 +508,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adjusted internet to close bad sockets" />
     <MESSAGE value="Changing debug level to info" />
     <MESSAGE value="Going to start key logic from website" />
     <MESSAGE value="Adjusted run_inference to separate inference and frame decoding, moving decoding logic to camera.py; adjusted control_logic.py from camera-&gt;cv2-&gt;stream to camera-&gt;stream-&gt;cv2" />
@@ -531,7 +532,8 @@
     <MESSAGE value="Going to massively upgrade control system, starting with keyboards and not testing move_direction yet until the keyboard commands completely work" />
     <MESSAGE value="Getting rid of ssh control client, its been deprecated for weeks now" />
     <MESSAGE value="Got radio commands reintegrated (but still need to fix the invisible command queue bug)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got radio commands reintegrated (but still need to fix the invisible command queue bug)" />
+    <MESSAGE value="Adding IS_COMPLETE to solve 'ghost queue' bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding IS_COMPLETE to solve 'ghost queue' bug" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

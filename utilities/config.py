@@ -34,10 +34,10 @@ import logging # import logging library for debugging
 
 ########## UTILITY CONFIGURATIONS ##########
 
-##### set global constant that are independent #####
+##### set global fps to be used by all modules #####
 
-LOOP_RATE_HZ = 30 # actions per second for all modules, default value 30
-DEFAULT_INTENSITY = 5 # represents speed/acceleration from 1-10
+LOOP_RATE_HZ = 30 # actions per second for all modules, default: 30
+DEFAULT_INTENSITY = 7 # default intensity for keyboard commands from 1-10
 
 ##### set logging configuration #####
 
