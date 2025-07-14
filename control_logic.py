@@ -26,12 +26,12 @@ from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
 from utilities.camera import initialize_camera, decode_frame  # import to start camera logic
 import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
+import utilities.config as config  # import config for DEFAULT_INTENSITY
 
 ##### import movement functions #####
 
 from movement.fundamental_movement import *  # import fundamental movement functions
 from movement.standing.standing import *  # import standing functions
-#from movement.walking.forward import *  # import walking functions
 
 ########## CREATE DEPENDENCIES ##########
 
@@ -177,7 +177,7 @@ def _handle_command(command, frame):
     if MODE == 'radio':
         try:
             logging.debug(f"(control_logic.py): Executing radio commands: {command}...\n")
-            IS_NEUTRAL, CURRENT_LEG = _execute_radio_commands_multi(
+            IS_NEUTRAL, CURRENT_LEG = _execute_radio_commands(
                 command,  # command should be the full commands dict from interpret_commands
                 frame,
                 IS_NEUTRAL,
@@ -217,44 +217,48 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
     # keys: list of pressed keys, e.g. ['w', 'd', 'arrowup']
 
     if not tune_mode:
+        # Cancel out contradictory keys
+        if 'w' in keys and 's' in keys:
+            keys = [k for k in keys if k not in ['w', 's']]
+        if 'a' in keys and 'd' in keys:
+            keys = [k for k in keys if k not in ['a', 'd']]
+        if 'arrowleft' in keys and 'arrowright' in keys:
+            keys = [k for k in keys if k not in ['arrowleft', 'arrowright']]
+        if 'arrowup' in keys and 'arrowdown' in keys:
+            keys = [k for k in keys if k not in ['arrowup', 'arrowdown']]
+
         # Movement direction logic
         direction = None
 
         # Movement (WASD and diagonals)
         if 'w' in keys and 'd' in keys:
-            direction = 'FORWARD_RIGHT'
+            direction = 'w+d'
         elif 'w' in keys and 'a' in keys:
-            direction = 'FORWARD_LEFT'
+            direction = 'w+a'
         elif 's' in keys and 'd' in keys:
-            direction = 'BACKWARD_RIGHT'
+            direction = 's+d'
         elif 's' in keys and 'a' in keys:
-            direction = 'BACKWARD_LEFT'
+            direction = 's+a'
         elif 'w' in keys:
-            direction = 'FORWARD'
+            direction = 'w'
         elif 's' in keys:
-            direction = 'BACKWARD'
+            direction = 's'
         elif 'a' in keys:
-            direction = 'LEFT'
+            direction = 'a'
         elif 'd' in keys:
-            direction = 'RIGHT'
+            direction = 'd'
 
         # Rotation (arrow keys)
-        if 'arrowleft' in keys and 'arrowright' in keys:
-            # Cancel out, do nothing
-            pass
-        elif 'arrowleft' in keys:
-            direction = 'ROTATE_LEFT'
+        if 'arrowleft' in keys:
+            direction = 'arrowleft'
         elif 'arrowright' in keys:
-            direction = 'ROTATE_RIGHT'
+            direction = 'arrowright'
 
         # Tilt (arrow up/down)
-        if 'arrowup' in keys and 'arrowdown' in keys:
-            # Cancel out, do nothing
-            pass
-        elif 'arrowup' in keys:
-            direction = 'TILT_UP'
+        if 'arrowup' in keys:
+            direction = 'arrowup'
         elif 'arrowdown' in keys:
-            direction = 'TILT_DOWN'
+            direction = 'arrowdown'
 
         # Neutral and special actions
         if 'n' in keys or not keys:
@@ -274,49 +278,77 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
             logging.warning(f"(control_logic.py): Invalid command: {keys}\n")
 
     else:
-        # Tuning mode (unchanged, but now keys is a list)
+        # Tuning mode - handle individual key actions
         for key in keys:
-            # ... (your tuning logic here, similar to before)
-            pass
+            if key in ADJUSTMENT_FUNCS.get(current_leg, {}):
+                try:
+                    ADJUSTMENT_FUNCS[current_leg][key]()
+                    logging.debug(f"(control_logic.py): Tuning {current_leg} with {key}\n")
+                except Exception as e:
+                    logging.error(f"(control_logic.py): Failed to adjust {current_leg} with {key}: {e}\n")
+            elif key == 'q':
+                # Switch to next leg
+                legs = ['FL', 'FR', 'BL', 'BR']
+                current_index = legs.index(current_leg)
+                current_leg = legs[(current_index + 1) % len(legs)]
+                logging.info(f"(control_logic.py): Switched to leg: {current_leg}\n")
+            elif key == 'e':
+                # Switch to previous leg
+                legs = ['FL', 'FR', 'BL', 'BR']
+                current_index = legs.index(current_leg)
+                current_leg = legs[(current_index - 1) % len(legs)]
+                logging.info(f"(control_logic.py): Switched to leg: {current_leg}\n")
 
     return is_neutral, current_leg
 
 
 ##### radio commands for multi-channel processing #####
 
-def _execute_radio_commands_multi(commands, frame, is_neutral, current_leg, tune_mode):
+def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode):
     # commands: dict of channel states, e.g. {'channel_5': ('MOVE_FORWARD', 8), 'channel_6': ('SHIFT_LEFT', 5)}
-    
+
     if not tune_mode:
         # Extract active commands (non-neutral)
-        active_commands = {channel: (action, intensity) for channel, (action, intensity) in commands.items() 
+        active_commands = {channel: (action, intensity) for channel, (action, intensity) in commands.items()
                           if action != 'NEUTRAL'}
-        
+
         if not active_commands:
             # All channels neutral, return to neutral position
             logging.info(f"(control_logic.py): All channels neutral, returning to neutral position\n")
             neutral_position(10)
             is_neutral = True
             return is_neutral, current_leg
-        
+
+        # Cancel out contradictory commands (similar to keyboard logic)
+        # Check for contradictory movement commands
+        move_actions = []
+        for channel in ['channel_5', 'channel_6']:
+            if channel in active_commands:
+                action = active_commands[channel][0]
+                if 'MOVE' in action or 'SHIFT' in action:
+                    move_actions.append((channel, action))
+
+        # Remove contradictory movements (this is handled by the direction logic below)
+        # Instead, we'll prioritize based on intensity and handle in direction determination
+
         # Determine primary direction and intensity
         direction = None
         max_intensity = 0
-        
+
         # Movement combinations (channels 5 and 6)
         move_forward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE FORWARD'
         move_backward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE BACKWARD'
         shift_left = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT LEFT'
         shift_right = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT RIGHT'
-        
+
         # Rotation (channel 3)
         rotate_left = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE LEFT'
         rotate_right = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE RIGHT'
-        
+
         # Tilt (channel 4)
         tilt_up = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT UP'
         tilt_down = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT DOWN'
-        
+
         # Special actions (channels 0, 1, 2, 7)
         look_up = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK UP'
         look_down = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK DOWN'
@@ -325,253 +357,103 @@ def _execute_radio_commands_multi(commands, frame, is_neutral, current_leg, tune
         squat_up = active_commands.get('channel_2', ('NEUTRAL', 0))[0] == 'SQUAT UP'
         plus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '+'
         minus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '-'
-        
-        # Handle diagonal movements
+
+        # Build complex direction string for computer-friendly parsing
+        direction_parts = []
+
+        # Handle diagonal movements (combine channels 5 and 6)
         if move_forward and shift_left:
-            direction = 'FORWARD_LEFT'
+            direction_parts.append('w+a')
             max_intensity = max(
                 active_commands.get('channel_5', ('NEUTRAL', 0))[1],
                 active_commands.get('channel_6', ('NEUTRAL', 0))[1]
             )
         elif move_forward and shift_right:
-            direction = 'FORWARD_RIGHT'
+            direction_parts.append('w+d')
             max_intensity = max(
                 active_commands.get('channel_5', ('NEUTRAL', 0))[1],
                 active_commands.get('channel_6', ('NEUTRAL', 0))[1]
             )
         elif move_backward and shift_left:
-            direction = 'BACKWARD_LEFT'
+            direction_parts.append('s+a')
             max_intensity = max(
                 active_commands.get('channel_5', ('NEUTRAL', 0))[1],
                 active_commands.get('channel_6', ('NEUTRAL', 0))[1]
             )
         elif move_backward and shift_right:
-            direction = 'BACKWARD_RIGHT'
+            direction_parts.append('s+d')
             max_intensity = max(
                 active_commands.get('channel_5', ('NEUTRAL', 0))[1],
                 active_commands.get('channel_6', ('NEUTRAL', 0))[1]
             )
         # Handle single movements
         elif move_forward:
-            direction = 'FORWARD'
+            direction_parts.append('w')
             max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
         elif move_backward:
-            direction = 'BACKWARD'
+            direction_parts.append('s')
             max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
         elif shift_left:
-            direction = 'LEFT'
+            direction_parts.append('a')
             max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
         elif shift_right:
-            direction = 'RIGHT'
+            direction_parts.append('d')
             max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
-        # Handle rotation
-        elif rotate_left:
-            direction = 'ROTATE_LEFT'
-            max_intensity = active_commands.get('channel_3', ('NEUTRAL', 0))[1]
+
+        # Handle rotation (can combine with movement)
+        if rotate_left:
+            direction_parts.append('arrowleft')
+            max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
         elif rotate_right:
-            direction = 'ROTATE_RIGHT'
-            max_intensity = active_commands.get('channel_3', ('NEUTRAL', 0))[1]
-        # Handle tilt
-        elif tilt_up:
-            direction = 'TILT_UP'
-            max_intensity = active_commands.get('channel_4', ('NEUTRAL', 0))[1]
+            direction_parts.append('arrowright')
+            max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
+
+        # Handle tilt (can combine with movement and rotation)
+        if tilt_up:
+            direction_parts.append('arrowup')
+            max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
         elif tilt_down:
-            direction = 'TILT_DOWN'
-            max_intensity = active_commands.get('channel_4', ('NEUTRAL', 0))[1]
-        # Handle special actions
-        elif look_up:
-            logging.info(f"(control_logic.py): LOOK UP\n")
-            # TODO: Implement look up action
-            is_neutral = False
+            direction_parts.append('arrowdown')
+            max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
+
+        # Handle special actions (these don't add to direction but are logged)
+        special_actions = []
+        if look_up:
+            special_actions.append('LOOK_UP')
         elif look_down:
-            logging.info(f"(control_logic.py): LOOK DOWN\n")
-            # TODO: Implement look down action
-            is_neutral = False
-        elif trigger_shoot:
-            logging.info(f"(control_logic.py): TRIGGER SHOOT\n")
-            # TODO: Implement trigger shoot action
-            is_neutral = False
-        elif squat_down:
-            logging.info(f"(control_logic.py): SQUAT DOWN\n")
-            squatting_position(1)
-            is_neutral = False
+            special_actions.append('LOOK_DOWN')
+        if trigger_shoot:
+            special_actions.append('TRIGGER_SHOOT')
+        if squat_down:
+            special_actions.append('SQUAT_DOWN')
         elif squat_up:
-            logging.info(f"(control_logic.py): SQUAT UP\n")
-            neutral_position(10)
-            is_neutral = True
-        elif plus_action:
-            logging.info(f"(control_logic.py): PLUS ACTION\n")
-            # TODO: Implement plus action
-            is_neutral = False
+            special_actions.append('SQUAT_UP')
+        if plus_action:
+            special_actions.append('PLUS')
         elif minus_action:
-            logging.info(f"(control_logic.py): MINUS ACTION\n")
-            # TODO: Implement minus action
-            is_neutral = False
-        
-        # Execute movement if direction determined
-        if direction:
+            special_actions.append('MINUS')
+
+        # Combine all direction parts
+        if direction_parts:
+            direction = '+'.join(direction_parts)
             logging.info(f"(control_logic.py): Radio commands {active_commands}: {direction} (intensity: {max_intensity})\n")
+            if special_actions:
+                logging.info(f"(control_logic.py): Special actions: {special_actions}\n")
             move_direction(direction, frame, max_intensity)
             is_neutral = False
-    
-    else:
-        # Tuning mode - handle individual channel actions
-        for channel, (action, intensity) in active_commands.items():
-            # TODO: Implement tuning mode logic for radio commands
-            logging.debug(f"(control_logic.py): Tuning mode - {channel}: {action} (intensity: {intensity})\n")
-    
+        elif special_actions:
+            # Only special actions, no movement
+            logging.info(f"(control_logic.py): Special actions only: {special_actions}\n")
+            # Handle special actions here
+            if 'SQUAT_DOWN' in special_actions:
+                squatting_position(1)
+                is_neutral = False
+            elif 'SQUAT_UP' in special_actions:
+                neutral_position(10)
+                is_neutral = True
+            # TODO: Implement other special actions
+
     return is_neutral, current_leg
-
-
-########## INTERPRET COMMANDS ##########
-
-# function to interpret commands from channel data and do things
-def _execute_radio_commands(channel, action, frame, intensity, is_neutral):
-
-    ##### squat channel 2 #####
-
-    if channel == 'channel_2':
-        if action == 'NEUTRAL' or action == 'SQUAT DOWN':
-            if action == 'SQUAT DOWN':
-                # TODO I can hand-do this
-                pass
-        elif action == 'SQUAT UP': # returns to neutral
-            # TODO I can hand-do this
-            pass
-
-    ##### tilt channel 0 #####
-
-    if channel == 'channel_0':
-        if action == 'LOOK DOWN':
-            # logging.info(f"(control_logic.py): {channel}:{action}\n")
-            # TODO I can hand-do this
-            pass
-        elif action == 'LOOK UP':
-            # logging.info(f"(control_logic.py): {channel}:{action}\n")
-            # TODO I can hand-do this
-            pass
-
-    ##### trigger channel 1 #####
-
-    elif channel == 'channel_1':
-        if action == 'TRIGGER SHOOT':
-            # logging.info(f"(control_logic.py): {channel}:{action}\n")
-            # TODO no hardware support for this yet
-            pass
-
-    ##### rotation channel 3 #####
-
-    elif channel == 'channel_3':
-
-        if action == 'ROTATE LEFT':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('ROTATE LEFT', frame, intensity)
-                is_neutral = False
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to rotate left in executeCommands: {e}\n")
-
-        elif action == 'NEUTRAL':
-            is_neutral = True
-
-        elif action == 'ROTATE RIGHT':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('ROTATE RIGHT', frame, intensity)
-                is_neutral = False
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to rotate right in executeCommands: {e}\n")
-
-    ##### look channel 4 #####
-
-    elif channel == 'channel_4':
-
-        if action == 'TILT DOWN':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('TILT DOWN', frame, intensity)
-                is_neutral = False
-                pass
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to look down in executeCommands: {e}\n")
-
-        elif action == 'NEUTRAL':
-            is_neutral = True
-            pass
-
-        elif action == 'TILT UP':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('TILT UP', frame, intensity)
-                is_neutral = False
-                pass
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to look up in executeCommands: {e}\n")
-
-    ##### move channel 5 #####
-
-    elif channel == 'channel_5':
-
-        if action == 'MOVE FORWARD':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('MOVE FORWARD', frame, intensity)
-                is_neutral = False
-
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to move forward in executeCommands: {e}\n")
-
-        elif action == 'NEUTRAL':
-            try:
-                if is_neutral == False:
-                    neutral_position(10)
-                    is_neutral = True
-            except Exception as e:
-                logging.error(
-                    f"(control_logic.py): Failed to move to neutral standing position in executeCommands: {e}\n")
-
-        elif action == 'MOVE BACKWARD':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('MOVE BACKWARD', frame, intensity)
-                is_neutral = False
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to move backward in executeCommands: {e}\n")
-
-    ##### shift channel 6 #####
-
-    elif channel == 'channel_6':
-
-        if action == 'SHIFT LEFT':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('SHIFT LEFT', frame, intensity)
-                is_neutral = False
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to shift left in executeCommands: {e}\n")
-
-        elif action == 'NEUTRAL':
-            is_neutral = True
-
-        elif action == 'SHIFT RIGHT':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-            try:
-                move_direction('SHIFT RIGHT', frame, intensity)
-                is_neutral = False
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to shift right in executeCommands: {e}\n")
-
-    ##### extra channel 7 #####
-
-    elif channel == 'channel_7':
-        if action == '+':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-        elif action == '-':
-            logging.info(f"(control_logic.py): {channel}:{action}\n")
-
-    ##### update is neutral standing #####
-
-    return is_neutral  # return neutral standing boolean for position awareness
 
 
 ########## EXECUTE KEYBOARD COMMANDS ##########
