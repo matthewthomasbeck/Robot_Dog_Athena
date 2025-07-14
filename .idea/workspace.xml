@@ -4,13 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Complex commands now implemented">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/opencv.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +120,7 @@
       <workItem from="1752342860828" duration="9000" />
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
-      <workItem from="1752411561255" duration="30533000" />
+      <workItem from="1752411561255" duration="31866000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -263,14 +261,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00024" summary="adjusted internet to close bad sockets">
-      <option name="closed" value="true" />
-      <created>1751502089117</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1751502089118</updated>
     </task>
     <task id="LOCAL-00025" summary="adjusted internet to close bad sockets">
       <option name="closed" value="true" />
@@ -496,7 +486,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752458883331</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work">
+      <option name="closed" value="true" />
+      <created>1752515024013</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1752515024013</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -511,7 +509,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adjusted run_inference to separate inference and frame decoding, moving decoding logic to camera.py; adjusted control_logic.py from camera-&gt;cv2-&gt;stream to camera-&gt;stream-&gt;cv2" />
     <MESSAGE value="Added threading to separate camera to streaming pipeline from inference and movement" />
     <MESSAGE value="Adjusted code to thread out inference and movement only when a command is detected (both to reduce lag and save electrical power from un-needed inference)" />
     <MESSAGE value="Threading works to separate (working) command, cv2, movement logic from camera, stream process" />
@@ -536,7 +533,8 @@
     <MESSAGE value="Adding IS_COMPLETE to solve 'ghost queue' bug" />
     <MESSAGE value="Multi-part commands now working for both radio and keyboard commands" />
     <MESSAGE value="Complex commands now implemented" />
-    <option name="LAST_COMMIT_MESSAGE" value="Complex commands now implemented" />
+    <MESSAGE value="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

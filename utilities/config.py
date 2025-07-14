@@ -50,13 +50,13 @@ LOG_CONFIG = {
 
 ##### set camera configuration #####
 
-CAMERA_CONFIG = {
+CAMERA_CONFIG = { # TODO BE VERY CAREFUL WITH OUTPUT WIDTHxHEIGHT! Remember, the height gets cut in half via 0.5 crop!
     'WIDTH': 640, # width of the camera image
     'HEIGHT': 480, # height of the camera image
     'FRAME_RATE': 30, # frame rate of the camera in frames per second
     'CROP_FRACTION': 0.5, # fraction of the image to crop from each side (0.0 to 1.0)
-    'OUTPUT_WIDTH': 640, # width of the ML image
-    'OUTPUT_HEIGHT': 480, # height of the image for ML inference
+    'OUTPUT_WIDTH': 128, # width of the ML image
+    'OUTPUT_HEIGHT': 48, # height of the image for ML inference
 }
 
 ##### set inference configuration #####

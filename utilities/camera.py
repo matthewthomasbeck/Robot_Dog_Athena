@@ -138,25 +138,22 @@ def decode_frame(camera_process, mjpeg_buffer):
             streamed_frame = mjpeg_buffer[start_idx:end_idx + 2]
             mjpeg_buffer = mjpeg_buffer[end_idx + 2:]
 
-            ##### gait adjustment #####
+            # Decode JPEG to image first
+            inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
 
-            if RL_NOT_CNN: # if running RL model for movement...
+            if RL_NOT_CNN:  # if running RL model for movement...
                 # 1. Crop
                 h = inference_frame.shape[0]
                 crop_start = int(h * (1 - CAMERA_CONFIG['CROP_FRACTION']))
                 cropped = inference_frame[crop_start:, :, :]
                 # 2. Grayscale
-                gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+                gray_frame = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
                 # 3. Resize
                 output_size = (CAMERA_CONFIG['OUTPUT_WIDTH'], CAMERA_CONFIG['OUTPUT_HEIGHT'])
-                resized = cv2.resize(gray, output_size)
-                inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
-                return mjpeg_buffer, streamed_frame, inference_frame
+                resized_frame = cv2.resize(gray_frame, output_size)
+                return mjpeg_buffer, streamed_frame, resized_frame
 
-            ##### person detection #####
-
-            elif not RL_NOT_CNN: # if testing with basic CNN...
-                inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
+            else:  # CNN or other use
                 return mjpeg_buffer, streamed_frame, inference_frame
 
         if len(mjpeg_buffer) > 65536: # if buffer overflow...

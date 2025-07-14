@@ -216,7 +216,13 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
     if not tune_mode:
-        # Cancel out contradictory keys
+
+        if 'i' in keys: # if user wishes to enable/disable imageless gait...
+            IMAGELESS_GAIT = not IMAGELESS_GAIT # toggle imageless gait mode
+            logging.warning(f"(control_logic.py): Toggled IMAGELESS_GAIT to {IMAGELESS_GAIT}\n")
+            keys = [k for k in keys if k != 'i'] # remove 'i' from the keys list
+
+        # cancel out contradictary keys
         if 'w' in keys and 's' in keys:
             keys = [k for k in keys if k not in ['w', 's']]
         if 'a' in keys and 'd' in keys:
@@ -309,7 +315,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
     global IMAGELESS_GAIT # set IMAGELESS_GAIT as global to switch between modes via button press
 
     # as radio is currently not reliable enough for individual button pressing, prevent image use and reserve radio as
-    # backup control
+    # backup control as model-switching is an expensive maneuver that should be avoided unless necessary
     IMAGELESS_GAIT = True
 
     if not tune_mode:
