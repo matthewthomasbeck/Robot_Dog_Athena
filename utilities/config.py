@@ -36,8 +36,10 @@ import logging # import logging library for debugging
 
 ##### set global fps to be used by all modules #####
 
-LOOP_RATE_HZ = 30 # actions per second for all modules, default: 30
-DEFAULT_INTENSITY = 7 # default intensity for keyboard commands from 1-10
+LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
+CONTROL_MODE = 'web' # current control mode of the robot (web or radio)
+RL_NOT_CNN: False  # boolean to switch between testing and RL models (true is RL, false is testing)
+DEFAULT_INTENSITY = 7 # default intensity for keyboard commands (1 to 10)
 
 ##### set logging configuration #####
 
@@ -50,14 +52,19 @@ LOG_CONFIG = {
 
 CAMERA_CONFIG = {
     'WIDTH': 640, # width of the camera image
-    'HEIGHT': 480 # height of the camera image
+    'HEIGHT': 480, # height of the camera image
+    'FRAME_RATE': 30, # frame rate of the camera in frames per second
+    'CROP_FRACTION': 0.5, # fraction of the image to crop from each side (0.0 to 1.0)
+    'OUTPUT_WIDTH': 640, # width of the ML image
+    'OUTPUT_HEIGHT': 480, # height of the image for ML inference
 }
 
 ##### set inference configuration #####
 
 INFERENCE_CONFIG = {
-    'MODEL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml", # DO NOT CHANGE
-    'TPU_NAME': "MYRIAD"  # literal device name in code
+    'TPU_NAME': "MYRIAD",  # literal device name in code
+    'RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/", # in-house RL model(s)
+    'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
 
 ##### declare movement channel GPIO pins #####
@@ -131,13 +138,24 @@ SERVO_CONFIG = { # dictionary of leg configurations
            'lower': {'servo': 9, 'FULL_FRONT': 2000.00, 'FULL_BACK': 1221.75, 'NEUTRAL': 1610.875, 'FULL_FRONT_ANGLE': 0.698, 'FULL_BACK_ANGLE': -0.698}},
 }
 
+##### set dictionary of feet current positions for the AI model #####
+
+CURRENT_FEET_POSITIONS = {
+    'FL': {'x': 0.0, 'y': 0.0, 'z': 0.0},
+    'FR': {'x': 0.0, 'y': 0.0, 'z': 0.0},
+    'BL': {'x': 0.0, 'y': 0.0, 'z': 0.0},
+    'RL': {'x': 0.0, 'y': 0.0, 'z': 0.0}
+}
 
 
 
 
-########################################################################
-############### CREATE EUCLIDEAN-BASED LEG CONFIGURATION ###############
-########################################################################
+
+#####################################################################################
+############### CREATE EUCLIDEAN-BASED LEG CONFIGURATION (HAND-TUNED) ###############
+#####################################################################################
+
+# TODO NOTE: THESE ARE ALL DEPRECATED AND ONLY USED IN HAND-TUNED MOVEMENTS
 
 
 ########## LEG PHASE CONFIG ##########

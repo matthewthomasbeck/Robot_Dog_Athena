@@ -18,14 +18,26 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import necessary libraries #####
+
 from openvino.runtime import Core # import OpenVINO runtime
 import numpy as np # import NumPy for array manipulation
 import cv2 # import OpenCV for image processing
 import logging # import logging for logging messages
 
-from utilities.config import INFERENCE_CONFIG
+##### import config #####
+
+from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG
 
 
+########## CREATE DEPENDENCIES ##########
+
+##### set model path #####
+
+if RL_NOT_CNN: # if using RL model (production)...
+    MODEL_PATH = INFERENCE_CONFIG['RL_PATH'] # path to gait adjustment model
+else: # if using CNN model (testing)...
+    MODEL_PATH = INFERENCE_CONFIG['CNN_PATH'] # path to person detection model
 
 
 
@@ -38,9 +50,8 @@ from utilities.config import INFERENCE_CONFIG
 
 # function to load and compile an OpenVINO model
 def load_and_compile_model(
-        model_xml_path=INFERENCE_CONFIG['MODEL_PATH'], # path to model XML file
-        device_name=INFERENCE_CONFIG['TPU_NAME'], # device name for inference (e.g., "CPU", "GPU", "MYRIAD", etc.)
-        enable_inference=True # <-- new argument
+        device_name=INFERENCE_CONFIG['TPU_NAME'], # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
+        enable_inference=True
 ):
 
     ##### clean up OpenCV windows from last run #####
@@ -62,8 +73,8 @@ def load_and_compile_model(
     try: # try to load and compile the model
 
         ie = Core() # check for devices
-        model_bin_path = model_xml_path.replace(".xml", ".bin") # get binary path from XML path (incase needed)
-        model = ie.read_model(model=model_xml_path) # read model from XML file
+        #model_bin_path = MODEL_PATH.replace(".xml", ".bin") # get binary path from XML path (incase needed)
+        model = ie.read_model(model=MODEL_PATH) # read model from XML file
         compiled_model = ie.compile_model(model=model, device_name=device_name) # compile model for specified device
         input_layer = compiled_model.input(0) # get input layer of compiled model
         output_layer = compiled_model.output(0) # get output layer of compiled model
@@ -110,12 +121,41 @@ def test_with_dummy_input(compiled_model, input_layer, output_layer): # function
         logging.error(f"(opencv.py): Dummy input test failed: {e}\n")
 
 
-########## RUN MODEL AND SHOW FRAME ##########
+########## RUN GAIT ADJUSTMENT RL MODEL STANDARD ##########
 
-def run_inference(compiled_model, input_layer, output_layer, frame, run_inference):
-    """
-    Runs inference on a decoded frame if requested, otherwise just displays it.
-    """
+def run_gait_adjustment_standard(  # function to run gait adjustment RL model without images for all terrain
+        compiled_model,
+        input_layer,
+        output_layer,
+        commands,
+        frame,
+        speed,
+        acceleration,
+        current_feet_positions
+):
+
+    return None, None # placeholders for target_positions, mid_positions
+
+
+########## RUN GAIT ADJUSTMENT RL MODEL WITHOUT IMAGES ##########
+
+def run_gait_adjustment_blind( # function to run gait adjustment RL model without images for speedy processing
+        compiled_model,
+        input_layer,
+        output_layer,
+        commands,
+        speed,
+        acceleration,
+        current_feet_positions
+):
+
+    return None, None # placeholders for target_positions, mid_positions
+
+
+########## RUN PERSON DETECTION CNN MODEL AND SHOW FRAME ##########
+
+def run_person_detection(compiled_model, input_layer, output_layer, frame, run_inference):
+
     if frame is None:
         logging.warning("(opencv.py): Frame is None.\n")
         return

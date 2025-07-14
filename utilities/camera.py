@@ -30,7 +30,7 @@ import cv2  # add cv2 for decoding frames
 
 ##### import config #####
 
-from utilities.config import LOOP_RATE_HZ, CAMERA_CONFIG # import config to get camera settings
+from utilities.config import CAMERA_CONFIG, RL_NOT_CNN # import config to get camera settings as well as model type
 
 
 
@@ -47,7 +47,7 @@ from utilities.config import LOOP_RATE_HZ, CAMERA_CONFIG # import config to get 
 def initialize_camera(
         width=CAMERA_CONFIG['WIDTH'],
         height=CAMERA_CONFIG['HEIGHT'],
-        frame_rate=LOOP_RATE_HZ
+        frame_rate=CAMERA_CONFIG['FRAME_RATE']
 ):
 
     ##### initialize camera by killing old processes and starting a new one #####
@@ -135,10 +135,29 @@ def decode_frame(camera_process, mjpeg_buffer):
         end_idx = mjpeg_buffer.find(b'\xff\xd9')
 
         if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-            frame_data = mjpeg_buffer[start_idx:end_idx + 2]
+            streamed_frame = mjpeg_buffer[start_idx:end_idx + 2]
             mjpeg_buffer = mjpeg_buffer[end_idx + 2:]
-            frame = cv2.imdecode(numpy.frombuffer(frame_data, dtype=numpy.uint8), cv2.IMREAD_COLOR)
-            return mjpeg_buffer, frame_data, frame
+
+            ##### gait adjustment #####
+
+            if RL_NOT_CNN: # if running RL model for movement...
+                # 1. Crop
+                h = inference_frame.shape[0]
+                crop_start = int(h * (1 - CAMERA_CONFIG['CROP_FRACTION']))
+                cropped = inference_frame[crop_start:, :, :]
+                # 2. Grayscale
+                gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+                # 3. Resize
+                output_size = (CAMERA_CONFIG['OUTPUT_WIDTH'], CAMERA_CONFIG['OUTPUT_HEIGHT'])
+                resized = cv2.resize(gray, output_size)
+                inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
+                return mjpeg_buffer, streamed_frame, inference_frame
+
+            ##### person detection #####
+
+            elif not RL_NOT_CNN: # if testing with basic CNN...
+                inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
+                return mjpeg_buffer, streamed_frame, inference_frame
 
         if len(mjpeg_buffer) > 65536: # if buffer overflow...
             mjpeg_buffer = b''

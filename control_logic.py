@@ -26,7 +26,7 @@ from utilities.log import initialize_logging  # import logging setup
 from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
 from utilities.camera import initialize_camera, decode_frame  # import to start camera logic
 import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
-import utilities.config as config  # import config for DEFAULT_INTENSITY
+from utilities.config import CONTROL_MODE, DEFAULT_INTENSITY  # import config for DEFAULT_INTENSITY
 
 ##### import movement functions #####
 
@@ -35,23 +35,22 @@ from movement.standing.standing import *  # import standing functions
 
 ########## CREATE DEPENDENCIES ##########
 
+##### set global variables #####
+
+IMAGELESS_GAIT = True  # set global variable for image-less gait
+IS_COMPLETE = True  # boolean that tracks if the robot is done moving, independent of it being neutral or not
+IS_NEUTRAL = False  # set global neutral standing boolean
+CURRENT_LEG = 'FL'  # set global current leg
+
 ##### initialize all utilities #####
 
 LOGGER = initialize_logging()  # set up logging
 CAMERA_PROCESS = initialize_camera()  # create camera process
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
-SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
-COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
-FRAME_QUEUE = queue.Queue(maxsize=1)
-
-##### create different control mode #####
-
-MODE = 'web'  # default mode is radio control, can be changed to 'radio' or 'web' for variable control
-IS_COMPLETE = True
-IS_NEUTRAL = False  # set global neutral standing boolean
-CURRENT_LEG = 'FL'  # set global current leg
-logging.info(f"(control_logic.py): IS_COMPLETE set to true.\n")
-logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # log start of script
+if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+    SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
+    COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+#FRAME_QUEUE = queue.Queue(maxsize=1)
 
 
 #########################################
@@ -63,10 +62,9 @@ logging.debug("(control_logic.py): Starting control_logic.py script...\n")  # lo
 
 def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
-    global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
-
     ##### set/initialize variables #####
 
+    global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG # declare as global as these will be edited by function
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
 
     ##### run robotic logic #####
@@ -75,8 +73,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
         squatting_position(1)
         time.sleep(3)
-        # tippytoes_position(1) TODO keep me commented out for now
-        # time.sleep(3) TODO me too
+        # tippytoes_position(1)
+        # time.sleep(3)
         neutral_position(1)
         time.sleep(3)
         IS_NEUTRAL = True  # set is_neutral to True
@@ -86,44 +84,46 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
         logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
+    ##### stream video, run inference, and control the robot #####
+
     try:  # try to run main robotic process
 
-        ##### stream video, run inference, and control the robot #####
+        while True:  # central loop to entire process, commenting out of importance
 
-        while True:
-            mjpeg_buffer, frame_data, frame = decode_frame(CAMERA_PROCESS, mjpeg_buffer)
-            internet.stream_to_backend(SOCK, frame_data)  # stream frame data to ec2 instance
-            command = None
+            # returns visual parameters, can choose to run the RL model or the CNN model for testing in config
+            mjpeg_buffer, streamed_frame, inference_frame = decode_frame(
+                CAMERA_PROCESS,
+                mjpeg_buffer
+            )
+            command = None # initially no command
 
-            if MODE == 'web' and COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
-                command = COMMAND_QUEUE.get()
-                if IS_COMPLETE: # if movement is complete, run command
-                    logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
-                else:
-                    logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL BLOCK).\n")
+            if config.CONTROL_MODE == 'web': # if web control enabled...
+                internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
 
-            # LEGACY RADIO COMMAND CODE, UNDER NO CIRCUMSTANCES REMOVE WHATSOEVER (I will get around to renewing radio support for override system)
-            #if MODE == 'radio':
-                #commands = interpret_commands(CHANNEL_DATA)
-                #for channel, (action, intensity) in commands.items():
-                    #is_neutral = _execute_radio_commands(channel, action, intensity, is_neutral)
+                # if command queue is not empty, get command from queue
+                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
+                    command = COMMAND_QUEUE.get()
+                    if IS_COMPLETE: # if movement is complete, run command
+                        logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
+                    else:
+                        logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL BLOCK).\n")
 
             # NEW MULTI-CHANNEL RADIO COMMAND SYSTEM
-            if MODE == 'radio':
+            if config.CONTROL_MODE == 'radio':
                 commands = interpret_commands(CHANNEL_DATA)
                 if IS_COMPLETE:  # if movement is complete, process radio commands
                     logging.debug(f"(control_logic.py): Processing radio commands: {commands}\n")
-                    threading.Thread(target=_handle_command, args=(commands, frame), daemon=True).start()
+                    threading.Thread(target=_handle_command, args=(commands, inference_frame), daemon=True).start()
 
             # WEB COMMAND HANDLING
             if command and IS_COMPLETE: # if command present and movement complete...
                 logging.debug(f"(control_logic.py): Running command: {command}...\n")
-                threading.Thread(target=_handle_command, args=(command, frame), daemon=True).start()
+                threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
 
             # NEUTRAL POSITION HANDLING (for both modes)
             elif not command and IS_COMPLETE and not IS_NEUTRAL: # if no command and movement complete and not neutral...
                 logging.info(f"(control_logic.py): No command received, returning to neutral position...\n")
-                threading.Thread(target=_handle_command, args=('n', frame), daemon=True).start()
+                threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -142,7 +142,6 @@ def _handle_command(command, frame):
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
 
     IS_COMPLETE = False  # block new commands until movement is complete
-    logging.info(f"(control_logic.py): IS_COMPLETE set to false.\n")
 
     # TODO deprecated CNN-based inference model
     #if command != 'n': # don't waste energy running inference for neutral command
@@ -174,7 +173,7 @@ def _handle_command(command, frame):
     else:
         keys = []
 
-    if MODE == 'radio':
+    if config.CONTROL_MODE == 'radio':
         try:
             logging.debug(f"(control_logic.py): Executing radio commands: {command}...\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_radio_commands(
@@ -191,7 +190,7 @@ def _handle_command(command, frame):
             IS_NEUTRAL = False
             IS_COMPLETE = True
 
-    elif MODE == 'web':
+    elif config.CONTROL_MODE == 'web':
         try:
             logging.debug(f"(control_logic.py): Executing keyboard command: {keys}\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
@@ -209,12 +208,12 @@ def _handle_command(command, frame):
             IS_NEUTRAL = False
             IS_COMPLETE = True
 
-    logging.info(f"(control_logic.py): IS_COMPLETE set to true.\n")
-
 ##### keyboard commands for tuning mode and normal operation #####
 
 def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, tune_mode):
     # keys: list of pressed keys, e.g. ['w', 'd', 'arrowup']
+
+    global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
     if not tune_mode:
         # Cancel out contradictory keys
@@ -272,7 +271,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
         elif direction:
             logging.info(f"(control_logic.py): {keys}: {direction}\n")
             #trot_forward(intensity)
-            move_direction(direction, frame, intensity)
+            move_direction(direction, frame, intensity, IMAGELESS_GAIT)
             is_neutral = False
         else:
             logging.warning(f"(control_logic.py): Invalid command: {keys}\n")
@@ -306,6 +305,12 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
 
 def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode):
     # commands: dict of channel states, e.g. {'channel_5': ('MOVE_FORWARD', 8), 'channel_6': ('SHIFT_LEFT', 5)}
+
+    global IMAGELESS_GAIT # set IMAGELESS_GAIT as global to switch between modes via button press
+
+    # as radio is currently not reliable enough for individual button pressing, prevent image use and reserve radio as
+    # backup control
+    IMAGELESS_GAIT = True
 
     if not tune_mode:
         # Extract active commands (non-neutral)
@@ -439,7 +444,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
             logging.info(f"(control_logic.py): Radio commands {active_commands}: {direction} (intensity: {max_intensity})\n")
             if special_actions:
                 logging.info(f"(control_logic.py): Special actions: {special_actions}\n")
-            move_direction(direction, frame, max_intensity)
+            move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
             is_neutral = False
         elif special_actions:
             # Only special actions, no movement
