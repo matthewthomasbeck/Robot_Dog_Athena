@@ -142,11 +142,11 @@ SERVO_CONFIG = { # dictionary of leg configurations
 
 ##### set dictionary of feet current positions for the AI model #####
 
-CURRENT_FEET_POSITIONS = {
+CURRENT_FEET_COORDINATES = {
     'FL': {'x': 0.0, 'y': 0.0, 'z': 0.0},
     'FR': {'x': 0.0, 'y': 0.0, 'z': 0.0},
     'BL': {'x': 0.0, 'y': 0.0, 'z': 0.0},
-    'RL': {'x': 0.0, 'y': 0.0, 'z': 0.0}
+    'BR': {'x': 0.0, 'y': 0.0, 'z': 0.0}
 }
 
 
@@ -157,7 +157,7 @@ CURRENT_FEET_POSITIONS = {
 ############### CREATE EUCLIDEAN-BASED LEG CONFIGURATION (HAND-TUNED) ###############
 #####################################################################################
 
-# TODO NOTE: THESE ARE ALL DEPRECATED AND ONLY USED IN HAND-TUNED MOVEMENTS
+# TODO THESE ARE ALL DEPRECATED AND ONLY USED IN HAND-TUNED MOVEMENTS
 
 
 ########## LEG PHASE CONFIG ##########
@@ -180,7 +180,7 @@ FL_TIPPYTOES = {'x': 0.0800, 'y': 0.0035, 'z': -0.1500}
 
 FL_SWING = {'x': 0.0300, 'y': 0.0165, 'z': -0.0550}
 FL_TOUCHDOWN = {'x': 0.0300, 'y': 0.0015, 'z': -0.0550}
-FL_MIDSTANCE = {'x': 0.0850, 'y': 0.0025, 'z': -0.1200} # TODO fix height 'x': 0.0000, 'y': 0.0075, 'z': -0.0800
+FL_MIDSTANCE = {'x': 0.0850, 'y': 0.0025, 'z': -0.1200}
 FL_STANCE = {'x': -0.0300, 'y': 0.0135, 'z': -0.1050}
 
 
@@ -196,7 +196,7 @@ FR_TIPPYTOES = {'x': -0.0150, 'y': -0.0015, 'z': -0.0050}
 
 FR_SWING = {'x': -0.1100, 'y': -0.0565, 'z': 0.0100}
 FR_TOUCHDOWN = {'x': -0.1100, 'y': -0.0115, 'z': 0.0100}
-FR_MIDSTANCE = {'x': -0.0600, 'y': -0.0115, 'z': -0.0350} # TODO fix height
+FR_MIDSTANCE = {'x': -0.0600, 'y': -0.0115, 'z': -0.0350}
 FR_STANCE = {'x': -0.0100, 'y': -0.0115, 'z': -0.0800}
 
 
@@ -212,7 +212,7 @@ BL_TIPPYTOES = {'x': 0.0800, 'y': -0.0085, 'z': -0.1450}
 
 BL_SWING = {'x': -0.0200, 'y': -0.0385, 'z': -0.0900}
 BL_TOUCHDOWN = {'x': -0.0200, 'y': -0.0135, 'z': -0.0900}
-BL_MIDSTANCE = {'x': -0.0200, 'y': -0.0135, 'z': -0.1250} # TODO fix height 'x': -0.0500, 'y': -0.0135, 'z': -0.1000
+BL_MIDSTANCE = {'x': -0.0200, 'y': -0.0135, 'z': -0.1250}
 BL_STANCE = {'x': -0.0800, 'y': -0.0135, 'z': -0.1100}
 
 
@@ -228,7 +228,7 @@ BR_TIPPYTOES = {'x': -0.0100, 'y': 0.0015, 'z': -0.0050}
 
 BR_SWING = {'x': -0.0050, 'y': 0.0315, 'z': -0.0600}
 BR_TOUCHDOWN = {'x': -0.0050, 'y': 0.0115, 'z': -0.0600}
-BR_MIDSTANCE = {'x': 0.0025, 'y': 0.0025, 'z': -0.0150} # TODO fix height 'x': 0.0025, 'y': 0.0075, 'z': -0.0400
+BR_MIDSTANCE = {'x': 0.0025, 'y': 0.0025, 'z': -0.0150}
 BR_STANCE = {'x': 0.0100, 'y': 0.0035, 'z': -0.0200}
 
 
