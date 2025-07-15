@@ -115,24 +115,22 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                 ##### run RL model(s) #####
 
                 if not imageless_gait: # if not using imageless gait adjustment...
-                    target_coordinates, mid_coordinates = run_gait_adjustment_standard( # run image support RL model
+                    target_coordinates, mid_coordinates, movement_rates = run_gait_adjustment_standard( # run standard
                         STANDARD_RL_MODEL,
                         STANDARD_INPUT_LAYER,
                         STANDARD_OUTPUT_LAYER,
                         commands,
                         frame,
-                        speed,
-                        acceleration,
+                        intensity,
                         config.CURRENT_FEET_COORDINATES
                     )
                 else: # if using imageless gait adjustment...
-                    target_coordinates, mid_coordinates = run_gait_adjustment_blind( # run blind RL model
+                    target_coordinates, mid_coordinates, movement_rates = run_gait_adjustment_blind( # run blind
                         BLIND_RL_MODEL,
                         BLIND_INPUT_LAYER,
                         BLIND_OUTPUT_LAYER,
                         commands,
-                        speed,
-                        acceleration,
+                        intensity,
                         config.CURRENT_FEET_COORDINATES
                     )
 
@@ -143,8 +141,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                     config.CURRENT_FEET_COORDINATES,
                     mid_coordinates,
                     target_coordinates,
-                    speed,
-                    acceleration
+                    movement_rates
                 )
 
             else: # if running person detection (testing)...
@@ -163,12 +160,21 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
             # gather state for RL agent (define get_simulation_state later if needed)
             state = None # TODO replace with actual state extraction if needed
             if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
-                target_coordinates, mid_coordinates = get_rl_action_standard(state, commands, intensity, frame)
+                target_coordinates, mid_coordinates, movement_rates = get_rl_action_standard(
+                    state,
+                    commands,
+                    intensity,
+                    frame
+                )
                 logging.warning(
                     "(fundamental_movement.py): Using get_rl_action_standard placeholder. Replace with RL agent output when available."
                 )
             elif imageless_gait:  # if using imageless gait adjustment (no image)...
-                target_coordinates, mid_coordinates = get_rl_action_blind(state, commands, intensity)
+                target_coordinates, mid_coordinates, movement_rates = get_rl_action_blind(
+                    state,
+                    commands,
+                    intensity
+                )
                 logging.warning(
                     "(fundamental_movement.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
                 )
@@ -180,8 +186,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                 config.CURRENT_FEET_COORDINATES,
                 mid_coordinates,
                 target_coordinates,
-                speed,
-                acceleration
+                movement_rates
             )
 
     except Exception as e: # if either model fails...
@@ -200,7 +205,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
 ########## THREAD LEG MOVEMENT ##########
 
-def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates, speed, acceleration):
+def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates, movement_rates):
 
     leg_threads = []  # create a list to hold threads for each leg
     for leg_id in ['FL', 'FR', 'BL', 'BR']:  # loop through each leg and create a thread to move
@@ -211,8 +216,7 @@ def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates
                 current_coordinates[leg_id],
                 mid_coordinates[leg_id],
                 target_coordinates[leg_id],
-                speed,
-                acceleration
+                movement_rates[leg_id]
             )
         )
         leg_threads.append(t)
@@ -225,9 +229,11 @@ def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates
 
 ########## SET LEG PHASE ##########
 
-def swing_leg(leg_id, current_coordinate, mid_coordinate, target_coordinate, speed, acceleration):
+def swing_leg(leg_id, current_coordinate, mid_coordinate, target_coordinate, movement_rate):
 
     try:
+        speed = movement_rate.get('speed', 16383)  # default to 16383 (max) if not provided
+        acceleration = movement_rate.get('acceleration', 255)  # default to 255 (max) if not provided
         move_foot_to_pos(leg_id, current_coordinate, mid_coordinate, speed, acceleration, use_bezier=False)
         move_foot_to_pos(leg_id, mid_coordinate, target_coordinate, speed, acceleration, use_bezier=False)
 

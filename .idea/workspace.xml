@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to make manual trot more reliable so I can better test things like timing, etc">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/walking/forward.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/forward.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/opencv.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,7 +122,7 @@
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
       <workItem from="1752411561255" duration="42720000" />
-      <workItem from="1752587465616" duration="15035000" />
+      <workItem from="1752587465616" duration="16564000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -263,14 +263,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00033" summary="better logging for moving forward">
-      <option name="closed" value="true" />
-      <created>1751993018406</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1751993018406</updated>
     </task>
     <task id="LOCAL-00034" summary="Hugely improved logging for movement, about to figure out why movement stops after only 1 command is listened to">
       <option name="closed" value="true" />
@@ -496,7 +488,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752603964850</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)">
+      <option name="closed" value="true" />
+      <created>1752610485471</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1752610485471</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -511,7 +511,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Made accurate ranges for all relevant joints" />
     <MESSAGE value="Got rid of useless crap in config" />
     <MESSAGE value="Finished URDF" />
     <MESSAGE value="Adjusted config to reflect angles and changes" />
@@ -536,7 +535,8 @@
     <MESSAGE value="Made tweaks to movement, going to stop work on this project until I get all of my computer parts" />
     <MESSAGE value="Forgot to refactor move_foot_to_pos_OLD in standing functions" />
     <MESSAGE value="Going to make manual trot more reliable so I can better test things like timing, etc" />
-    <option name="LAST_COMMIT_MESSAGE" value="Going to make manual trot more reliable so I can better test things like timing, etc" />
+    <MESSAGE value="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

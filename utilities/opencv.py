@@ -150,8 +150,7 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
         output_layer,
         commands,
         frame,
-        speed,
-        acceleration,
+        intensity,
         current_feet_positions
 ):
     """
@@ -166,8 +165,7 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
     """
     # --- Normalize/encode inputs ---
     cmd_vec = encode_commands(commands)
-    speed_norm = normalize_scalar(speed, 0, 10)  # adjust min/max as needed
-    accel_norm = normalize_scalar(acceleration, 0, 255)  # adjust as needed
+    intensity_norm = normalize_scalar(intensity, 1, 10)  # adjust min/max as needed
     feet_vec = normalize_feet_positions(current_feet_positions, {'x':-0.2,'y':-0.2,'z':-0.2}, {'x':0.2,'y':0.2,'z':0.2})  # adjust min/max as needed
 
     # Flatten frame and normalize to [0,1]
@@ -175,7 +173,7 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
     frame_flat = frame_flat.flatten()
 
     # --- Assemble input ---
-    input_vec = np.concatenate([cmd_vec, [speed_norm, accel_norm], feet_vec, frame_flat])
+    input_vec = np.concatenate([cmd_vec, intensity_norm, feet_vec, frame_flat])
     input_vec = input_vec.reshape(1, -1)  # batch dimension
 
     # --- Run inference ---
@@ -200,19 +198,17 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         input_layer,
         output_layer,
         commands,
-        speed,
-        acceleration,
+        intensity,
         current_feet_positions
 ):
     """
     Run RL model without vision.
     """
     cmd_vec = encode_commands(commands)
-    speed_norm = normalize_scalar(speed, 0, 10)
-    accel_norm = normalize_scalar(acceleration, 0, 255)
+    intensity_norm = normalize_scalar(intensity, 1, 10)  # adjust min/max as needed
     feet_vec = normalize_feet_positions(current_feet_positions, {'x':-0.2,'y':-0.2,'z':-0.2}, {'x':0.2,'y':0.2,'z':0.2})
 
-    input_vec = np.concatenate([cmd_vec, [speed_norm, accel_norm], feet_vec])
+    input_vec = np.concatenate([cmd_vec, intensity_norm, feet_vec])
     input_vec = input_vec.reshape(1, -1)
 
     result = model([input_vec])[output_layer]
