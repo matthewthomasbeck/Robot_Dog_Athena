@@ -228,8 +228,8 @@ def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates
 def swing_leg(leg_id, current_coordinate, mid_coordinate, target_coordinate, speed, acceleration):
 
     try:
-        move_foot_to_pos(leg_id, current_coordinate, mid_coordinate, speed, acceleration, use_bezier=True)
-        move_foot_to_pos(leg_id, mid_coordinate, target_coordinate, speed, acceleration, use_bezier=True)
+        move_foot_to_pos(leg_id, current_coordinate, mid_coordinate, speed, acceleration, use_bezier=False)
+        move_foot_to_pos(leg_id, mid_coordinate, target_coordinate, speed, acceleration, use_bezier=False)
 
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to swing leg: {e}\n")
@@ -251,7 +251,6 @@ def move_foot_to_pos(leg_id, start_coordinate, end_coordinate, speed, accelerati
         )
         for x, y, z in curve: # iterate through the bezier curve points
             move_foot(leg_id, x, y, z, speed, acceleration)
-            time.sleep(0.03) # TODO: test adding time.sleep here
 
     else: # if user does not want to use bezier curves for foot movement...
         move_foot(
@@ -262,7 +261,6 @@ def move_foot_to_pos(leg_id, start_coordinate, end_coordinate, speed, accelerati
             speed=speed,
             acceleration=acceleration
         )
-        time.sleep(0.2)  # TODO: test adding time.sleep here
 
 def move_foot_to_pos_OLD(leg_id, pos, speed, acceleration, use_bezier):
 
@@ -278,11 +276,9 @@ def move_foot_to_pos_OLD(leg_id, pos, speed, acceleration, use_bezier):
         )
         for x, y, z in curve: # iterate through the bezier curve points
             move_foot(leg_id, x, y, z, speed, acceleration)
-            time.sleep(0.03) # TODO: test adding time.sleep here
 
     else: # if user does not want to use bezier curves for foot movement...
         move_foot(leg_id, x=pos['x'], y=pos['y'], z=pos['z'], speed=speed, acceleration=acceleration)
-        time.sleep(0.2)  # TODO: test adding time.sleep here
 
 
 ########## MOVE LEG FUNCTION ##########
