@@ -23,10 +23,47 @@ import queue
 ##### import necessary utilities #####
 
 from utilities.log import initialize_logging  # import logging setup
+from utilities.config import CONTROL_MODE, DEFAULT_INTENSITY, USE_SIMULATION  # import config for DEFAULT_INTENSITY
+
+##### conditional imports based on simulation mode #####
+
+if not USE_SIMULATION:
+    # Hardware-dependent imports
 from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
 from utilities.camera import initialize_camera, decode_frame  # import to start camera logic
 import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
-from utilities.config import CONTROL_MODE, DEFAULT_INTENSITY  # import config for DEFAULT_INTENSITY
+else:
+    # Simulation mode - mock these modules
+    import time
+    import numpy as np
+    
+    # Mock camera function
+    def decode_frame(camera_process, mjpeg_buffer):
+        # Return dummy frame data for simulation
+        dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        return mjpeg_buffer, dummy_frame, dummy_frame
+    
+    # Mock receiver function
+    def interpret_commands(channel_data):
+        # Return empty commands for simulation
+        return {}
+    
+    # Mock internet functions
+    class MockInternet:
+        def initialize_backend_socket(self):
+            return None
+        def initialize_command_queue(self, sock):
+            return None
+        def stream_to_backend(self, sock, frame):
+            pass
+    
+    internet = MockInternet()
+
+##### import simulation dependencies #####
+
+if USE_SIMULATION:
+    import pybullet as p
+    import os
 
 ##### import movement functions #####
 
@@ -45,12 +82,55 @@ CURRENT_LEG = 'FL'  # set global current leg
 ##### initialize all utilities #####
 
 LOGGER = initialize_logging()  # set up logging
+
+if not USE_SIMULATION:
+    # Hardware-dependent initialization
 CAMERA_PROCESS = initialize_camera()  # create camera process
 CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
-if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
-    SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
-    COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
-#FRAME_QUEUE = queue.Queue(maxsize=1)
+    if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
+COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+    else:
+        SOCK = None
+        COMMAND_QUEUE = None
+else:
+    # Simulation mode - mock hardware
+    CAMERA_PROCESS = None
+    CHANNEL_DATA = {}
+    SOCK = None
+    COMMAND_QUEUE = None
+
+##### initialize simulation if enabled #####
+
+if USE_SIMULATION:
+    # Initialize PyBullet
+    p.connect(p.GUI)
+    p.setGravity(0, 0, -9.81)
+    p.loadURDF("plane.urdf")
+    
+    # Load robot URDF
+    urdf_path = os.path.join(os.path.dirname(__file__), "training", "urdf", "robot_dog.urdf")
+    ROBOT_ID = p.loadURDF(urdf_path, [0, 0, 0.1], useFixedBase=True)
+    
+    # Create joint mapping
+    JOINT_MAP = {}
+    num_joints = p.getNumJoints(ROBOT_ID)
+    for i in range(num_joints):
+        info = p.getJointInfo(ROBOT_ID, i)
+        joint_name = info[1].decode('utf-8')
+        if '_' in joint_name and joint_name.split('_')[0] in ['FL', 'FR', 'BL', 'BR']:
+            parts = joint_name.split('_')
+            if len(parts) == 2 and parts[1] in ['hip', 'upper', 'lower']:
+                JOINT_MAP[(parts[0], parts[1])] = i
+    
+    logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}")
+    logging.info(f"(control_logic.py): Joint map: {JOINT_MAP}")
+    
+    # Set simulation variables in movement module
+    set_simulation_variables(ROBOT_ID, JOINT_MAP)
+else:
+    ROBOT_ID = None
+    JOINT_MAP = {}
 
 
 #########################################
@@ -102,11 +182,11 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
                 # if command queue is not empty, get command from queue
                 if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
-                    command = COMMAND_QUEUE.get()
-                    if IS_COMPLETE: # if movement is complete, run command
-                        logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
-                    else:
-                        logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL BLOCK).\n")
+                command = COMMAND_QUEUE.get()
+                if IS_COMPLETE: # if movement is complete, run command
+                    logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
+                else:
+                    logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL BLOCK).\n")
 
             # NEW MULTI-CHANNEL RADIO COMMAND SYSTEM
             if config.CONTROL_MODE == 'radio':
@@ -124,6 +204,10 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             elif not command and IS_COMPLETE and not IS_NEUTRAL: # if no command and movement complete and not neutral...
                 logging.info(f"(control_logic.py): No command received, returning to neutral position...\n")
                 threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
+
+            # Step simulation if enabled
+            if USE_SIMULATION:
+                p.stepSimulation()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -289,7 +373,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
                 try:
                     ADJUSTMENT_FUNCS[current_leg][key]()
                     logging.debug(f"(control_logic.py): Tuning {current_leg} with {key}\n")
-                except Exception as e:
+            except Exception as e:
                     logging.error(f"(control_logic.py): Failed to adjust {current_leg} with {key}: {e}\n")
             elif key == 'q':
                 # Switch to next leg
@@ -451,7 +535,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
             if special_actions:
                 logging.info(f"(control_logic.py): Special actions: {special_actions}\n")
             move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
-            is_neutral = False
+                is_neutral = False
         elif special_actions:
             # Only special actions, no movement
             logging.info(f"(control_logic.py): Special actions only: {special_actions}\n")
@@ -460,8 +544,8 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
                 squatting_position(1)
                 is_neutral = False
             elif 'SQUAT_UP' in special_actions:
-                neutral_position(10)
-                is_neutral = True
+                    neutral_position(10)
+                    is_neutral = True
             # TODO: Implement other special actions
 
     return is_neutral, current_leg

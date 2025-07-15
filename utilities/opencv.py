@@ -18,17 +18,17 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
-##### import necessary libraries #####
-
-from openvino.runtime import Core # import OpenVINO runtime
-import numpy as np # import NumPy for array manipulation
-import cv2 # import OpenCV for image processing
-import logging # import logging for logging messages
-
 ##### import config #####
 
-from utilities.config import INFERENCE_CONFIG
+from utilities.config import INFERENCE_CONFIG, USE_SIMULATION
 
+##### import necessary libraries #####
+
+import numpy as np # import NumPy for array manipulation
+import logging # import logging for logging messages
+if not USE_SIMULATION: # if not using simulation...
+    from openvino.runtime import Core  # import OpenVINO runtime
+    import cv2 # import OpenCV for image processing
 
 ########## CREATE DEPENDENCIES ##########
 

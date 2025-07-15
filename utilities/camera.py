@@ -18,19 +18,20 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import config #####
+
+from utilities.config import CAMERA_CONFIG, RL_NOT_CNN, USE_SIMULATION
+
 ##### import necessary libraries #####
 
 import subprocess # import subprocess to run rpicam command
-import os # import os to check if rpicam instances exists
-import signal # import signal to send signals to processes
+#import os # import os to check if rpicam instances exists
+#import signal # import signal to send signals to processes
 import logging # import logging for logging messages
 import time # add time for waiting
 import numpy # add numpy for decoding frames
-import cv2  # add cv2 for decoding frames
-
-##### import config #####
-
-from utilities.config import CAMERA_CONFIG, RL_NOT_CNN # import config to get camera settings as well as model type
+if not USE_SIMULATION:
+    import cv2  # add cv2 for decoding frames
 
 
 

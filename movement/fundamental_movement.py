@@ -18,11 +18,14 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import from config #####
+
+from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG, USE_SIMULATION # import whether to use RL or CNN model
+
 ##### import necessary functions #####
 
 # load function/models for gait adjustment and person detection
 from utilities.opencv import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, run_person_detection
-from utilities.servos import map_angle_to_servo_position, set_target # import servo mapping functions
 import utilities.config as config # import configuration data for servos and link lengths
 from utilities.mathematics import * # import all mathematical functions
 
@@ -31,9 +34,13 @@ from utilities.mathematics import * # import all mathematical functions
 import time # import time for proper leg sequencing
 import threading # import threading for thread management
 
-##### import from config #####
+##### import dependencies based on simulation use #####
 
-from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG # import whether to use RL or CNN model
+if USE_SIMULATION:
+    import pybullet
+    import math
+elif not USE_SIMULATION:
+    from utilities.servos import map_angle_to_servo_position, set_target  # import servo mapping functions
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -41,6 +48,24 @@ from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG # import whether to us
 ##### initialize variables for kinematics and neural processing #####
 
 k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic functions
+
+##### simulation variables (set by control_logic.py) #####
+
+if USE_SIMULATION:
+    ROBOT_ID = None  # Will be set by control_logic.py
+    JOINT_MAP = {}   # Will be set by control_logic.py
+else:
+    ROBOT_ID = None
+    JOINT_MAP = {}
+
+def set_simulation_variables(robot_id, joint_map):
+    """Set simulation variables from control_logic.py"""
+    global ROBOT_ID, JOINT_MAP
+    ROBOT_ID = robot_id
+    JOINT_MAP = joint_map
+
+##### load and compile models #####
+
 if RL_NOT_CNN:
     # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
     STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['STANDARD_RL_PATH'])
@@ -102,40 +127,80 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
     try: # try to run some model
 
-        if RL_NOT_CNN: # if running gait adjustment (production)...
+        if not USE_SIMULATION: # if user wants to use real servos...
+            if RL_NOT_CNN: # if running gait adjustment (production)...
 
-            ##### run RL model(s) #####
+                ##### run RL model(s) #####
 
-            if not imageless_gait: # if not using imageless gait adjustment...
+                if not imageless_gait: # if not using imageless gait adjustment...
 
-                target_positions, mid_positions = run_gait_adjustment_standard( # use RL model with image support
-                    STANDARD_RL_MODEL,
-                    STANDARD_INPUT_LAYER,
-                    STANDARD_OUTPUT_LAYER,
-                    commands,
+                    target_positions, mid_positions = run_gait_adjustment_standard( # use RL model with image support
+                        STANDARD_RL_MODEL,
+                        STANDARD_INPUT_LAYER,
+                        STANDARD_OUTPUT_LAYER,
+                        commands,
+                        frame,
+                        speed,
+                        acceleration,
+                        config.CURRENT_FEET_POSITIONS
+                    )
+
+                else: # if using imageless gait adjustment...
+
+                    target_positions, mid_positions = run_gait_adjustment_blind( # use blind RL model for speedy processing
+                        BLIND_RL_MODEL,
+                        BLIND_INPUT_LAYER,
+                        BLIND_OUTPUT_LAYER,
+                        commands,
+                        speed,
+                        acceleration,
+                        config.CURRENT_FEET_POSITIONS,
+                    )
+
+                ##### move legs #####
+
+                leg_threads = []
+                for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                    t = threading.Thread(target=swing_leg, args=(leg_id, target_positions[leg_id], mid_positions[leg_id], speed, acceleration))
+                    leg_threads.append(t)
+                    t.start()
+                for t in leg_threads:
+                    t.join()  # Wait for all legs to finish
+
+                # Now all legs are done, update CURRENT_FEET_POSITIONS
+                for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                    config.CURRENT_FEET_POSITIONS[leg_id] = target_positions[leg_id].copy()
+
+            else: # if running person detection (testing)...
+                run_person_detection(
+                    CNN_MODEL,
+                    CNN_INPUT_LAYER,
+                    CNN_OUTPUT_LAYER,
                     frame,
-                    speed,
-                    acceleration,
-                    config.CURRENT_FEET_POSITIONS
+                    run_inference=False
                 )
+            logging.info(f"(fundamental_movement.py): Ran AI for command(s) {commands} with intensity {intensity}\n")
 
-            else: # if using imageless gait adjustment...
+        elif USE_SIMULATION: # if running code in simulator...
 
-                target_positions, mid_positions = run_gait_adjustment_blind( # use blind RL model for speedy processing
-                    BLIND_RL_MODEL,
-                    BLIND_INPUT_LAYER,
-                    BLIND_OUTPUT_LAYER,
-                    commands,
-                    speed,
-                    acceleration,
-                    config.CURRENT_FEET_POSITIONS,
-                )
+            ##### this is probably where the agent will take data and give points #####
+
+            if not imageless_gait:  # if not using imageless gait adjustment...
+                # TODO (probably) make code that allows RL agent to interface with this function to return point sets
+                target_positions = None
+                mid_positions = None
+
+            else:  # if using imageless gait adjustment...
+                # TODO (probably) make code that allows RL agent to interface with this function to return point sets
+                target_positions = None
+                mid_positions = None
 
             ##### move legs #####
 
             leg_threads = []
             for leg_id in ['FL', 'FR', 'BL', 'BR']:
-                t = threading.Thread(target=swing_leg, args=(leg_id, target_positions[leg_id], mid_positions[leg_id], speed, acceleration))
+                t = threading.Thread(target=swing_leg, args=(
+                leg_id, target_positions[leg_id], mid_positions[leg_id], speed, acceleration))
                 leg_threads.append(t)
                 t.start()
             for t in leg_threads:
@@ -144,16 +209,6 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
             # Now all legs are done, update CURRENT_FEET_POSITIONS
             for leg_id in ['FL', 'FR', 'BL', 'BR']:
                 config.CURRENT_FEET_POSITIONS[leg_id] = target_positions[leg_id].copy()
-
-        else: # if running person detection (testing)...
-            run_person_detection(
-                CNN_MODEL,
-                CNN_INPUT_LAYER,
-                CNN_OUTPUT_LAYER,
-                frame,
-                run_inference=False
-            )
-        logging.info(f"(fundamental_movement.py): Ran AI for command(s) {commands} with intensity {intensity}\n")
 
     except Exception as e: # if either model fails...
         logging.error(f"(fundamental_movement.py): Failed to run AI for command: {e}\n")
@@ -175,9 +230,9 @@ def swing_leg(leg_id, target_point, mid_point, speed, acceleration):
 
     try:
         move_foot_to_pos(leg_id, mid_point, speed, acceleration, use_bezier=True)
-        time.sleep(0.2)
+        #time.sleep(0.2)
         move_foot_to_pos(leg_id, target_point, speed, acceleration, use_bezier=True)
-        time.sleep(0.2)
+        #time.sleep(0.2)
 
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to swing leg: {e}\n")
@@ -186,19 +241,11 @@ def swing_leg(leg_id, target_point, mid_point, speed, acceleration):
 ########## MOVE FOOT FUNCTION ##########
 
 def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier):
+
     if use_bezier:
         p0 = get_neutral_positions(leg_id)
-        p2 = {
-            'x': pos['x'],
-            'y': pos['y'],
-            'z': pos['z']
-        }
-        p1 = {
-            'x': (p0['x'] + p2['x']) / 2,
-            'y': (p0['y'] + p2['y']) / 2,
-            'z': max(p0['z'], p2['z']) + 0.025
-        }
-
+        p2 = {'x': pos['x'], 'y': pos['y'], 'z': pos['z']}
+        p1 = {'x': (p0['x'] + p2['x']) / 2, 'y': (p0['y'] + p2['y']) / 2, 'z': max(p0['z'], p2['z']) + 0.025}
         curve = bezier_curve(
             p0=(p0['x'], p0['y'], p0['z']),
             p1=(p1['x'], p1['y'], p1['z']),
@@ -208,17 +255,11 @@ def move_foot_to_pos(leg_id, pos, speed, acceleration, use_bezier):
 
         for x, y, z in curve:
             move_foot(leg_id, x, y, z, speed, acceleration)
+            time.sleep(0.1)
             # TODO: test adding time.sleep here
 
     else:
-        move_foot(
-            leg_id,
-            x=pos['x'],
-            y=pos['y'],
-            z=pos['z'],
-            speed=speed,
-            acceleration=acceleration
-        )
+        move_foot(leg_id, x=pos['x'], y=pos['y'], z=pos['z'], speed=speed, acceleration=acceleration)
 
 
 ########## MOVE LEG FUNCTION ##########
@@ -238,10 +279,31 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
         #joint_speed = speed
         #joint_acceleration = acceleration
 
-        servo_data = config.SERVO_CONFIG[leg_id][joint]
-        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-        pwm = map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
-        set_target(servo_data['servo'], pwm, joint_speed, joint_acceleration)
+        if not USE_SIMULATION: # if user wants to use real servos...
+            servo_data = config.SERVO_CONFIG[leg_id][joint]
+            is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+            pwm = map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
+            set_target(servo_data['servo'], pwm, joint_speed, joint_acceleration)
+
+        elif USE_SIMULATION: # if user wants to control simulated robot...
+            # Convert angle from degrees to radians (your IK returns degrees)
+            angle_rad = math.radians(angle)
+            
+            # Get joint index for this leg and joint type
+            joint_key = (leg_id, joint)
+            if joint_key in JOINT_MAP:
+                joint_index = JOINT_MAP[joint_key]
+                
+                # Set joint position in PyBullet
+                pybullet.setJointMotorControl2(
+                    bodyUniqueId=ROBOT_ID,
+                    jointIndex=joint_index,
+                    controlMode=pybullet.POSITION_CONTROL,
+                    targetPosition=angle_rad,
+                    force=4.41  # Adjust force as needed
+                )
+            else:
+                logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map")
 
 
 ##### GET NEUTRAL POSITIONS #####
