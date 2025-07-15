@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Repaired my control_logic.py code, works for both radio and web (although channel 4 is still noisy unfortunately)">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/walking/forward.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/walking/forward.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made tweaks to movement, going to stop work on this project until I get all of my computer parts" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -123,7 +118,7 @@
       <workItem from="1752342877748" duration="57000" />
       <workItem from="1752343933383" duration="8419000" />
       <workItem from="1752411561255" duration="42720000" />
-      <workItem from="1752587465616" duration="8808000" />
+      <workItem from="1752587465616" duration="9166000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -264,14 +259,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00030" summary="Adjusted code to thread out inference and movement only when a command is detected (both to reduce lag and save electrical power from un-needed inference)">
-      <option name="closed" value="true" />
-      <created>1751935546621</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1751935546621</updated>
     </task>
     <task id="LOCAL-00031" summary="Threading works to separate (working) command, cv2, movement logic from camera, stream process">
       <option name="closed" value="true" />
@@ -497,7 +484,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752591953944</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="Made tweaks to movement, going to stop work on this project until I get all of my computer parts">
+      <option name="closed" value="true" />
+      <created>1752601423529</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1752601423529</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -512,7 +507,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Going to start RL setup while I wait for the GPU (greedy bastards are playing games with me, buyer beware of Gandis Goods)" />
     <MESSAGE value="Added functions to help me tune the robot in pybullet via mapping full front and back positions for joints in the physical world to the virtual world" />
     <MESSAGE value="Fixed URDF to use &lt;LEG&gt;_&lt;SERVO&gt; naming convention for important joints, adjusted visualize.py" />
     <MESSAGE value="Made accurate ranges for all relevant joints" />
@@ -537,7 +531,8 @@
     <MESSAGE value="Creates a USE_SIMULATION mode, so I can run the robot on a computer (TODO: finish interface for RL agent, debug the mess I've made today)" />
     <MESSAGE value="Creates a USE_SIMULATION mode, so I can run the robot on a computer and made a very brief simulation running the old trot_forward() function (TODO: finish interface for RL agent, debug the mess I've made today)" />
     <MESSAGE value="Repaired my control_logic.py code, works for both radio and web (although channel 4 is still noisy unfortunately)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Repaired my control_logic.py code, works for both radio and web (although channel 4 is still noisy unfortunately)" />
+    <MESSAGE value="Made tweaks to movement, going to stop work on this project until I get all of my computer parts" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made tweaks to movement, going to stop work on this project until I get all of my computer parts" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

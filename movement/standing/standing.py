@@ -27,7 +27,7 @@ import logging # import logging for debugging
 
 import utilities.config as config # import leg positions config
 from utilities.mathematics import interpret_intensity # import intensity interpretation function
-from movement.fundamental_movement import move_foot_to_pos # import fundamental movement function to move foot to pos
+from movement.fundamental_movement import move_foot_to_pos_OLD # import fundamental movement function to move foot to pos
 
 
 
@@ -88,7 +88,7 @@ def set_leg_neutral(leg_id, state, speed, acceleration): # function to return le
 
         try: # try to move leg to neutral position
 
-            move_foot_to_pos(
+            move_foot_to_pos_OLD(
                 leg_id,
                 neutral_position,
                 speed,
@@ -100,7 +100,7 @@ def set_leg_neutral(leg_id, state, speed, acceleration): # function to return le
 
         except Exception as e: # if movement fails...
 
-            logging.error(f"(manual_walking.py): Failed to reset {leg_id} leg neutral position: {e}\n")
+            logging.error(f"(standing.py): Failed to reset {leg_id} leg neutral position: {e}\n")
             return
 
 
@@ -158,7 +158,7 @@ def set_leg_tippytoes(leg_id, state, speed, acceleration): # function to move le
 
         try: # try to move leg to tippytoes position
 
-            move_foot_to_pos(
+            move_foot_to_pos_OLD(
                 leg_id,
                 tippytoes_position,
                 speed,
@@ -225,7 +225,7 @@ def set_leg_squatting(leg_id, state, speed, acceleration): # function to move le
 
         try: # try to move leg to squatting position
 
-            move_foot_to_pos(
+            move_foot_to_pos_OLD(
                 leg_id,
                 squatting_position,
                 speed,
