@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Making this an error statement, may try to get this working tomorrow">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Implementing caveman solution to hard reset the system whenever unstable">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/internet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/internet.py" afterDir="false" />
     </list>
@@ -263,14 +263,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00035" summary="Threading and movement now completely works, issue was poor error trapping in run_inference">
-      <option name="closed" value="true" />
-      <created>1752008567593</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1752008567593</updated>
-    </task>
     <task id="LOCAL-00036" summary="Going to start RL setup while I wait for the GPU (greedy bastards are playing games with me, buyer beware of Gandis Goods)">
       <option name="closed" value="true" />
       <created>1752336559937</created>
@@ -495,7 +487,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752634281893</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="Implementing caveman solution to hard reset the system whenever unstable">
+      <option name="closed" value="true" />
+      <created>1752673794186</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1752673794186</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -510,7 +510,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Finished URDF" />
     <MESSAGE value="Adjusted config to reflect angles and changes" />
     <MESSAGE value="Cleaned up training space, I have to do it here because of context" />
     <MESSAGE value="Got visualization working, going to try to set up environment tomorrow" />
@@ -535,7 +534,8 @@
     <MESSAGE value="Going to make manual trot more reliable so I can better test things like timing, etc" />
     <MESSAGE value="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)" />
     <MESSAGE value="Making this an error statement, may try to get this working tomorrow" />
-    <option name="LAST_COMMIT_MESSAGE" value="Making this an error statement, may try to get this working tomorrow" />
+    <MESSAGE value="Implementing caveman solution to hard reset the system whenever unstable" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implementing caveman solution to hard reset the system whenever unstable" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

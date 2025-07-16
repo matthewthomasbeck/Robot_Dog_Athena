@@ -35,7 +35,7 @@ from utilities.config import LOOP_RATE_HZ, INTERNET_CONFIG  # import logging con
 
 ##### create global variables #####
 
-sock = None  # global socket variable for backend connection, initialized to None
+SOCK = None  # global socket variable for backend connection, initialized to None
 _send_lock = threading.Lock()  # lock for sending data to backend, initialized to a new threading lock
 
 
@@ -52,21 +52,19 @@ def initialize_backend_socket(): # function to connect to backend via socket
 
     ##### initialize global socket #####
 
+    global SOCK
     logging.debug("(internet.py): Initializing backend socket...\n")
-
-    global sock
-
-    if not sock: # if sock is not already initialized...
-        sock = socket.socket() # create a new socket object
+    if not SOCK: # if sock is not already initialized...
+        SOCK = socket.socket() # create a new socket object
 
         try:
-            sock.connect((INTERNET_CONFIG['BACKEND_PUBLIC_IP'], INTERNET_CONFIG['BACKEND_PORT']))
+            SOCK.connect((INTERNET_CONFIG['BACKEND_PUBLIC_IP'], INTERNET_CONFIG['BACKEND_PORT']))
             logging.info("(internet.py): Connected to website backend.\n")
-            return sock
+            return SOCK
 
         except Exception as e:
             logging.error(f"(internet.py): Failed to connect to website backend: {e}\n")
-            sock = None
+            SOCK = None
             return None
 
 
@@ -76,9 +74,9 @@ def stream_to_backend(socket_param, frame_data): # function to send frame data t
 
     ##### send frame data to backend #####
 
-    logging.debug("(internet.py): Streaming frame data to website backend...\n")
-
+    global SOCK
     if frame_data is not None and socket_param is not None:
+        logging.debug("(internet.py): Streaming frame data to website backend...\n")
         try:
             with _send_lock:
                 # Send frame length first (4 bytes)
@@ -93,9 +91,8 @@ def stream_to_backend(socket_param, frame_data): # function to send frame data t
             # Try to reconnect if connection is lost
             try:
                 socket_param.close()
-                global sock
-                sock = None
-                sock = initialize_backend_socket()
+                SOCK = None
+                SOCK = initialize_backend_socket()
             except Exception as reconnect_error:
                 logging.error(f"(internet.py): Failed to reconnect: {reconnect_error}\n")
 
@@ -109,17 +106,17 @@ def stream_to_backend(socket_param, frame_data): # function to send frame data t
 
 ########## INITIALIZE COMMAND QUEUE ##########
 
-def initialize_command_queue(SOCK): # function to create a command queue for receiving commands from backend
+def initialize_command_queue(local_sock): # function to create a command queue for receiving commands from backend
 
     logging.debug("(internet.py): Initializing command queue...\n") # log initialization of command queue
 
-    if SOCK is None:
+    if local_sock is None:
         logging.error("(internet.py): No website backend socket—command queue not started.\n")
         return None
 
     try:
         command_queue = Queue() # create a new command queue
-        threading.Thread(target=listen_for_commands, args=(SOCK, command_queue), daemon=True).start()
+        threading.Thread(target=listen_for_commands, args=(local_sock, command_queue), daemon=True).start()
         logging.info("(internet.py): Command queue initialized successfully.\n")
         return command_queue # return the command queue for further processing
 
@@ -130,11 +127,11 @@ def initialize_command_queue(SOCK): # function to create a command queue for rec
 
 ########## RECEIVE COMMANDS FROM BACKEND ##########
 
-def listen_for_commands(sock, command_queue):
+def listen_for_commands(local_sock, command_queue):
     logging.debug("(internet.py): Listening for commands from website backend...\n")
     while True:
         try:
-            length_bytes = sock.recv(4)
+            length_bytes = local_sock.recv(4)
             logging.debug(f"(internet.py): Received length_bytes: {length_bytes}\n")
             if not length_bytes:
                 logging.warning("(internet.py): Socket closed or no data received for length. Exiting thread.\n")
@@ -142,7 +139,7 @@ def listen_for_commands(sock, command_queue):
             length = int.from_bytes(length_bytes, 'big')
             command_bytes = b''
             while len(command_bytes) < length:
-                chunk = sock.recv(length - len(command_bytes))
+                chunk = local_sock.recv(length - len(command_bytes))
                 if not chunk:
                     logging.warning("(internet.py): Socket closed while reading command. Exiting thread.\n")
                     break
@@ -156,11 +153,13 @@ def listen_for_commands(sock, command_queue):
             logging.error(f"(internet.py): Error receiving command from website backend: {e}\n")
             break
         finally:
-            logging.warning("(internet.py): Encountering thread issues, restarting...\n")
+            logging.warning("(internet.py): Encountering thread issues (thread exiting)!\n")
             try:
                 # TODO this is a really shitty way to solve this problem, I need to see if the thread issue is caused by
                 # TODO some kind of camera overflow, an unstable internet connection, or something else
-                os.system("sudo systemctl restart robot_dog.service")
+                pass
+                #os.system("sudo systemctl restart robot_dog.service")
             except Exception as e:
-                logging.error(f"(internet.py): Failed to restart robot_dog service: {e}\n")
+                pass
+                #logging.error(f"(internet.py): Failed to restart robot_dog service: {e}\n")
             pass
