@@ -156,5 +156,5 @@ def listen_for_commands(sock, command_queue):
             logging.error(f"(internet.py): Error receiving command from website backend: {e}\n")
             break
         finally:
-            logging.debug("(internet.py): listen_for_commands thread exiting!\n")
+            logging.error("(internet.py): listen_for_commands thread exiting!\n")
             pass
