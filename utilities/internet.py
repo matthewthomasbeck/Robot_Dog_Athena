@@ -148,7 +148,7 @@ def listen_for_commands(sock, command_queue):
                     break
                 command_bytes += chunk
             if len(command_bytes) < length:
-                break  # Exit if we didn't get the full command
+                break
             command = command_bytes.decode()
             command_queue.put(command)
             logging.debug(f"(internet.py): Received command: {command}\n")
@@ -156,5 +156,11 @@ def listen_for_commands(sock, command_queue):
             logging.error(f"(internet.py): Error receiving command from website backend: {e}\n")
             break
         finally:
-            logging.error("(internet.py): listen_for_commands thread exiting!\n")
+            logging.warning("(internet.py): Encountering thread issues, restarting...\n")
+            try:
+                # TODO this is a really shitty way to solve this problem, I need to see if the thread issue is caused by
+                # TODO some kind of camera overflow, an unstable internet connection, or something else
+                os.system("sudo systemctl restart robot_dog.service")
+            except Exception as e:
+                logging.error(f"(internet.py): Failed to restart robot_dog service: {e}\n")
             pass
