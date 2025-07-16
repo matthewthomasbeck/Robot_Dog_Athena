@@ -19,8 +19,9 @@
 
 import threading
 import queue
+import time  # <-- already imported in simulation, import unconditionally here
+import os    # <-- already imported in simulation, import unconditionally here
 
-from movement.walking.forward import trot_forward
 ##### import necessary utilities #####
 
 from utilities.log import initialize_logging  # import logging setup
@@ -67,6 +68,7 @@ elif USE_SIMULATION:
 
 from movement.fundamental_movement import *  # import fundamental movement functions
 from movement.standing.standing import *  # import standing functions
+from movement.walking.forward import trot_forward
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -596,4 +598,15 @@ ADJUSTMENT_FUNCS = {
 
 ##### run robotic process #####
 
+def periodic_restart(): # tart a background thread to restart the robot_dog.service every 30 minutes by checking elapsed time
+    start_time = time.time()
+    while True:
+        elapsed = time.time() - start_time
+        if elapsed >= 1800:  # 30 minutes = 1800 seconds
+            os.system('sudo systemctl restart robot_dog.service')
+            start_time = time.time()  # Reset timer after restart
+        time.sleep(1)  # Check every second
+
+restart_thread = threading.Thread(target=periodic_restart, daemon=True)
+restart_thread.start()
 _perception_loop(CHANNEL_DATA)  # run robot process
