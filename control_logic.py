@@ -13,47 +13,84 @@
 ############################################################
 
 
-########## IMPORT DEPENDENCIES ##########
+########## MANDATORY DEPENDENCIES ##########
 
-##### import necessary libraries #####
+##### mandatory libraries #####
 
 import threading
 import queue
-import time  # <-- already imported in simulation, import unconditionally here
-import os    # <-- already imported in simulation, import unconditionally here
+import time
+import os
 
-##### import necessary utilities #####
+##### mandatory dependencies #####
 
-from utilities.log import initialize_logging  # import logging setup
-from utilities.config import CONTROL_MODE, DEFAULT_INTENSITY, USE_SIMULATION  # import config for DEFAULT_INTENSITY
+from movement.fundamental_movement import *
+from movement.standing.standing import *
+from movement.walking.forward import trot_forward
+from utilities.log import initialize_logging
+from utilities.config import CONTROL_MODE, DEFAULT_INTENSITY, USE_SIMULATION
+from utilities.receiver import interpret_commands
+from utilities.camera import decode_frame
 
-##### conditional imports based on simulation mode #####
+##### (pre)initialize all utilities #####
 
-if not USE_SIMULATION:
-    # Hardware-dependent imports
-    from utilities.receiver import initialize_receiver, interpret_commands  # import receiver initialization functions
-    from utilities.camera import initialize_camera, decode_frame  # import to start camera logic
-    import utilities.internet as internet  # dynamically import internet utilities to be constantly updated (sending frames)
+LOGGER = initialize_logging()
+CAMERA_PROCESS = None
+CHANNEL_DATA = {}
+SOCK = None
+COMMAND_QUEUE = None
+ROBOT_ID = None
+JOINT_MAP = {}
 
-elif USE_SIMULATION:
-    # Simulation mode - mock these modules
-    import time
-    import numpy as np
-    import pybullet as p
-    import os
-    
-    # Mock camera function
-    def decode_frame(camera_process, mjpeg_buffer):
-        # Return dummy frame data for simulation
-        dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+
+########## SET REAL ROBOT DEPENDENCIES ##########
+
+def set_real_robot_dependencies():
+
+    ##### import/create dependencies #####
+
+    global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP, internet
+    from utilities.receiver import initialize_receiver  # import receiver initialization functions
+    from utilities.camera import initialize_camera  # import to start camera logic
+    import utilities.internet as internet  # dynamically import internet utilities to be constantly updated
+
+    CAMERA_PROCESS = initialize_camera()  # create camera process
+    if CAMERA_PROCESS is None:
+        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS!\n")
+
+    if CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+        SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
+        COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+        if SOCK is None:
+            logging.error("(control_logic.py): Failed to initialize SOCK!\n")
+        if COMMAND_QUEUE is None:
+            logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE!\n")
+
+    elif CONTROL_MODE == 'radio':  # if radio control mode...
+        CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
+        if CHANNEL_DATA == None:
+            logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA!\n")
+
+
+
+########## SET SIMULATED ROBOT DEPENDENCIES ##########
+
+def set_simulation_dependencies():
+
+    ##### import/create dependencies #####
+
+    global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP
+    import numpy
+    import pybullet
+
+    def sim_decode_frame(camera_process, mjpeg_buffer):
+        dummy_frame = numpy.zeros((480, 640, 3), dtype=numpy.uint8)
         return mjpeg_buffer, dummy_frame, dummy_frame
-    
-    # Mock receiver function
+
+    decode_frame = sim_decode_frame
     def interpret_commands(channel_data):
-        # Return empty commands for simulation
         return {}
-    
-    # Mock internet functions
+
     class MockInternet:
         def initialize_backend_socket(self):
             return None
@@ -61,75 +98,31 @@ elif USE_SIMULATION:
             return None
         def stream_to_backend(self, sock, frame):
             pass
-    
+
     internet = MockInternet()
-
-##### import movement functions #####
-
-from movement.fundamental_movement import *  # import fundamental movement functions
-from movement.standing.standing import *  # import standing functions
-from movement.walking.forward import trot_forward
-
-
-########## CREATE DEPENDENCIES ##########
-
-##### initialize all utilities #####
-
-LOGGER = initialize_logging()  # set up logging
-
-if not USE_SIMULATION:
-    # Hardware-dependent initialization
-    CAMERA_PROCESS = initialize_camera()  # create camera process
-    CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
-    ROBOT_ID = None
-    JOINT_MAP = {}
-    if CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
-        SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
-        COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
-    elif CONTROL_MODE == 'radio':  # if radio control mode...
-        SOCK = None
-        COMMAND_QUEUE = None
-
-elif USE_SIMULATION:
-    # Simulation mode - mock hardware
     CAMERA_PROCESS = None
     CHANNEL_DATA = {}
     SOCK = None
     COMMAND_QUEUE = None
-
-    ##### initialize simulation if enabled #####
-
-    p.connect(p.GUI)
-    p.setGravity(0, 0, -9.81)
-    p.loadURDF("plane.urdf")
-    
-    # Load robot URDF
+    pybullet.connect(pybullet.GUI)
+    pybullet.setGravity(0, 0, -9.81)
+    pybullet.loadURDF("plane.urdf")
     urdf_path = os.path.join(os.path.dirname(__file__), "training", "urdf", "robot_dog.urdf")
-    ROBOT_ID = p.loadURDF(urdf_path, [0, 0, 0.1], useFixedBase=True)
-    
-    # Create joint mapping
+    ROBOT_ID = pybullet.loadURDF(urdf_path, [0, 0, 0.1], useFixedBase=True)
     JOINT_MAP = {}
-    num_joints = p.getNumJoints(ROBOT_ID)
+    num_joints = pybullet.getNumJoints(ROBOT_ID)
+
     for i in range(num_joints):
-        info = p.getJointInfo(ROBOT_ID, i)
+        info = pybullet.getJointInfo(ROBOT_ID, i)
         joint_name = info[1].decode('utf-8')
         if '_' in joint_name and joint_name.split('_')[0] in ['FL', 'FR', 'BL', 'BR']:
             parts = joint_name.split('_')
             if len(parts) == 2 and parts[1] in ['hip', 'upper', 'lower']:
                 JOINT_MAP[(parts[0], parts[1])] = i
-    
-    logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}")
-    logging.info(f"(control_logic.py): Joint map: {JOINT_MAP}")
-    
-    # Set simulation variables in movement module
+
+    logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}\n")
+    logging.info(f"(control_logic.py): Joint map: {JOINT_MAP}\n")
     set_simulation_variables(ROBOT_ID, JOINT_MAP)
-
-##### set global variables #####
-
-IMAGELESS_GAIT = True  # set global variable for imageless gait
-IS_COMPLETE = True  # boolean that tracks if the robot is done moving, independent of it being neutral or not
-IS_NEUTRAL = False  # set global neutral standing boolean
-CURRENT_LEG = 'FL'  # set global current leg
 
 
 
@@ -141,6 +134,22 @@ CURRENT_LEG = 'FL'  # set global current leg
 
 
 ########## RUN ROBOTIC PROCESS ##########
+
+##### import/create necessary dependencies #####
+
+if not USE_SIMULATION:
+    set_real_robot_dependencies()
+elif USE_SIMULATION:
+    set_simulation_dependencies()
+
+##### set global variables #####
+
+IMAGELESS_GAIT = True  # set global variable for imageless gait
+IS_COMPLETE = True  # boolean that tracks if the robot is done moving, independent of it being neutral or not
+IS_NEUTRAL = False  # set global neutral standing boolean
+CURRENT_LEG = 'FL'  # set global current leg
+
+##### run robotic process #####
 
 def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
@@ -208,9 +217,9 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 logging.info(f"(control_logic.py): No command received, returning to neutral position...\n")
                 threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
 
-            # Step simulation if enabled
+            # step simulation if enabled
             if USE_SIMULATION:
-                p.stepSimulation()
+                pybullet.stepSimulation()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -244,7 +253,6 @@ def _handle_command(command, frame):
         #except Exception as e:
             #logging.error(f"(control_logic.py): Failed to run inference for command: {e}\n")
 
-    # Accept both string and list (for future-proofing)
     if isinstance(command, str):
         if '+' in command:
             keys = command.split('+')
@@ -255,8 +263,7 @@ def _handle_command(command, frame):
     elif isinstance(command, (list, tuple)):
         keys = list(command)
     elif isinstance(command, dict):
-        # Radio commands come as a dict from interpret_commands
-        keys = []  # Not used for radio mode
+        keys = []  # not used for radio mode
     else:
         keys = []
 
@@ -298,7 +305,6 @@ def _handle_command(command, frame):
 ##### keyboard commands for tuning mode and normal operation #####
 
 def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, tune_mode):
-    # keys: list of pressed keys, e.g. ['w', 'd', 'arrowup']
 
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
@@ -309,7 +315,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
             logging.warning(f"(control_logic.py): Toggled IMAGELESS_GAIT to {IMAGELESS_GAIT}\n")
             keys = [k for k in keys if k != 'i'] # remove 'i' from the keys list
 
-        # cancel out contradictary keys
+        # cancel out contradictory keys
         if 'w' in keys and 's' in keys:
             keys = [k for k in keys if k not in ['w', 's']]
         if 'a' in keys and 'd' in keys:
@@ -319,10 +325,10 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
         if 'arrowup' in keys and 'arrowdown' in keys:
             keys = [k for k in keys if k not in ['arrowup', 'arrowdown']]
 
-        # Movement direction logic
+        # movement direction logic
         direction = None
 
-        # Movement (WASD and diagonals)
+        # movement (WASD and diagonals)
         if 'w' in keys and 'd' in keys:
             direction = 'w+d'
         elif 'w' in keys and 'a' in keys:
@@ -340,19 +346,19 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
         elif 'd' in keys:
             direction = 'd'
 
-        # Rotation (arrow keys)
+        # rotation (arrow keys)
         if 'arrowleft' in keys:
             direction = 'arrowleft'
         elif 'arrowright' in keys:
             direction = 'arrowright'
 
-        # Tilt (arrow up/down)
+        # tilt (arrow up/down)
         if 'arrowup' in keys:
             direction = 'arrowup'
         elif 'arrowdown' in keys:
             direction = 'arrowdown'
 
-        # Neutral and special actions
+        # neutral and special actions
         if 'n' in keys or not keys:
             logging.info(f"(control_logic.py): NEUTRAL\n")
             neutral_position(10)
@@ -370,7 +376,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
             logging.warning(f"(control_logic.py): Invalid command: {keys}\n")
 
     else:
-        # Tuning mode - handle individual key actions
+        # tuning mode - handle individual key actions
         for key in keys:
             if key in ADJUSTMENT_FUNCS.get(current_leg, {}):
                 try:
@@ -379,13 +385,13 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
                 except Exception as e:
                         logging.error(f"(control_logic.py): Failed to adjust {current_leg} with {key}: {e}\n")
             elif key == 'q':
-                # Switch to next leg
+                # switch to next leg
                 legs = ['FL', 'FR', 'BL', 'BR']
                 current_index = legs.index(current_leg)
                 current_leg = legs[(current_index + 1) % len(legs)]
                 logging.info(f"(control_logic.py): Switched to leg: {current_leg}\n")
             elif key == 'e':
-                # Switch to previous leg
+                # switch to previous leg
                 legs = ['FL', 'FR', 'BL', 'BR']
                 current_index = legs.index(current_leg)
                 current_leg = legs[(current_index - 1) % len(legs)]
@@ -397,7 +403,6 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
 ##### radio commands for multi-channel processing #####
 
 def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode):
-    # commands: dict of channel states, e.g. {'channel_5': ('MOVE_FORWARD', 8), 'channel_6': ('SHIFT_LEFT', 5)}
 
     global IMAGELESS_GAIT # set IMAGELESS_GAIT as global to switch between modes via button press
 
@@ -406,20 +411,18 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
     IMAGELESS_GAIT = True
 
     if not tune_mode:
-        # Extract active commands (non-neutral)
         active_commands = {
             channel: (action, intensity) for channel, (action, intensity) in commands.items() if action != 'NEUTRAL'
         }
 
         if not active_commands:
-            # All channels neutral, return to neutral position
-            logging.info(f"(control_logic.py): All channels neutral, returning to neutral position\n")
+            logging.info(f"(control_logic.py): All channels neutral, returning to neutral position.\n")
             neutral_position(10)
             is_neutral = True
             return is_neutral, current_leg
 
-        # Cancel out contradictory commands (similar to keyboard logic)
-        # Check for contradictory movement commands
+        # cancel out contradictory commands (similar to keyboard logic)
+        # check for contradictory movement commands
         move_actions = []
         for channel in ['channel_5', 'channel_6']:
             if channel in active_commands:
@@ -427,28 +430,25 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
                 if 'MOVE' in action or 'SHIFT' in action:
                     move_actions.append((channel, action))
 
-        # Remove contradictory movements (this is handled by the direction logic below)
-        # Instead, we'll prioritize based on intensity and handle in direction determination
-
-        # Determine primary direction and intensity
+        # determine primary direction and intensity
         direction = None
         max_intensity = 0
 
-        # Movement combinations (channels 5 and 6)
+        # movement combinations (channels 5 and 6)
         move_forward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE FORWARD'
         move_backward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE BACKWARD'
         shift_left = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT LEFT'
         shift_right = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT RIGHT'
 
-        # Rotation (channel 3)
+        # rotation (channel 3)
         rotate_left = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE LEFT'
         rotate_right = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE RIGHT'
 
-        # Tilt (channel 4)
+        # tilt (channel 4)
         tilt_up = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT UP'
         tilt_down = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT DOWN'
 
-        # Special actions (channels 0, 1, 2, 7)
+        # special actions (channels 0, 1, 2, 7)
         look_up = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK UP'
         look_down = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK DOWN'
         trigger_shoot = active_commands.get('channel_1', ('NEUTRAL', 0))[0] == 'TRIGGER SHOOT'
@@ -457,10 +457,10 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
         plus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '+'
         minus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '-'
 
-        # Build complex direction string for computer-friendly parsing
+        # build complex direction string for computer-friendly parsing
         direction_parts = []
 
-        # Handle diagonal movements (combine channels 5 and 6)
+        # handle diagonal movements (combine channels 5 and 6)
         if move_forward and shift_left:
             direction_parts.append('w+a')
             max_intensity = max(
@@ -485,7 +485,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
                 active_commands.get('channel_5', ('NEUTRAL', 0))[1],
                 active_commands.get('channel_6', ('NEUTRAL', 0))[1]
             )
-        # Handle single movements
+        # handle single movements
         elif move_forward:
             direction_parts.append('w')
             max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
@@ -499,7 +499,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
             direction_parts.append('d')
             max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
 
-        # Handle rotation (can combine with movement)
+        # handle rotation (can combine with movement)
         if rotate_left:
             direction_parts.append('arrowleft')
             max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
@@ -507,7 +507,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
             direction_parts.append('arrowright')
             max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
 
-        # Handle tilt (can combine with movement and rotation)
+        # handle tilt (can combine with movement and rotation)
         if tilt_up:
             direction_parts.append('arrowup')
             max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
@@ -515,7 +515,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
             direction_parts.append('arrowdown')
             max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
 
-        # Handle special actions (these don't add to direction but are logged)
+        # handle special actions (these don't add to direction but are logged)
         special_actions = []
         if look_up:
             special_actions.append('LOOK_UP')
@@ -532,19 +532,19 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
         elif minus_action:
             special_actions.append('MINUS')
 
-        # Combine all direction parts
+        # combine all direction parts
         if direction_parts:
             direction = '+'.join(direction_parts)
-            logging.info(f"(control_logic.py): Radio commands {active_commands}: {direction} (intensity: {max_intensity})\n")
+            logging.info(f"(control_logic.py): Radio commands {active_commands}:{direction}\n")
             if special_actions:
-                logging.info(f"(control_logic.py): Special actions: {special_actions}\n")
+                logging.info(f"(control_logic.py): Special actions:{special_actions}\n")
             #move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
             trot_forward(max_intensity)
             is_neutral = False
         elif special_actions:
-            # Only special actions, no movement
+            # only special actions, no movement
             logging.info(f"(control_logic.py): Special actions only: {special_actions}\n")
-            # Handle special actions here
+            # handle special actions here
             if 'SQUAT_DOWN' in special_actions:
                 squatting_position(1)
                 is_neutral = False
@@ -598,7 +598,7 @@ ADJUSTMENT_FUNCS = {
 
 ##### run robotic process #####
 
-def periodic_restart(): # tart a background thread to restart the robot_dog.service every 30 minutes by checking elapsed time
+def periodic_restart(): # start background thread to restart robot_dog.service every 30 minutes by checking elapsed time
     start_time = time.time()
     while True:
         elapsed = time.time() - start_time
