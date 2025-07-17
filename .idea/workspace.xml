@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,6 +119,7 @@
       <workItem from="1752343933383" duration="8419000" />
       <workItem from="1752411561255" duration="42720000" />
       <workItem from="1752587465616" duration="16564000" />
+      <workItem from="1752776754978" duration="1963000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -261,14 +260,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00039" summary="Made accurate ranges for all relevant joints">
-      <option name="closed" value="true" />
-      <created>1752363324368</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1752363324368</updated>
     </task>
     <task id="LOCAL-00040" summary="Got rid of useless crap in config">
       <option name="closed" value="true" />
@@ -494,7 +485,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752698651744</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values">
+      <option name="closed" value="true" />
+      <created>1752784350875</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1752784350876</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -509,7 +508,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick" />
     <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly" />
     <MESSAGE value="Going to massively upgrade control system, starting with keyboards and not testing move_direction yet until the keyboard commands completely work" />
     <MESSAGE value="Getting rid of ssh control client, its been deprecated for weeks now" />
@@ -534,7 +532,8 @@
     <MESSAGE value="Updating controller.js to most recent version" />
     <MESSAGE value="Made it so robot automatically restarts every 30 minutes" />
     <MESSAGE value="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next" />
-    <option name="LAST_COMMIT_MESSAGE" value="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next" />
+    <MESSAGE value="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values" />
+    <option name="LAST_COMMIT_MESSAGE" value="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

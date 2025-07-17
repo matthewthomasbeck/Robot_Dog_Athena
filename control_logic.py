@@ -21,6 +21,7 @@ import threading
 import queue
 import time
 import os
+import socket
 
 ##### mandatory dependencies #####
 
@@ -120,8 +121,8 @@ def set_simulation_dependencies():
             if len(parts) == 2 and parts[1] in ['hip', 'upper', 'lower']:
                 JOINT_MAP[(parts[0], parts[1])] = i
 
-    logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}\n")
-    logging.info(f"(control_logic.py): Joint map: {JOINT_MAP}\n")
+    logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}.\n")
+    logging.info(f"(control_logic.py): Joint map initialized as {JOINT_MAP}.\n")
     set_simulation_variables(ROBOT_ID, JOINT_MAP)
 
 
@@ -214,7 +215,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
             # NEUTRAL POSITION HANDLING (for both modes)
             elif not command and IS_COMPLETE and not IS_NEUTRAL: # if no command and movement complete and not neutral...
-                logging.info(f"(control_logic.py): No command received, returning to neutral position...\n")
+                logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
                 threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
 
             # step simulation if enabled
@@ -360,20 +361,20 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
 
         # neutral and special actions
         if 'n' in keys or not keys:
-            logging.info(f"(control_logic.py): NEUTRAL\n")
+            logging.debug(f"(control_logic.py): NEUTRAL\n")
             neutral_position(10)
             is_neutral = True
         elif ' ' in keys:
-            logging.info(f"(control_logic.py): space: LIE DOWN\n")
+            logging.debug(f"(control_logic.py): space: LIE DOWN\n")
             squatting_position(1)
             is_neutral = False
         elif direction:
-            logging.info(f"(control_logic.py): {keys}: {direction}\n")
+            logging.debug(f"(control_logic.py): {keys}: {direction}\n")
             trot_forward(intensity)
             #move_direction(direction, frame, intensity, IMAGELESS_GAIT)
             is_neutral = False
         else:
-            logging.warning(f"(control_logic.py): Invalid command: {keys}\n")
+            logging.warning(f"(control_logic.py): Invalid command: {keys}.\n")
 
     else:
         # tuning mode - handle individual key actions
@@ -381,7 +382,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
             if key in ADJUSTMENT_FUNCS.get(current_leg, {}):
                 try:
                     ADJUSTMENT_FUNCS[current_leg][key]()
-                    logging.debug(f"(control_logic.py): Tuning {current_leg} with {key}\n")
+                    logging.debug(f"(control_logic.py): Tuning {current_leg} with {key}.\n")
                 except Exception as e:
                         logging.error(f"(control_logic.py): Failed to adjust {current_leg} with {key}: {e}\n")
             elif key == 'q':
@@ -535,15 +536,15 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
         # combine all direction parts
         if direction_parts:
             direction = '+'.join(direction_parts)
-            logging.info(f"(control_logic.py): Radio commands {active_commands}:{direction}\n")
+            logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
             if special_actions:
-                logging.info(f"(control_logic.py): Special actions:{special_actions}\n")
+                logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
             #move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
             trot_forward(max_intensity)
             is_neutral = False
         elif special_actions:
             # only special actions, no movement
-            logging.info(f"(control_logic.py): Special actions only: {special_actions}\n")
+            logging.debug(f"(control_logic.py): Special actions only: ({special_actions})\n")
             # handle special actions here
             if 'SQUAT_DOWN' in special_actions:
                 squatting_position(1)
@@ -606,6 +607,31 @@ def restart_process(): # start background thread to restart robot_dog.service ev
             start_time = time.time()  # reset timer after restart
         time.sleep(1)  # check every second
 
+def send_voltage_to_backend(voltage):
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('127.0.0.1', 3000))  # Use backend's IP if remote
+        msg = f'VOLTAGE:{voltage:.4f}'
+        s.sendall(msg.encode())
+        s.close()
+    except Exception as e:
+        logging.error(f"(control_logic.py) Failed to send voltage: {e}\n")
+
+def voltage_monitor():
+    while True:
+        voltage_output = os.popen('vcgencmd measure_voltage').read()
+        voltage_str = voltage_output.strip().replace('volt=', '').replace('V', '')
+        try:
+            voltage = float(voltage_str)
+            if voltage < 0.8600:
+                logging.warning(f"(control_logic.py) Low voltage ({voltage:.4f}V) detected!\n")
+            send_voltage_to_backend(voltage)
+        except ValueError:
+            logging.error(f"(control_logic.py) Failed to parse voltage: {voltage_output}\n")
+        time.sleep(10)  # check every 10 seconds
+
 #restart_thread = threading.Thread(target=restart_process, daemon=True) # TODO disabling for endurance testing
 #restart_thread.start()
+voltage_thread = threading.Thread(target=voltage_monitor, daemon=True)
+voltage_thread.start()
 _perception_loop(CHANNEL_DATA)  # run robot process
