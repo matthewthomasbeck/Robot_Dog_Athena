@@ -595,18 +595,17 @@ ADJUSTMENT_FUNCS = {
     }
 }
 
-
 ##### run robotic process #####
 
-def periodic_restart(): # start background thread to restart robot_dog.service every 30 minutes by checking elapsed time
+def restart_process(): # start background thread to restart robot_dog.service every 30 minutes by checking elapsed time
     start_time = time.time()
     while True:
         elapsed = time.time() - start_time
         if elapsed >= 1800:  # 30 minutes = 1800 seconds
             os.system('sudo systemctl restart robot_dog.service')
-            start_time = time.time()  # Reset timer after restart
-        time.sleep(1)  # Check every second
+            start_time = time.time()  # reset timer after restart
+        time.sleep(1)  # check every second
 
-restart_thread = threading.Thread(target=periodic_restart, daemon=True)
-restart_thread.start()
+#restart_thread = threading.Thread(target=restart_process, daemon=True) # TODO disabling for endurance testing
+#restart_thread.start()
 _perception_loop(CHANNEL_DATA)  # run robot process

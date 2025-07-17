@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made it so robot automatically restarts every 30 minutes">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -263,14 +262,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00038" summary="Fixed URDF to use &lt;LEG&gt;_&lt;SERVO&gt; naming convention for important joints, adjusted visualize.py">
-      <option name="closed" value="true" />
-      <created>1752348794159</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1752348794159</updated>
-    </task>
     <task id="LOCAL-00039" summary="Made accurate ranges for all relevant joints">
       <option name="closed" value="true" />
       <created>1752363324368</created>
@@ -495,7 +486,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752688272974</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next">
+      <option name="closed" value="true" />
+      <created>1752698651744</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1752698651744</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -510,7 +509,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Got visualization working, going to try to set up environment tomorrow" />
     <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick" />
     <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly" />
     <MESSAGE value="Going to massively upgrade control system, starting with keyboards and not testing move_direction yet until the keyboard commands completely work" />
@@ -535,7 +533,8 @@
     <MESSAGE value="Implementing caveman solution to hard reset the system whenever unstable" />
     <MESSAGE value="Updating controller.js to most recent version" />
     <MESSAGE value="Made it so robot automatically restarts every 30 minutes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Made it so robot automatically restarts every 30 minutes" />
+    <MESSAGE value="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next" />
+    <option name="LAST_COMMIT_MESSAGE" value="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

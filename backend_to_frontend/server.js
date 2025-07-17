@@ -63,7 +63,7 @@ let activeSessionId = null; // Track which session is currently controlling the 
 
 // Create robot server on port 3000
 const robotServer = net.createServer((socket) => {
-  console.log('Robot connected from:', socket.remoteAddress);
+  logger.info('Robot connected from:', socket.remoteAddress);
   robotSocket = socket;
   robotConnected = true;
 
@@ -74,7 +74,7 @@ const robotServer = net.createServer((socket) => {
 });
 
 robotServer.listen(3000, '0.0.0.0', () => {
-  console.log('Robot server listening on port 3000');
+  logger.info('Robot server listening on port 3000');
 });
 
 // Add this function near the top or before the io.on('connection') block
@@ -98,7 +98,7 @@ function sanitizeKeys(keys) {
 
 // WebSocket signaling for WebRTC
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
+  logger.info('Client connected:', socket.id);
 
   // Handle authentication
   socket.on('auth', async (data) => {
@@ -119,11 +119,11 @@ io.on('connection', (socket) => {
         // This session is already active, allow this connection
         connectedClients.set(socket.id, { authenticated: true, token, videoReady: false, sessionId });
         socket.emit('auth-success');
-        console.log('Client authenticated (existing session):', socket.id);
-        
+        logger.info('Client authenticated (existing session):', socket.id);
+
         // Update active client ID to this new socket
         activeClientId = socket.id;
-        
+
         // If robot is already connected, notify client immediately
         if (robotConnected) {
           socket.emit('robot-available');
@@ -140,7 +140,7 @@ io.on('connection', (socket) => {
       // For now, just check if token exists (you can add more validation later)
       connectedClients.set(socket.id, { authenticated: true, token, videoReady: false, sessionId });
       socket.emit('auth-success');
-      console.log('Client authenticated:', socket.id);
+      logger.info('Client authenticated:', socket.id);
 
       // Set this client as the active client and session
       activeClientId = socket.id;
@@ -152,14 +152,14 @@ io.on('connection', (socket) => {
       }
 
     } catch (error) {
-      console.error('Authentication error:', error);
+      logger.error('Authentication error:', error);
       socket.emit('auth-failed', { message: 'Authentication failed' });
     }
   });
 
   // Handle WebRTC signaling
   socket.on('offer', (data) => {
-    console.log('Received offer from client');
+    logger.info('Received offer from client');
 
     const client = connectedClients.get(socket.id);
     if (client && client.authenticated && activeClientId === socket.id) {
@@ -178,18 +178,18 @@ io.on('connection', (socket) => {
   });
 
   socket.on('answer', (data) => {
-    console.log('Received answer from client');
+    logger.info('Received answer from client');
   });
 
   socket.on('ice-candidate', (data) => {
-    console.log('Received ICE candidate from client');
+    logger.info('Received ICE candidate from client');
     // Echo back for testing
     socket.emit('ice-candidate', data);
   });
 
   // Handle robot commands
   socket.on('robot-command', (data) => {
-    console.log('Robot command received:', data.command);
+    logger.info('Robot command received:', data.command);
 
     // Only allow commands from the active client
     if (activeClientId !== socket.id) {
@@ -224,9 +224,9 @@ io.on('connection', (socket) => {
           status: 'sent',
           timestamp: Date.now()
         });
-        console.log(`Command sent to robot: ${commandToSend}`);
+        logger.info(`Command sent to robot: ${commandToSend}`);
       } catch (error) {
-        console.error('Error sending command to robot:', error);
+        logger.error('Error sending command to robot:', error);
         socket.emit('command-ack', {
           command: commandToSend,
           status: 'error',
@@ -245,7 +245,7 @@ io.on('connection', (socket) => {
 
   // Handle client leaving (manual disconnect)
   socket.on('leave-robot', () => {
-    console.log('Client leaving robot control:', socket.id);
+    logger.info('Client leaving robot control:', socket.id);
     if (activeClientId === socket.id) {
       activeClientId = null;
       activeSessionId = null;
@@ -259,16 +259,16 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
-    
+    logger.info('Client disconnected:', socket.id);
+
     const client = connectedClients.get(socket.id);
-    
+
     // If this was the active client, clear the active client and notify others
     if (activeClientId === socket.id) {
       activeClientId = null;
       activeSessionId = null;
-      console.log('Active client disconnected, robot is now available');
-      
+      logger.info('Active client disconnected, robot is now available');
+
       // Notify all remaining authenticated clients that robot is available
       connectedClients.forEach((client, clientId) => {
         if (client.authenticated && clientId !== socket.id) {
@@ -276,15 +276,31 @@ io.on('connection', (socket) => {
         }
       });
     }
-    
+
     connectedClients.delete(socket.id);
   });
 });
 
+// Add at the top, after other variable declarations
+const MAX_FRAME_SIZE = 2 * 1024 * 1024; // 2MB max frame size for sanity check
+
+// Log buffer size every 10 seconds
+setInterval(() => {
+  if (robotBuffer.length > 0) {
+    logger.info('Current robotBuffer size:', robotBuffer.length);
+  }
+}, 10000); // every 10 seconds
+
+// Log memory usage every minute
+setInterval(() => {
+  const mem = process.memoryUsage();
+  logger.info('Memory usage:', mem);
+}, 60000); // every minute
+
 // Handle robot socket events
 robotServer.on('connection', (socket) => {
   socket.on('data', (data) => {
-    console.log(`Received ${data.length} bytes from robot`);
+    logger.info(`Received ${data.length} bytes from robot`);
 
     // Append new data to buffer
     robotBuffer = Buffer.concat([robotBuffer, data]);
@@ -293,6 +309,13 @@ robotServer.on('connection', (socket) => {
     while (robotBuffer.length >= 4) {
       // Read frame length (4 bytes)
       const frameLength = robotBuffer.readUInt32BE(0);
+
+      // Sanity check for frame length
+      if (frameLength <= 0 || frameLength > MAX_FRAME_SIZE) {
+        logger.error('Invalid frame length:', frameLength, 'Clearing buffer.');
+        robotBuffer = Buffer.alloc(0);
+        break;
+      }
 
       // Check if we have a complete frame
       if (robotBuffer.length >= 4 + frameLength) {
@@ -314,10 +337,12 @@ robotServer.on('connection', (socket) => {
                   frame: frameBase64,
                   timestamp: Date.now()
                 });
-                console.log(`Sent video frame to active client ${activeClientId}, size: ${frameLength} bytes`);
+                logger.info(`Sent video frame to active client ${activeClientId}, size: ${frameLength} bytes`);
+              } else {
+                logger.warn('Frame base64 is empty, skipping emit.');
               }
             } catch (error) {
-              console.error('Error processing video frame:', error);
+              logger.error('Error processing video frame:', error);
             }
           }
         }
@@ -332,9 +357,10 @@ robotServer.on('connection', (socket) => {
   });
 
   socket.on('close', () => {
-    console.log('Robot disconnected');
+    logger.info('Robot disconnected');
     robotConnected = false;
     robotSocket = null;
+    robotBuffer = Buffer.alloc(0); // Clear buffer on disconnect
 
     // Notify the active client that robot is unavailable
     if (activeClientId) {
@@ -343,10 +369,11 @@ robotServer.on('connection', (socket) => {
   });
 
   socket.on('error', (err) => {
-    console.error('Robot socket error:', err);
+    logger.error('Robot socket error:', err);
     robotConnected = false;
     robotSocket = null;
-    
+    robotBuffer = Buffer.alloc(0); // Clear buffer on error
+
     // Notify the active client that robot is unavailable
     if (activeClientId) {
       io.to(activeClientId).emit('robot-unavailable');
@@ -368,4 +395,4 @@ app.get('/health', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, '0.0.0.0', () => console.log(`Backend running on port ${PORT}`)); 
+server.listen(PORT, '0.0.0.0', () => logger.info(`Backend running on port ${PORT}`));

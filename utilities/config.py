@@ -143,10 +143,10 @@ SERVO_CONFIG = { # dictionary of leg configurations
 ##### set dictionary of feet current positions for the AI model #####
 
 CURRENT_FEET_COORDINATES = {
-    'FL': {'x': 0.0, 'y': 0.0, 'z': 0.0},
-    'FR': {'x': 0.0, 'y': 0.0, 'z': 0.0},
-    'BL': {'x': 0.0, 'y': 0.0, 'z': 0.0},
-    'BR': {'x': 0.0, 'y': 0.0, 'z': 0.0}
+    'FL': {'x': 0.0290, 'y': 0.0485, 'z': -0.235},
+    'FR': {'x': 0.0290, 'y': -0.0485, 'z': -0.235},
+    'BL': {'x': -0.0290, 'y': 0.0485, 'z': -0.235},
+    'BR': {'x': -0.0290, 'y': -0.0485, 'z': -0.235}
 }
 
 
