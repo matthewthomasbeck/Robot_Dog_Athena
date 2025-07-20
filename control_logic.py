@@ -632,6 +632,6 @@ def voltage_monitor():
 
 #restart_thread = threading.Thread(target=restart_process, daemon=True) # TODO disabling for endurance testing
 #restart_thread.start()
-voltage_thread = threading.Thread(target=voltage_monitor, daemon=True)
-voltage_thread.start()
+#voltage_thread = threading.Thread(target=voltage_monitor, daemon=True) # TODO clean up your messy code first!
+#voltage_thread.start()
 _perception_loop(CHANNEL_DATA)  # run robot process

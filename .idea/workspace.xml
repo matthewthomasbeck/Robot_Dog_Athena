@@ -4,7 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to add voltage checking for power awareness">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/back/athena_back-butt_1.2.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/back/athena_back-top_1.2.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/2s 6200mah LiPo battery.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/ai_module-mock_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/feet/ares_feet-foot_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/femurs/ares_femurs-left_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/femurs/ares_femurs-right_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/front/athena_front-face_1.1.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/front/athena_front-top_1.1.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/110mm tierod.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/25T Disc Servo Horn.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/25T Servo Horn.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/legpins/ares_legpins-legpin_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection-batteryplate_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection-bottom_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection-side_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/athena_midsection-connectorplate_1.2.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/athena_midsection-top_1.1.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis/ares_pelvis-foreleft-hindright_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis/ares_pelvis-foreright-hindleft_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis_blades/ares_pelvis_blades-left_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis_blades/ares_pelvis_blades-right_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/tibias/ares_tibias-left_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/tibias/ares_tibias-right_1.0.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog.urdf" beforeDir="false" afterPath="$PROJECT_DIR$/training/urdf/robot_dog.urdf" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -120,6 +148,9 @@
       <workItem from="1752411561255" duration="42720000" />
       <workItem from="1752587465616" duration="16564000" />
       <workItem from="1752776754978" duration="1963000" />
+      <workItem from="1752784885037" duration="824000" />
+      <workItem from="1752791579525" duration="128000" />
+      <workItem from="1753027178312" duration="507000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -260,14 +291,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00040" summary="Got rid of useless crap in config">
-      <option name="closed" value="true" />
-      <created>1752363451302</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1752363451302</updated>
     </task>
     <task id="LOCAL-00041" summary="Finished URDF">
       <option name="closed" value="true" />
@@ -493,7 +516,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752784350876</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="Going to add voltage checking for power awareness">
+      <option name="closed" value="true" />
+      <created>1752787644208</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1752787644208</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -508,7 +539,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly" />
     <MESSAGE value="Going to massively upgrade control system, starting with keyboards and not testing move_direction yet until the keyboard commands completely work" />
     <MESSAGE value="Getting rid of ssh control client, its been deprecated for weeks now" />
     <MESSAGE value="Got radio commands reintegrated (but still need to fix the invisible command queue bug)" />
@@ -533,7 +563,8 @@
     <MESSAGE value="Made it so robot automatically restarts every 30 minutes" />
     <MESSAGE value="(Semi) cleaned up the dependency hell I got myself into, might try to make individual dependency creation functions next" />
     <MESSAGE value="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values" />
-    <option name="LAST_COMMIT_MESSAGE" value="Connection issue seemingly solved as backend buffer overflow, going to comment out resetting to see if that is no longer needed; I also changed the config initial coordinates for neutral to more accurate values" />
+    <MESSAGE value="Going to add voltage checking for power awareness" />
+    <option name="LAST_COMMIT_MESSAGE" value="Going to add voltage checking for power awareness" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1738759018904" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
