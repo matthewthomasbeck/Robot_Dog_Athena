@@ -39,6 +39,7 @@ import threading # import threading for thread management
 if USE_SIMULATION:
     import pybullet
     import math
+    from utilities.config import USE_ISAAC_SIM
 elif not USE_SIMULATION:
     from utilities.servos import map_angle_to_servo_position, set_target  # import servo mapping functions
 
@@ -310,13 +311,13 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
         #joint_speed = speed
         #joint_acceleration = acceleration
 
-        if not USE_SIMULATION: # if user wants to use real servos...
+        if not USE_SIMULATION and not USE_ISAAC_SIM: # if user wants to use real servos...
             servo_data = config.SERVO_CONFIG[leg_id][joint]
             is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
             pwm = map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
             set_target(servo_data['servo'], pwm, joint_speed, joint_acceleration)
 
-        elif USE_SIMULATION: # if user wants to control simulated robot...
+        elif USE_SIMULATION and not USE_ISAAC_SIM: # if user wants to control simulated robot with PyBullet...
             angle_rad = math.radians(angle) # convert angles to radians for simulation
             joint_key = (leg_id, joint) # get joint key for simulation
             if joint_key in JOINT_MAP: # if joint exists...
@@ -330,6 +331,22 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
                 )
             else:
                 logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map")
+
+        elif USE_SIMULATION and USE_ISAAC_SIM:
+            # --- ISAAC SIM LOGIC ---
+            # Assumes global ISAAC_ROBOT and ISAAC_JOINT_MAP are set
+            global ISAAC_ROBOT, ISAAC_JOINT_MAP
+            angle_rad = math.radians(angle)
+            joint_key = (leg_id, joint)
+            if joint_key in ISAAC_JOINT_MAP:
+                isaac_joint_name = ISAAC_JOINT_MAP[joint_key]
+                try:
+                    # Set the joint position in Isaac Sim (template, fill in with your API)
+                    ISAAC_ROBOT.get_articulation_controller().set_joint_positions({isaac_joint_name: angle_rad})
+                except Exception as e:
+                    logging.error(f"(fundamental_movement.py): Failed to set Isaac Sim joint {isaac_joint_name}: {e}")
+            else:
+                logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in Isaac Sim joint map")
 
 
 ##### GET NEUTRAL POSITIONS #####

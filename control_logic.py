@@ -76,7 +76,13 @@ def set_real_robot_dependencies():
 
 ########## SET SIMULATED ROBOT DEPENDENCIES ##########
 
-def set_simulation_dependencies():
+def set_isaac_dependencies():
+
+    from omni.isaac.kit import SimulationApp
+    from omni.isaac.core import World
+    from omni.isaac.core.robots import Robot
+
+def set_pybullet_dependencies():
 
     ##### import/create dependencies #####
 
@@ -141,7 +147,7 @@ def set_simulation_dependencies():
 if not USE_SIMULATION:
     set_real_robot_dependencies()
 elif USE_SIMULATION:
-    set_simulation_dependencies()
+    set_isaac_dependencies()
 
 ##### set global variables #####
 
