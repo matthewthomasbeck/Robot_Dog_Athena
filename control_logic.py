@@ -73,14 +73,33 @@ def set_real_robot_dependencies():
             logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA!\n")
 
 
-
 ########## SET SIMULATED ROBOT DEPENDENCIES ##########
 
 def set_isaac_dependencies():
+    global ISAAC_SIM_APP, ISAAC_WORLD, ISAAC_ROBOT, ISAAC_JOINT_MAP, CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
 
-    from omni.isaac.kit import SimulationApp
-    from omni.isaac.core import World
-    from omni.isaac.core.robots import Robot
+    from isaacsim.simulation_app import SimulationApp
+    ISAAC_SIM_APP = SimulationApp({"headless": False})
+
+    from isaacsim.core.api import World
+    from isaacsim.core.api.robots import Robot
+    from isaacsim.core.utils.stage import add_reference_to_stage
+
+    ISAAC_WORLD = World(stage_units_in_meters=1.0)
+    usd_path = os.path.expanduser("~/training/urdf/robot_dog/robot_dog.usd")
+    add_reference_to_stage(usd_path, "/World/robot")
+    ISAAC_ROBOT = Robot(prim_path="/World/robot", name="robot_dog")
+    ISAAC_WORLD.scene.add(ISAAC_ROBOT)
+    ISAAC_WORLD.reset()
+    joint_names = ISAAC_ROBOT.get_joints()
+    ISAAC_JOINT_MAP = {}
+
+    for joint in joint_names:
+        parts = joint.split("_")
+        if len(parts) == 2 and parts[0] in ['FL', 'FR', 'BL', 'BR'] and parts[1] in ['hip', 'upper', 'lower']:
+            ISAAC_JOINT_MAP[(parts[0], parts[1])] = joint
+
+    print("Isaac Sim initialized, joint map:", ISAAC_JOINT_MAP)
 
 def set_pybullet_dependencies():
 
@@ -147,7 +166,10 @@ def set_pybullet_dependencies():
 if not USE_SIMULATION:
     set_real_robot_dependencies()
 elif USE_SIMULATION:
-    set_isaac_dependencies()
+    if USE_ISAAC_SIM:
+        set_isaac_dependencies()
+    elif not USE_ISAAC_SIM:
+        set_pybullet_dependencies()
 
 ##### set global variables #####
 
@@ -226,7 +248,11 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
             # step simulation if enabled
             if USE_SIMULATION:
-                pybullet.stepSimulation()
+
+                if USE_ISAAC_SIM:
+                    ISAAC_WORLD.step(render=True)
+                else:
+                    pybullet.stepSimulation()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")

@@ -20,7 +20,7 @@
 
 ##### import from config #####
 
-from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG, USE_SIMULATION # import whether to use RL or CNN model
+from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG, USE_SIMULATION, USE_ISAAC_SIM
 
 ##### import necessary functions #####
 
@@ -37,9 +37,12 @@ import threading # import threading for thread management
 ##### import dependencies based on simulation use #####
 
 if USE_SIMULATION:
-    import pybullet
-    import math
-    from utilities.config import USE_ISAAC_SIM
+
+    if USE_ISAAC_SIM:
+        pass
+    else:
+        import pybullet
+        import math
 elif not USE_SIMULATION:
     from utilities.servos import map_angle_to_servo_position, set_target  # import servo mapping functions
 
@@ -157,38 +160,40 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
         elif USE_SIMULATION: # if running code in simulator...
 
-            ##### rl agent integration point #####
-            # gather state for RL agent (define get_simulation_state later if needed)
-            state = None # TODO replace with actual state extraction if needed
-            if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
-                target_coordinates, mid_coordinates, movement_rates = get_rl_action_standard(
-                    state,
-                    commands,
-                    intensity,
-                    frame
-                )
-                logging.warning(
-                    "(fundamental_movement.py): Using get_rl_action_standard placeholder. Replace with RL agent output when available."
-                )
-            elif imageless_gait:  # if using imageless gait adjustment (no image)...
-                target_coordinates, mid_coordinates, movement_rates = get_rl_action_blind(
-                    state,
-                    commands,
-                    intensity
-                )
-                logging.warning(
-                    "(fundamental_movement.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
-                )
+            if USE_ISAAC_SIM:
 
-            ##### move legs and update current position #####
+                ##### rl agent integration point #####
+                # gather state for RL agent (define get_simulation_state later if needed)
+                state = None # TODO replace with actual state extraction if needed
+                if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
+                    target_coordinates, mid_coordinates, movement_rates = get_rl_action_standard(
+                        state,
+                        commands,
+                        intensity,
+                        frame
+                    )
+                    logging.warning(
+                        "(fundamental_movement.py): Using get_rl_action_standard placeholder. Replace with RL agent output when available."
+                    )
+                elif imageless_gait:  # if using imageless gait adjustment (no image)...
+                    target_coordinates, mid_coordinates, movement_rates = get_rl_action_blind(
+                        state,
+                        commands,
+                        intensity
+                    )
+                    logging.warning(
+                        "(fundamental_movement.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
+                    )
 
-            # move legs and update cur pos
-            thread_leg_movement(
-                config.CURRENT_FEET_COORDINATES,
-                mid_coordinates,
-                target_coordinates,
-                movement_rates
-            )
+                ##### move legs and update current position #####
+
+                # move legs and update cur pos
+                thread_leg_movement(
+                    config.CURRENT_FEET_COORDINATES,
+                    mid_coordinates,
+                    target_coordinates,
+                    movement_rates
+                )
 
     except Exception as e: # if either model fails...
         logging.error(f"(fundamental_movement.py): Failed to run AI for command: {e}\n")
