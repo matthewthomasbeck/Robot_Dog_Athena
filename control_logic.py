@@ -86,9 +86,9 @@ def set_isaac_dependencies():
     from isaacsim.core.utils.stage import add_reference_to_stage
 
     ISAAC_WORLD = World(stage_units_in_meters=1.0)
-    usd_path = os.path.expanduser("~/training/urdf/robot_dog/robot_dog.usd")
-    add_reference_to_stage(usd_path, "/World/robot")
-    ISAAC_ROBOT = Robot(prim_path="/World/robot", name="robot_dog")
+    usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
+    add_reference_to_stage(usd_path, "/World/robot_dog")
+    ISAAC_ROBOT = Robot(prim_path="/World/robot_dog", name="robot_dog")
     ISAAC_WORLD.scene.add(ISAAC_ROBOT)
     ISAAC_WORLD.reset()
     joint_names = ISAAC_ROBOT.get_joints()
