@@ -81,9 +81,15 @@ def set_isaac_dependencies():
     from isaacsim.simulation_app import SimulationApp
     ISAAC_SIM_APP = SimulationApp({"headless": False})
 
+    import sys
+    import carb
+    import numpy as np
     from isaacsim.core.api import World
-    from isaacsim.core.api.robots import Robot
-    from isaacsim.core.utils.stage import add_reference_to_stage
+    from isaacsim.core.prims import Articulation
+    from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
+    from isaacsim.core.utils.types import ArticulationAction
+    from isaacsim.core.utils.viewports import set_camera_view
+    from isaacsim.storage.native import get_assets_root_path
 
     ISAAC_WORLD = World(stage_units_in_meters=1.0)
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
@@ -91,7 +97,7 @@ def set_isaac_dependencies():
     ISAAC_ROBOT = Robot(prim_path="/World/robot_dog", name="robot_dog")
     ISAAC_WORLD.scene.add(ISAAC_ROBOT)
     ISAAC_WORLD.reset()
-    joint_names = ISAAC_ROBOT.get_joints()
+    joint_names = ISAAC_ROBOT.dof_names
     ISAAC_JOINT_MAP = {}
 
     for joint in joint_names:
