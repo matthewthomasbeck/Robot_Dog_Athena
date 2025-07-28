@@ -20,7 +20,7 @@
 
 ##### import from config #####
 
-from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG, USE_SIMULATION, USE_ISAAC_SIM
+#from utilities.config import RL_NOT_CNN, INFERENCE_CONFIG, USE_SIMULATION, USE_ISAAC_SIM, ISAAC_SIM_APP
 
 ##### import necessary functions #####
 
@@ -36,14 +36,13 @@ import threading # import threading for thread management
 
 ##### import dependencies based on simulation use #####
 
-if USE_SIMULATION:
-
-    if USE_ISAAC_SIM:
-        pass
+if config.USE_SIMULATION:
+    if config.USE_ISAAC_SIM:
+        from isaacsim.core.utils.types import ArticulationAction
     else:
         import pybullet
         import math
-elif not USE_SIMULATION:
+elif not config.USE_SIMULATION:
     from utilities.servos import map_angle_to_servo_position, set_target  # import servo mapping functions
 
 
@@ -55,7 +54,7 @@ k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic fu
 
 ##### simulation variables (set by control_logic.py) #####
 
-if USE_SIMULATION:
+if config.USE_SIMULATION:
     ROBOT_ID = None  # Will be set by control_logic.py
     JOINT_MAP = {}   # Will be set by control_logic.py
 else:
@@ -64,12 +63,12 @@ else:
 
 ##### load and compile models #####
 
-if RL_NOT_CNN:
+if config.RL_NOT_CNN:
     # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
-    STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['STANDARD_RL_PATH'])
-    BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['BLIND_RL_PATH'])
-elif not RL_NOT_CNN:
-    CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(INFERENCE_CONFIG['CNN_PATH'])
+    STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
+    BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['BLIND_RL_PATH'])
+elif not config.RL_NOT_CNN:
+    CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
 
 ##### define servos #####
 
@@ -113,8 +112,8 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
         f"(fundamental_movement.py): Running inference for command(s) {commands} with intensity {intensity}...\n"
     )
     try: # try to run a model
-        if not USE_SIMULATION: # if user wants to use real servos...
-            if RL_NOT_CNN: # if running gait adjustment (production)...
+        if not config.USE_SIMULATION: # if user wants to use real servos...
+            if config.RL_NOT_CNN: # if running gait adjustment (production)...
 
                 ##### run RL model(s) #####
 
@@ -158,9 +157,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                 )
             logging.info(f"(fundamental_movement.py): Ran AI for command(s) {commands} with intensity {intensity}\n")
 
-        elif USE_SIMULATION: # if running code in simulator...
+        elif config.USE_SIMULATION: # if running code in simulator...
 
-            if USE_ISAAC_SIM:
+            if config.USE_ISAAC_SIM:
 
                 ##### rl agent integration point #####
                 # gather state for RL agent (define get_simulation_state later if needed)
@@ -293,7 +292,7 @@ def move_foot_to_pos_OLD(leg_id, pos, speed, acceleration, use_bezier):
         move_foot(leg_id, x=pos['x'], y=pos['y'], z=pos['z'], speed=speed, acceleration=acceleration)
 
 
-########## MOVE LEG FUNCTION ##########
+########## MOVE FOOT FUNCTION ##########
 
 def move_foot(leg_id, x, y, z, speed, acceleration):
 
@@ -301,6 +300,7 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
 
     hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
     hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
+    joint_targets = {} # for isaac sim use
 
     ##### move each joint of the leg to desired angle #####
 
@@ -316,13 +316,13 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
         #joint_speed = speed
         #joint_acceleration = acceleration
 
-        if not USE_SIMULATION and not USE_ISAAC_SIM: # if user wants to use real servos...
+        if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if user wants to use real servos...
             servo_data = config.SERVO_CONFIG[leg_id][joint]
             is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
             pwm = map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
             set_target(servo_data['servo'], pwm, joint_speed, joint_acceleration)
 
-        elif USE_SIMULATION and not USE_ISAAC_SIM: # if user wants to control simulated robot with PyBullet...
+        elif config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if user wants to control simulated robot with PyBullet...
             angle_rad = math.radians(angle) # convert angles to radians for simulation
             joint_key = (leg_id, joint) # get joint key for simulation
             if joint_key in JOINT_MAP: # if joint exists...
@@ -337,19 +337,30 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
             else:
                 logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map")
 
-        elif USE_SIMULATION and USE_ISAAC_SIM:
+
+        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:
+
             # --- ISAAC SIM LOGIC ---
+
             # Use SERVO_CONFIG to construct joint names
+
             angle_rad = math.radians(angle)
-            
-            # Construct joint name using the same pattern as SERVO_CONFIG
+
             isaac_joint_name = f"{leg_id}_{joint}"
-            
+
+            joint_targets[isaac_joint_name] = angle_rad
+
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+
             try:
-                # Set the joint position in Isaac Sim
-                config.ISAAC_ROBOT.get_articulation_controller().set_joint_positions({isaac_joint_name: angle_rad})
+
+                action = ArticulationAction(joint_positions=joint_targets)
+
+                config.ISAAC_ROBOT.apply_action(action)
+
             except Exception as e:
-                logging.error(f"(fundamental_movement.py): Failed to set Isaac Sim joint {isaac_joint_name}: {e}")
+
+                logging.error(f"(fundamental_movement.py): Failed to apply Isaac Sim joint action: {e}")
 
 
 ##### GET NEUTRAL POSITIONS #####

@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed articulation paths, robot is (mostly) importing but I need to continue researching and bug-fixing to get all parts importing in">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to have isaac sim use an object in my config for the world and the robot itself">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
@@ -294,14 +294,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00044" summary="Got visualization working, going to try to set up environment tomorrow">
-      <option name="closed" value="true" />
-      <created>1752372792851</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1752372792851</updated>
-    </task>
     <task id="LOCAL-00045" summary="Adjusted execute commands to be more RL friendly, refactored channels 0 and 4 so tilting gets a joystick, likely going to retire forward.py in favor of a generalized movement function that is more RL friendly">
       <option name="closed" value="true" />
       <created>1752432179832</created>
@@ -526,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753724154098</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="Going to have isaac sim use an object in my config for the world and the robot itself">
+      <option name="closed" value="true" />
+      <created>1753732294736</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1753732294736</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -544,7 +544,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adding IS_COMPLETE to solve 'ghost queue' bug" />
     <MESSAGE value="Multi-part commands now working for both radio and keyboard commands" />
     <MESSAGE value="Complex commands now implemented" />
     <MESSAGE value="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work" />
@@ -569,7 +568,8 @@
     <MESSAGE value="Got URDF loaded and working with Isaac Sim!" />
     <MESSAGE value="Fixed the World/robot/ import error by adding correct path and purging default names" />
     <MESSAGE value="Fixed articulation paths, robot is (mostly) importing but I need to continue researching and bug-fixing to get all parts importing in" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed articulation paths, robot is (mostly) importing but I need to continue researching and bug-fixing to get all parts importing in" />
+    <MESSAGE value="Going to have isaac sim use an object in my config for the world and the robot itself" />
+    <option name="LAST_COMMIT_MESSAGE" value="Going to have isaac sim use an object in my config for the world and the robot itself" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

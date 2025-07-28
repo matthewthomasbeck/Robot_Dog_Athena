@@ -70,6 +70,7 @@ INFERENCE_CONFIG = {
     'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
 
+ISAAC_SIM_APP = None # isaac sim application instance
 ISAAC_WORLD = None # isaac sim world
 ISAAC_ROBOT = None # isaac sim robot articulation
 

@@ -25,9 +25,6 @@ import socket
 
 ##### mandatory dependencies #####
 
-from movement.fundamental_movement import *
-from movement.standing.standing import *
-from movement.walking.forward import trot_forward
 from utilities.log import initialize_logging
 import utilities.config as config
 from utilities.receiver import interpret_commands
@@ -59,7 +56,7 @@ def set_real_robot_dependencies():
     if CAMERA_PROCESS is None:
         logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS!\n")
 
-    if CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+    if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
         SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
         COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
         if SOCK is None:
@@ -67,7 +64,7 @@ def set_real_robot_dependencies():
         if COMMAND_QUEUE is None:
             logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE!\n")
 
-    elif CONTROL_MODE == 'radio':  # if radio control mode...
+    elif config.CONTROL_MODE == 'radio':  # if radio control mode...
         CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
         if CHANNEL_DATA == None:
             logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA!\n")
@@ -76,10 +73,10 @@ def set_real_robot_dependencies():
 ########## SET SIMULATED ROBOT DEPENDENCIES ##########
 
 def set_isaac_dependencies():
-    global ISAAC_SIM_APP, ISAAC_WORLD, CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
+    global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
 
     from isaacsim.simulation_app import SimulationApp
-    ISAAC_SIM_APP = SimulationApp({"headless": False})
+    config.ISAAC_SIM_APP = SimulationApp({"headless": False})
 
     import sys
     import carb
@@ -148,6 +145,12 @@ def set_pybullet_dependencies():
     logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}.\n")
     logging.info(f"(control_logic.py): Joint map initialized as {JOINT_MAP}.\n")
     set_simulation_variables(ROBOT_ID, JOINT_MAP)
+
+##### movement dependencies #####
+
+from movement.fundamental_movement import *
+from movement.standing.standing import *
+from movement.walking.forward import trot_forward
 
 
 
@@ -247,9 +250,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
             # step simulation if enabled
             if USE_SIMULATION:
-
                 if USE_ISAAC_SIM:
-                    ISAAC_WORLD.step(render=True)
+                    config.ISAAC_WORLD.step(render=True)
                 else:
                     pybullet.stepSimulation()
 
