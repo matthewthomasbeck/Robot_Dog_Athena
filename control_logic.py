@@ -146,6 +146,16 @@ def set_pybullet_dependencies():
     logging.info(f"(control_logic.py): Joint map initialized as {JOINT_MAP}.\n")
     set_simulation_variables(ROBOT_ID, JOINT_MAP)
 
+##### import/create necessary dependencies based on detected environment #####
+
+if not config.USE_SIMULATION:
+    set_real_robot_dependencies()
+elif config.USE_SIMULATION:
+    if config.USE_ISAAC_SIM:
+        set_isaac_dependencies()
+    elif not config.USE_ISAAC_SIM:
+        set_pybullet_dependencies()
+
 ##### movement dependencies #####
 
 from movement.fundamental_movement import *
@@ -162,16 +172,6 @@ from movement.walking.forward import trot_forward
 
 
 ########## RUN ROBOTIC PROCESS ##########
-
-##### import/create necessary dependencies #####
-
-if not USE_SIMULATION:
-    set_real_robot_dependencies()
-elif USE_SIMULATION:
-    if USE_ISAAC_SIM:
-        set_isaac_dependencies()
-    elif not USE_ISAAC_SIM:
-        set_pybullet_dependencies()
 
 ##### set global variables #####
 
