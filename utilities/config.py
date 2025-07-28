@@ -61,7 +61,7 @@ CAMERA_CONFIG = { # TODO BE VERY CAREFUL WITH OUTPUT WIDTHxHEIGHT! Remember, the
     'OUTPUT_HEIGHT': 48, # height of the image for ML inference
 }
 
-##### set inference configuration #####
+##### set ML configurations #####
 
 INFERENCE_CONFIG = {
     'TPU_NAME': "MYRIAD",  # literal device name in code
@@ -69,6 +69,9 @@ INFERENCE_CONFIG = {
     'BLIND_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/blind", # speedy imageless RL model
     'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
+
+ISAAC_WORLD = None # isaac sim world
+ISAAC_ROBOT = None # isaac sim robot articulation
 
 ##### declare movement channel GPIO pins #####
 

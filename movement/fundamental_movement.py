@@ -339,19 +339,17 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
 
         elif USE_SIMULATION and USE_ISAAC_SIM:
             # --- ISAAC SIM LOGIC ---
-            # Assumes global ISAAC_ROBOT and ISAAC_JOINT_MAP are set
-            global ISAAC_ROBOT, ISAAC_JOINT_MAP
+            # Use SERVO_CONFIG to construct joint names
             angle_rad = math.radians(angle)
-            joint_key = (leg_id, joint)
-            if joint_key in ISAAC_JOINT_MAP:
-                isaac_joint_name = ISAAC_JOINT_MAP[joint_key]
-                try:
-                    # Set the joint position in Isaac Sim (template, fill in with your API)
-                    ISAAC_ROBOT.get_articulation_controller().set_joint_positions({isaac_joint_name: angle_rad})
-                except Exception as e:
-                    logging.error(f"(fundamental_movement.py): Failed to set Isaac Sim joint {isaac_joint_name}: {e}")
-            else:
-                logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in Isaac Sim joint map")
+            
+            # Construct joint name using the same pattern as SERVO_CONFIG
+            isaac_joint_name = f"{leg_id}_{joint}"
+            
+            try:
+                # Set the joint position in Isaac Sim
+                config.ISAAC_ROBOT.get_articulation_controller().set_joint_positions({isaac_joint_name: angle_rad})
+            except Exception as e:
+                logging.error(f"(fundamental_movement.py): Failed to set Isaac Sim joint {isaac_joint_name}: {e}")
 
 
 ##### GET NEUTRAL POSITIONS #####

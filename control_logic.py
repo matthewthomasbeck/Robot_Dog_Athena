@@ -29,7 +29,7 @@ from movement.fundamental_movement import *
 from movement.standing.standing import *
 from movement.walking.forward import trot_forward
 from utilities.log import initialize_logging
-from utilities.config import CONTROL_MODE, DEFAULT_INTENSITY, USE_SIMULATION
+import utilities.config as config
 from utilities.receiver import interpret_commands
 from utilities.camera import decode_frame
 
@@ -76,7 +76,7 @@ def set_real_robot_dependencies():
 ########## SET SIMULATED ROBOT DEPENDENCIES ##########
 
 def set_isaac_dependencies():
-    global ISAAC_SIM_APP, ISAAC_WORLD, ISAAC_ROBOT, ISAAC_JOINT_MAP, CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
+    global ISAAC_SIM_APP, ISAAC_WORLD, CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
 
     from isaacsim.simulation_app import SimulationApp
     ISAAC_SIM_APP = SimulationApp({"headless": False})
@@ -91,21 +91,14 @@ def set_isaac_dependencies():
     from isaacsim.core.utils.viewports import set_camera_view
     from isaacsim.storage.native import get_assets_root_path
 
-    ISAAC_WORLD = World(stage_units_in_meters=1.0)
+    config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
     add_reference_to_stage(usd_path, "/World/robot_dog")
-    ISAAC_ROBOT = Robot(prim_path="/World/robot_dog", name="robot_dog")
-    ISAAC_WORLD.scene.add(ISAAC_ROBOT)
-    ISAAC_WORLD.reset()
-    joint_names = ISAAC_ROBOT.dof_names
-    ISAAC_JOINT_MAP = {}
+    config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")
+    config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
+    config.ISAAC_WORLD.reset()
 
-    for joint in joint_names:
-        parts = joint.split("_")
-        if len(parts) == 2 and parts[0] in ['FL', 'FR', 'BL', 'BR'] and parts[1] in ['hip', 'upper', 'lower']:
-            ISAAC_JOINT_MAP[(parts[0], parts[1])] = joint
-
-    print("Isaac Sim initialized, joint map:", ISAAC_JOINT_MAP)
+    print("Isaac Sim initialized using SERVO_CONFIG for joint mapping")
 
 def set_pybullet_dependencies():
 
@@ -223,7 +216,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             )
             command = None # initially no command
 
-            if CONTROL_MODE == 'web': # if web control enabled...
+            if config.CONTROL_MODE == 'web': # if web control enabled...
                 internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
 
                 # if command queue is not empty, get command from queue
@@ -236,7 +229,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                             logging.info(f"(control_logic.py): Received command '{command}' from queue (BLOCKED).\n")
 
             # NEW MULTI-CHANNEL RADIO COMMAND SYSTEM
-            if CONTROL_MODE == 'radio':
+            if config.CONTROL_MODE == 'radio':
                 commands = interpret_commands(CHANNEL_DATA)
                 if IS_COMPLETE:  # if movement is complete, process radio commands
                     logging.debug(f"(control_logic.py): Processing radio commands: {commands}\n")
@@ -306,7 +299,7 @@ def _handle_command(command, frame):
     else:
         keys = []
 
-    if CONTROL_MODE == 'radio':
+    if config.CONTROL_MODE == 'radio':
         try:
             logging.debug(f"(control_logic.py): Executing radio commands: {command}...\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_radio_commands(
@@ -323,7 +316,7 @@ def _handle_command(command, frame):
             IS_NEUTRAL = False
             IS_COMPLETE = True
 
-    elif CONTROL_MODE == 'web':
+    elif config.CONTROL_MODE == 'web':
         try:
             logging.debug(f"(control_logic.py): Executing keyboard command: {keys}\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
@@ -331,7 +324,7 @@ def _handle_command(command, frame):
                 frame,
                 IS_NEUTRAL,
                 CURRENT_LEG,
-                DEFAULT_INTENSITY,
+                config.DEFAULT_INTENSITY,
                 tune_mode=False
             )
             logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
