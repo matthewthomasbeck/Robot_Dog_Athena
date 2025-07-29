@@ -39,6 +39,7 @@ import threading # import threading for thread management
 if config.USE_SIMULATION:
     if config.USE_ISAAC_SIM:
         from isaacsim.core.utils.types import ArticulationAction
+        import numpy
     else:
         import pybullet
         import math
@@ -300,7 +301,6 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
 
     hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
     hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
-    joint_targets = {} # for isaac sim use
 
     ##### move each joint of the leg to desired angle #####
 
@@ -335,32 +335,43 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
                     force=4.41
                 )
             else:
-                logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map")
+                logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map\n")
 
 
-        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:
+        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if user wants to control simulated robot with Isaac Sim...
 
-            # --- ISAAC SIM LOGIC ---
-
-            # Use SERVO_CONFIG to construct joint names
-
-            angle_rad = math.radians(angle)
-
-            isaac_joint_name = f"{leg_id}_{joint}"
-
-            joint_targets[isaac_joint_name] = angle_rad
-
-        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            angle_rad = math.radians(angle)  # convert angles to radians for simulation
+            joint_name = f"{leg_id}_{joint}"  # construct joint name for Isaac Sim
 
             try:
+                logging.info(f"(fundamental_movement.py) ROBOT OBJECT: {config.ISAAC_ROBOT}")
+                joint_names = config.ISAAC_ROBOT.joint_names
+                logging.info(f"(fundamental_movement.py) JOINT NAMES: {joint_names}")
 
-                action = ArticulationAction(joint_positions=joint_targets)
+                if joint_name in joint_names:
+                    joint_index = joint_names.index(joint_name)
+                    position_array = numpy.array([angle_rad], dtype=numpy.float32)
+                    velocity_array = numpy.array([math.radians(joint_speed)], dtype=numpy.float32)
+                    index_array = numpy.array([joint_index], dtype=numpy.int32)
+                    logging.info("=== DEBUG JOINT STATE ===")
+                    logging.info(f"joint_name: {joint_name} | joint_index: {joint_index}")
+                    logging.info(f"Target angle_rad: {angle_rad:.4f}, joint_speed: {joint_speed}")
+                    action = ArticulationAction(
+                        joint_positions=position_array,
+                        joint_velocities=velocity_array,
+                        joint_indices=index_array
+                    )
+                    config.ISAAC_ROBOT.apply_action(action)
 
-                config.ISAAC_ROBOT.apply_action(action)
+
+                else:
+                    logging.warning(f"(fundamental_movement.py): Isaac joint {joint_name} not found in robot\n")
 
             except Exception as e:
 
-                logging.error(f"(fundamental_movement.py): Failed to apply Isaac Sim joint action: {e}")
+                logging.error(
+                    f"(fundamental_movement.py): Failed to apply Isaac Sim joint action for {joint_name}: {e}\n"
+                )
 
 
 ##### GET NEUTRAL POSITIONS #####

@@ -91,6 +91,8 @@ def set_isaac_dependencies():
     config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
     add_reference_to_stage(usd_path, "/World/robot_dog")
+    for _ in range(3): # let isaac sim load a few steps
+        config.ISAAC_WORLD.step(render=True)
     config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")
     config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
     config.ISAAC_WORLD.reset()
