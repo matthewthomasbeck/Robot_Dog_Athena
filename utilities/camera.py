@@ -20,7 +20,7 @@
 
 ##### import config #####
 
-from utilities.config import CAMERA_CONFIG, RL_NOT_CNN, USE_SIMULATION
+from utilities.config import CAMERA_CONFIG, RL_NOT_CNN
 
 ##### import necessary libraries #####
 
@@ -30,8 +30,7 @@ import subprocess # import subprocess to run rpicam command
 import logging # import logging for logging messages
 import time # add time for waiting
 import numpy # add numpy for decoding frames
-if not USE_SIMULATION:
-    import cv2  # add cv2 for decoding frames
+import cv2  # add cv2 for decoding frames for isaac sim and the real robot
 
 
 

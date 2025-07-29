@@ -24,8 +24,6 @@
 
 ##### import necessary functions #####
 
-# load function/models for gait adjustment and person detection
-from utilities.opencv import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, run_person_detection
 import utilities.config as config # import configuration data for servos and link lengths
 from utilities.mathematics import * # import all mathematical functions
 
@@ -44,7 +42,18 @@ if config.USE_SIMULATION:
         import pybullet
         import math
 elif not config.USE_SIMULATION:
+    # load function/models for gait adjustment and person detection
+    from utilities.opencv import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
+        run_person_detection
     from utilities.servos import map_angle_to_servo_position, set_target  # import servo mapping functions
+    if config.RL_NOT_CNN:
+        # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
+        STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(
+            config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
+        BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(
+            config.INFERENCE_CONFIG['BLIND_RL_PATH'])
+    elif not config.RL_NOT_CNN:
+        CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -61,15 +70,6 @@ if config.USE_SIMULATION:
 else:
     ROBOT_ID = None
     JOINT_MAP = {}
-
-##### load and compile models #####
-
-if config.RL_NOT_CNN:
-    # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
-    STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
-    BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['BLIND_RL_PATH'])
-elif not config.RL_NOT_CNN:
-    CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
 
 ##### define servos #####
 

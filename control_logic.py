@@ -214,14 +214,18 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
         while True:  # central loop to entire process, commenting out of importance
 
             # returns visual parameters, can choose to run the RL model or the CNN model for testing in config
-            mjpeg_buffer, streamed_frame, inference_frame = decode_frame(
-                CAMERA_PROCESS,
-                mjpeg_buffer
-            )
-            command = None # initially no command
+
+            if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # if physical robot...
+                mjpeg_buffer, streamed_frame, inference_frame = decode_frame(
+                    CAMERA_PROCESS,
+                    mjpeg_buffer
+                )
+                command = None # initially no command
 
             if config.CONTROL_MODE == 'web': # if web control enabled...
-                internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
+
+                if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
+                    internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
 
                 # if command queue is not empty, get command from queue
                 if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
