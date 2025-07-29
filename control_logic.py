@@ -193,20 +193,19 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
     ##### run robotic logic #####
 
-    try:  # try to run robot startup sequence
+    if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
+        try:  # try to run robot startup sequence
+            squatting_position(1)
+            time.sleep(3)
+            # tippytoes_position(1)
+            # time.sleep(3)
+            neutral_position(1)
+            time.sleep(3)
+            IS_NEUTRAL = True  # set is_neutral to True
+            time.sleep(3)  # wait for 3 seconds
 
-        squatting_position(1)
-        time.sleep(3)
-        # tippytoes_position(1)
-        # time.sleep(3)
-        neutral_position(1)
-        time.sleep(3)
-        IS_NEUTRAL = True  # set is_neutral to True
-        time.sleep(3)  # wait for 3 seconds
-
-    except Exception as e:  # if there is an error, log error
-
-        logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
+        except Exception as e:  # if there is an error, log error
+            logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
     ##### stream video, run inference, and control the robot #####
 
@@ -251,8 +250,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
 
             # step simulation if enabled
-            if USE_SIMULATION:
-                if USE_ISAAC_SIM:
+            if config.USE_SIMULATION:
+                if config.USE_ISAAC_SIM:
                     config.ISAAC_WORLD.step(render=True)
                 else:
                     pybullet.stepSimulation()

@@ -345,27 +345,32 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
 
             try:
                 logging.info(f"(fundamental_movement.py) ROBOT OBJECT: {config.ISAAC_ROBOT}")
-                joint_names = config.ISAAC_ROBOT.joint_names
-                logging.info(f"(fundamental_movement.py) JOINT NAMES: {joint_names}")
+                #joint_names = config.ISAAC_ROBOT.joint_names
+                #logging.info(f"(fundamental_movement.py) JOINT NAMES: {joint_names}")
 
-                if joint_name in joint_names:
-                    joint_index = joint_names.index(joint_name)
-                    position_array = numpy.array([angle_rad], dtype=numpy.float32)
-                    velocity_array = numpy.array([math.radians(joint_speed)], dtype=numpy.float32)
-                    index_array = numpy.array([joint_index], dtype=numpy.int32)
-                    logging.info("=== DEBUG JOINT STATE ===")
-                    logging.info(f"joint_name: {joint_name} | joint_index: {joint_index}")
-                    logging.info(f"Target angle_rad: {angle_rad:.4f}, joint_speed: {joint_speed}")
-                    action = ArticulationAction(
-                        joint_positions=position_array,
-                        joint_velocities=velocity_array,
-                        joint_indices=index_array
-                    )
-                    config.ISAAC_ROBOT.apply_action(action)
+                action = ArticulationAction(
+                    joint_positions=numpy.array([0.0, 0.0]), joint_indices=numpy.array([1, 2])
+                )
+                config.ISAAC_ROBOT.apply_action(action)
+
+                #if joint_name in joint_names:
+                    #joint_index = joint_names.index(joint_name)
+                    #position_array = numpy.array([angle_rad], dtype=numpy.float32)
+                    #velocity_array = numpy.array([math.radians(joint_speed)], dtype=numpy.float32)
+                    #index_array = numpy.array([joint_index], dtype=numpy.int32)
+                    #logging.info("=== DEBUG JOINT STATE ===")
+                    #logging.info(f"joint_name: {joint_name} | joint_index: {joint_index}")
+                    #logging.info(f"Target angle_rad: {angle_rad:.4f}, joint_speed: {joint_speed}")
+                    #action = ArticulationAction(
+                        #joint_positions=position_array,
+                        #joint_velocities=velocity_array,
+                        #joint_indices=index_array
+                    #)
+                    #config.ISAAC_ROBOT.apply_action(action)
 
 
-                else:
-                    logging.warning(f"(fundamental_movement.py): Isaac joint {joint_name} not found in robot\n")
+                #else:
+                    #logging.warning(f"(fundamental_movement.py): Isaac joint {joint_name} not found in robot\n")
 
             except Exception as e:
 
