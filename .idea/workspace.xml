@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Solved cv2 dependency issue in isaac, going to try to solve '(control_logic.py): Unexpected exception in main loop: cannot access local variable 'command' where it is not associated with a value' next">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got isaac sim camera imported (I think? lmao), logging is somehow broken">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -152,7 +149,7 @@
       <workItem from="1753211658640" duration="235000" />
       <workItem from="1753212139563" duration="984000" />
       <workItem from="1753237505516" duration="7873000" />
-      <workItem from="1753799074651" duration="18959000" />
+      <workItem from="1753799074651" duration="19536000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -293,14 +290,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00050" summary="Adding IS_COMPLETE to solve 'ghost queue' bug">
-      <option name="closed" value="true" />
-      <created>1752452306482</created>
-      <option name="number" value="00050" />
-      <option name="presentableId" value="LOCAL-00050" />
-      <option name="project" value="LOCAL" />
-      <updated>1752452306483</updated>
     </task>
     <task id="LOCAL-00051" summary="Multi-part commands now working for both radio and keyboard commands">
       <option name="closed" value="true" />
@@ -526,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753829376436</updated>
     </task>
-    <option name="localTasksCounter" value="79" />
+    <task id="LOCAL-00079" summary="Got isaac sim camera imported (I think? lmao), logging is somehow broken">
+      <option name="closed" value="true" />
+      <created>1753899334994</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1753899334994</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -544,7 +541,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Made pass-able functions for walking" />
     <MESSAGE value="Made pass-able functions for walking and RL integration" />
     <MESSAGE value="Creates a USE_SIMULATION mode, so I can run the robot on a computer (TODO: finish interface for RL agent, debug the mess I've made today)" />
     <MESSAGE value="Creates a USE_SIMULATION mode, so I can run the robot on a computer and made a very brief simulation running the old trot_forward() function (TODO: finish interface for RL agent, debug the mess I've made today)" />
@@ -569,7 +565,8 @@
     <MESSAGE value="This code does not work, but saving before ditching articulation objects in favor of higher level fucntions like set_joint_position to move in isaac sim" />
     <MESSAGE value="Solved basic implementation of articulation, I was trying to move before initialization like a doofus" />
     <MESSAGE value="Solved cv2 dependency issue in isaac, going to try to solve '(control_logic.py): Unexpected exception in main loop: cannot access local variable 'command' where it is not associated with a value' next" />
-    <option name="LAST_COMMIT_MESSAGE" value="Solved cv2 dependency issue in isaac, going to try to solve '(control_logic.py): Unexpected exception in main loop: cannot access local variable 'command' where it is not associated with a value' next" />
+    <MESSAGE value="Got isaac sim camera imported (I think? lmao), logging is somehow broken" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got isaac sim camera imported (I think? lmao), logging is somehow broken" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

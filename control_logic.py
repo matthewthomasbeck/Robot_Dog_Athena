@@ -22,6 +22,7 @@ import queue
 import time
 import os
 import socket
+import logging
 
 ##### mandatory dependencies #####
 
