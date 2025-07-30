@@ -36,8 +36,12 @@ import threading # import threading for thread management
 
 if config.USE_SIMULATION:
     if config.USE_ISAAC_SIM:
+        from isaacsim.core.api.controllers.articulation_controller import ArticulationController
         from isaacsim.core.utils.types import ArticulationAction
         import numpy
+
+        ARTICULATION_CONTROLLER = ArticulationController() # create new articulation controller instance
+        ARTICULATION_CONTROLLER.initialize(config.ISAAC_ROBOT) # initialize the controller
     else:
         import pybullet
         import math
@@ -338,20 +342,22 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
                 logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map\n")
 
 
-        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if user wants to control simulated robot with Isaac Sim...
+        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if isaac sim...
 
             angle_rad = math.radians(angle)  # convert angles to radians for simulation
             joint_name = f"{leg_id}_{joint}"  # construct joint name for Isaac Sim
 
             try:
-                logging.info(f"(fundamental_movement.py) ROBOT OBJECT: {config.ISAAC_ROBOT}")
+                #logging.info(f"(fundamental_movement.py) ROBOT OBJECT: {config.ISAAC_ROBOT}")
                 #joint_names = config.ISAAC_ROBOT.joint_names
                 #logging.info(f"(fundamental_movement.py) JOINT NAMES: {joint_names}")
 
+                logging.debug(f"(fundamental_movement.py) Attempting to move joint...\n")
                 action = ArticulationAction(
-                    joint_positions=numpy.array([0.0, 0.0]), joint_indices=numpy.array([1, 2])
+                    joint_positions=numpy.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
                 )
-                config.ISAAC_ROBOT.apply_action(action)
+                ARTICULATION_CONTROLLER.apply_action(action)
+                logging.debug(f"(fundamental_movement.py) Successfully moved joint.\n")
 
                 #if joint_name in joint_names:
                     #joint_index = joint_names.index(joint_name)

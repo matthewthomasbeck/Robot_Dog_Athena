@@ -75,19 +75,19 @@ def set_real_robot_dependencies():
 def set_isaac_dependencies():
 
     global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
+    import sys
+    import carb
+    import numpy
 
     # IMPORTANT 'SimulationApp' MUST be imported and made before any other isaac utilization of any kind!!!
     from isaacsim.simulation_app import SimulationApp
     config.ISAAC_SIM_APP = SimulationApp({"headless": False})
-    import sys
-    import carb
-    import numpy
     from isaacsim.core.api import World
     from isaacsim.core.prims import Articulation
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
-    from isaacsim.core.utils.types import ArticulationAction
-    from isaacsim.core.utils.viewports import set_camera_view
-    from isaacsim.storage.native import get_assets_root_path
+    #from isaacsim.core.utils.types import ArticulationAction
+    #from isaacsim.core.utils.viewports import set_camera_view
+    #from isaacsim.storage.native import get_assets_root_path
 
     from utilities.camera import initialize_camera  # import to start camera logic
     CAMERA_PROCESS = initialize_camera()  # create camera process
