@@ -53,6 +53,14 @@ LOG_CONFIG = {
 ##### set camera configuration #####
 
 CAMERA_CONFIG = { # TODO BE VERY CAREFUL WITH OUTPUT WIDTHxHEIGHT! Remember, the height gets cut in half via 0.5 crop!
+    'FOV': 75, # degrees
+    'CAMERA_WIDTH': 4608,
+    'CAMERA_HEIGHT': 2592,
+    'FOV_HORIZONTAL': 66,  # degrees
+    'FOV_VERTICAL': 41,  # degrees
+    'PIXEL_SIZE_UM': 1.4,  # pixel size in micrometers
+    'DEPTH_OF_FIELD': 0.1,  # depth of field distance in meters
+    'APERTURE_RATIO': 1.8,
     'WIDTH': 640, # width of the camera image
     'HEIGHT': 480, # height of the camera image
     'FRAME_RATE': 30, # frame rate of the camera in frames per second

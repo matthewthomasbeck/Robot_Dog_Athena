@@ -28,7 +28,6 @@ import socket
 from utilities.log import initialize_logging
 import utilities.config as config
 from utilities.receiver import interpret_commands
-from utilities.camera import decode_frame
 
 ##### (pre)initialize all utilities #####
 
@@ -54,33 +53,34 @@ def set_real_robot_dependencies():
 
     CAMERA_PROCESS = initialize_camera()  # create camera process
     if CAMERA_PROCESS is None:
-        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS!\n")
+        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for robot!\n")
 
     if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
         SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
         COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
         if SOCK is None:
-            logging.error("(control_logic.py): Failed to initialize SOCK!\n")
+            logging.error("(control_logic.py): Failed to initialize SOCK for robot!\n")
         if COMMAND_QUEUE is None:
-            logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE!\n")
+            logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
 
     elif config.CONTROL_MODE == 'radio':  # if radio control mode...
         CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
         if CHANNEL_DATA == None:
-            logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA!\n")
+            logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA for robot!\n")
 
 
 ########## SET SIMULATED ROBOT DEPENDENCIES ##########
 
 def set_isaac_dependencies():
+
     global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
 
+    # IMPORTANT 'SimulationApp' MUST be imported and made before any other isaac utilization of any kind!!!
     from isaacsim.simulation_app import SimulationApp
     config.ISAAC_SIM_APP = SimulationApp({"headless": False})
-
     import sys
     import carb
-    import numpy as np
+    import numpy
     from isaacsim.core.api import World
     from isaacsim.core.prims import Articulation
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
@@ -88,16 +88,19 @@ def set_isaac_dependencies():
     from isaacsim.core.utils.viewports import set_camera_view
     from isaacsim.storage.native import get_assets_root_path
 
+    from utilities.camera import initialize_camera  # import to start camera logic
+    CAMERA_PROCESS = initialize_camera()  # create camera process
+    if CAMERA_PROCESS is None:
+        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
     config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
     add_reference_to_stage(usd_path, "/World/robot_dog")
-    for _ in range(3): # let isaac sim load a few steps
+    for _ in range(3): # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
     config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")
     config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
     config.ISAAC_WORLD.reset()
-
-    print("Isaac Sim initialized using SERVO_CONFIG for joint mapping")
+    logging.info("(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.\n")
 
 def set_pybullet_dependencies():
 
@@ -158,11 +161,12 @@ elif config.USE_SIMULATION:
     elif not config.USE_ISAAC_SIM:
         set_pybullet_dependencies()
 
-##### movement dependencies #####
+##### post-initialization dependencies #####
 
 from movement.fundamental_movement import *
 from movement.standing.standing import *
 from movement.walking.forward import trot_forward
+from utilities.camera import decode_real_frame, decode_isaac_frame
 
 
 
@@ -207,29 +211,39 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
         except Exception as e:  # if there is an error, log error
             logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
+    elif config.USE_SIMULATION and config.USE_ISAAC_SIM: # if isaac sim...
+        for _ in range(3):  # let isaac sim load a few steps for general process
+            config.ISAAC_WORLD.step(render=True)
+
     ##### stream video, run inference, and control the robot #####
 
     try:  # try to run main robotic process
 
         while True:  # central loop to entire process, commenting out of importance
 
-            # returns visual parameters, can choose to run the RL model or the CNN model for testing in config
-
             if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # if physical robot...
-                mjpeg_buffer, streamed_frame, inference_frame = decode_frame(
+                mjpeg_buffer, streamed_frame, inference_frame = decode_real_frame( # run camera and decode frame
                     CAMERA_PROCESS,
                     mjpeg_buffer
                 )
-                command = None # initially no command
+                command = None  # initially no command
+
+            # TODO create a way for isaac sim to collect frames as well as commands for RL agent
+            if config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if isaac sim...
+                # TODO send/make commands to isaac sim with frame data (run camera)
+                mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
+                    CAMERA_PROCESS
+                )
+                command = None  # initially no command
+                pass
 
             if config.CONTROL_MODE == 'web': # if web control enabled...
 
                 if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
                     internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
 
-                # if command queue is not empty, get command from queue
-                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
-                    command = COMMAND_QUEUE.get()
+                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty(): # if command queue is not empty...
+                    command = COMMAND_QUEUE.get() # get command from queue
                     if command is not None:
                         if IS_COMPLETE: # if movement is complete, run command
                             logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")

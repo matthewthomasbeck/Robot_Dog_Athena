@@ -20,17 +20,23 @@
 
 ##### import config #####
 
-from utilities.config import CAMERA_CONFIG, RL_NOT_CNN
+from utilities.config import CAMERA_CONFIG, RL_NOT_CNN, USE_SIMULATION, USE_ISAAC_SIM
 
 ##### import necessary libraries #####
 
 import subprocess # import subprocess to run rpicam command
-#import os # import os to check if rpicam instances exists
-#import signal # import signal to send signals to processes
 import logging # import logging for logging messages
 import time # add time for waiting
 import numpy # add numpy for decoding frames
 import cv2  # add cv2 for decoding frames for isaac sim and the real robot
+
+##### import isaac sim dependencies #####
+
+if USE_SIMULATION and USE_ISAAC_SIM:
+
+    from isaacsim.sensors.camera import Camera
+    import isaacsim.core.utils.numpy.rotations as rot_utils
+    from isaacsim.core.utils.stage import get_current_stage
 
 
 
@@ -43,8 +49,7 @@ import cv2  # add cv2 for decoding frames for isaac sim and the real robot
 
 ########## INITIALIZE CAMERA ##########
 
-# function to initialize camera
-def initialize_camera(
+def initialize_camera( # function to initialize camera
         width=CAMERA_CONFIG['WIDTH'],
         height=CAMERA_CONFIG['HEIGHT'],
         frame_rate=CAMERA_CONFIG['FRAME_RATE']
@@ -60,7 +65,16 @@ def initialize_camera(
         logging.error("(camera.py): Camera initialization failed, no camera process started.\n")
 
     else: # if camera process started successfully...
-        logging.info(f"(camera.py): Camera initialized successfully with PID {camera_process.pid}.\n")
+
+        if not USE_SIMULATION and not USE_ISAAC_SIM: # if physical robot...
+            logging.info(f"(camera.py): Camera initialized successfully with PID {camera_process.pid}.\n")
+
+        elif USE_SIMULATION and not USE_ISAAC_SIM: # if simulating with pybullet...
+            pass
+
+        if USE_SIMULATION and USE_ISAAC_SIM: # if simulating with isaac...
+            logging.info(f"(camera.py): Isaac Sim camera initialized successfully.\n")
+
         return camera_process
 
 
@@ -69,18 +83,14 @@ def initialize_camera(
 def _kill_existing_camera_processes(): # function to kill existing camera processes if they exist
 
     try:
-
         logging.debug("(camera.py): Checking for existing camera processes...\n")
-
-        # Use pkill for each process type
-        subprocess.run(["pkill", "-9", "-f", "rpicam-vid"])
+        subprocess.run(["pkill", "-9", "-f", "rpicam-vid"]) # use pkill for each process type
         subprocess.run(["pkill", "-9", "-f", "rpicam-jpeg"])
         subprocess.run(["pkill", "-9", "-f", "libcamera"])
         logging.info("(camera.py): Successfully killed existing camera processes.\n")
-        time.sleep(0.5)  # Give time for processes to exit
+        time.sleep(0.5)  # give time for processes to exit
 
     except Exception as e:
-
         logging.error(f"(camera.py): Failed to terminate existing camera processes: {e}\n")
 
 
@@ -88,42 +98,87 @@ def _kill_existing_camera_processes(): # function to kill existing camera proces
 
 def _start_camera_process(width, height, frame_rate): # function to start camera process for opencv
 
-    try:
+    if not USE_SIMULATION and not USE_ISAAC_SIM:  # if physical robot...
+        try:
+            real_camera = subprocess.Popen(  # open an rpicam vid process
+                [
+                    "rpicam-vid",
+                    "--width", str(width),
+                    "--height", str(height),
+                    "--framerate", str(frame_rate),
+                    "--timeout", "0",
+                    "--output", "-",
+                    "--codec", "mjpeg",
+                    "--nopreview"
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                bufsize=0
+            )
+            time.sleep(0.2)
+            if real_camera.poll() is not None:
+                stderr = real_camera.stderr.read().decode()
+                logging.error(f"(camera.py): Camera process failed to start. Stderr: {stderr}\n")
+                return None
+            return real_camera
 
-        camera_process = subprocess.Popen( # open an rpicam vid process
-            [
-                "rpicam-vid",
-                "--width", str(width),
-                "--height", str(height),
-                "--framerate", str(frame_rate),
-                "--timeout", "0",
-                "--output", "-",
-                "--codec", "mjpeg",
-                "--nopreview"
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            bufsize=0
-        )
-        # Optionally, check if process started successfully
-        time.sleep(0.2)
-        if camera_process.poll() is not None:
-            # Process exited immediately
-            stderr = camera_process.stderr.read().decode()
-            logging.error(f"(camera.py): Camera process failed to start. Stderr: {stderr}\n")
+        except Exception as e:
+            logging.error(f"(camera.py): Failed to start camera process: {e}\n")
             return None
-        return camera_process
 
-    except Exception as e:
+    elif USE_SIMULATION and USE_ISAAC_SIM: # if isaac sim...
+        try: # try to make camera object for isaac sim
 
-        logging.error(f"(camera.py): Failed to start camera process: {e}\n")
+            logging.debug("(camera.py) Computing aperture size for isaac camera...\n")
+            horizontal_aperture = CAMERA_CONFIG['CAMERA_WIDTH'] * CAMERA_CONFIG['PIXEL_SIZE_UM'] * 1e-6
+            vertical_aperture = CAMERA_CONFIG['CAMERA_HEIGHT'] * CAMERA_CONFIG['PIXEL_SIZE_UM'] * 1e-6
+            logging.info("(camera.py) Computed aperture size for isaac camera.\n")
 
-        return None
+            logging.debug("(camera.py) Computing focal length for isaac camera...\n")
+            focal_length_x = (horizontal_aperture / 2) / numpy.tan(numpy.radians(CAMERA_CONFIG['FOV_HORIZONTAL'] / 2))
+            focal_length_y = (vertical_aperture / 2) / numpy.tan(numpy.radians(CAMERA_CONFIG['FOV_VERTICAL'] / 2))
+            focal_length = (focal_length_x + focal_length_y) / 2
+            logging.info("(camera.py) Computed focal length for isaac camera.\n")
+
+            logging.debug("(camera.py) Creating isaac camera object...\n")
+            isaac_camera = Camera(
+                prim_path="/World/robot_dog/athena_front_face/camera_sensor",
+                resolution=(CAMERA_CONFIG['WIDTH'], CAMERA_CONFIG['HEIGHT']),
+                frequency=CAMERA_CONFIG['FRAME_RATE'],
+                orientation=rot_utils.euler_angles_to_quats(numpy.array([0, 0, 0]), degrees=True),  # change if needed
+                position=numpy.array([0.0, 0.0, 0.01]),  # a tiny offset if needed
+            )
+            logging.debug("(camera.py) Created isaac camera object.\n")
+
+            #logging.debug("(camera.py) Attaching isaac camera to parent with offset...\n")
+            #stage = get_current_stage()
+            #UsdGeom.Xformable(stage.GetPrimAtPath(isaac_camera.prim_path)).AddTransformOp().Set(
+                #Gf.Matrix4d().SetTranslate((0, 0, 0.01)))
+            #isaac_camera.set_parent("/World/robot_dog/athena_front_face")
+            #logging.info("(camera.py) Attached isaac camera to parent with offset.\n")
+
+            logging.debug("(camera.py) Applying optics to isaac camera...\n")
+            isaac_camera.set_focal_length(focal_length)
+            isaac_camera.set_horizontal_aperture(horizontal_aperture)
+            isaac_camera.set_vertical_aperture(vertical_aperture)
+            isaac_camera.set_focus_distance(CAMERA_CONFIG['DEPTH_OF_FIELD'])
+            isaac_camera.set_lens_aperture(CAMERA_CONFIG['APERTURE_RATIO'])
+            isaac_camera.set_clipping_range(0.05, 100000.0)
+            logging.info("(camera.py) Applied optics to isaac camera.\n")
+
+            logging.debug("(camera.py) Initializing isaac camera...\n")
+            isaac_camera.initialize()
+            logging.info("(camera.py) Initialized isaac camera.\n")
+
+            return isaac_camera
+
+        except Exception as e: # if camera object creation fails...
+            logging.error(f"(camera.py): Failed to create camera object in Isaac Sim: {e}\n")
 
 
 ########## DECODE FRAME ##########
 
-def decode_frame(camera_process, mjpeg_buffer):
+def decode_real_frame(camera_process, mjpeg_buffer):
 
     try:
         chunk = camera_process.stdout.read(4096)
@@ -137,8 +192,6 @@ def decode_frame(camera_process, mjpeg_buffer):
         if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
             streamed_frame = mjpeg_buffer[start_idx:end_idx + 2]
             mjpeg_buffer = mjpeg_buffer[end_idx + 2:]
-
-            # Decode JPEG to image first
             inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
 
             if RL_NOT_CNN:  # if running RL model for movement...
@@ -153,13 +206,34 @@ def decode_frame(camera_process, mjpeg_buffer):
                 resized_frame = cv2.resize(gray_frame, output_size)
                 return mjpeg_buffer, streamed_frame, resized_frame
 
-            else:  # CNN or other use
+            else: # cnn or other use
                 return mjpeg_buffer, streamed_frame, inference_frame
 
         if len(mjpeg_buffer) > 65536: # if buffer overflow...
-            mjpeg_buffer = b''
+            mjpeg_buffer = b'' # reset buffer to avoid overflow
         return mjpeg_buffer, None, None
 
     except Exception as e:
         logging.error(f"(camera.py): Failed to decode frame: {e}\n")
         return mjpeg_buffer, None, None
+
+
+########## DECODE ISAAC SIM FRAME ##########
+
+def decode_isaac_frame(camera_object):
+    try:
+        rgba = camera_object.get_rgba()  # Shape: (H, W, 4), floats 0-1
+        image = (rgba[..., :3] * 255).astype(numpy.uint8)  # Strip alpha, scale to 0–255
+        inference_frame = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        h = inference_frame.shape[0]
+        crop_start = int(h * (1 - CAMERA_CONFIG['CROP_FRACTION']))
+        cropped = inference_frame[crop_start:, :, :]
+        gray_frame = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+        resized_frame = cv2.resize(
+            gray_frame,
+            (CAMERA_CONFIG['OUTPUT_WIDTH'], CAMERA_CONFIG['OUTPUT_HEIGHT'])
+        )
+        return None, inference_frame, resized_frame
+    except Exception as e:
+        logging.error(f"(camera.py): Failed to decode Isaac Sim frame: {e}\n")
+        return None, None, None
