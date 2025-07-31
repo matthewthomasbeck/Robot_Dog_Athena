@@ -85,9 +85,7 @@ def set_isaac_dependencies():
     from isaacsim.core.api import World
     from isaacsim.core.prims import Articulation
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
-    #from isaacsim.core.utils.types import ArticulationAction
-    #from isaacsim.core.utils.viewports import set_camera_view
-    #from isaacsim.storage.native import get_assets_root_path
+    from training.isaac_sim import build_isaac_joint_index_map  # import joint index map builder
 
     from utilities.camera import initialize_camera  # import to start camera logic
     CAMERA_PROCESS = initialize_camera()  # create camera process
@@ -101,6 +99,7 @@ def set_isaac_dependencies():
     config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")
     config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
     config.ISAAC_WORLD.reset()
+    config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
     logging.info("(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.\n")
 
 def set_pybullet_dependencies():

@@ -42,9 +42,12 @@ if config.USE_SIMULATION:
 
         ARTICULATION_CONTROLLER = ArticulationController() # create new articulation controller instance
         ARTICULATION_CONTROLLER.initialize(config.ISAAC_ROBOT) # initialize the controller
+        config.JOINT_INDEX_MAP = {}  # global or config
+
     else:
         import pybullet
         import math
+
 elif not config.USE_SIMULATION:
     # load function/models for gait adjustment and person detection
     from utilities.opencv import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
@@ -69,8 +72,8 @@ k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic fu
 ##### simulation variables (set by control_logic.py) #####
 
 if config.USE_SIMULATION:
-    ROBOT_ID = None  # Will be set by control_logic.py
-    JOINT_MAP = {}   # Will be set by control_logic.py
+    ROBOT_ID = None  # will be set by control_logic.py
+    JOINT_MAP = {}   # will be set by control_logic.py
 else:
     ROBOT_ID = None
     JOINT_MAP = {}
@@ -342,44 +345,23 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
                 logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map\n")
 
 
-        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if isaac sim...
+        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:
 
-            angle_rad = math.radians(angle)  # convert angles to radians for simulation
-            joint_name = f"{leg_id}_{joint}"  # construct joint name for Isaac Sim
+            angle_rad = math.radians(angle)
+            joint_name = f"{leg_id}_{joint}"
 
             try:
-                #logging.info(f"(fundamental_movement.py) ROBOT OBJECT: {config.ISAAC_ROBOT}")
-                #joint_names = config.ISAAC_ROBOT.joint_names
-                #logging.info(f"(fundamental_movement.py) JOINT NAMES: {joint_names}")
-
-                logging.debug(f"(fundamental_movement.py) Attempting to move joint...\n")
-                action = ArticulationAction(
-                    joint_positions=numpy.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
-                )
+                logging.debug(f"(fundamental_movement.py) Attempting to move joint {joint_name}...\n")
+                joint_index = config.JOINT_INDEX_MAP.get(joint_name)
+                joint_positions = numpy.zeros(len(config.ISAAC_ROBOT.dof_names))
+                joint_positions[joint_index] = angle_rad
+                action = ArticulationAction(joint_positions=joint_positions)
                 ARTICULATION_CONTROLLER.apply_action(action)
-                logging.debug(f"(fundamental_movement.py) Successfully moved joint.\n")
-
-                #if joint_name in joint_names:
-                    #joint_index = joint_names.index(joint_name)
-                    #position_array = numpy.array([angle_rad], dtype=numpy.float32)
-                    #velocity_array = numpy.array([math.radians(joint_speed)], dtype=numpy.float32)
-                    #index_array = numpy.array([joint_index], dtype=numpy.int32)
-                    #logging.info("=== DEBUG JOINT STATE ===")
-                    #logging.info(f"joint_name: {joint_name} | joint_index: {joint_index}")
-                    #logging.info(f"Target angle_rad: {angle_rad:.4f}, joint_speed: {joint_speed}")
-                    #action = ArticulationAction(
-                        #joint_positions=position_array,
-                        #joint_velocities=velocity_array,
-                        #joint_indices=index_array
-                    #)
-                    #config.ISAAC_ROBOT.apply_action(action)
-
-
-                #else:
-                    #logging.warning(f"(fundamental_movement.py): Isaac joint {joint_name} not found in robot\n")
+                logging.debug(
+                    f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad.\n"
+                )
 
             except Exception as e:
-
                 logging.error(
                     f"(fundamental_movement.py): Failed to apply Isaac Sim joint action for {joint_name}: {e}\n"
                 )

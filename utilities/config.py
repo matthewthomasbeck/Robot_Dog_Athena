@@ -78,10 +78,6 @@ INFERENCE_CONFIG = {
     'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
 
-ISAAC_SIM_APP = None # isaac sim application instance
-ISAAC_WORLD = None # isaac sim world
-ISAAC_ROBOT = None # isaac sim robot articulation
-
 ##### declare movement channel GPIO pins #####
 
 SIGNAL_TUNING_CONFIG = { # dictionary of signal tuning configuration for sensitivity
@@ -161,6 +157,13 @@ CURRENT_FEET_COORDINATES = {
     'BL': {'x': -0.0290, 'y': 0.0485, 'z': -0.235},
     'BR': {'x': -0.0290, 'y': -0.0485, 'z': -0.235}
 }
+
+
+########## ISAAC SIM CONFIGURATION ##########
+
+##### isaac sim joint config #####
+
+JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac sim
 
 
 
