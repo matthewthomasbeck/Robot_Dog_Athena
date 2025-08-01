@@ -351,11 +351,20 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
             joint_name = f"{leg_id}_{joint}"
 
             try:
-                logging.debug(f"(fundamental_movement.py) Attempting to move joint {joint_name}...\n")
+                #logging.debug(f"(fundamental_movement.py) Attempting to move joint {joint_name}...\n")
                 joint_index = config.JOINT_INDEX_MAP.get(joint_name)
-                joint_positions = numpy.zeros(len(config.ISAAC_ROBOT.dof_names))
-                joint_positions[joint_index] = angle_rad
-                action = ArticulationAction(joint_positions=joint_positions)
+                joint_count = len(config.ISAAC_ROBOT.dof_names)
+                joint_positions = numpy.zeros(joint_count) # fill all indices with 0
+                joint_velocities = numpy.zeros(joint_count) # fill all indices with 0
+                joint_accelerations = numpy.zeros(joint_count) # fill all indices with 0
+                joint_positions[joint_index] = angle_rad # replace index with correct angle
+                joint_velocities[joint_index] = joint_speed # replace index with correct speed
+                joint_accelerations[joint_index] = joint_acceleration # replace index with correct acceleration
+                action = ArticulationAction(
+                    joint_positions=joint_positions,
+                    joint_velocities=joint_velocities
+                    #joint_accelerations=joint_accelerations # acceleration is not supported in Isaac Sim :l
+                )
                 ARTICULATION_CONTROLLER.apply_action(action)
                 logging.debug(
                     f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad.\n"

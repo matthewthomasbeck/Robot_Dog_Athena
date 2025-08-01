@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Massive milestone, isaac sim no longer crashes and I can successfully joints to 0.0 values">
-      <change afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,7 +151,8 @@
       <workItem from="1753212139563" duration="984000" />
       <workItem from="1753237505516" duration="7873000" />
       <workItem from="1753799074651" duration="25956000" />
-      <workItem from="1753969744134" duration="4349000" />
+      <workItem from="1753969744134" duration="4532000" />
+      <workItem from="1754061663992" duration="558000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -295,14 +293,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00053" summary="Working on multi-RL pipeline, saving before cursor possibly destroys up my hard work">
-      <option name="closed" value="true" />
-      <created>1752515024013</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1752515024013</updated>
     </task>
     <task id="LOCAL-00054" summary="(Supposedly) fixed image processing for RL mode, I can only really see once I get RL up and running">
       <option name="closed" value="true" />
@@ -528,7 +518,15 @@
       <option name="project" value="LOCAL" />
       <updated>1753909106126</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete">
+      <option name="closed" value="true" />
+      <created>1753977050437</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1753977050437</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -546,7 +544,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Creates a USE_SIMULATION mode, so I can run the robot on a computer and made a very brief simulation running the old trot_forward() function (TODO: finish interface for RL agent, debug the mess I've made today)" />
     <MESSAGE value="Repaired my control_logic.py code, works for both radio and web (although channel 4 is still noisy unfortunately)" />
     <MESSAGE value="Made tweaks to movement, going to stop work on this project until I get all of my computer parts" />
     <MESSAGE value="Forgot to refactor move_foot_to_pos_OLD in standing functions" />
@@ -571,7 +568,8 @@
     <MESSAGE value="Got isaac sim camera imported (I think? lmao), logging is somehow broken" />
     <MESSAGE value="Fixed logging" />
     <MESSAGE value="Massive milestone, isaac sim no longer crashes and I can successfully joints to 0.0 values" />
-    <option name="LAST_COMMIT_MESSAGE" value="Massive milestone, isaac sim no longer crashes and I can successfully joints to 0.0 values" />
+    <MESSAGE value="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
