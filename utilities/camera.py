@@ -20,7 +20,7 @@
 
 ##### import config #####
 
-from utilities.config import CAMERA_CONFIG, RL_NOT_CNN, USE_SIMULATION, USE_ISAAC_SIM
+import utilities.config as config
 
 ##### import necessary libraries #####
 
@@ -32,7 +32,7 @@ import cv2  # add cv2 for decoding frames for isaac sim and the real robot
 
 ##### import isaac sim dependencies #####
 
-if USE_SIMULATION and USE_ISAAC_SIM:
+if config.USE_SIMULATION and config.USE_ISAAC_SIM:
 
     from isaacsim.sensors.camera import Camera
     import isaacsim.core.utils.numpy.rotations as rot_utils
@@ -50,9 +50,9 @@ if USE_SIMULATION and USE_ISAAC_SIM:
 ########## INITIALIZE CAMERA ##########
 
 def initialize_camera( # function to initialize camera
-        width=CAMERA_CONFIG['WIDTH'],
-        height=CAMERA_CONFIG['HEIGHT'],
-        frame_rate=CAMERA_CONFIG['FRAME_RATE']
+        width=config.CAMERA_CONFIG['WIDTH'],
+        height=config.CAMERA_CONFIG['HEIGHT'],
+        frame_rate=config.CAMERA_CONFIG['FRAME_RATE']
 ):
 
     ##### initialize camera by killing old processes and starting a new one #####
@@ -63,18 +63,9 @@ def initialize_camera( # function to initialize camera
 
     if camera_process is None: # if camera process failed to start...
         logging.error("(camera.py): Camera initialization failed, no camera process started.\n")
+        return None
 
     else: # if camera process started successfully...
-
-        if not USE_SIMULATION and not USE_ISAAC_SIM: # if physical robot...
-            logging.info(f"(camera.py): Camera initialized successfully with PID {camera_process.pid}.\n")
-
-        elif USE_SIMULATION and not USE_ISAAC_SIM: # if simulating with pybullet...
-            pass
-
-        if USE_SIMULATION and USE_ISAAC_SIM: # if simulating with isaac...
-            logging.info(f"(camera.py): Isaac Sim camera initialized successfully.\n")
-
         return camera_process
 
 
@@ -98,7 +89,7 @@ def _kill_existing_camera_processes(): # function to kill existing camera proces
 
 def _start_camera_process(width, height, frame_rate): # function to start camera process for opencv
 
-    if not USE_SIMULATION and not USE_ISAAC_SIM:  # if physical robot...
+    if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # if physical robot...
         try:
             real_camera = subprocess.Popen(  # open an rpicam vid process
                 [
@@ -120,31 +111,32 @@ def _start_camera_process(width, height, frame_rate): # function to start camera
                 stderr = real_camera.stderr.read().decode()
                 logging.error(f"(camera.py): Camera process failed to start. Stderr: {stderr}\n")
                 return None
+            logging.info(f"(camera.py): Camera initialized successfully with PID {real_camera.pid}.\n")
             return real_camera
 
         except Exception as e:
             logging.error(f"(camera.py): Failed to start camera process: {e}\n")
             return None
 
-    elif USE_SIMULATION and USE_ISAAC_SIM: # if isaac sim...
+    elif config.USE_SIMULATION and config.USE_ISAAC_SIM: # if isaac sim...
         try: # try to make camera object for isaac sim
 
             logging.debug("(camera.py) Computing aperture size for isaac camera...\n")
-            horizontal_aperture = CAMERA_CONFIG['CAMERA_WIDTH'] * CAMERA_CONFIG['PIXEL_SIZE_UM'] * 1e-6
-            vertical_aperture = CAMERA_CONFIG['CAMERA_HEIGHT'] * CAMERA_CONFIG['PIXEL_SIZE_UM'] * 1e-6
+            horizontal_aperture = config.CAMERA_CONFIG['CAMERA_WIDTH'] * config.CAMERA_CONFIG['PIXEL_SIZE_UM'] * 1e-6
+            vertical_aperture = config.CAMERA_CONFIG['CAMERA_HEIGHT'] * config.CAMERA_CONFIG['PIXEL_SIZE_UM'] * 1e-6
             logging.info("(camera.py) Computed aperture size for isaac camera.\n")
 
             logging.debug("(camera.py) Computing focal length for isaac camera...\n")
-            focal_length_x = (horizontal_aperture / 2) / numpy.tan(numpy.radians(CAMERA_CONFIG['FOV_HORIZONTAL'] / 2))
-            focal_length_y = (vertical_aperture / 2) / numpy.tan(numpy.radians(CAMERA_CONFIG['FOV_VERTICAL'] / 2))
+            focal_length_x = (horizontal_aperture / 2) / numpy.tan(numpy.radians(config.CAMERA_CONFIG['FOV_HORIZONTAL'] / 2))
+            focal_length_y = (vertical_aperture / 2) / numpy.tan(numpy.radians(config.CAMERA_CONFIG['FOV_VERTICAL'] / 2))
             focal_length = (focal_length_x + focal_length_y) / 2
             logging.info("(camera.py) Computed focal length for isaac camera.\n")
 
             logging.debug("(camera.py) Creating isaac camera object...\n")
             isaac_camera = Camera(
                 prim_path="/World/robot_dog/athena_front_face/camera_sensor",
-                resolution=(CAMERA_CONFIG['WIDTH'], CAMERA_CONFIG['HEIGHT']),
-                frequency=CAMERA_CONFIG['FRAME_RATE'],
+                resolution=(config.CAMERA_CONFIG['WIDTH'], config.CAMERA_CONFIG['HEIGHT']),
+                frequency=config.CAMERA_CONFIG['FRAME_RATE'],
                 orientation=rot_utils.euler_angles_to_quats(numpy.array([0, 0, 0]), degrees=True),  # change if needed
                 position=numpy.array([0.0, 0.0, 0.01]),  # a tiny offset if needed
             )
@@ -161,14 +153,24 @@ def _start_camera_process(width, height, frame_rate): # function to start camera
             isaac_camera.set_focal_length(focal_length)
             isaac_camera.set_horizontal_aperture(horizontal_aperture)
             isaac_camera.set_vertical_aperture(vertical_aperture)
-            isaac_camera.set_focus_distance(CAMERA_CONFIG['DEPTH_OF_FIELD'])
-            isaac_camera.set_lens_aperture(CAMERA_CONFIG['APERTURE_RATIO'])
+            isaac_camera.set_focus_distance(config.CAMERA_CONFIG['DEPTH_OF_FIELD'])
+            isaac_camera.set_lens_aperture(config.CAMERA_CONFIG['APERTURE_RATIO'])
             isaac_camera.set_clipping_range(0.05, 100000.0)
             logging.info("(camera.py) Applied optics to isaac camera.\n")
 
             logging.debug("(camera.py) Initializing isaac camera...\n")
             isaac_camera.initialize()
             logging.info("(camera.py) Initialized isaac camera.\n")
+
+            for _ in range(10):
+                rgba = isaac_camera.get_rgba()
+                if rgba is not None and rgba.size > 0:
+                    break
+                time.sleep(0.1)
+                if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+                    config.ISAAC_WORLD.step(render=True)
+            else:
+                logging.warning("(camera.py): Isaac camera failed to warm up with a valid frame.\n")
 
             return isaac_camera
 
@@ -194,15 +196,15 @@ def decode_real_frame(camera_process, mjpeg_buffer):
             mjpeg_buffer = mjpeg_buffer[end_idx + 2:]
             inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
 
-            if RL_NOT_CNN:  # if running RL model for movement...
+            if config.RL_NOT_CNN:  # if running RL model for movement...
                 # 1. Crop
                 h = inference_frame.shape[0]
-                crop_start = int(h * (1 - CAMERA_CONFIG['CROP_FRACTION']))
+                crop_start = int(h * (1 - config.CAMERA_CONFIG['CROP_FRACTION']))
                 cropped = inference_frame[crop_start:, :, :]
                 # 2. Grayscale
                 gray_frame = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
                 # 3. Resize
-                output_size = (CAMERA_CONFIG['OUTPUT_WIDTH'], CAMERA_CONFIG['OUTPUT_HEIGHT'])
+                output_size = (config.CAMERA_CONFIG['OUTPUT_WIDTH'], config.CAMERA_CONFIG['OUTPUT_HEIGHT'])
                 resized_frame = cv2.resize(gray_frame, output_size)
                 return mjpeg_buffer, streamed_frame, resized_frame
 
@@ -226,12 +228,12 @@ def decode_isaac_frame(camera_object):
         image = (rgba[..., :3] * 255).astype(numpy.uint8)  # Strip alpha, scale to 0–255
         inference_frame = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         h = inference_frame.shape[0]
-        crop_start = int(h * (1 - CAMERA_CONFIG['CROP_FRACTION']))
+        crop_start = int(h * (1 - config.CAMERA_CONFIG['CROP_FRACTION']))
         cropped = inference_frame[crop_start:, :, :]
         gray_frame = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
         resized_frame = cv2.resize(
             gray_frame,
-            (CAMERA_CONFIG['OUTPUT_WIDTH'], CAMERA_CONFIG['OUTPUT_HEIGHT'])
+            (config.CAMERA_CONFIG['OUTPUT_WIDTH'], config.CAMERA_CONFIG['OUTPUT_HEIGHT'])
         )
         return None, inference_frame, resized_frame
     except Exception as e:

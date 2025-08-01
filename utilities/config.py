@@ -161,6 +161,12 @@ CURRENT_FEET_COORDINATES = {
 
 ########## ISAAC SIM CONFIGURATION ##########
 
+##### isaac sim objects #####
+
+ISAAC_SIM_APP = None # isaac sim application instance
+ISAAC_WORLD = None # isaac sim world
+ISAAC_ROBOT = None # isaac sim robot articulation
+
 ##### isaac sim joint config #####
 
 JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac sim

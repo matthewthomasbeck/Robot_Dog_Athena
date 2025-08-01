@@ -87,10 +87,6 @@ def set_isaac_dependencies():
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
     from training.isaac_sim import build_isaac_joint_index_map  # import joint index map builder
 
-    from utilities.camera import initialize_camera  # import to start camera logic
-    CAMERA_PROCESS = initialize_camera()  # create camera process
-    if CAMERA_PROCESS is None:
-        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
     config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
     add_reference_to_stage(usd_path, "/World/robot_dog")
@@ -101,6 +97,11 @@ def set_isaac_dependencies():
     config.ISAAC_WORLD.reset()
     config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
     logging.info("(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.\n")
+
+    from utilities.camera import initialize_camera  # import to start camera logic
+    CAMERA_PROCESS = initialize_camera()  # create camera process
+    if CAMERA_PROCESS is None:
+        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
 
 def set_pybullet_dependencies():
 
