@@ -28,8 +28,6 @@ import utilities.config as config
 
 ##### import isaac sim libraries #####
 
-from omni.isaac.core.utils.prims import get_prim_at_path
-from omni.isaac.core.utils.pose import get_world_pose
 from pxr import Gf
 
 
@@ -77,34 +75,44 @@ def compute_reward(robot_prim_path, previous_pose, current_pose, command, intens
     # position delta
     prev_pos = numpy.array(previous_pose[0])  # (x, y, z)
     curr_pos = numpy.array(current_pose[0])
-    delta_pos = curr_pos - prev_pos
+    delta_pos = curr_pos - prev_pos  # (dx, dy, dz)
 
     # orientation delta
     prev_rot = Gf.Quatf(*previous_pose[1])  # (w, x, y, z)
     curr_rot = Gf.Quatf(*current_pose[1])
     delta_rot = curr_rot * prev_rot.GetInverse()
-    delta_yaw = delta_rot.GetAxisAngle()[0] * delta_rot.GetAxisAngle()[1][2]  # yaw only
+    delta_yaw = delta_rot.GetAxisAngle()[0] * delta_rot.GetAxisAngle()[1][2]  # yaw around Z
 
     reward = 0.0
+    command_keys = command.split('+') if isinstance(command, str) else []
 
-    # cardinal direction rewards
-    if 'w' in command:
+    # Translational movements
+    if 'w' in command_keys:
         reward += delta_pos[0] * intensity  # +X is forward
-    if 's' in command:
+    if 's' in command_keys:
         reward -= delta_pos[0] * intensity
-    if 'a' in command:
+    if 'a' in command_keys:
         reward += delta_pos[1] * intensity  # +Y is left
-    if 'd' in command:
+    if 'd' in command_keys:
         reward -= delta_pos[1] * intensity
 
-    # rotation-based reward
-    if 'arrowleft' in command:
+    # Rotational movements
+    if 'arrowleft' in command_keys:
         reward += delta_yaw * intensity
-    if 'arrowright' in command:
+    if 'arrowright' in command_keys:
         reward -= delta_yaw * intensity
 
-    # penalty for undesired movement or instability
-    noise_penalty = numpy.linalg.norm(delta_pos[:2]) * 0.05 if not command else 0
-    reward -= noise_penalty
+    # Tilting (Up/Down): reward changes in pitch via z-axis body angle or delta_z
+    delta_z = delta_pos[2]
+
+    if 'arrowup' in command_keys:
+        reward += delta_z * intensity  # raise front / tilt up
+    if 'arrowdown' in command_keys:
+        reward -= delta_z * intensity  # lower front / tilt down
+
+    # Penalty for unintended drift if no command is active
+    if not command_keys:
+        noise_penalty = numpy.linalg.norm(delta_pos[:2]) * 0.05
+        reward -= noise_penalty
 
     return reward

@@ -231,12 +231,14 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
             # TODO create a way for isaac sim to collect frames as well as commands for RL agent
             if config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if isaac sim...
-                # TODO send/make commands to isaac sim with frame data (run camera)
+
                 mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
                     CAMERA_PROCESS
                 )
                 command = None  # initially no command
-                pass
+
+                # TODO get start pose of robot, may need to move to foundational movement
+                prev_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
 
             if config.CONTROL_MODE == 'web': # if web control enabled...
 
@@ -272,6 +274,11 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             if config.USE_SIMULATION:
                 if config.USE_ISAAC_SIM:
                     config.ISAAC_WORLD.step(render=True)
+
+                    # TODO compute reward, may need to move to foundational movement
+                    curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
+                    reward = compute_reward('/World/my_robot/base_link', prev_pose, curr_pose, command, intensity)
+
                 else:
                     pybullet.stepSimulation()
 

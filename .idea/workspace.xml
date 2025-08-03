@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed failing camera error">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got basic implementation of a reward function, exhausted and calling it for today">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
     </list>
@@ -153,7 +153,7 @@
       <workItem from="1753799074651" duration="25956000" />
       <workItem from="1753969744134" duration="4532000" />
       <workItem from="1754061663992" duration="3105000" />
-      <workItem from="1754081869247" duration="5071000" />
+      <workItem from="1754081869247" duration="7773000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -294,14 +294,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00056" summary="Made pass-able functions for walking and RL integration">
-      <option name="closed" value="true" />
-      <created>1752525797627</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1752525797627</updated>
     </task>
     <task id="LOCAL-00057" summary="Creates a USE_SIMULATION mode, so I can run the robot on a computer and made a very brief simulation running the old trot_forward() function (TODO: finish interface for RL agent, debug the mess I've made today)">
       <option name="closed" value="true" />
@@ -527,7 +519,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754066365422</updated>
     </task>
-    <option name="localTasksCounter" value="85" />
+    <task id="LOCAL-00085" summary="Got basic implementation of a reward function, exhausted and calling it for today">
+      <option name="closed" value="true" />
+      <created>1754188090280</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1754188090281</updated>
+    </task>
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -545,7 +545,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Forgot to refactor move_foot_to_pos_OLD in standing functions" />
     <MESSAGE value="Going to make manual trot more reliable so I can better test things like timing, etc" />
     <MESSAGE value="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)" />
     <MESSAGE value="Making this an error statement, may try to get this working tomorrow" />
@@ -570,7 +569,8 @@
     <MESSAGE value="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete" />
     <MESSAGE value="Got velocity integrated with isaac movement" />
     <MESSAGE value="Fixed failing camera error" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed failing camera error" />
+    <MESSAGE value="Got basic implementation of a reward function, exhausted and calling it for today" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got basic implementation of a reward function, exhausted and calling it for today" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
