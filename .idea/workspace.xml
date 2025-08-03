@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got velocity integrated with isaac movement">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed failing camera error">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -154,7 +152,8 @@
       <workItem from="1753237505516" duration="7873000" />
       <workItem from="1753799074651" duration="25956000" />
       <workItem from="1753969744134" duration="4532000" />
-      <workItem from="1754061663992" duration="2091000" />
+      <workItem from="1754061663992" duration="3105000" />
+      <workItem from="1754081869247" duration="5071000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -295,14 +294,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00055" summary="Made dummy functions for RL processing">
-      <option name="closed" value="true" />
-      <created>1752518589714</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1752518589715</updated>
     </task>
     <task id="LOCAL-00056" summary="Made pass-able functions for walking and RL integration">
       <option name="closed" value="true" />
@@ -528,7 +519,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754064245436</updated>
     </task>
-    <option name="localTasksCounter" value="84" />
+    <task id="LOCAL-00084" summary="Fixed failing camera error">
+      <option name="closed" value="true" />
+      <created>1754066365422</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1754066365422</updated>
+    </task>
+    <option name="localTasksCounter" value="85" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -546,7 +545,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Made tweaks to movement, going to stop work on this project until I get all of my computer parts" />
     <MESSAGE value="Forgot to refactor move_foot_to_pos_OLD in standing functions" />
     <MESSAGE value="Going to make manual trot more reliable so I can better test things like timing, etc" />
     <MESSAGE value="Got rid of time.sleep (not necessary, caused too many issues) and going to ditch bezier curves (ironically making movement less smooth)" />
@@ -571,7 +569,8 @@
     <MESSAGE value="Massive milestone, isaac sim no longer crashes and I can successfully joints to 0.0 values" />
     <MESSAGE value="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete" />
     <MESSAGE value="Got velocity integrated with isaac movement" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got velocity integrated with isaac movement" />
+    <MESSAGE value="Fixed failing camera error" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed failing camera error" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
