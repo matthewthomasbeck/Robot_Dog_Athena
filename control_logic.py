@@ -29,6 +29,7 @@ import logging
 from utilities.log import initialize_logging
 import utilities.config as config
 from utilities.receiver import interpret_commands
+import utilities.internet as internet  # dynamically import internet utilities to be constantly updated
 
 ##### (pre)initialize all utilities #####
 
@@ -85,7 +86,7 @@ def set_isaac_dependencies():
     from isaacsim.core.api import World
     from isaacsim.core.prims import Articulation
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
-    from training.isaac_sim import build_isaac_joint_index_map  # import joint index map builder
+    from training.isaac_sim import build_isaac_joint_index_map, compute_reward
 
     config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
@@ -102,6 +103,14 @@ def set_isaac_dependencies():
     CAMERA_PROCESS = initialize_camera()  # create camera process
     if CAMERA_PROCESS is None:
         logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
+
+    if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+        SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
+        COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+        if SOCK is None:
+            logging.error("(control_logic.py): Failed to initialize SOCK for robot!\n")
+        if COMMAND_QUEUE is None:
+            logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
 
 def set_pybullet_dependencies():
 
@@ -238,12 +247,14 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 command = None  # initially no command
 
                 # TODO get start pose of robot, may need to move to foundational movement
-                prev_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
+                #prev_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
 
             if config.CONTROL_MODE == 'web': # if web control enabled...
 
-                if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
-                    internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
+                #if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
+                    #internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
+
+                internet.stream_to_backend(SOCK, streamed_frame)
 
                 if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty(): # if command queue is not empty...
                     command = COMMAND_QUEUE.get() # get command from queue
@@ -276,8 +287,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     config.ISAAC_WORLD.step(render=True)
 
                     # TODO compute reward, may need to move to foundational movement
-                    curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
-                    reward = compute_reward('/World/my_robot/base_link', prev_pose, curr_pose, command, intensity)
+                    #curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
+                    #reward = compute_reward('/World/my_robot/base_link', prev_pose, curr_pose, command, intensity)
 
                 else:
                     pybullet.stepSimulation()

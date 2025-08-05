@@ -346,28 +346,29 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
 
 
         elif config.USE_SIMULATION and config.USE_ISAAC_SIM:
-
-            angle_rad = math.radians(angle)
+            servo_data = config.SERVO_CONFIG[leg_id][joint]
+            is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+            adjusted_angle = -angle if is_inverted else angle
+            angle_rad = math.radians(adjusted_angle)
             joint_name = f"{leg_id}_{joint}"
 
             try:
-                #logging.debug(f"(fundamental_movement.py) Attempting to move joint {joint_name}...\n")
                 joint_index = config.JOINT_INDEX_MAP.get(joint_name)
                 joint_count = len(config.ISAAC_ROBOT.dof_names)
-                joint_positions = numpy.zeros(joint_count) # fill all indices with 0
-                joint_velocities = numpy.zeros(joint_count) # fill all indices with 0
-                joint_accelerations = numpy.zeros(joint_count) # fill all indices with 0
-                joint_positions[joint_index] = angle_rad # replace index with correct angle
-                joint_velocities[joint_index] = joint_speed # replace index with correct speed
-                joint_accelerations[joint_index] = joint_acceleration # replace index with correct acceleration
+                joint_positions = numpy.zeros(joint_count)
+                joint_velocities = numpy.zeros(joint_count)
+                joint_accelerations = numpy.zeros(joint_count)
+                joint_positions[joint_index] = angle_rad
+                joint_velocities[joint_index] = joint_speed
+                joint_accelerations[joint_index] = joint_acceleration  # Optional, not used
                 action = ArticulationAction(
                     joint_positions=joint_positions,
                     joint_velocities=joint_velocities
-                    #joint_accelerations=joint_accelerations # acceleration is not supported in Isaac Sim :l
+                    # joint_accelerations=joint_accelerations  # not supported
                 )
                 ARTICULATION_CONTROLLER.apply_action(action)
                 logging.debug(
-                    f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad.\n"
+                    f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
                 )
 
             except Exception as e:

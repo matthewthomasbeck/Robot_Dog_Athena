@@ -562,6 +562,34 @@
     </inertial>
   </link>
 
+  <!--##### front-left-shin-horn #####-->
+
+  <link name="front_left_shin_horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
   <!--##### front-left-shin-shin #####-->
 
   <link name="front_left_shin_shin">
@@ -636,6 +664,34 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-left-hip #####-->
+
+  <link name="front_left_hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_left.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_left.dae" scale="1 1 1"/>
       </geometry>
     </collision>
 
@@ -740,12 +796,29 @@
     <origin xyz="-0.0175 -0.0271 0.0231" rpy="-1.5708 1.5708 -1.5708"/>
   </joint>
 
+  <!--##### front-left-shin-servo/horn joint #####-->
+
+  <joint name="front_left_shin_servo_horn" type="continuous">
+    <parent link="front_left_shin_servo"/>
+    <child link="front_left_shin_horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 0.785398"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
   <!--##### front-left-pelvis-pelvis/front-left-femur-servo joint #####-->
 
   <joint name="front_left_pelvis_pelvis_front_left_femur_servo" type="fixed">
     <parent link="front_left_pelvis_pelvis"/>
     <child link="front_left_femur_servo"/>
     <origin xyz="-0.0175 -0.0271 0.0431" rpy="0 -1.5708 -3.14"/>
+  </joint>
+
+  <!--##### front-left-femur-servo/front-left-hip joint #####-->
+
+  <joint name="front_left_femur_servo_front_left_hip" type="continuous">
+    <parent link="front_left_femur_servo"/>
+    <child link="front_left_hip"/>
+    <origin xyz="0 -0.01 0.0409" rpy="0 -1.5708 3.14"/>
   </joint>
 
   <!--##### front-left-femur-servo/disc joint TODO (FL_upper) #####-->
@@ -901,6 +974,34 @@
     </inertial>
   </link>
 
+  <!--##### front-right-shin-horn #####-->
+
+  <link name="front_right_shin_horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
   <!--##### front-right-shin-shin #####-->
 
   <link name="front_right_shin_shin">
@@ -975,6 +1076,34 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### front-right-hip #####-->
+
+  <link name="front_right_hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_right.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_right.dae" scale="1 1 1"/>
       </geometry>
     </collision>
 
@@ -1079,12 +1208,29 @@
     <origin xyz="-0.0175 -0.0271 -0.0231" rpy="1.5708 1.5708 1.5708"/>
   </joint>
 
+  <!--##### front-right-shin-servo/horn joint #####-->
+
+  <joint name="front_right_shin_servo_horn" type="continuous">
+    <parent link="front_right_shin_servo"/>
+    <child link="front_right_shin_horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 2.356198"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
   <!--##### front-right-pelvis-pelvis/front-right-femur-servo joint #####-->
 
   <joint name="front_right_pelvis_pelvis_front_right_femur_servo" type="fixed">
     <parent link="front_right_pelvis_pelvis"/>
     <child link="front_right_femur_servo"/>
     <origin xyz="-0.0175 -0.0271 -0.0431" rpy="0 -1.5708 -3.14"/>
+  </joint>
+
+  <!--##### front-right-femur-servo/front-right-hip joint #####-->
+
+  <joint name="front_right_femur_servo_front_right_hip" type="continuous">
+    <parent link="front_right_femur_servo"/>
+    <child link="front_right_hip"/>
+    <origin xyz="0 -0.01 0.0468" rpy="0 1.5708 3.14"/>
   </joint>
 
   <!--##### front-right-femur-servo/disc joint TODO (FR_upper) #####-->
@@ -1240,6 +1386,34 @@
     </inertial>
   </link>
 
+  <!--##### back-left-shin-horn #####-->
+
+  <link name="back_left_shin_horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
   <!--##### back-left-shin-shin #####-->
 
   <link name="back_left_shin_shin">
@@ -1314,6 +1488,34 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-left-hip #####-->
+
+  <link name="back_left_hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_left.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_left.dae" scale="1 1 1"/>
       </geometry>
     </collision>
 
@@ -1418,12 +1620,29 @@
     <origin xyz="-0.0175 -0.0271 -0.0231" rpy="1.5708 -1.5708 1.5708"/>
   </joint>
 
+  <!--##### back-left-shin-servo/horn joint #####-->
+
+  <joint name="back_left_shin_servo_horn" type="continuous">
+    <parent link="back_left_shin_servo"/>
+    <child link="back_left_shin_horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 0.785398"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
   <!--##### back-left-pelvis-pelvis/back-left-femur-servo joint #####-->
 
   <joint name="back_left_pelvis_pelvis_back_left_femur_servo" type="fixed">
     <parent link="back_left_pelvis_pelvis"/>
     <child link="back_left_femur_servo"/>
     <origin xyz="-0.0175 -0.0271 -0.0431" rpy="1.5708 1.5708 1.5708"/>
+  </joint>
+
+  <!--##### back-left-femur-servo/back-left-hip joint #####-->
+
+  <joint name="back_left_femur_servo_back_left_hip" type="continuous">
+    <parent link="back_left_femur_servo"/>
+    <child link="back_left_hip"/>
+    <origin xyz="0 -0.01 0.0409" rpy="0 -1.5708 3.14"/>
   </joint>
 
   <!--##### back-left-femur-servo/disc joint TODO (BL_upper) #####-->
@@ -1579,6 +1798,34 @@
     </inertial>
   </link>
 
+  <!--##### back-right-shin-horn #####-->
+
+  <link name="back_right_shin_horn">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="White">
+          <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/hardware/servo_horn.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
   <!--##### back-right-shin-shin #####-->
 
   <link name="back_right_shin_shin">
@@ -1653,6 +1900,34 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/electronics/DS3218.dae" scale="1 1 1"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <mass value="0.01"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </inertial>
+  </link>
+
+  <!--##### back-right-hip #####-->
+
+  <link name="back_right_hip">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_right.dae" scale="1 1 1"/>
+      </geometry>
+
+      <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="/home/matthewthomasbeck/Projects/Robot_Dog/training/meshes/pelvis_blades/ares_pelvis_blades_right.dae" scale="1 1 1"/>
       </geometry>
     </collision>
 
@@ -1757,12 +2032,29 @@
     <origin xyz="-0.0175 -0.0271 0.0231" rpy="1.5708 -1.5708 1.5708"/>
   </joint>
 
+  <!--##### back-right-shin-servo/horn joint #####-->
+
+  <joint name="back_right_shin_servo_horn" type="continuous">
+    <parent link="back_right_shin_servo"/>
+    <child link="back_right_shin_horn"/>
+    <origin xyz="0 -0.01 0.043" rpy="0 0 2.356198"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
   <!--##### back-right-pelvis-pelvis/back-right-femur-servo joint #####-->
 
   <joint name="back_right_pelvis_pelvis_back_right_femur_servo" type="fixed">
     <parent link="back_right_pelvis_pelvis"/>
     <child link="back_right_femur_servo"/>
     <origin xyz="-0.0175 -0.0271 0.0431" rpy="1.5708 1.5708 1.5708"/>
+  </joint>
+
+  <!--##### back-right-femur-servo/back-right-hip joint #####-->
+
+  <joint name="back_right_femur_servo_back_right_hip" type="continuous">
+    <parent link="back_right_femur_servo"/>
+    <child link="back_right_hip"/>
+    <origin xyz="0 -0.01 0.0468" rpy="0 1.5708 3.14"/>
   </joint>
 
   <!--##### back-right-femur-servo/disc joint TODO (BR_upper) #####-->

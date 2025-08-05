@@ -1,2 +1,202 @@
-2025-07-23 10:25:12 INFO: (log.py): Logging setup complete.
+2025-08-05 17:30:55 INFO: (log.py): Logging setup complete.
+
+2025-08-05 17:31:03 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.
+
+2025-08-05 17:31:03 INFO: (camera.py): Successfully killed existing camera processes.
+
+2025-08-05 17:31:04 INFO: (camera.py) Computed aperture size for isaac camera.
+
+2025-08-05 17:31:04 INFO: (camera.py) Computed focal length for isaac camera.
+
+2025-08-05 17:31:04 INFO: (camera.py) Applied optics to isaac camera.
+
+2025-08-05 17:31:04 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-05 17:31:04 INFO: (internet.py): Connected to website backend.
+
+2025-08-05 17:31:04 INFO: (internet.py): Command queue initialized successfully.
+
+2025-08-05 17:31:04 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-05 17:31:43 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:43 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:43 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:43 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Received command 'n' from queue (BLOCKED).
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:43 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:45 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:45 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:45 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:45 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:45 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:46 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:46 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:49 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-05 17:31:49 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
+
+2025-08-05 17:31:49 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-05 17:31:49 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
+
+2025-08-05 17:31:49 INFO: (control_logic.py): Executed keyboard command: []
 

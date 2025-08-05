@@ -1,2 +1,20 @@
-2025-07-23 10:27:58 INFO: (log.py): Logging setup complete.
+2025-08-05 17:59:24 INFO: (log.py): Logging setup complete.
+
+2025-08-05 17:59:33 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.
+
+2025-08-05 17:59:33 INFO: (camera.py): Successfully killed existing camera processes.
+
+2025-08-05 17:59:33 INFO: (camera.py) Computed aperture size for isaac camera.
+
+2025-08-05 17:59:33 INFO: (camera.py) Computed focal length for isaac camera.
+
+2025-08-05 17:59:33 INFO: (camera.py) Applied optics to isaac camera.
+
+2025-08-05 17:59:33 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-05 17:59:34 INFO: (internet.py): Connected to website backend.
+
+2025-08-05 17:59:34 INFO: (internet.py): Command queue initialized successfully.
+
+2025-08-05 17:59:34 INFO: (control_logic.py): Executed keyboard command: []
 

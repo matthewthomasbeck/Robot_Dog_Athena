@@ -76,7 +76,7 @@ def stream_to_backend(socket_param, frame_data): # function to send frame data t
 
     global SOCK
     if frame_data is not None and socket_param is not None:
-        logging.debug("(internet.py): Streaming frame data to website backend...\n")
+        #logging.debug("(internet.py): Streaming frame data to website backend...\n")
         try:
             with _send_lock:
                 # Send frame length first (4 bytes)
@@ -84,7 +84,9 @@ def stream_to_backend(socket_param, frame_data): # function to send frame data t
                 socket_param.sendall(frame_length.to_bytes(4, 'big'))
                 # Send frame data
                 socket_param.sendall(frame_data)
-                logging.debug(f"Frame data sent to website backend successfully. Frame size: {frame_length} bytes\n")
+                #logging.debug(
+                    #f"(internet.py); Frame data sent to website backend successfully of size: {frame_length} bytes\n"
+                #)
 
         except Exception as e:
             logging.error(f"(internet.py): Error sending data to website backend: {e}\n")
