@@ -1,338 +1,44 @@
-2025-08-05 19:29:03 INFO: (log.py): Logging setup complete.
+2025-08-05 21:17:52 INFO: (log.py): Logging setup complete.
 
-2025-08-05 19:29:11 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.
+2025-08-05 21:18:00 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.
 
-2025-08-05 19:29:11 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-05 21:18:00 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-05 19:29:11 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-05 21:18:01 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-05 19:29:11 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-05 21:18:01 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-05 19:29:11 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-05 21:18:01 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-05 19:29:12 INFO: (camera.py) Initialized isaac camera.
+2025-08-05 21:18:01 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-05 19:29:12 INFO: (internet.py): Connected to website backend.
+2025-08-05 21:18:01 INFO: (internet.py): Connected to website backend.
 
-2025-08-05 19:29:12 INFO: (internet.py): Command queue initialized successfully.
+2025-08-05 21:18:01 INFO: (internet.py): Command queue initialized successfully.
 
-2025-08-05 19:29:12 INFO: (control_logic.py): Executed keyboard command: []
+2025-08-05 21:18:02 INFO: (control_logic.py): Executed keyboard command: []
 
-2025-08-05 19:29:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 21:23:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
 
-2025-08-05 19:29:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 21:23:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
 
-2025-08-05 19:29:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+2025-08-05 21:23:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
 
-2025-08-05 19:29:56 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
+2025-08-05 21:23:13 INFO: (control_logic.py): Executed keyboard command: ['w']
 
-2025-08-05 19:29:56 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
+2025-08-05 21:23:13 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
 
-2025-08-05 19:29:56 INFO: (control_logic.py): Received command 'n' from queue (BLOCKED).
+2025-08-05 21:23:13 INFO: (control_logic.py): Executed keyboard command: []
 
-2025-08-05 19:29:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+2025-08-05 21:23:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
 
-2025-08-05 19:29:56 INFO: (control_logic.py): Executed keyboard command: []
+2025-08-05 21:23:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
 
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 21:23:14 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
 
-2025-08-05 19:29:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+2025-08-05 21:23:14 INFO: (control_logic.py): Executed keyboard command: ['d']
 
-2025-08-05 19:29:58 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
+2025-08-05 21:23:14 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
 
-2025-08-05 19:29:58 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:58 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:58 INFO: (control_logic.py): Executed keyboard command: []
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:58 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:58 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
-
-2025-08-05 19:29:58 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:58 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:58 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:59 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:59 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:29:59 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:59 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:59 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:59 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:59 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:59 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
-
-2025-08-05 19:29:59 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:29:59 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:29:59 INFO: (control_logic.py): Received command 'w' from queue (BLOCKED).
-
-2025-08-05 19:30:00 INFO: (control_logic.py): Executed keyboard command: ['w']
-
-2025-08-05 19:30:00 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
-
-2025-08-05 19:30:00 INFO: (control_logic.py): Executed keyboard command: []
-
-2025-08-05 19:30:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:47 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:30:47 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:30:47 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:30:47 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:47 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:30:47 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:30:47 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:30:47 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:30:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:30:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:30:48 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:30:48 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:30:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:30:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:48 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:30:48 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:30:48 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
-
-2025-08-05 19:30:48 INFO: (control_logic.py): Executed keyboard command: []
-
-2025-08-05 19:30:50 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:51 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
-
-2025-08-05 19:30:51 INFO: (control_logic.py): Executed keyboard command: []
-
-2025-08-05 19:30:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:30:52 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:30:52 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:30:52 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:30:52 INFO: (control_logic.py): Received command 'n' from queue (BLOCKED).
-
-2025-08-05 19:30:52 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:30:52 INFO: (control_logic.py): Executed keyboard command: []
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:07 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:07 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:07 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:07 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:07 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:07 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:07 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:07 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:32:07 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:07 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:08 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:08 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:08 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:08 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:08 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:08 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:08 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:08 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:08 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:08 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Received command 'd' from queue (BLOCKED).
-
-2025-08-05 19:32:08 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:09 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
-
-2025-08-05 19:32:09 ERROR: (fundamental_movement.py): Failed to run AI for command: not enough values to unpack (expected 3, got 2)
-
-2025-08-05 19:32:09 INFO: (fundamental_movement.py): Executed move_direction() with intensity: 10
-
-2025-08-05 19:32:09 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 19:32:09 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
-
-2025-08-05 19:32:09 INFO: (control_logic.py): Executed keyboard command: []
+2025-08-05 21:23:14 INFO: (control_logic.py): Executed keyboard command: []
 

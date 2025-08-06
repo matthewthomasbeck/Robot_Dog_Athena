@@ -43,7 +43,7 @@ from movement.fundamental_movement import move_foot_to_pos # import to move foot
 ########## GAIT FUNCTIONS ##########
 
 def trot_forward(intensity): # function to trot forward manually
-    logging.debug(f"(forward.py): Running trot_forward() with intensity: {intensity}...\n")
+    #logging.debug(f"(forward.py): Running trot_forward() with intensity: {intensity}...\n")
 
     gait_states = {
         'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE,

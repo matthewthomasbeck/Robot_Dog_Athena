@@ -277,7 +277,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
             # WEB COMMAND HANDLING
             if command and IS_COMPLETE: # if command present and movement complete...
-                logging.debug(f"(control_logic.py): Running command: {command}...\n")
+                #logging.debug(f"(control_logic.py): Running command: {command}...\n")
                 threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
 
             # NEUTRAL POSITION HANDLING (for both modes)
@@ -312,7 +312,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
 def _handle_command(command, frame):
 
-    logging.debug(f"(control_logic.py): Threading command: {command}...\n")
+    #logging.debug(f"(control_logic.py): Threading command: {command}...\n")
 
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
 
@@ -365,7 +365,7 @@ def _handle_command(command, frame):
 
     elif config.CONTROL_MODE == 'web':
         try:
-            logging.debug(f"(control_logic.py): Executing keyboard command: {keys}\n")
+            #logging.debug(f"(control_logic.py): Executing keyboard command: {keys}\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
                 keys,
                 frame,
@@ -439,7 +439,6 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
 
         # neutral and special actions
         if 'n' in keys or not keys:
-            logging.debug(f"(control_logic.py): NEUTRAL\n")
             neutral_position(10)
             is_neutral = True
         elif ' ' in keys:
@@ -447,7 +446,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
             squatting_position(1)
             is_neutral = False
         elif direction:
-            logging.debug(f"(control_logic.py): {keys}: {direction}\n")
+            #logging.debug(f"(control_logic.py): {keys}: {direction}\n")
             # Use trot_forward for all modes (now supports Isaac Sim queue system)
             trot_forward(intensity)
             is_neutral = False

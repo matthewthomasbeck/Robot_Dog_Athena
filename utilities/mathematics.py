@@ -49,7 +49,7 @@ class Kinematics: # class to handle inverse kinematics calculations for a leg
 
         ##### calculate inverse kinematics #####
 
-        logging.debug(f"(mathematics.py): Calculating inverse kinematics for x={x}, y={y}, z={z}...\n")
+        #logging.debug(f"(mathematics.py): Calculating inverse kinematics for x={x}, y={y}, z={z}...\n")
 
         try: # attempt to calculate inverse kinematics
 

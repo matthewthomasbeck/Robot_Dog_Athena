@@ -134,7 +134,7 @@ def listen_for_commands(local_sock, command_queue):
     while True:
         try:
             length_bytes = local_sock.recv(4)
-            logging.debug(f"(internet.py): Received length_bytes: {length_bytes}\n")
+            #logging.debug(f"(internet.py): Received length_bytes: {length_bytes}\n")
             if not length_bytes:
                 logging.warning("(internet.py): Socket closed or no data received for length. Exiting thread.\n")
                 break

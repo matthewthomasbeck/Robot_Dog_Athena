@@ -375,9 +375,9 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
                     # joint_accelerations=joint_accelerations  # not supported
                 )
                 ARTICULATION_CONTROLLER.apply_action(action)
-                logging.debug(
-                    f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
-                )
+                #logging.debug(
+                    #f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
+                #)
 
             except Exception as e:
                 logging.error(
@@ -610,9 +610,9 @@ def move_foot_isaac(leg_id, x, y, z, speed, acceleration):
                 joint_velocities=joint_velocities
             )
             ARTICULATION_CONTROLLER.apply_action(action)
-            logging.debug(
-                f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
-            )
+            #logging.debug(
+                #f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
+            #)
 
         except Exception as e:
             logging.error(
