@@ -97,7 +97,7 @@ def set_isaac_dependencies():
     config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
     config.ISAAC_WORLD.reset()
     config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
-    logging.info("(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.\n")
+    logging.info(f"(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {config.JOINT_INDEX_MAP}\n")
 
     from utilities.camera import initialize_camera  # import to start camera logic
     CAMERA_PROCESS = initialize_camera()  # create camera process

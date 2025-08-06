@@ -44,7 +44,7 @@ if config.USE_SIMULATION:
 
         ARTICULATION_CONTROLLER = ArticulationController() # create new articulation controller instance
         ARTICULATION_CONTROLLER.initialize(config.ISAAC_ROBOT) # initialize the controller
-        config.JOINT_INDEX_MAP = {}  # global or config
+        # Note: config.JOINT_INDEX_MAP is set in control_logic.py set_isaac_dependencies()
         
         # Queue system for Isaac Sim to avoid PhysX threading violations
         ISAAC_MOVEMENT_QUEUE = queue.Queue()
@@ -291,6 +291,22 @@ def move_foot_to_pos(leg_id, start_coordinate, end_coordinate, speed, accelerati
 
 def move_foot_to_pos_OLD(leg_id, pos, speed, acceleration, use_bezier):
 
+    if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+        # For Isaac Sim, use the queue system to avoid PhysX threading violations
+        logging.debug(f"(fundamental_movement.py): Using Isaac Sim queue for move_foot_to_pos_OLD: {leg_id} to {pos}\n")
+        
+        # Create movement data for Isaac Sim
+        movement_data = {
+            'current_coordinates': {leg_id: config.CURRENT_FEET_COORDINATES[leg_id].copy()},
+            'mid_coordinates': {leg_id: pos.copy()},  # Direct movement, no mid point
+            'target_coordinates': {leg_id: pos.copy()},
+            'movement_rates': {leg_id: {'speed': speed, 'acceleration': acceleration}}
+        }
+        
+        # Queue the movement data
+        ISAAC_MOVEMENT_QUEUE.put(movement_data)
+        return
+
     if use_bezier: # if user wants to use bezier curves for foot movement...
         p0 = get_neutral_positions(leg_id) # get the neutral position of the leg (old hand-tuned method for testing)
         p2 = {'x': pos['x'], 'y': pos['y'], 'z': pos['z']}
@@ -362,6 +378,10 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
 
             try:
                 joint_index = config.JOINT_INDEX_MAP.get(joint_name)
+                if joint_index is None:
+                    logging.error(f"(fundamental_movement.py): Joint {joint_name} not found in JOINT_INDEX_MAP: {config.JOINT_INDEX_MAP}\n")
+                    return
+                
                 joint_count = len(config.ISAAC_ROBOT.dof_names)
                 joint_positions = numpy.zeros(joint_count)
                 joint_velocities = numpy.zeros(joint_count)
@@ -375,9 +395,9 @@ def move_foot(leg_id, x, y, z, speed, acceleration):
                     # joint_accelerations=joint_accelerations  # not supported
                 )
                 ARTICULATION_CONTROLLER.apply_action(action)
-                #logging.debug(
-                    #f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
-                #)
+                logging.debug(
+                    f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
+                )
 
             except Exception as e:
                 logging.error(
@@ -489,22 +509,27 @@ def apply_isaac_leg_movement(movement_data):
     target_coordinates = movement_data['target_coordinates']
     movement_rates = movement_data['movement_rates']
     
-    # Apply movement for each leg sequentially (no threading)
+    # Apply movement for each leg that has movement data (no threading)
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
         try:
-            swing_leg_isaac(
-                leg_id,
-                current_coordinates[leg_id],
-                mid_coordinates[leg_id],
-                target_coordinates[leg_id],
-                movement_rates[leg_id]
-            )
+            # Check if this leg has movement data
+            if leg_id in current_coordinates and leg_id in target_coordinates:
+                swing_leg_isaac(
+                    leg_id,
+                    current_coordinates[leg_id],
+                    mid_coordinates[leg_id],
+                    target_coordinates[leg_id],
+                    movement_rates[leg_id]
+                )
+            else:
+                logging.debug(f"(fundamental_movement.py): No movement data for leg {leg_id}, skipping\n")
         except Exception as e:
             logging.error(f"(fundamental_movement.py): Failed to swing leg {leg_id} in Isaac Sim: {e}\n")
     
-    # Update current foot positions
+    # Update current foot positions for legs that were moved
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
-        config.CURRENT_FEET_COORDINATES[leg_id] = target_coordinates[leg_id].copy()
+        if leg_id in target_coordinates:
+            config.CURRENT_FEET_COORDINATES[leg_id] = target_coordinates[leg_id].copy()
 
 
 def swing_leg_isaac(leg_id, current_coordinate, mid_coordinate, target_coordinate, movement_rate):
@@ -579,9 +604,13 @@ def move_foot_isaac(leg_id, x, y, z, speed, acceleration):
     if not config.USE_SIMULATION or not config.USE_ISAAC_SIM:
         return
     
+    logging.debug(f"(fundamental_movement.py): move_foot_isaac called for {leg_id} to ({x:.3f}, {y:.3f}, {z:.3f})\n")
+    
     # Collect angles for each joint of leg
     hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
     hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
+    
+    logging.debug(f"(fundamental_movement.py): Calculated angles for {leg_id}: hip={hip_angle:.1f}°, upper={upper_angle:.1f}°, lower={lower_angle:.1f}°\n")
     
     # Move each joint of the leg to desired angle
     for joint, angle, neutral in zip(
@@ -600,6 +629,10 @@ def move_foot_isaac(leg_id, x, y, z, speed, acceleration):
 
         try:
             joint_index = config.JOINT_INDEX_MAP.get(joint_name)
+            if joint_index is None:
+                logging.error(f"(fundamental_movement.py): Joint {joint_name} not found in JOINT_INDEX_MAP: {config.JOINT_INDEX_MAP}\n")
+                continue
+                
             joint_count = len(config.ISAAC_ROBOT.dof_names)
             joint_positions = numpy.zeros(joint_count)
             joint_velocities = numpy.zeros(joint_count)
@@ -610,9 +643,9 @@ def move_foot_isaac(leg_id, x, y, z, speed, acceleration):
                 joint_velocities=joint_velocities
             )
             ARTICULATION_CONTROLLER.apply_action(action)
-            #logging.debug(
-                #f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
-            #)
+            logging.debug(
+                f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
+            )
 
         except Exception as e:
             logging.error(

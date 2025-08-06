@@ -1,44 +1,40 @@
-2025-08-05 21:17:52 INFO: (log.py): Logging setup complete.
+2025-08-05 22:26:32 INFO: (log.py): Logging setup complete.
 
-2025-08-05 21:18:00 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.
+2025-08-05 22:26:41 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping.
 
-2025-08-05 21:18:00 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-05 22:26:41 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-05 21:18:01 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-05 22:26:41 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-05 21:18:01 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-05 22:26:41 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-05 21:18:01 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-05 22:26:41 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-05 21:18:01 INFO: (camera.py) Initialized isaac camera.
+2025-08-05 22:26:41 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-05 21:18:01 INFO: (internet.py): Connected to website backend.
+2025-08-05 22:26:42 INFO: (internet.py): Connected to website backend.
 
-2025-08-05 21:18:01 INFO: (internet.py): Command queue initialized successfully.
+2025-08-05 22:26:42 INFO: (internet.py): Command queue initialized successfully.
 
-2025-08-05 21:18:02 INFO: (control_logic.py): Executed keyboard command: []
+2025-08-05 22:26:42 INFO: (control_logic.py): Executed keyboard command: []
 
-2025-08-05 21:23:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Joint FL_hip not found in JOINT_INDEX_MAP: {}
 
-2025-08-05 21:23:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Joint FL_upper not found in JOINT_INDEX_MAP: {}
 
-2025-08-05 21:23:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Joint FL_lower not found in JOINT_INDEX_MAP: {}
 
-2025-08-05 21:23:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Joint FL_hip not found in JOINT_INDEX_MAP: {}
 
-2025-08-05 21:23:13 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Joint FL_upper not found in JOINT_INDEX_MAP: {}
 
-2025-08-05 21:23:13 INFO: (control_logic.py): Executed keyboard command: []
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Joint FL_lower not found in JOINT_INDEX_MAP: {}
 
-2025-08-05 21:23:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Failed to swing leg FR in Isaac Sim: 'FR'
 
-2025-08-05 21:23:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Failed to swing leg BL in Isaac Sim: 'BL'
 
-2025-08-05 21:23:14 INFO: (control_logic.py): Received command 'd' from queue (WILL RUN).
+2025-08-05 22:26:42 ERROR: (fundamental_movement.py): Failed to swing leg BR in Isaac Sim: 'BR'
 
-2025-08-05 21:23:14 INFO: (control_logic.py): Executed keyboard command: ['d']
-
-2025-08-05 21:23:14 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
-
-2025-08-05 21:23:14 INFO: (control_logic.py): Executed keyboard command: []
+2025-08-05 22:26:42 ERROR: (control_logic.py): Unexpected exception in main loop: 'FR'
 
