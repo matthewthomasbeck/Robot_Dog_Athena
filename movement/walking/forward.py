@@ -57,18 +57,77 @@ def trot_forward(intensity): # function to trot forward manually
         return
 
     try:
-        # Threaded movement for all legs
-        leg_threads = []
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            t = threading.Thread(
-                target=manual_swing_leg,
-                args=(leg_id, gait_states[leg_id]['phase'], speed, acceleration, gait_states[leg_id])
-            )
-            leg_threads.append(t)
-            t.start()
-        for t in leg_threads:
-            t.join()
-        time.sleep(0.1)
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Use queue-based movement for Isaac Sim to avoid PhysX threading violations
+            from movement.fundamental_movement import ISAAC_MOVEMENT_QUEUE
+            
+            # Create movement data for the trot gait
+            movement_data = {
+                'current_coordinates': config.CURRENT_FEET_COORDINATES.copy(),
+                'mid_coordinates': {},
+                'target_coordinates': {},
+                'movement_rates': {}
+            }
+            
+            # Calculate target positions for each leg based on gait state
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                gait_state = gait_states[leg_id]
+                phase = gait_state['phase']
+                
+                # Get current position
+                current_pos = config.CURRENT_FEET_COORDINATES[leg_id]
+                
+                # Determine target position based on phase
+                if phase == 'stance':
+                    # Move from stance to swing positions
+                    target_pos = config.FL_SWING if leg_id == 'FL' else \
+                                config.FR_SWING if leg_id == 'FR' else \
+                                config.BL_SWING if leg_id == 'BL' else \
+                                config.BR_SWING
+                    mid_pos = config.FL_TOUCHDOWN if leg_id == 'FL' else \
+                             config.FR_TOUCHDOWN if leg_id == 'FR' else \
+                             config.BL_TOUCHDOWN if leg_id == 'BL' else \
+                             config.BR_TOUCHDOWN
+                else:  # phase == 'swing'
+                    # Move from swing to stance positions
+                    target_pos = config.FL_STANCE if leg_id == 'FL' else \
+                                config.FR_STANCE if leg_id == 'FR' else \
+                                config.BL_STANCE if leg_id == 'BL' else \
+                                config.BR_STANCE
+                    mid_pos = config.FL_TIPPYTOES if leg_id == 'FL' else \
+                             config.FR_TIPPYTOES if leg_id == 'FR' else \
+                             config.BL_TIPPYTOES if leg_id == 'BL' else \
+                             config.BR_TIPPYTOES
+                
+                movement_data['mid_coordinates'][leg_id] = mid_pos
+                movement_data['target_coordinates'][leg_id] = target_pos
+                movement_data['movement_rates'][leg_id] = {
+                    'speed': speed,
+                    'acceleration': acceleration
+                }
+                
+                # Update gait state for next cycle
+                gait_state['phase'] = 'swing' if phase == 'stance' else 'stance'
+                gait_state['returned_to_neutral'] = False
+            
+            # Queue the movement data
+            ISAAC_MOVEMENT_QUEUE.put(movement_data)
+            logging.debug(f"(forward.py): Queued trot_forward movement data for Isaac Sim\n")
+            
+        else:
+            # Threaded movement for real robot and PyBullet simulation
+            leg_threads = []
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                t = threading.Thread(
+                    target=manual_swing_leg,
+                    args=(leg_id, gait_states[leg_id]['phase'], speed, acceleration, gait_states[leg_id])
+                )
+                leg_threads.append(t)
+                t.start()
+            for t in leg_threads:
+                t.join()
+            time.sleep(0.1)
+            
     except Exception as e:
         logging.error(f"(forward.py): Failed to gait-cycle legs in trot_forward(): {e}\n")
 

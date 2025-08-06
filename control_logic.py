@@ -178,6 +178,10 @@ from movement.standing.standing import *
 from movement.walking.forward import trot_forward
 from utilities.camera import decode_real_frame, decode_isaac_frame
 
+# Import queue processing function for Isaac Sim
+if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+    from movement.fundamental_movement import process_isaac_movement_queue
+
 
 
 
@@ -285,6 +289,9 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
             if config.USE_SIMULATION:
                 if config.USE_ISAAC_SIM:
                     config.ISAAC_WORLD.step(render=True)
+                    
+                    # Process queued movements for Isaac Sim (avoid PhysX threading violations)
+                    process_isaac_movement_queue()
 
                     # TODO compute reward, may need to move to foundational movement
                     #curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
@@ -441,8 +448,8 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
             is_neutral = False
         elif direction:
             logging.debug(f"(control_logic.py): {keys}: {direction}\n")
+            # Use trot_forward for all modes (now supports Isaac Sim queue system)
             trot_forward(intensity)
-            #move_direction(direction, frame, intensity, IMAGELESS_GAIT)
             is_neutral = False
         else:
             logging.warning(f"(control_logic.py): Invalid command: {keys}.\n")
