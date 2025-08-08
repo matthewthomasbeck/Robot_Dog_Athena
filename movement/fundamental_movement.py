@@ -120,6 +120,30 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
     speed, acceleration = interpret_intensity(intensity) # get speed and acceleration from intensity score
 
+    ##### BASIC TESTING - MOVE ALL JOINTS FORWARD/BACKWARD #####
+
+    if 'w' in commands:
+        # Move all joints to FULL_FRONT
+        logging.info("(fundamental_movement.py): Moving all joints FORWARD for testing...\n")
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Isaac Sim: Use direct joint control
+            _move_all_joints_forward_isaac()
+        else:
+            # Physical: Use PWM control
+            _move_all_joints_forward_physical(speed, acceleration)
+        return
+
+    elif 's' in commands:
+        # Move all joints to FULL_BACK
+        logging.info("(fundamental_movement.py): Moving all joints BACKWARD for testing...\n")
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Isaac Sim: Use direct joint control
+            _move_all_joints_backward_isaac()
+        else:
+            # Physical: Use PWM control
+            _move_all_joints_backward_physical(speed, acceleration)
+        return
+
     ##### run inference before moving #####
 
     logging.debug(
@@ -489,7 +513,8 @@ def process_isaac_movement_queue():
                 # Apply the joint position directly
                 joint_name = movement_data['joint_name']
                 angle_rad = movement_data['angle_rad']
-                _apply_single_joint_position_isaac(joint_name, angle_rad)
+                velocity = movement_data.get('velocity', 0.5)  # Default to 0.5 if not specified
+                _apply_single_joint_position_isaac(joint_name, angle_rad, velocity)
                 
                 # Signal that this calibration movement is complete
                 ISAAC_CALIBRATION_COMPLETE.set()
@@ -571,8 +596,8 @@ def calibrate_joints_isaac():
                     progress = step / steps_per_movement
                     current_pos = start_pos + (end_pos - start_pos) * progress
                     
-                    # Queue the joint position
-                    _queue_single_joint_position_isaac(joint_full_name, current_pos)
+                    # Queue the joint position with slow velocity for calibration
+                    _queue_single_joint_position_isaac(joint_full_name, current_pos, velocity=0.5)
                     
                     # Wait for this position to be processed before continuing
                     ISAAC_CALIBRATION_COMPLETE.wait(timeout=1.0)
@@ -591,19 +616,21 @@ def calibrate_joints_isaac():
             time.sleep(1)  # Wait before retrying
 
 
-def _queue_single_joint_position_isaac(joint_name, angle_rad):
+def _queue_single_joint_position_isaac(joint_name, angle_rad, velocity=0.5):
     """
     Queue a single joint position for Isaac Sim calibration.
     Args:
         joint_name: Full joint name (e.g., 'FL_hip')
         angle_rad: Target angle in radians
+        velocity: Joint velocity in radians/second (default: 0.5)
     """
     try:
         # Create calibration movement data
         calibration_data = {
             'type': 'calibration',
             'joint_name': joint_name,
-            'angle_rad': angle_rad
+            'angle_rad': angle_rad,
+            'velocity': velocity
         }
         
         # Queue the calibration data
@@ -613,12 +640,13 @@ def _queue_single_joint_position_isaac(joint_name, angle_rad):
         logging.error(f"(fundamental_movement.py): Failed to queue calibration position for {joint_name}: {e}\n")
 
 
-def _apply_single_joint_position_isaac(joint_name, angle_rad):
+def _apply_single_joint_position_isaac(joint_name, angle_rad, velocity=0.5):
     """
     Apply a single joint position for Isaac Sim calibration.
     Args:
         joint_name: Full joint name (e.g., 'FL_hip')
         angle_rad: Target angle in radians
+        velocity: Joint velocity in radians/second (default: 0.5)
     """
     try:
         joint_index = config.JOINT_INDEX_MAP.get(joint_name)
@@ -630,7 +658,7 @@ def _apply_single_joint_position_isaac(joint_name, angle_rad):
         joint_positions = numpy.zeros(joint_count)
         joint_velocities = numpy.zeros(joint_count)
         joint_positions[joint_index] = angle_rad
-        joint_velocities[joint_index] = 0.5  # Slow movement for calibration
+        joint_velocities[joint_index] = velocity
         
         action = ArticulationAction(
             joint_positions=joint_positions,
@@ -711,3 +739,129 @@ def _applyFootPositionBL():
     x, y, z = config.BL_TUNE['x'], config.BL_TUNE['y'], config.BL_TUNE['z']
     move_foot('BL', x, y, z, speed=16383, acceleration=255)
     logging.info(f"TUNING → BL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
+
+
+########## BASIC TESTING FUNCTIONS ##########
+
+def _move_all_joints_forward_isaac():
+    """
+    Move all joints to FULL_FRONT positions for Isaac Sim testing.
+    """
+    try:
+        joint_count = len(config.ISAAC_ROBOT.dof_names)
+        joint_positions = numpy.zeros(joint_count)
+        joint_velocities = numpy.zeros(joint_count)
+        
+        # Define joint order
+        joint_order = [
+            ('FL', 'hip'), ('FL', 'upper'), ('FL', 'lower'),
+            ('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
+            ('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
+            ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ]
+        
+        # Set all joint positions at once
+        for leg_id, joint_name in joint_order:
+            joint_full_name = f"{leg_id}_{joint_name}"
+            joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
+            
+            if joint_index is not None:
+                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                full_front_angle = servo_data['FULL_FRONT_ANGLE']  # Already in radians
+                
+                joint_positions[joint_index] = full_front_angle
+                joint_velocities[joint_index] = 1.0  # Moderate velocity
+                
+                # Update the current angle in config
+                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = full_front_angle
+            else:
+                logging.error(f"(fundamental_movement.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
+        
+        # Apply all joint positions in a single action
+        action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        ARTICULATION_CONTROLLER.apply_action(action)
+        
+        logging.info("(fundamental_movement.py): Applied all joints to FULL_FRONT positions\n")
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to move all joints to FULL_FRONT: {e}\n")
+
+
+def _move_all_joints_backward_isaac():
+    """
+    Move all joints to FULL_BACK positions for Isaac Sim testing.
+    """
+    try:
+        joint_count = len(config.ISAAC_ROBOT.dof_names)
+        joint_positions = numpy.zeros(joint_count)
+        joint_velocities = numpy.zeros(joint_count)
+        
+        # Define joint order
+        joint_order = [
+            ('FL', 'hip'), ('FL', 'upper'), ('FL', 'lower'),
+            ('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
+            ('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
+            ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ]
+        
+        # Set all joint positions at once
+        for leg_id, joint_name in joint_order:
+            joint_full_name = f"{leg_id}_{joint_name}"
+            joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
+            
+            if joint_index is not None:
+                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                full_back_angle = servo_data['FULL_BACK_ANGLE']  # Already in radians
+                
+                joint_positions[joint_index] = full_back_angle
+                joint_velocities[joint_index] = 1.0  # Moderate velocity
+                
+                # Update the current angle in config
+                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = full_back_angle
+            else:
+                logging.error(f"(fundamental_movement.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
+        
+        # Apply all joint positions in a single action
+        action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        ARTICULATION_CONTROLLER.apply_action(action)
+        
+        logging.info("(fundamental_movement.py): Applied all joints to FULL_BACK positions\n")
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to move all joints to FULL_BACK: {e}\n")
+
+
+def _move_all_joints_forward_physical(speed, acceleration):
+    """
+    Move all joints to FULL_FRONT positions for physical robot testing.
+    """
+    from utilities.servos import set_target
+    
+    for leg in config.SERVO_CONFIG:
+        for joint in config.SERVO_CONFIG[leg]:
+            try:
+                servo_data = config.SERVO_CONFIG[leg][joint]
+                set_target(servo_data['servo'], servo_data['FULL_FRONT'], speed, acceleration)
+            except Exception as e:
+                logging.error(f"(fundamental_movement.py): Failed to move {leg}_{joint} to FULL_FRONT: {e}\n")
+
+
+def _move_all_joints_backward_physical(speed, acceleration):
+    """
+    Move all joints to FULL_BACK positions for physical robot testing.
+    """
+    from utilities.servos import set_target
+    
+    for leg in config.SERVO_CONFIG:
+        for joint in config.SERVO_CONFIG[leg]:
+            try:
+                servo_data = config.SERVO_CONFIG[leg][joint]
+                set_target(servo_data['servo'], servo_data['FULL_BACK'], speed, acceleration)
+            except Exception as e:
+                logging.error(f"(fundamental_movement.py): Failed to move {leg}_{joint} to FULL_BACK: {e}\n")

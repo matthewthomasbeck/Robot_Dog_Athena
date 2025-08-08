@@ -27,7 +27,7 @@ import logging # import logging for debugging
 
 import utilities.config as config # import leg positions config
 from utilities.mathematics import interpret_intensity # import intensity interpretation function
-from movement.fundamental_movement import move_foot_to_pos_OLD # import fundamental movement function to move foot to pos
+from movement.fundamental_movement import move_foot_to_pos, _queue_single_joint_position_isaac # import fundamental movement functions
 
 
 
@@ -40,68 +40,113 @@ from movement.fundamental_movement import move_foot_to_pos_OLD # import fundamen
 
 ########## NEUTRAL POSITION ##########
 
-def neutral_position(intensity): # function to set all legs to squatting position
-
+def neutral_position(intensity): # function to set all legs to neutral position
+    """
+    Set all legs to neutral position with two modes:
+    - Physical robot: Uses move_foot_to_pos with 3D coordinates
+    - Isaac Sim: Uses direct joint control with NEUTRAL_ANGLE
+    """
+    
     ##### get intensity #####
-
-    try: # try to calculate intensity of the movement
-
+    try:
         speed, acceleration = interpret_intensity(intensity)
-
-    except Exception as e: # if interpretation fails...
-
+    except Exception as e:
         logging.error(f"(standing.py): Failed to interpret intensity in neutral_position(): {e}\n")
         return
 
-    ##### move legs forward #####
-
-    try: # try to update legs to neutral position
-
-        set_leg_neutral('FL', {'FORWARD': True}, speed, acceleration)
-        set_leg_neutral('BR', {'FORWARD': True}, speed, acceleration)
-        set_leg_neutral('FR', {'FORWARD': True}, speed, acceleration)
-        set_leg_neutral('BL', {'FORWARD': True}, speed, acceleration)
-
-    except Exception as e: # if gait update fails...
-
+    ##### move legs to neutral based on simulation mode #####
+    try:
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Isaac Sim mode: Direct joint control using NEUTRAL_ANGLE
+            _neutral_position_isaac()
+        else:
+            # Physical robot mode: Use 3D coordinates
+            _neutral_position_physical(speed, acceleration)
+            
+    except Exception as e:
         logging.error(f"(standing.py): Failed to move legs to neutral position: {e}\n")
 
 
-########## SET LEG NEUTRAL ##########
+def _neutral_position_isaac():
+    """
+    Set all joints to neutral position for Isaac Sim using direct joint control.
+    """
+    try:
+        from movement.fundamental_movement import ARTICULATION_CONTROLLER
+        from isaacsim.core.utils.types import ArticulationAction
+        import numpy
+        
+        joint_count = len(config.ISAAC_ROBOT.dof_names)
+        joint_positions = numpy.zeros(joint_count)
+        joint_velocities = numpy.zeros(joint_count)
+        
+        # Define joint order (same as calibration)
+        joint_order = [
+            ('FL', 'hip'), ('FL', 'upper'), ('FL', 'lower'),
+            ('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
+            ('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
+            ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ]
+        
+        logging.info("(standing.py): Moving all joints to neutral position in Isaac Sim...\n")
+        
+        # Set all joint positions at once
+        for leg_id, joint_name in joint_order:
+            joint_full_name = f"{leg_id}_{joint_name}"
+            joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
+            
+            if joint_index is not None:
+                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                neutral_angle = servo_data['NEUTRAL_ANGLE']  # Always 0.0 radians
+                
+                joint_positions[joint_index] = neutral_angle
+                joint_velocities[joint_index] = 1.0  # Moderate velocity
+                
+                # Update the current angle in config
+                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = neutral_angle
+            else:
+                logging.error(f"(standing.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
+        
+        # Apply all joint positions in a single action
+        action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        ARTICULATION_CONTROLLER.apply_action(action)
+        
+        logging.info("(standing.py): Applied all joints to neutral positions\n")
+        
+    except Exception as e:
+        logging.error(f"(standing.py): Failed to move all joints to neutral: {e}\n")
 
-def set_leg_neutral(leg_id, state, speed, acceleration): # function to return leg to neutral
 
-    ##### set variables #####
-
-    gait_states = {
-        'FL': config.FL_GAIT_STATE, 'FR': config.FR_GAIT_STATE, 'BL': config.BL_GAIT_STATE, 'BR': config.BR_GAIT_STATE
-    }
+def _neutral_position_physical(speed, acceleration):
+    """
+    Set all legs to neutral position for physical robot using 3D coordinates.
+    """
+    # Define neutral positions for each leg
     neutral_positions = {
-        'FL': config.FL_NEUTRAL, 'FR': config.FR_NEUTRAL, 'BL': config.BL_NEUTRAL, 'BR': config.BR_NEUTRAL
+        'FL': config.FL_NEUTRAL,
+        'FR': config.FR_NEUTRAL,
+        'BL': config.BL_NEUTRAL,
+        'BR': config.BR_NEUTRAL
     }
-    gait_state = gait_states[leg_id]
-    neutral_position = neutral_positions[leg_id]
-
-    ##### return legs to neutral #####
-
-    if not gait_state['returned_to_neutral']: # if leg has not returned to neutral position...
-
-        try: # try to move leg to neutral position
-
-            move_foot_to_pos_OLD(
+    
+    logging.info("(standing.py): Moving all legs to neutral position on physical robot...\n")
+    
+    # Move each leg to its neutral position
+    for leg_id, neutral_pos in neutral_positions.items():
+        try:
+            move_foot_to_pos(
                 leg_id,
-                neutral_position,
+                neutral_pos,
+                neutral_pos,  # No mid-point for neutral position
                 speed,
                 acceleration,
                 use_bezier=False
             )
-
-            gait_state['returned_to_neutral'] = True
-
-        except Exception as e: # if movement fails...
-
-            logging.error(f"(standing.py): Failed to reset {leg_id} leg neutral position: {e}\n")
-            return
+        except Exception as e:
+            logging.error(f"(standing.py): Failed to move {leg_id} leg to neutral: {e}\n")
 
 
 ########## TIPPYTOES POSITION ##########
@@ -240,31 +285,3 @@ def set_leg_squatting(leg_id, state, speed, acceleration): # function to move le
 
             logging.error(f"(standing.py): Failed to move leg {leg_id} to squatting position: {e}\n")
             return
-
-
-def move_all_joints_full_front(intensity):
-    """
-    Move all joints of all legs to their FULL_FRONT positions for calibration.
-    """
-    import utilities.config as config
-    from utilities.servos import set_target
-    speed, acceleration = interpret_intensity(intensity)
-    for leg in config.SERVO_CONFIG:
-        for joint in config.SERVO_CONFIG[leg]:
-            servo_data = config.SERVO_CONFIG[leg][joint]
-            set_target(servo_data['servo'], servo_data['FULL_FRONT'], speed, acceleration)
-    logging.info("(standing.py): All joints moved to FULL_FRONT for calibration.\n")
-
-
-def move_all_joints_full_back(intensity):
-    """
-    Move all joints of all legs to their FULL_BACK positions for calibration.
-    """
-    import utilities.config as config
-    from utilities.servos import set_target
-    speed, acceleration = interpret_intensity(intensity)
-    for leg in config.SERVO_CONFIG:
-        for joint in config.SERVO_CONFIG[leg]:
-            servo_data = config.SERVO_CONFIG[leg][joint]
-            set_target(servo_data['servo'], servo_data['FULL_BACK'], speed, acceleration)
-    logging.info("(standing.py): All joints moved to FULL_BACK for calibration.\n")

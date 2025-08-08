@@ -1,18 +1,1562 @@
-2025-08-08 11:30:56 INFO: (log.py): Logging setup complete.
+2025-08-08 12:45:33 INFO: (log.py): Logging setup complete.
 
-2025-08-08 11:31:04 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+2025-08-08 12:45:41 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
 
-2025-08-08 11:31:04 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-08 12:45:41 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-08 11:31:05 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-08 12:45:42 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-08 11:31:05 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-08 12:45:42 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-08 11:31:05 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-08 12:45:42 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-08 11:31:05 INFO: (camera.py) Initialized isaac camera.
+2025-08-08 12:45:42 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-08 11:31:05 INFO: (internet.py): Connected to website backend.
+2025-08-08 12:45:42 INFO: (internet.py): Connected to website backend.
 
-2025-08-08 11:31:05 INFO: (internet.py): Command queue initialized successfully.
+2025-08-08 12:45:42 INFO: (internet.py): Command queue initialized successfully.
+
+2025-08-08 12:45:42 INFO: (standing.py): Moving all joints to neutral position in Isaac Sim...
+
+2025-08-08 12:45:42 INFO: (standing.py): Applied all joints to neutral positions
+
+2025-08-08 12:45:42 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:52 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:52 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:52 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:52 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:53 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:53 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:54 INFO: (standing.py): Moving all joints to neutral position in Isaac Sim...
+
+2025-08-08 12:45:54 INFO: (standing.py): Applied all joints to neutral positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-08 12:45:54 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:54 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:54 INFO: (standing.py): Moving all joints to neutral position in Isaac Sim...
+
+2025-08-08 12:45:54 INFO: (standing.py): Applied all joints to neutral positions
+
+2025-08-08 12:45:54 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:55 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:55 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:56 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:56 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:57 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:57 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:58 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:58 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:58 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:59 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:45:59 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:45:59 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:00 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:00 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:01 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:01 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:02 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
+
+2025-08-08 12:46:02 INFO: (standing.py): Moving all joints to neutral position in Isaac Sim...
+
+2025-08-08 12:46:02 INFO: (standing.py): Applied all joints to neutral positions
+
+2025-08-08 12:46:02 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:08 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:08 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:08 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:08 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:08 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:08 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:08 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:08 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:08 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:08 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:08 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:08 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:08 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:09 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:09 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:10 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:10 INFO: (standing.py): Moving all joints to neutral position in Isaac Sim...
+
+2025-08-08 12:46:10 INFO: (standing.py): Applied all joints to neutral positions
+
+2025-08-08 12:46:10 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:11 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:12 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:13 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:14 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:14 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:15 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:15 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:15 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:15 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:15 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 WARNING: (internet.py): Encountering thread issues (thread exiting)!
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:16 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:17 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:18 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'w' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Moving all joints FORWARD for testing...
+
+2025-08-08 12:46:19 INFO: (fundamental_movement.py): Applied all joints to FULL_FRONT positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Received command 'n' from queue (WILL RUN).
+
+2025-08-08 12:46:19 INFO: (standing.py): Moving all joints to neutral position in Isaac Sim...
+
+2025-08-08 12:46:19 INFO: (standing.py): Applied all joints to neutral positions
+
+2025-08-08 12:46:19 INFO: (control_logic.py): Executed keyboard command: []
 

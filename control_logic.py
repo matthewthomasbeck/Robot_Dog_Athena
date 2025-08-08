@@ -439,8 +439,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
 
         # neutral and special actions
         if 'n' in keys or not keys:
-            #neutral_position(10)
-            calibrate_joints_isaac()
+            neutral_position(10)
             is_neutral = True
         elif ' ' in keys:
             logging.debug(f"(control_logic.py): space: LIE DOWN\n")
@@ -449,7 +448,8 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
         elif direction:
             #logging.debug(f"(control_logic.py): {keys}: {direction}\n")
             # Use trot_forward for all modes (now supports Isaac Sim queue system)
-            move_direction(intensity)
+            move_direction(direction, frame, intensity, IMAGELESS_GAIT)
+            #calibrate_joints_isaac()
             is_neutral = False
         else:
             logging.warning(f"(control_logic.py): Invalid command: {keys}.\n")
