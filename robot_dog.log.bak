@@ -1,38 +1,18 @@
-2025-08-07 22:19:32 INFO: (log.py): Logging setup complete.
+2025-08-08 11:30:56 INFO: (log.py): Logging setup complete.
 
-2025-08-07 22:19:40 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+2025-08-08 11:31:04 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
 
-2025-08-07 22:19:40 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-08 11:31:04 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-07 22:19:41 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-08 11:31:05 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-07 22:19:41 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-08 11:31:05 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-07 22:19:41 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-08 11:31:05 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-07 22:19:41 INFO: (camera.py) Initialized isaac camera.
+2025-08-08 11:31:05 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-07 22:19:41 INFO: (internet.py): Connected to website backend.
+2025-08-08 11:31:05 INFO: (internet.py): Connected to website backend.
 
-2025-08-07 22:19:41 INFO: (internet.py): Command queue initialized successfully.
-
-2025-08-07 22:19:41 INFO: (fundamental_movement.py): Starting joint calibration for Isaac Sim...
-
-2025-08-07 22:19:41 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:19:49 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:19:59 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:20:10 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:20:20 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:20:30 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:20:40 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:20:51 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
-
-2025-08-07 22:21:01 INFO: (fundamental_movement.py): Calibrating BR_upper - Back: -37.5°, Front: 37.5°, Neutral: 0.0°
+2025-08-08 11:31:05 INFO: (internet.py): Command queue initialized successfully.
 

@@ -48,7 +48,6 @@ if config.USE_SIMULATION:
         
         # Queue system for Isaac Sim to avoid PhysX threading violations
         ISAAC_MOVEMENT_QUEUE = queue.Queue()
-        ISAAC_PENDING_MOVEMENTS = queue.Queue()
         ISAAC_CALIBRATION_COMPLETE = threading.Event()  # Signal for calibration completion
 
     else:
@@ -484,199 +483,19 @@ def process_isaac_movement_queue():
     while not ISAAC_MOVEMENT_QUEUE.empty():
         try:
             movement_data = ISAAC_MOVEMENT_QUEUE.get_nowait()
-            ISAAC_PENDING_MOVEMENTS.put(movement_data)
+            
+            # Check if this is calibration data
+            if isinstance(movement_data, dict) and movement_data.get('type') == 'calibration':
+                # Apply the joint position directly
+                joint_name = movement_data['joint_name']
+                angle_rad = movement_data['angle_rad']
+                _apply_single_joint_position_isaac(joint_name, angle_rad)
+                
+                # Signal that this calibration movement is complete
+                ISAAC_CALIBRATION_COMPLETE.set()
+                
         except queue.Empty:
             break
-    
-    # Process pending movements (one at a time to avoid overwhelming PhysX)
-    if not ISAAC_PENDING_MOVEMENTS.empty():
-        try:
-            movement_data = ISAAC_PENDING_MOVEMENTS.get_nowait()
-            
-            # Check if this is calibration data or regular movement data
-            if isinstance(movement_data, dict) and movement_data.get('type') == 'calibration':
-                apply_isaac_calibration_movement(movement_data)
-            else:
-                apply_isaac_leg_movement(movement_data)
-        except queue.Empty:
-            pass
-
-
-def apply_isaac_calibration_movement(movement_data):
-    """
-    Apply calibration movement for Isaac Sim in the main thread.
-    Args:
-        movement_data: Dictionary containing calibration data (type, joint_name, angle_rad)
-    """
-    try:
-        joint_name = movement_data['joint_name']
-        angle_rad = movement_data['angle_rad']
-        
-        # Apply the joint position directly
-        _apply_single_joint_position_isaac(joint_name, angle_rad)
-        
-        # Signal that this calibration movement is complete
-        ISAAC_CALIBRATION_COMPLETE.set()
-        
-    except Exception as e:
-        logging.error(f"(fundamental_movement.py): Failed to apply calibration movement: {e}\n")
-        # Still signal completion even on error to prevent hanging
-        ISAAC_CALIBRATION_COMPLETE.set()
-
-
-def apply_isaac_leg_movement(movement_data):
-    """
-    Apply leg movement for Isaac Sim in the main thread.
-    Args:
-        movement_data: Dictionary containing current_coordinates, mid_coordinates, target_coordinates, movement_rates
-    """
-    current_coordinates = movement_data['current_coordinates']
-    mid_coordinates = movement_data['mid_coordinates']
-    target_coordinates = movement_data['target_coordinates']
-    movement_rates = movement_data['movement_rates']
-    
-    # Apply movement for each leg that has movement data (no threading)
-    for leg_id in ['FL', 'FR', 'BL', 'BR']:
-        try:
-            # Check if this leg has movement data
-            if leg_id in current_coordinates and leg_id in target_coordinates:
-                swing_leg_isaac(
-                    leg_id,
-                    current_coordinates[leg_id],
-                    mid_coordinates[leg_id],
-                    target_coordinates[leg_id],
-                    movement_rates[leg_id]
-                )
-            else:
-                logging.debug(f"(fundamental_movement.py): No movement data for leg {leg_id}, skipping\n")
-        except Exception as e:
-            logging.error(f"(fundamental_movement.py): Failed to swing leg {leg_id} in Isaac Sim: {e}\n")
-    
-    # Update current foot positions for legs that were moved
-    for leg_id in ['FL', 'FR', 'BL', 'BR']:
-        if leg_id in target_coordinates:
-            config.CURRENT_FEET_COORDINATES[leg_id] = target_coordinates[leg_id].copy()
-
-
-def swing_leg_isaac(leg_id, current_coordinate, mid_coordinate, target_coordinate, movement_rate):
-    """
-    Swing leg for Isaac Sim without threading (main thread only).
-    Args:
-        leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
-        current_coordinate: Current foot position
-        mid_coordinate: Mid-swing position
-        target_coordinate: Target foot position
-        movement_rate: Movement rate parameters
-    """
-    try:
-        speed = movement_rate.get('speed', 16383)  # default to 16383 (max) if not provided
-        acceleration = movement_rate.get('acceleration', 255)  # default to 255 (max) if not provided
-        
-        # Move to mid position first
-        move_foot_to_pos_isaac(leg_id, current_coordinate, mid_coordinate, speed, acceleration, use_bezier=False)
-        # Then move to target position
-        move_foot_to_pos_isaac(leg_id, mid_coordinate, target_coordinate, speed, acceleration, use_bezier=False)
-        
-    except Exception as e:
-        logging.error(f"(fundamental_movement.py): Failed to swing leg {leg_id} in Isaac Sim: {e}\n")
-
-
-def move_foot_to_pos_isaac(leg_id, start_coordinate, end_coordinate, speed, acceleration, use_bezier):
-    """
-    Move foot to position for Isaac Sim without threading (main thread only).
-    Args:
-        leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
-        start_coordinate: Starting foot position
-        end_coordinate: Ending foot position
-        speed: Movement speed
-        acceleration: Movement acceleration
-        use_bezier: Whether to use bezier curve movement
-    """
-    if use_bezier:
-        # Bezier curve movement (same as original but without threading)
-        p0 = {'x': start_coordinate['x'], 'y': start_coordinate['y'], 'z': start_coordinate['z']}
-        p2 = {'x': end_coordinate['x'], 'y': end_coordinate['y'], 'z': end_coordinate['z']}
-        p1 = {'x': (p0['x'] + p2['x']) / 2, 'y': (p0['y'] + p2['y']) / 2, 'z': max(p0['z'], p2['z']) + 0.025}
-        curve = bezier_curve(
-            p0=(p0['x'], p0['y'], p0['z']),
-            p1=(p1['x'], p1['y'], p1['z']),
-            p2=(p2['x'], p2['y'], p2['z']),
-            steps=4
-        )
-        for x, y, z in curve:
-            move_foot_isaac(leg_id, x, y, z, speed, acceleration)
-    else:
-        # Direct movement
-        move_foot_isaac(
-            leg_id,
-            x=end_coordinate['x'],
-            y=end_coordinate['y'],
-            z=end_coordinate['z'],
-            speed=speed,
-            acceleration=acceleration
-        )
-
-
-def move_foot_isaac(leg_id, x, y, z, speed, acceleration):
-    """
-    Move foot for Isaac Sim without threading (main thread only).
-    This is the same as move_foot but specifically for Isaac Sim to avoid PhysX violations.
-    Args:
-        leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
-        x, y, z: Target foot coordinates
-        speed: Movement speed
-        acceleration: Movement acceleration
-    """
-    if not config.USE_SIMULATION or not config.USE_ISAAC_SIM:
-        return
-    
-    logging.debug(f"(fundamental_movement.py): move_foot_isaac called for {leg_id} to ({x:.3f}, {y:.3f}, {z:.3f})\n")
-    
-    # Collect angles for each joint of leg
-    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
-    hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
-    
-    logging.debug(f"(fundamental_movement.py): Calculated angles for {leg_id}: hip={hip_angle:.1f}°, upper={upper_angle:.1f}°, lower={lower_angle:.1f}°\n")
-    
-    # Move each joint of the leg to desired angle
-    for joint, angle, neutral in zip(
-            ['hip', 'upper', 'lower'],
-            [hip_angle, upper_angle, lower_angle],
-            [hip_neutral, upper_neutral, lower_neutral]
-    ):
-        joint_speed = max(1, speed // 3) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 3) if joint in ['upper', 'hip'] else acceleration
-        
-        servo_data = config.SERVO_CONFIG[leg_id][joint]
-        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-        adjusted_angle = -angle if is_inverted else angle
-        angle_rad = math.radians(adjusted_angle)
-        joint_name = f"{leg_id}_{joint}"
-
-        try:
-            joint_index = config.JOINT_INDEX_MAP.get(joint_name)
-            if joint_index is None:
-                logging.error(f"(fundamental_movement.py): Joint {joint_name} not found in JOINT_INDEX_MAP: {config.JOINT_INDEX_MAP}\n")
-                continue
-                
-            joint_count = len(config.ISAAC_ROBOT.dof_names)
-            joint_positions = numpy.zeros(joint_count)
-            joint_velocities = numpy.zeros(joint_count)
-            joint_positions[joint_index] = angle_rad
-            joint_velocities[joint_index] = joint_speed
-            action = ArticulationAction(
-                joint_positions=joint_positions,
-                joint_velocities=joint_velocities
-            )
-            ARTICULATION_CONTROLLER.apply_action(action)
-            logging.debug(
-                f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
-            )
-
-        except Exception as e:
-            logging.error(
-                f"(fundamental_movement.py): Failed to apply Isaac Sim joint action for {joint_name}: {e}\n"
-            )
 
 
 ########## JOINT CALIBRATION ##########
