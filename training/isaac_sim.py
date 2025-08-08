@@ -116,3 +116,116 @@ def compute_reward(robot_prim_path, previous_pose, current_pose, command, intens
         reward -= noise_penalty
 
     return reward
+
+
+########## SIMULATION VARIABLES ##########
+
+def set_simulation_variables(robot_id, joint_map):
+    """
+    Set global simulation variables for PyBullet.
+    Args:
+        robot_id: PyBullet robot body ID
+        joint_map: Dictionary mapping joint names to indices
+    """
+    global ROBOT_ID, JOINT_MAP
+    ROBOT_ID = robot_id
+    JOINT_MAP = joint_map
+
+
+########## RL AGENT ACTION FUNCTIONS ##########
+
+def get_rl_action_standard(state, commands, intensity, frame):
+    """
+    Placeholder for RL agent's policy WITH image input (standard gait adjustment).
+    Args:
+        state: The current state of the robot/simulation (to be defined).
+        commands: The movement commands.
+        intensity: The movement intensity.
+        frame: The current image frame (for vision-based agent).
+    Returns:
+        target_angles: dict of target joint angles for each leg (similar to SERVO_CONFIG structure).
+        mid_angles: dict of mid joint angles for each leg (similar to SERVO_CONFIG structure).
+        movement_rates: dict of movement rate parameters for each leg.
+    TODO: Replace this with a call to your RL agent's policy/model (with image input).
+    """
+    # For now, just return the current angles as both mid and target
+    target_angles = {}
+    mid_angles = {}
+    movement_rates = {}
+    
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        target_angles[leg_id] = {}
+        mid_angles[leg_id] = {}
+        movement_rates[leg_id] = {'speed': 1000, 'acceleration': 255}
+        
+        for joint_name in ['hip', 'upper', 'lower']:
+            current_angle = config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']
+            target_angles[leg_id][joint_name] = current_angle
+            mid_angles[leg_id][joint_name] = current_angle
+    
+    return target_angles, mid_angles, movement_rates
+
+
+def get_rl_action_blind(state, commands, intensity):
+    """
+    Placeholder for RL agent's policy WITHOUT image input (imageless gait adjustment).
+    Args:
+        state: The current state of the robot/simulation (to be defined).
+        commands: The movement commands.
+        intensity: The movement intensity.
+    Returns:
+        target_angles: dict of target joint angles for each leg (similar to SERVO_CONFIG structure).
+        mid_angles: dict of mid joint angles for each leg (similar to SERVO_CONFIG structure).
+        movement_rates: dict of movement rate parameters for each leg.
+    TODO: Replace this with a call to your RL agent's policy/model (no image input).
+    """
+    # For now, just return the current angles as both mid and target
+    target_angles = {}
+    mid_angles = {}
+    movement_rates = {}
+    
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        target_angles[leg_id] = {}
+        mid_angles[leg_id] = {}
+        movement_rates[leg_id] = {'speed': 1000, 'acceleration': 255}
+        
+        for joint_name in ['hip', 'upper', 'lower']:
+            current_angle = config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']
+            target_angles[leg_id][joint_name] = current_angle
+            mid_angles[leg_id][joint_name] = current_angle
+    
+    return target_angles, mid_angles, movement_rates
+
+
+########## ISAAC SIM QUEUE PROCESSING ##########
+
+def process_isaac_movement_queue():
+    """
+    Process queued movements for Isaac Sim in the main thread to avoid PhysX violations.
+    This function should be called from the main loop after each simulation step.
+    """
+    if not config.USE_SIMULATION or not config.USE_ISAAC_SIM:
+        return
+    
+    # Import here to avoid circular imports
+    from movement.fundamental_movement import ISAAC_MOVEMENT_QUEUE, ISAAC_CALIBRATION_COMPLETE, _apply_single_joint_position_isaac
+    import queue
+    
+    # Process any new movement data
+    while not ISAAC_MOVEMENT_QUEUE.empty():
+        try:
+            movement_data = ISAAC_MOVEMENT_QUEUE.get_nowait()
+            
+            # Check if this is calibration data
+            if isinstance(movement_data, dict) and movement_data.get('type') == 'calibration':
+                # Apply the joint position directly
+                joint_name = movement_data['joint_name']
+                angle_rad = movement_data['angle_rad']
+                velocity = movement_data.get('velocity', 0.5)  # Default to 0.5 if not specified
+                _apply_single_joint_position_isaac(joint_name, angle_rad, velocity)
+                
+                # Signal that this calibration movement is complete
+                ISAAC_CALIBRATION_COMPLETE.set()
+                
+        except queue.Empty:
+            break

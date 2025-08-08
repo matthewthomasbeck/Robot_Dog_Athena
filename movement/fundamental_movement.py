@@ -120,30 +120,6 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
     speed, acceleration = interpret_intensity(intensity) # get speed and acceleration from intensity score
 
-    ##### BASIC TESTING - MOVE ALL JOINTS FORWARD/BACKWARD #####
-
-    if 'w' in commands:
-        # Move all joints to FULL_FRONT
-        logging.info("(fundamental_movement.py): Moving all joints FORWARD for testing...\n")
-        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-            # Isaac Sim: Use direct joint control
-            _move_all_joints_forward_isaac()
-        else:
-            # Physical: Use PWM control
-            _move_all_joints_forward_physical(speed, acceleration)
-        return
-
-    elif 's' in commands:
-        # Move all joints to FULL_BACK
-        logging.info("(fundamental_movement.py): Moving all joints BACKWARD for testing...\n")
-        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-            # Isaac Sim: Use direct joint control
-            _move_all_joints_backward_isaac()
-        else:
-            # Physical: Use PWM control
-            _move_all_joints_backward_physical(speed, acceleration)
-        return
-
     ##### run inference before moving #####
 
     logging.debug(
@@ -156,32 +132,32 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                 ##### run RL model(s) #####
 
                 if not imageless_gait: # if not using imageless gait adjustment...
-                    target_coordinates, mid_coordinates, movement_rates = run_gait_adjustment_standard( # run standard
+                    target_angles, mid_angles, movement_rates = run_gait_adjustment_standard( # run standard
                         STANDARD_RL_MODEL,
                         STANDARD_INPUT_LAYER,
                         STANDARD_OUTPUT_LAYER,
                         commands,
                         frame,
                         intensity,
-                        config.CURRENT_FEET_COORDINATES
+                        config.SERVO_CONFIG
                     )
                 else: # if using imageless gait adjustment...
-                    target_coordinates, mid_coordinates, movement_rates = run_gait_adjustment_blind( # run blind
+                    target_angles, mid_angles, movement_rates = run_gait_adjustment_blind( # run blind
                         BLIND_RL_MODEL,
                         BLIND_INPUT_LAYER,
                         BLIND_OUTPUT_LAYER,
                         commands,
                         intensity,
-                        config.CURRENT_FEET_COORDINATES
+                        config.SERVO_CONFIG
                     )
 
                 ##### move legs and update current position #####
 
-                # move legs and update cur pos
-                thread_leg_movement(
-                    config.CURRENT_FEET_COORDINATES,
-                    mid_coordinates,
-                    target_coordinates,
+                # move legs and update current angles
+                thread_leg_movement_angles(
+                    config.SERVO_CONFIG,
+                    mid_angles,
+                    target_angles,
                     movement_rates
                 )
 
@@ -202,8 +178,11 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                 ##### rl agent integration point #####
                 # gather state for RL agent (define get_simulation_state later if needed)
                 state = None # TODO replace with actual state extraction if needed
+                # Import Isaac Sim RL functions
+                from training.isaac_sim import get_rl_action_standard, get_rl_action_blind
+                
                 if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
-                    target_coordinates, mid_coordinates, movement_rates = get_rl_action_standard(
+                    target_angles, mid_angles, movement_rates = get_rl_action_standard(
                         state,
                         commands,
                         intensity,
@@ -213,7 +192,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                         "(fundamental_movement.py): Using get_rl_action_standard placeholder. Replace with RL agent output when available."
                     )
                 elif imageless_gait:  # if using imageless gait adjustment (no image)...
-                    target_coordinates, mid_coordinates, movement_rates = get_rl_action_blind(
+                    target_angles, mid_angles, movement_rates = get_rl_action_blind(
                         state,
                         commands,
                         intensity
@@ -222,17 +201,16 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                         "(fundamental_movement.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
                     )
 
-                ##### queue leg movement for Isaac Sim (avoid PhysX threading violations) #####
+                ##### apply direct joint control for Isaac Sim #####
 
-                # Queue the movement data instead of threading
-                movement_data = {
-                    'current_coordinates': config.CURRENT_FEET_COORDINATES.copy(),
-                    'mid_coordinates': mid_coordinates,
-                    'target_coordinates': target_coordinates,
-                    'movement_rates': movement_rates
-                }
-                ISAAC_MOVEMENT_QUEUE.put(movement_data)
-                logging.debug(f"(fundamental_movement.py): Queued movement data for Isaac Sim: {commands}\n")
+                # Apply the joint angles directly
+                apply_joint_angles_isaac(
+                    config.SERVO_CONFIG,
+                    mid_angles,
+                    target_angles,
+                    movement_rates
+                )
+                logging.debug(f"(fundamental_movement.py): Applied joint angles for Isaac Sim: {commands}\n")
 
     except Exception as e: # if either model fails...
         logging.error(f"(fundamental_movement.py): Failed to run AI for command: {e}\n")
@@ -272,255 +250,110 @@ def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates
         config.CURRENT_FEET_COORDINATES[leg_id] = target_coordinates[leg_id].copy()
 
 
-########## SET LEG PHASE ##########
+########## ANGLE-BASED LEG MOVEMENT ##########
 
-def swing_leg(leg_id, current_coordinate, mid_coordinate, target_coordinate, movement_rate):
-
+def swing_leg(leg_id, current_angles, mid_angles, target_angles, movement_rate):
+    """
+    Swing leg using direct joint angles instead of coordinates.
+    Args:
+        leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
+        current_angles: Current joint angles for the leg
+        mid_angles: Mid joint angles for the leg
+        target_angles: Target joint angles for the leg
+        movement_rate: Movement rate parameters
+    """
     try:
         speed = movement_rate.get('speed', 16383)  # default to 16383 (max) if not provided
         acceleration = movement_rate.get('acceleration', 255)  # default to 255 (max) if not provided
-        move_foot_to_pos(leg_id, current_coordinate, mid_coordinate, speed, acceleration, use_bezier=False)
-        move_foot_to_pos(leg_id, mid_coordinate, target_coordinate, speed, acceleration, use_bezier=False)
+        
+        # Move to mid angles first, then to target angles
+        move_joints_to_angles(leg_id, current_angles, mid_angles, speed, acceleration)
+        move_joints_to_angles(leg_id, mid_angles, target_angles, speed, acceleration)
 
     except Exception as e:
-        logging.error(f"(fundamental_movement.py): Failed to swing leg: {e}\n")
+        logging.error(f"(fundamental_movement.py): Failed to swing leg {leg_id} with angles: {e}\n")
 
 
-########## MOVE FOOT FUNCTION ##########
-
-def move_foot_to_pos(leg_id, start_coordinate, end_coordinate, speed, acceleration, use_bezier):
-
-    if use_bezier: # if user wants to use bezier curves for foot movement...
-        p0 = {'x': start_coordinate['x'], 'y': start_coordinate['y'], 'z': start_coordinate['z']}
-        p2 = {'x': end_coordinate['x'], 'y': end_coordinate['y'], 'z': end_coordinate['z']}
-        p1 = {'x': (p0['x'] + p2['x']) / 2, 'y': (p0['y'] + p2['y']) / 2, 'z': max(p0['z'], p2['z']) + 0.025}
-        curve = bezier_curve(
-            p0=(p0['x'], p0['y'], p0['z']),
-            p1=(p1['x'], p1['y'], p1['z']),
-            p2=(p2['x'], p2['y'], p2['z']),
-            steps=4
-        )
-        for x, y, z in curve: # iterate through the bezier curve points
-            move_foot(leg_id, x, y, z, speed, acceleration)
-
-    else: # if user does not want to use bezier curves for foot movement...
-        move_foot(
-            leg_id,
-            x=end_coordinate['x'],
-            y=end_coordinate['y'],
-            z=end_coordinate['z'],
-            speed=speed,
-            acceleration=acceleration
-        )
-
-def move_foot_to_pos_OLD(leg_id, pos, speed, acceleration, use_bezier):
-
-    if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-        # For Isaac Sim, use the queue system to avoid PhysX threading violations
-        logging.debug(f"(fundamental_movement.py): Using Isaac Sim queue for move_foot_to_pos_OLD: {leg_id} to {pos}\n")
-        
-        # Create movement data for Isaac Sim
-        movement_data = {
-            'current_coordinates': {leg_id: config.CURRENT_FEET_COORDINATES[leg_id].copy()},
-            'mid_coordinates': {leg_id: pos.copy()},  # Direct movement, no mid point
-            'target_coordinates': {leg_id: pos.copy()},
-            'movement_rates': {leg_id: {'speed': speed, 'acceleration': acceleration}}
-        }
-        
-        # Queue the movement data
-        ISAAC_MOVEMENT_QUEUE.put(movement_data)
-        return
-
-    if use_bezier: # if user wants to use bezier curves for foot movement...
-        p0 = get_neutral_positions(leg_id) # get the neutral position of the leg (old hand-tuned method for testing)
-        p2 = {'x': pos['x'], 'y': pos['y'], 'z': pos['z']}
-        p1 = {'x': (p0['x'] + p2['x']) / 2, 'y': (p0['y'] + p2['y']) / 2, 'z': max(p0['z'], p2['z']) + 0.025}
-        curve = bezier_curve(
-            p0=(p0['x'], p0['y'], p0['z']),
-            p1=(p1['x'], p1['y'], p1['z']),
-            p2=(p2['x'], p2['y'], p2['z']),
-            steps=4
-        )
-        for x, y, z in curve: # iterate through the bezier curve points
-            move_foot(leg_id, x, y, z, speed, acceleration)
-
-    else: # if user does not want to use bezier curves for foot movement...
-        move_foot(leg_id, x=pos['x'], y=pos['y'], z=pos['z'], speed=speed, acceleration=acceleration)
-
-
-########## MOVE FOOT FUNCTION ##########
-
-def move_foot(leg_id, x, y, z, speed, acceleration):
-
-    ##### collect angles for each joint of leg #####
-
-    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(x, y, z)
-    hip_neutral, upper_neutral, lower_neutral = 0, 45, 45
-
-    ##### move each joint of the leg to desired angle #####
-
-    for joint, angle, neutral in zip(
-            ['hip', 'upper', 'lower'],
-            [hip_angle, upper_angle, lower_angle],
-            [hip_neutral, upper_neutral, lower_neutral]
-    ):
-
-        joint_speed = max(1, speed // 3) if joint in ['upper', 'hip'] else speed
-        joint_acceleration = max(1, acceleration // 3) if joint in ['upper', 'hip'] else acceleration
-        # TODO comment this if I ever need upper servos to move more quickly
-        #joint_speed = speed
-        #joint_acceleration = acceleration
-
-        if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if user wants to use real servos...
-            servo_data = config.SERVO_CONFIG[leg_id][joint]
-            is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-            pwm = map_angle_to_servo_position(angle, servo_data, neutral, is_inverted)
-            set_target(servo_data['servo'], pwm, joint_speed, joint_acceleration)
-
-        elif config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if user wants to control simulated robot with PyBullet...
-            angle_rad = math.radians(angle) # convert angles to radians for simulation
-            joint_key = (leg_id, joint) # get joint key for simulation
-            if joint_key in JOINT_MAP: # if joint exists...
-                joint_index = JOINT_MAP[joint_key] # get joint index from joint map
-                pybullet.setJointMotorControl2( # set joint position
-                    bodyUniqueId=ROBOT_ID,
-                    jointIndex=joint_index,
-                    controlMode=pybullet.POSITION_CONTROL,
-                    targetPosition=angle_rad,
-                    force=4.41
-                )
-            else:
-                logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map\n")
-
-
-        elif config.USE_SIMULATION and config.USE_ISAAC_SIM:
-            servo_data = config.SERVO_CONFIG[leg_id][joint]
-            is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-            adjusted_angle = -angle if is_inverted else angle
-            angle_rad = math.radians(adjusted_angle)
-            joint_name = f"{leg_id}_{joint}"
-
-            try:
-                joint_index = config.JOINT_INDEX_MAP.get(joint_name)
-                if joint_index is None:
-                    logging.error(f"(fundamental_movement.py): Joint {joint_name} not found in JOINT_INDEX_MAP: {config.JOINT_INDEX_MAP}\n")
-                    return
-                
-                joint_count = len(config.ISAAC_ROBOT.dof_names)
-                joint_positions = numpy.zeros(joint_count)
-                joint_velocities = numpy.zeros(joint_count)
-                joint_accelerations = numpy.zeros(joint_count)
-                joint_positions[joint_index] = angle_rad
-                joint_velocities[joint_index] = joint_speed
-                joint_accelerations[joint_index] = joint_acceleration  # Optional, not used
-                action = ArticulationAction(
-                    joint_positions=joint_positions,
-                    joint_velocities=joint_velocities
-                    # joint_accelerations=joint_accelerations  # not supported
-                )
-                ARTICULATION_CONTROLLER.apply_action(action)
-                logging.debug(
-                    f"(fundamental_movement.py) Successfully moved joint {joint_name} to {angle_rad:.3f} rad (inverted: {is_inverted}).\n"
-                )
-
-            except Exception as e:
-                logging.error(
-                    f"(fundamental_movement.py): Failed to apply Isaac Sim joint action for {joint_name}: {e}\n"
-                )
-
-
-##### GET NEUTRAL POSITIONS #####
-
-def get_neutral_positions(leg_id): # function to get the neutral position of a leg, used in manual movement
-
-    NEUTRAL_POSITIONS = {
-        'FL': config.FL_NEUTRAL,
-        'FR': config.FR_NEUTRAL,
-        'BL': config.BL_NEUTRAL,
-        'BR': config.BR_NEUTRAL
-    }
-    neutral = NEUTRAL_POSITIONS[leg_id]
-    return {'x': neutral['x'], 'y': neutral['y'], 'z': neutral['z'] }
-
-
-########## INITIALIZE SIMULATION ##########
-
-def set_simulation_variables(robot_id, joint_map):
-
-    global ROBOT_ID, JOINT_MAP
-    ROBOT_ID = robot_id
-    JOINT_MAP = joint_map
-
-
-########## STANDARD RL MODEL ACTION SPACE ##########
-
-def get_rl_action_standard(state, commands, intensity, frame): # this is a placeholder function for the standard model
+def move_joints_to_angles(leg_id, start_angles, end_angles, speed, acceleration):
     """
-    Placeholder for RL agent's policy WITH image input (standard gait adjustment).
+    Move leg joints to target angles.
     Args:
-        state: The current state of the robot/simulation (to be defined).
-        commands: The movement commands.
-        intensity: The movement intensity.
-        frame: The current image frame (for vision-based agent).
-    Returns:
-        target_positions: dict of target foot positions for each leg.
-        mid_positions: dict of mid foot positions for each leg.
-    TODO: Replace this with a call to your RL agent's policy/model (with image input).
+        leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
+        start_angles: Starting joint angles for the leg
+        end_angles: Ending joint angles for the leg
+        speed: Movement speed
+        acceleration: Movement acceleration
     """
-    # For now, just return the current positions as both mid and target
-    target_positions = {leg: config.CURRENT_FEET_COORDINATES[leg].copy() for leg in ['FL', 'FR', 'BL', 'BR']}
-    mid_positions = {leg: config.CURRENT_FEET_COORDINATES[leg].copy() for leg in ['FL', 'FR', 'BL', 'BR']}
-    return target_positions, mid_positions
-
-
-########## BLIND RL MODEL ACTION SPACE ##########
-
-def get_rl_action_blind(state, commands, intensity): # this is a placeholder function for the blind model
-    """
-    Placeholder for RL agent's policy WITHOUT image input (imageless gait adjustment).
-    Args:
-        state: The current state of the robot/simulation (to be defined).
-        commands: The movement commands.
-        intensity: The movement intensity.
-    Returns:
-        target_positions: dict of target foot positions for each leg.
-        mid_positions: dict of mid foot positions for each leg.
-    TODO: Replace this with a call to your RL agent's policy/model (no image input).
-    """
-    # For now, just return the current positions as both mid and target
-    target_positions = {leg: config.CURRENT_FEET_COORDINATES[leg].copy() for leg in ['FL', 'FR', 'BL', 'BR']}
-    mid_positions = {leg: config.CURRENT_FEET_COORDINATES[leg].copy() for leg in ['FL', 'FR', 'BL', 'BR']}
-    return target_positions, mid_positions
-
-
-########## ISAAC SIM QUEUE-BASED MOVEMENT FUNCTIONS ##########
-
-def process_isaac_movement_queue():
-    """
-    Process queued movements for Isaac Sim in the main thread to avoid PhysX violations.
-    This function should be called from the main loop after each simulation step.
-    """
-    if not config.USE_SIMULATION or not config.USE_ISAAC_SIM:
-        return
-    
-    # Process any new movement data
-    while not ISAAC_MOVEMENT_QUEUE.empty():
+    for joint_name in ['hip', 'upper', 'lower']:
         try:
-            movement_data = ISAAC_MOVEMENT_QUEUE.get_nowait()
+            start_angle = start_angles[joint_name]['CURRENT_ANGLE'] if isinstance(start_angles, dict) else start_angles[joint_name]
+            end_angle = end_angles[joint_name]
             
-            # Check if this is calibration data
-            if isinstance(movement_data, dict) and movement_data.get('type') == 'calibration':
-                # Apply the joint position directly
-                joint_name = movement_data['joint_name']
-                angle_rad = movement_data['angle_rad']
-                velocity = movement_data.get('velocity', 0.5)  # Default to 0.5 if not specified
-                _apply_single_joint_position_isaac(joint_name, angle_rad, velocity)
-                
-                # Signal that this calibration movement is complete
-                ISAAC_CALIBRATION_COMPLETE.set()
-                
-        except queue.Empty:
-            break
+            move_joint(leg_id, joint_name, end_angle, speed, acceleration)
+            
+        except Exception as e:
+            logging.error(f"(fundamental_movement.py): Failed to move {leg_id}_{joint_name} to angle: {e}\n")
+
+
+def move_joint(leg_id, joint_name, target_angle, speed, acceleration):
+    """
+    Move a single joint to target angle.
+    Args:
+        leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
+        joint_name: Joint name ('hip', 'upper', 'lower')
+        target_angle: Target angle in radians
+        speed: Movement speed
+        acceleration: Movement acceleration
+    """
+    if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # Physical robot
+        servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+        pwm = map_angle_to_servo_position(target_angle, servo_data, 0, is_inverted)
+        set_target(servo_data['servo'], pwm, speed, acceleration)
+        
+    elif config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # PyBullet
+        # Import simulation variables from isaac_sim.py
+        from training.isaac_sim import ROBOT_ID, JOINT_MAP
+        angle_rad = target_angle  # Already in radians
+        joint_key = (leg_id, joint_name)
+        if joint_key in JOINT_MAP:
+            joint_index = JOINT_MAP[joint_key]
+            pybullet.setJointMotorControl2(
+                bodyUniqueId=ROBOT_ID,
+                jointIndex=joint_index,
+                controlMode=pybullet.POSITION_CONTROL,
+                targetPosition=angle_rad,
+                force=4.41
+            )
+        else:
+            logging.warning(f"(fundamental_movement.py): Joint {joint_key} not found in PyBullet joint map\n")
+    
+    # Update current angle in config
+    config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = target_angle
+
+
+def move_foot_to_pos_physical(leg_id, pos, speed, acceleration, use_bezier):
+    """
+    Move foot to position for physical robot (legacy coordinate-based system).
+    This is kept for neutral position compatibility.
+    """
+    if use_bezier:
+        # Bezier curve implementation would go here
+        # For now, just move directly to position
+        pass
+    
+    # Use inverse kinematics to convert position to angles
+    hip_angle, upper_angle, lower_angle = k.inverse_kinematics(pos['x'], pos['y'], pos['z'])
+    
+    # Move each joint
+    for joint, angle in zip(['hip', 'upper', 'lower'], [hip_angle, upper_angle, lower_angle]):
+        servo_data = config.SERVO_CONFIG[leg_id][joint]
+        is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+        pwm = map_angle_to_servo_position(angle, servo_data, 0, is_inverted)
+        set_target(servo_data['servo'], pwm, speed, acceleration)
+        
+        # Update current angle
+        config.SERVO_CONFIG[leg_id][joint]['CURRENT_ANGLE'] = math.radians(angle)
 
 
 ########## JOINT CALIBRATION ##########
@@ -670,75 +503,172 @@ def _apply_single_joint_position_isaac(joint_name, angle_rad, velocity=0.5):
         logging.error(f"(fundamental_movement.py): Failed to apply calibration position for {joint_name}: {e}\n")
 
 
-########## FOOT TUNING ##########
+########## ISAAC SIM AI AGENT JOINT CONTROL ##########
 
-def adjustFL_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    config.FL_TUNE['x'] += direction * delta
-    _applyFootPosition()
-def adjustBR_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    config.BR_TUNE['x'] += direction * delta
-    _applyFootPositionBR()
-def adjustFR_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    config.FR_TUNE['x'] += direction * delta
-    _applyFootPositionFR()
-def adjustBL_X(forward=True, delta=0.005):
-    direction = 1 if forward else -1
-    config.BL_TUNE['x'] += direction * delta
-    _applyFootPositionBL()
+def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, movement_rates):
+    """
+    Apply joint angles directly for Isaac Sim AI agent training.
+    This function moves all joints to their target angles in a single ArticulationAction.
+    
+    Args:
+        current_servo_config: Current servo configuration with CURRENT_ANGLE values
+        target_angles: Target joint angles for each leg (similar to SERVO_CONFIG structure)
+        mid_angles: Mid joint angles for each leg (similar to SERVO_CONFIG structure)
+        movement_rates: Movement rate parameters for each leg
+    """
+    try:
+        joint_count = len(config.ISAAC_ROBOT.dof_names)
+        joint_positions = numpy.zeros(joint_count)
+        joint_velocities = numpy.zeros(joint_count)
+        
+        # Define joint order (same as working functions)
+        joint_order = [
+            ('FL', 'hip'), ('FL', 'upper'), ('FL', 'lower'),
+            ('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
+            ('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
+            ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ]
+        
+        # Set all joint positions at once
+        for leg_id, joint_name in joint_order:
+            joint_full_name = f"{leg_id}_{joint_name}"
+            joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
+            
+            if joint_index is not None:
+                # Get target angle from the AI agent's output
+                target_angle = target_angles[leg_id][joint_name]
+                
+                # Get velocity from movement_rates (convert to reasonable range)
+                # Default to 1.0 if not specified, similar to working functions
+                velocity = movement_rates[leg_id].get('speed', 1000) / 1000.0  # Convert to reasonable velocity
+                
+                joint_positions[joint_index] = target_angle
+                joint_velocities[joint_index] = velocity
+                
+                # Update the current angle in config
+                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = target_angle
+            else:
+                logging.error(f"(fundamental_movement.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
+        
+        # Apply all joint positions in a single action (same as working functions)
+        action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        ARTICULATION_CONTROLLER.apply_action(action)
+        
+        logging.debug(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim\n")
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to apply AI agent joint angles for Isaac Sim: {e}\n")
 
-def adjustFL_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    config.FL_TUNE['y'] += direction * delta
-    _applyFootPosition()
-def adjustBR_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    config.BR_TUNE['y'] += direction * delta
-    _applyFootPositionBR()
-def adjustFR_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    config.FR_TUNE['y'] += direction * delta
-    _applyFootPositionFR()
-def adjustBL_Y(left=True, delta=0.005):
-    direction = 1 if left else -1
-    config.BL_TUNE['y'] += direction * delta
-    _applyFootPositionBL()
 
-def adjustFL_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    config.FL_TUNE['z'] += direction * delta
-    _applyFootPosition()
-def adjustBR_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    config.BR_TUNE['z'] += direction * delta
-    _applyFootPositionBR()
-def adjustFR_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    config.FR_TUNE['z'] += direction * delta
-    _applyFootPositionFR()
-def adjustBL_Z(up=True, delta=0.005):
-    direction = 1 if up else -1
-    config.BL_TUNE['z'] += direction * delta
-    _applyFootPositionBL()
+########## NEUTRAL POSITION FUNCTIONS ##########
 
-def _applyFootPosition():
-    x, y, z = config.FL_TUNE['x'], config.FL_TUNE['y'], config.FL_TUNE['z']
-    move_foot('FL', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → FL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
-def _applyFootPositionBR():
-    x, y, z = config.BR_TUNE['x'], config.BR_TUNE['y'], config.BR_TUNE['z']
-    move_foot('BR', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → BR foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
-def _applyFootPositionFR():
-    x, y, z = config.FR_TUNE['x'], config.FR_TUNE['y'], config.FR_TUNE['z']
-    move_foot('FR', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → FR foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
-def _applyFootPositionBL():
-    x, y, z = config.BL_TUNE['x'], config.BL_TUNE['y'], config.BL_TUNE['z']
-    move_foot('BL', x, y, z, speed=16383, acceleration=255)
-    logging.info(f"TUNING → BL foot at: 'x': {x:.4f}, 'y': {y:.4f}, 'z': {z:.4f}")
+def neutral_position(intensity):
+    """
+    Set all legs to neutral position with two modes:
+    - Physical robot: Uses move_foot_to_pos with 3D coordinates
+    - Isaac Sim: Uses direct joint control with NEUTRAL_ANGLE
+    """
+    
+    ##### get intensity #####
+    try:
+        speed, acceleration = interpret_intensity(intensity)
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to interpret intensity in neutral_position(): {e}\n")
+        return
+
+    ##### move legs to neutral based on simulation mode #####
+    try:
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Isaac Sim mode: Direct joint control using NEUTRAL_ANGLE
+            _neutral_position_isaac()
+        else:
+            # Physical robot mode: Use 3D coordinates
+            _neutral_position_physical(speed, acceleration)
+            
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to move legs to neutral position: {e}\n")
+
+
+def _neutral_position_isaac():
+    """
+    Set all joints to neutral position for Isaac Sim using direct joint control.
+    """
+    try:
+        joint_count = len(config.ISAAC_ROBOT.dof_names)
+        joint_positions = numpy.zeros(joint_count)
+        joint_velocities = numpy.zeros(joint_count)
+        
+        # Define joint order (same as calibration)
+        joint_order = [
+            ('FL', 'hip'), ('FL', 'upper'), ('FL', 'lower'),
+            ('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
+            ('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
+            ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ]
+        
+        logging.info("(fundamental_movement.py): Moving all joints to neutral position in Isaac Sim...\n")
+        
+        # Set all joint positions at once
+        for leg_id, joint_name in joint_order:
+            joint_full_name = f"{leg_id}_{joint_name}"
+            joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
+            
+            if joint_index is not None:
+                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                neutral_angle = servo_data['NEUTRAL_ANGLE']  # Always 0.0 radians
+                
+                joint_positions[joint_index] = neutral_angle
+                joint_velocities[joint_index] = 1.0  # Moderate velocity
+                
+                # Update the current angle in config
+                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = neutral_angle
+            else:
+                logging.error(f"(fundamental_movement.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
+        
+        # Apply all joint positions in a single action
+        action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        ARTICULATION_CONTROLLER.apply_action(action)
+        
+        logging.info("(fundamental_movement.py): Applied all joints to neutral positions\n")
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to move all joints to neutral: {e}\n")
+
+
+def _neutral_position_physical(speed, acceleration):
+    """
+    Set all legs to neutral position for physical robot using 3D coordinates.
+    """
+    # Define neutral positions for each leg
+    neutral_positions = {
+        'FL': config.FL_NEUTRAL,
+        'FR': config.FR_NEUTRAL,
+        'BL': config.BL_NEUTRAL,
+        'BR': config.BR_NEUTRAL
+    }
+    
+    logging.info("(fundamental_movement.py): Moving all legs to neutral position on physical robot...\n")
+    
+    # Move each leg to its neutral position
+    for leg_id, neutral_pos in neutral_positions.items():
+        try:
+            # Use the old coordinate-based system for physical robot neutral position
+            # This maintains compatibility with existing neutral position definitions
+            move_foot_to_pos_physical(
+                leg_id,
+                neutral_pos,
+                speed,
+                acceleration,
+                use_bezier=False
+            )
+        except Exception as e:
+            logging.error(f"(fundamental_movement.py): Failed to move {leg_id} leg to neutral: {e}\n")
 
 
 ########## BASIC TESTING FUNCTIONS ##########
@@ -836,32 +766,3 @@ def _move_all_joints_backward_isaac():
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to move all joints to FULL_BACK: {e}\n")
 
-
-def _move_all_joints_forward_physical(speed, acceleration):
-    """
-    Move all joints to FULL_FRONT positions for physical robot testing.
-    """
-    from utilities.servos import set_target
-    
-    for leg in config.SERVO_CONFIG:
-        for joint in config.SERVO_CONFIG[leg]:
-            try:
-                servo_data = config.SERVO_CONFIG[leg][joint]
-                set_target(servo_data['servo'], servo_data['FULL_FRONT'], speed, acceleration)
-            except Exception as e:
-                logging.error(f"(fundamental_movement.py): Failed to move {leg}_{joint} to FULL_FRONT: {e}\n")
-
-
-def _move_all_joints_backward_physical(speed, acceleration):
-    """
-    Move all joints to FULL_BACK positions for physical robot testing.
-    """
-    from utilities.servos import set_target
-    
-    for leg in config.SERVO_CONFIG:
-        for joint in config.SERVO_CONFIG[leg]:
-            try:
-                servo_data = config.SERVO_CONFIG[leg][joint]
-                set_target(servo_data['servo'], servo_data['FULL_BACK'], speed, acceleration)
-            except Exception as e:
-                logging.error(f"(fundamental_movement.py): Failed to move {leg}_{joint} to FULL_BACK: {e}\n")

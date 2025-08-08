@@ -151,7 +151,7 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
         commands,
         frame,
         intensity,
-        current_feet_positions
+        current_servo_config
 ):
     """
     Run RL model with vision.
@@ -159,36 +159,54 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
     - input_layer, output_layer: OpenVINO layers
     - commands: list of str
     - frame: preprocessed np.ndarray (H, W) or (H, W, 1)
-    - speed, acceleration: scalars
-    - current_feet_positions: dict of dicts
-    Returns: target_positions, mid_positions
+    - intensity: scalar
+    - current_servo_config: dict of dicts with CURRENT_ANGLE values
+    Returns: target_angles, mid_angles
     """
     # --- Normalize/encode inputs ---
     cmd_vec = encode_commands(commands)
     intensity_norm = normalize_scalar(intensity, 1, 10)  # adjust min/max as needed
-    feet_vec = normalize_feet_positions(current_feet_positions, {'x':-0.2,'y':-0.2,'z':-0.2}, {'x':0.2,'y':0.2,'z':0.2})  # adjust min/max as needed
+    
+    # Flatten current joint angles and normalize
+    current_angles_vec = []
+    for leg in ['FL', 'FR', 'BL', 'BR']:
+        for joint in ['hip', 'upper', 'lower']:
+            current_angle = current_servo_config[leg][joint]['CURRENT_ANGLE']
+            # Normalize angle to [0, 1] assuming range [-pi, pi]
+            angle_norm = (current_angle + np.pi) / (2 * np.pi)
+            current_angles_vec.append(angle_norm)
+    current_angles_vec = np.array(current_angles_vec, dtype=np.float32)
 
     # Flatten frame and normalize to [0,1]
     frame_flat = frame.astype(np.float32) / 255.0
     frame_flat = frame_flat.flatten()
 
     # --- Assemble input ---
-    input_vec = np.concatenate([cmd_vec, intensity_norm, feet_vec, frame_flat])
+    input_vec = np.concatenate([cmd_vec, intensity_norm, current_angles_vec, frame_flat])
     input_vec = input_vec.reshape(1, -1)  # batch dimension
 
     # --- Run inference ---
     result = model([input_vec])[output_layer]
-    # Assume result shape: (1, 24) for 4 legs * 2 points * 3 coords
+    # Assume result shape: (1, 24) for 4 legs * 2 points * 3 joints
 
     # --- Parse output ---
-    result = result.reshape(4, 2, 3)  # (leg, point, xyz)
+    result = result.reshape(4, 2, 3)  # (leg, point, joint)
     legs = ['FL', 'FR', 'BL', 'BR']
-    target_positions = {}
-    mid_positions = {}
+    joints = ['hip', 'upper', 'lower']
+    
+    target_angles = {}
+    mid_angles = {}
     for i, leg in enumerate(legs):
-        mid_positions[leg] = {'x': result[i,0,0], 'y': result[i,0,1], 'z': result[i,0,2]}
-        target_positions[leg] = {'x': result[i,1,0], 'y': result[i,1,1], 'z': result[i,1,2]}
-    return target_positions, mid_positions
+        target_angles[leg] = {}
+        mid_angles[leg] = {}
+        for j, joint in enumerate(joints):
+            # Denormalize angles from [0, 1] back to [-pi, pi]
+            mid_angle_norm = result[i, 0, j]
+            target_angle_norm = result[i, 1, j]
+            mid_angles[leg][joint] = (mid_angle_norm * 2 * np.pi) - np.pi
+            target_angles[leg][joint] = (target_angle_norm * 2 * np.pi) - np.pi
+    
+    return target_angles, mid_angles
 
 
 ########## RUN GAIT ADJUSTMENT RL MODEL WITHOUT IMAGES ##########
@@ -199,27 +217,45 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         output_layer,
         commands,
         intensity,
-        current_feet_positions
+        current_servo_config
 ):
     """
     Run RL model without vision.
     """
     cmd_vec = encode_commands(commands)
     intensity_norm = normalize_scalar(intensity, 1, 10)  # adjust min/max as needed
-    feet_vec = normalize_feet_positions(current_feet_positions, {'x':-0.2,'y':-0.2,'z':-0.2}, {'x':0.2,'y':0.2,'z':0.2})
+    
+    # Flatten current joint angles and normalize
+    current_angles_vec = []
+    for leg in ['FL', 'FR', 'BL', 'BR']:
+        for joint in ['hip', 'upper', 'lower']:
+            current_angle = current_servo_config[leg][joint]['CURRENT_ANGLE']
+            # Normalize angle to [0, 1] assuming range [-pi, pi]
+            angle_norm = (current_angle + np.pi) / (2 * np.pi)
+            current_angles_vec.append(angle_norm)
+    current_angles_vec = np.array(current_angles_vec, dtype=np.float32)
 
-    input_vec = np.concatenate([cmd_vec, intensity_norm, feet_vec])
+    input_vec = np.concatenate([cmd_vec, intensity_norm, current_angles_vec])
     input_vec = input_vec.reshape(1, -1)
 
     result = model([input_vec])[output_layer]
     result = result.reshape(4, 2, 3)
     legs = ['FL', 'FR', 'BL', 'BR']
-    target_positions = {}
-    mid_positions = {}
+    joints = ['hip', 'upper', 'lower']
+    
+    target_angles = {}
+    mid_angles = {}
     for i, leg in enumerate(legs):
-        mid_positions[leg] = {'x': result[i,0,0], 'y': result[i,0,1], 'z': result[i,0,2]}
-        target_positions[leg] = {'x': result[i,1,0], 'y': result[i,1,1], 'z': result[i,1,2]}
-    return target_positions, mid_positions
+        target_angles[leg] = {}
+        mid_angles[leg] = {}
+        for j, joint in enumerate(joints):
+            # Denormalize angles from [0, 1] back to [-pi, pi]
+            mid_angle_norm = result[i, 0, j]
+            target_angle_norm = result[i, 1, j]
+            mid_angles[leg][joint] = (mid_angle_norm * 2 * np.pi) - np.pi
+            target_angles[leg][joint] = (target_angle_norm * 2 * np.pi) - np.pi
+    
+    return target_angles, mid_angles
 
 
 ########## RUN PERSON DETECTION CNN MODEL AND SHOW FRAME ##########

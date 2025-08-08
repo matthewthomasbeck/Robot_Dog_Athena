@@ -159,6 +159,7 @@ def set_pybullet_dependencies():
 
     logging.info(f"(control_logic.py): PyBullet initialized with robot ID {ROBOT_ID}.\n")
     logging.info(f"(control_logic.py): Joint map initialized as {JOINT_MAP}.\n")
+    from training.isaac_sim import set_simulation_variables
     set_simulation_variables(ROBOT_ID, JOINT_MAP)
 
 ##### import/create necessary dependencies based on detected environment #####
@@ -174,13 +175,11 @@ elif config.USE_SIMULATION:
 ##### post-initialization dependencies #####
 
 from movement.fundamental_movement import *
-from movement.standing.standing import *
-from movement.walking.forward import trot_forward
 from utilities.camera import decode_real_frame, decode_isaac_frame
 
-# Import queue processing function for Isaac Sim
+# Import Isaac Sim specific functions
 if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-    from movement.fundamental_movement import process_isaac_movement_queue
+    from training.isaac_sim import process_isaac_movement_queue
 
 
 
@@ -353,8 +352,7 @@ def _handle_command(command, frame):
                 command,  # command should be the full commands dict from interpret_commands
                 frame,
                 IS_NEUTRAL,
-                CURRENT_LEG,
-                tune_mode=False
+                CURRENT_LEG
             )
             logging.info(f"(control_logic.py): Executed radio commands: {command}\n")
             IS_COMPLETE = True
@@ -371,8 +369,7 @@ def _handle_command(command, frame):
                 frame,
                 IS_NEUTRAL,
                 CURRENT_LEG,
-                config.DEFAULT_INTENSITY,
-                tune_mode=False
+                config.DEFAULT_INTENSITY
             )
             logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
             IS_COMPLETE = True
@@ -383,105 +380,81 @@ def _handle_command(command, frame):
 
 ##### keyboard commands for tuning mode and normal operation #####
 
-def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, tune_mode):
+def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
 
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
-    if not tune_mode:
+    if 'i' in keys: # if user wishes to enable/disable imageless gait...
+        IMAGELESS_GAIT = not IMAGELESS_GAIT # toggle imageless gait mode
+        logging.warning(f"(control_logic.py): Toggled IMAGELESS_GAIT to {IMAGELESS_GAIT}\n")
+        keys = [k for k in keys if k != 'i'] # remove 'i' from the keys list
 
-        if 'i' in keys: # if user wishes to enable/disable imageless gait...
-            IMAGELESS_GAIT = not IMAGELESS_GAIT # toggle imageless gait mode
-            logging.warning(f"(control_logic.py): Toggled IMAGELESS_GAIT to {IMAGELESS_GAIT}\n")
-            keys = [k for k in keys if k != 'i'] # remove 'i' from the keys list
+    # cancel out contradictory keys
+    if 'w' in keys and 's' in keys:
+        keys = [k for k in keys if k not in ['w', 's']]
+    if 'a' in keys and 'd' in keys:
+        keys = [k for k in keys if k not in ['a', 'd']]
+    if 'arrowleft' in keys and 'arrowright' in keys:
+        keys = [k for k in keys if k not in ['arrowleft', 'arrowright']]
+    if 'arrowup' in keys and 'arrowdown' in keys:
+        keys = [k for k in keys if k not in ['arrowup', 'arrowdown']]
 
-        # cancel out contradictory keys
-        if 'w' in keys and 's' in keys:
-            keys = [k for k in keys if k not in ['w', 's']]
-        if 'a' in keys and 'd' in keys:
-            keys = [k for k in keys if k not in ['a', 'd']]
-        if 'arrowleft' in keys and 'arrowright' in keys:
-            keys = [k for k in keys if k not in ['arrowleft', 'arrowright']]
-        if 'arrowup' in keys and 'arrowdown' in keys:
-            keys = [k for k in keys if k not in ['arrowup', 'arrowdown']]
+    # movement direction logic
+    direction = None
 
-        # movement direction logic
-        direction = None
+    # movement (WASD and diagonals)
+    if 'w' in keys and 'd' in keys:
+        direction = 'w+d'
+    elif 'w' in keys and 'a' in keys:
+        direction = 'w+a'
+    elif 's' in keys and 'd' in keys:
+        direction = 's+d'
+    elif 's' in keys and 'a' in keys:
+        direction = 's+a'
+    elif 'w' in keys:
+        direction = 'w'
+    elif 's' in keys:
+        direction = 's'
+    elif 'a' in keys:
+        direction = 'a'
+    elif 'd' in keys:
+        direction = 'd'
 
-        # movement (WASD and diagonals)
-        if 'w' in keys and 'd' in keys:
-            direction = 'w+d'
-        elif 'w' in keys and 'a' in keys:
-            direction = 'w+a'
-        elif 's' in keys and 'd' in keys:
-            direction = 's+d'
-        elif 's' in keys and 'a' in keys:
-            direction = 's+a'
-        elif 'w' in keys:
-            direction = 'w'
-        elif 's' in keys:
-            direction = 's'
-        elif 'a' in keys:
-            direction = 'a'
-        elif 'd' in keys:
-            direction = 'd'
+    # rotation (arrow keys)
+    if 'arrowleft' in keys:
+        direction = 'arrowleft'
+    elif 'arrowright' in keys:
+        direction = 'arrowright'
 
-        # rotation (arrow keys)
-        if 'arrowleft' in keys:
-            direction = 'arrowleft'
-        elif 'arrowright' in keys:
-            direction = 'arrowright'
+    # tilt (arrow up/down)
+    if 'arrowup' in keys:
+        direction = 'arrowup'
+    elif 'arrowdown' in keys:
+        direction = 'arrowdown'
 
-        # tilt (arrow up/down)
-        if 'arrowup' in keys:
-            direction = 'arrowup'
-        elif 'arrowdown' in keys:
-            direction = 'arrowdown'
-
-        # neutral and special actions
-        if 'n' in keys or not keys:
-            neutral_position(10)
-            is_neutral = True
-        elif ' ' in keys:
-            logging.debug(f"(control_logic.py): space: LIE DOWN\n")
-            squatting_position(1)
-            is_neutral = False
-        elif direction:
-            #logging.debug(f"(control_logic.py): {keys}: {direction}\n")
-            # Use trot_forward for all modes (now supports Isaac Sim queue system)
-            move_direction(direction, frame, intensity, IMAGELESS_GAIT)
-            #calibrate_joints_isaac()
-            is_neutral = False
-        else:
-            logging.warning(f"(control_logic.py): Invalid command: {keys}.\n")
-
+    # neutral and special actions
+    if 'n' in keys or not keys:
+        neutral_position(10)
+        is_neutral = True
+    elif ' ' in keys:
+        logging.debug(f"(control_logic.py): space: LIE DOWN\n")
+        squatting_position(1)
+        is_neutral = False
+    elif direction:
+        #logging.debug(f"(control_logic.py): {keys}: {direction}\n")
+        # Use trot_forward for all modes (now supports Isaac Sim queue system)
+        move_direction(direction, frame, intensity, IMAGELESS_GAIT)
+        #calibrate_joints_isaac()
+        is_neutral = False
     else:
-        # tuning mode - handle individual key actions
-        for key in keys:
-            if key in ADJUSTMENT_FUNCS.get(current_leg, {}):
-                try:
-                    ADJUSTMENT_FUNCS[current_leg][key]()
-                    logging.debug(f"(control_logic.py): Tuning {current_leg} with {key}.\n")
-                except Exception as e:
-                        logging.error(f"(control_logic.py): Failed to adjust {current_leg} with {key}: {e}\n")
-            elif key == 'q':
-                # switch to next leg
-                legs = ['FL', 'FR', 'BL', 'BR']
-                current_index = legs.index(current_leg)
-                current_leg = legs[(current_index + 1) % len(legs)]
-                logging.info(f"(control_logic.py): Switched to leg: {current_leg}\n")
-            elif key == 'e':
-                # switch to previous leg
-                legs = ['FL', 'FR', 'BL', 'BR']
-                current_index = legs.index(current_leg)
-                current_leg = legs[(current_index - 1) % len(legs)]
-                logging.info(f"(control_logic.py): Switched to leg: {current_leg}\n")
+        logging.warning(f"(control_logic.py): Invalid command: {keys}.\n")
 
     return is_neutral, current_leg
 
 
 ##### radio commands for multi-channel processing #####
 
-def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode):
+def _execute_radio_commands(commands, frame, is_neutral, current_leg):
 
     global IMAGELESS_GAIT # set IMAGELESS_GAIT as global to switch between modes via button press
 
@@ -489,190 +462,152 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg, tune_mode)
     # backup control as model-switching is an expensive maneuver that should be avoided unless necessary
     IMAGELESS_GAIT = True
 
-    if not tune_mode:
-        active_commands = {
-            channel: (action, intensity) for channel, (action, intensity) in commands.items() if action != 'NEUTRAL'
-        }
+    active_commands = {
+        channel: (action, intensity) for channel, (action, intensity) in commands.items() if action != 'NEUTRAL'
+    }
 
-        if not active_commands:
-            logging.info(f"(control_logic.py): All channels neutral, returning to neutral position.\n")
-            neutral_position(10)
-            is_neutral = True
-            return is_neutral, current_leg
+    if not active_commands:
+        logging.info(f"(control_logic.py): All channels neutral, returning to neutral position.\n")
+        neutral_position(10)
+        is_neutral = True
+        return is_neutral, current_leg
 
-        # cancel out contradictory commands (similar to keyboard logic)
-        # check for contradictory movement commands
-        move_actions = []
-        for channel in ['channel_5', 'channel_6']:
-            if channel in active_commands:
-                action = active_commands[channel][0]
-                if 'MOVE' in action or 'SHIFT' in action:
-                    move_actions.append((channel, action))
+    # cancel out contradictory commands (similar to keyboard logic)
+    # check for contradictory movement commands
+    move_actions = []
+    for channel in ['channel_5', 'channel_6']:
+        if channel in active_commands:
+            action = active_commands[channel][0]
+            if 'MOVE' in action or 'SHIFT' in action:
+                move_actions.append((channel, action))
 
-        # determine primary direction and intensity
-        direction = None
-        max_intensity = 0
+    # determine primary direction and intensity
+    direction = None
+    max_intensity = 0
 
-        # movement combinations (channels 5 and 6)
-        move_forward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE FORWARD'
-        move_backward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE BACKWARD'
-        shift_left = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT LEFT'
-        shift_right = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT RIGHT'
+    # movement combinations (channels 5 and 6)
+    move_forward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE FORWARD'
+    move_backward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE BACKWARD'
+    shift_left = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT LEFT'
+    shift_right = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT RIGHT'
 
-        # rotation (channel 3)
-        rotate_left = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE LEFT'
-        rotate_right = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE RIGHT'
+    # rotation (channel 3)
+    rotate_left = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE LEFT'
+    rotate_right = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE RIGHT'
 
-        # tilt (channel 4)
-        tilt_up = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT UP'
-        tilt_down = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT DOWN'
+    # tilt (channel 4)
+    tilt_up = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT UP'
+    tilt_down = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT DOWN'
 
-        # special actions (channels 0, 1, 2, 7)
-        look_up = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK UP'
-        look_down = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK DOWN'
-        trigger_shoot = active_commands.get('channel_1', ('NEUTRAL', 0))[0] == 'TRIGGER SHOOT'
-        squat_down = active_commands.get('channel_2', ('NEUTRAL', 0))[0] == 'SQUAT DOWN'
-        squat_up = active_commands.get('channel_2', ('NEUTRAL', 0))[0] == 'SQUAT UP'
-        plus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '+'
-        minus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '-'
+    # special actions (channels 0, 1, 2, 7)
+    look_up = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK UP'
+    look_down = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK DOWN'
+    trigger_shoot = active_commands.get('channel_1', ('NEUTRAL', 0))[0] == 'TRIGGER SHOOT'
+    squat_down = active_commands.get('channel_2', ('NEUTRAL', 0))[0] == 'SQUAT DOWN'
+    squat_up = active_commands.get('channel_2', ('NEUTRAL', 0))[0] == 'SQUAT UP'
+    plus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '+'
+    minus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '-'
 
-        # build complex direction string for computer-friendly parsing
-        direction_parts = []
+    # build complex direction string for computer-friendly parsing
+    direction_parts = []
 
-        # handle diagonal movements (combine channels 5 and 6)
-        if move_forward and shift_left:
-            direction_parts.append('w+a')
-            max_intensity = max(
-                active_commands.get('channel_5', ('NEUTRAL', 0))[1],
-                active_commands.get('channel_6', ('NEUTRAL', 0))[1]
-            )
-        elif move_forward and shift_right:
-            direction_parts.append('w+d')
-            max_intensity = max(
-                active_commands.get('channel_5', ('NEUTRAL', 0))[1],
-                active_commands.get('channel_6', ('NEUTRAL', 0))[1]
-            )
-        elif move_backward and shift_left:
-            direction_parts.append('s+a')
-            max_intensity = max(
-                active_commands.get('channel_5', ('NEUTRAL', 0))[1],
-                active_commands.get('channel_6', ('NEUTRAL', 0))[1]
-            )
-        elif move_backward and shift_right:
-            direction_parts.append('s+d')
-            max_intensity = max(
-                active_commands.get('channel_5', ('NEUTRAL', 0))[1],
-                active_commands.get('channel_6', ('NEUTRAL', 0))[1]
-            )
-        # handle single movements
-        elif move_forward:
-            direction_parts.append('w')
-            max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
-        elif move_backward:
-            direction_parts.append('s')
-            max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
-        elif shift_left:
-            direction_parts.append('a')
-            max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
-        elif shift_right:
-            direction_parts.append('d')
-            max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
+    # handle diagonal movements (combine channels 5 and 6)
+    if move_forward and shift_left:
+        direction_parts.append('w+a')
+        max_intensity = max(
+            active_commands.get('channel_5', ('NEUTRAL', 0))[1],
+            active_commands.get('channel_6', ('NEUTRAL', 0))[1]
+        )
+    elif move_forward and shift_right:
+        direction_parts.append('w+d')
+        max_intensity = max(
+            active_commands.get('channel_5', ('NEUTRAL', 0))[1],
+            active_commands.get('channel_6', ('NEUTRAL', 0))[1]
+        )
+    elif move_backward and shift_left:
+        direction_parts.append('s+a')
+        max_intensity = max(
+            active_commands.get('channel_5', ('NEUTRAL', 0))[1],
+            active_commands.get('channel_6', ('NEUTRAL', 0))[1]
+        )
+    elif move_backward and shift_right:
+        direction_parts.append('s+d')
+        max_intensity = max(
+            active_commands.get('channel_5', ('NEUTRAL', 0))[1],
+            active_commands.get('channel_6', ('NEUTRAL', 0))[1]
+        )
+    # handle single movements
+    elif move_forward:
+        direction_parts.append('w')
+        max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
+    elif move_backward:
+        direction_parts.append('s')
+        max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
+    elif shift_left:
+        direction_parts.append('a')
+        max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
+    elif shift_right:
+        direction_parts.append('d')
+        max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
 
-        # handle rotation (can combine with movement)
-        if rotate_left:
-            direction_parts.append('arrowleft')
-            max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
-        elif rotate_right:
-            direction_parts.append('arrowright')
-            max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
+    # handle rotation (can combine with movement)
+    if rotate_left:
+        direction_parts.append('arrowleft')
+        max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
+    elif rotate_right:
+        direction_parts.append('arrowright')
+        max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
 
-        # handle tilt (can combine with movement and rotation)
-        if tilt_up:
-            direction_parts.append('arrowup')
-            max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
-        elif tilt_down:
-            direction_parts.append('arrowdown')
-            max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
+    # handle tilt (can combine with movement and rotation)
+    if tilt_up:
+        direction_parts.append('arrowup')
+        max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
+    elif tilt_down:
+        direction_parts.append('arrowdown')
+        max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
 
-        # handle special actions (these don't add to direction but are logged)
-        special_actions = []
-        if look_up:
-            special_actions.append('LOOK_UP')
-        elif look_down:
-            special_actions.append('LOOK_DOWN')
-        if trigger_shoot:
-            special_actions.append('TRIGGER_SHOOT')
-        if squat_down:
-            special_actions.append('SQUAT_DOWN')
-        elif squat_up:
-            special_actions.append('SQUAT_UP')
-        if plus_action:
-            special_actions.append('PLUS')
-        elif minus_action:
-            special_actions.append('MINUS')
+    # handle special actions (these don't add to direction but are logged)
+    special_actions = []
+    if look_up:
+        special_actions.append('LOOK_UP')
+    elif look_down:
+        special_actions.append('LOOK_DOWN')
+    if trigger_shoot:
+        special_actions.append('TRIGGER_SHOOT')
+    if squat_down:
+        special_actions.append('SQUAT_DOWN')
+    elif squat_up:
+        special_actions.append('SQUAT_UP')
+    if plus_action:
+        special_actions.append('PLUS')
+    elif minus_action:
+        special_actions.append('MINUS')
 
-        # combine all direction parts
-        if direction_parts:
-            direction = '+'.join(direction_parts)
-            logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
-            if special_actions:
-                logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
-            #move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
-            move_direction(max_intensity)
+    # combine all direction parts
+    if direction_parts:
+        direction = '+'.join(direction_parts)
+        logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
+        if special_actions:
+            logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
+        #move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
+        move_direction(max_intensity)
+        is_neutral = False
+    elif special_actions:
+        # only special actions, no movement
+        logging.debug(f"(control_logic.py): Special actions only: ({special_actions})\n")
+        # handle special actions here
+        if 'SQUAT_DOWN' in special_actions:
+            squatting_position(1)
             is_neutral = False
-        elif special_actions:
-            # only special actions, no movement
-            logging.debug(f"(control_logic.py): Special actions only: ({special_actions})\n")
-            # handle special actions here
-            if 'SQUAT_DOWN' in special_actions:
-                squatting_position(1)
-                is_neutral = False
-            elif 'SQUAT_UP' in special_actions:
-                    neutral_position(10)
-                    is_neutral = True
-            # TODO: Implement other special actions
+        elif 'SQUAT_UP' in special_actions:
+                neutral_position(10)
+                is_neutral = True
+        # TODO: Implement other special actions
 
     return is_neutral, current_leg
 
 
 ########## EXECUTE KEYBOARD COMMANDS ##########
-
-##### temporary dictionary of commands #####
-
-ADJUSTMENT_FUNCS = {
-    'FL': {
-        'x+': adjustFL_X,
-        'x-': lambda: adjustFL_X(forward=False),
-        'y+': adjustFL_Y,
-        'y-': lambda: adjustFL_Y(left=False),
-        'z+': adjustFL_Z,
-        'z-': lambda: adjustFL_Z(up=False),
-    },
-    'FR': {
-        'x+': adjustFR_X,
-        'x-': lambda: adjustFR_X(forward=False),
-        'y+': adjustFR_Y,
-        'y-': lambda: adjustFR_Y(left=False),
-        'z+': adjustFR_Z,
-        'z-': lambda: adjustFR_Z(up=False),
-    },
-    'BL': {
-        'x+': adjustBL_X,
-        'x-': lambda: adjustBL_X(forward=False),
-        'y+': adjustBL_Y,
-        'y-': lambda: adjustBL_Y(left=False),
-        'z+': adjustBL_Z,
-        'z-': lambda: adjustBL_Z(up=False),
-    },
-    'BR': {
-        'x+': adjustBR_X,
-        'x-': lambda: adjustBR_X(forward=False),
-        'y+': adjustBR_Y,
-        'y-': lambda: adjustBR_Y(left=False),
-        'z+': adjustBR_Z,
-        'z-': lambda: adjustBR_Z(up=False),
-    }
-}
 
 ##### run robotic process #####
 
