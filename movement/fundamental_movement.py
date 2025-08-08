@@ -693,10 +693,18 @@ def calibrate_joints_isaac():
     
     # Define joint order for calibration
     joint_order = [
-        ('FL', 'hip')#, ('FL', 'upper'), ('FL', 'lower'),
-        #('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
-        #('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
-        #('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ('FL', 'hip'),
+        ('FL', 'upper'),
+        ('FL', 'lower'),
+        ('FR', 'hip'),
+        ('FR', 'upper'),
+        ('FR', 'lower'),
+        ('BL', 'hip'),
+        ('BL', 'upper'),
+        ('BL', 'lower'),
+        ('BR', 'hip'),
+        ('BR', 'upper'),
+        ('BR', 'lower')
     ]
     
     # Calibration parameters
@@ -727,11 +735,11 @@ def calibrate_joints_isaac():
             
             logging.info(f"(fundamental_movement.py): Calibrating {joint_full_name} - Back: {math.degrees(full_back_rad):.1f}°, Front: {math.degrees(full_front_rad):.1f}°, Neutral: {math.degrees(neutral_rad):.1f}°\n")
             
-            # Move through the sequence: BACK -> FRONT -> BACK -> NEUTRAL
+            # Move through the sequence: NEUTRAL -> BACK -> FRONT -> NEUTRAL
             movements = [
+                (neutral_rad, full_back_rad),      # Neutral to Back
                 (full_back_rad, full_front_rad),   # Back to Front
-                (full_front_rad, full_back_rad),   # Front to Back  
-                (full_back_rad, neutral_rad)       # Back to Neutral
+                (full_front_rad, neutral_rad)      # Front to Neutral
             ]
             
             for start_pos, end_pos in movements:
