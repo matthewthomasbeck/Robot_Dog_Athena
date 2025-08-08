@@ -89,6 +89,11 @@ def set_isaac_dependencies():
     from training.isaac_sim import build_isaac_joint_index_map, compute_reward
 
     config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
+    
+    # Add ground plane
+    config.ISAAC_WORLD.scene.add_default_ground_plane()
+    
+    # Add robot
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
     add_reference_to_stage(usd_path, "/World/robot_dog")
     for _ in range(3): # let isaac sim load a few steps for general process
