@@ -49,6 +49,7 @@ if config.USE_SIMULATION:
         # Queue system for Isaac Sim to avoid PhysX threading violations
         ISAAC_MOVEMENT_QUEUE = queue.Queue()
         ISAAC_PENDING_MOVEMENTS = queue.Queue()
+        ISAAC_CALIBRATION_COMPLETE = threading.Event()  # Signal for calibration completion
 
     else:
         import pybullet
@@ -484,7 +485,6 @@ def process_isaac_movement_queue():
         try:
             movement_data = ISAAC_MOVEMENT_QUEUE.get_nowait()
             ISAAC_PENDING_MOVEMENTS.put(movement_data)
-            logging.debug(f"(fundamental_movement.py): Moved movement data to pending queue\n")
         except queue.Empty:
             break
     
@@ -492,10 +492,36 @@ def process_isaac_movement_queue():
     if not ISAAC_PENDING_MOVEMENTS.empty():
         try:
             movement_data = ISAAC_PENDING_MOVEMENTS.get_nowait()
-            apply_isaac_leg_movement(movement_data)
-            logging.debug(f"(fundamental_movement.py): Applied Isaac Sim leg movement\n")
+            
+            # Check if this is calibration data or regular movement data
+            if isinstance(movement_data, dict) and movement_data.get('type') == 'calibration':
+                apply_isaac_calibration_movement(movement_data)
+            else:
+                apply_isaac_leg_movement(movement_data)
         except queue.Empty:
             pass
+
+
+def apply_isaac_calibration_movement(movement_data):
+    """
+    Apply calibration movement for Isaac Sim in the main thread.
+    Args:
+        movement_data: Dictionary containing calibration data (type, joint_name, angle_rad)
+    """
+    try:
+        joint_name = movement_data['joint_name']
+        angle_rad = movement_data['angle_rad']
+        
+        # Apply the joint position directly
+        _apply_single_joint_position_isaac(joint_name, angle_rad)
+        
+        # Signal that this calibration movement is complete
+        ISAAC_CALIBRATION_COMPLETE.set()
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to apply calibration movement: {e}\n")
+        # Still signal completion even on error to prevent hanging
+        ISAAC_CALIBRATION_COMPLETE.set()
 
 
 def apply_isaac_leg_movement(movement_data):
@@ -651,6 +677,142 @@ def move_foot_isaac(leg_id, x, y, z, speed, acceleration):
             logging.error(
                 f"(fundamental_movement.py): Failed to apply Isaac Sim joint action for {joint_name}: {e}\n"
             )
+
+
+########## JOINT CALIBRATION ##########
+
+def calibrate_joints_isaac():
+    """
+    Calibrate all joints by moving each joint through its full range of motion.
+    This function runs indefinitely and cycles through each joint one at a time.
+    Only for Isaac Sim - uses queue system to avoid PhysX threading violations.
+    """
+    if not config.USE_SIMULATION or not config.USE_ISAAC_SIM:
+        logging.error("(fundamental_movement.py): calibrate_joints_isaac() only works with Isaac Sim\n")
+        return
+    
+    # Define joint order for calibration
+    joint_order = [
+        ('FL', 'hip')#, ('FL', 'upper'), ('FL', 'lower'),
+        #('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
+        #('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
+        #('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+    ]
+    
+    # Calibration parameters
+    step_time = 0.1  # seconds between position updates
+    steps_per_movement = 10  # number of steps to complete one movement
+    
+    logging.info("(fundamental_movement.py): Starting joint calibration for Isaac Sim...\n")
+    
+    joint_index = 0
+    while True:
+        try:
+            # Get current joint to calibrate
+            leg_id, joint_name = joint_order[joint_index]
+            joint_full_name = f"{leg_id}_{joint_name}"
+            
+            # Get joint configuration
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
+            
+            # Convert angles to radians - use the actual angle values, not PWM values
+            full_back_rad = servo_data['FULL_BACK_ANGLE']  # Already in radians
+            full_front_rad = servo_data['FULL_FRONT_ANGLE']  # Already in radians
+            neutral_rad = 0.0  # Neutral position at 0 radians
+            
+            # Apply inversion if needed
+            if is_inverted:
+                full_back_rad, full_front_rad = full_front_rad, full_back_rad
+            
+            logging.info(f"(fundamental_movement.py): Calibrating {joint_full_name} - Back: {math.degrees(full_back_rad):.1f}°, Front: {math.degrees(full_front_rad):.1f}°, Neutral: {math.degrees(neutral_rad):.1f}°\n")
+            
+            # Move through the sequence: BACK -> FRONT -> BACK -> NEUTRAL
+            movements = [
+                (full_back_rad, full_front_rad),   # Back to Front
+                (full_front_rad, full_back_rad),   # Front to Back  
+                (full_back_rad, neutral_rad)       # Back to Neutral
+            ]
+            
+            for start_pos, end_pos in movements:
+                # Move through intermediate positions
+                for step in range(steps_per_movement):
+                    # Clear the completion signal
+                    ISAAC_CALIBRATION_COMPLETE.clear()
+                    
+                    # Linear interpolation between start and end positions
+                    progress = step / steps_per_movement
+                    current_pos = start_pos + (end_pos - start_pos) * progress
+                    
+                    # Queue the joint position
+                    _queue_single_joint_position_isaac(joint_full_name, current_pos)
+                    
+                    # Wait for this position to be processed before continuing
+                    ISAAC_CALIBRATION_COMPLETE.wait(timeout=1.0)
+                    
+                    # Wait before next step
+                    time.sleep(step_time)
+            
+            # Wait 3 seconds before moving to next joint
+            time.sleep(3.0)
+            
+            # Move to next joint
+            joint_index = (joint_index + 1) % len(joint_order)
+            
+        except Exception as e:
+            logging.error(f"(fundamental_movement.py): Error in joint calibration: {e}\n")
+            time.sleep(1)  # Wait before retrying
+
+
+def _queue_single_joint_position_isaac(joint_name, angle_rad):
+    """
+    Queue a single joint position for Isaac Sim calibration.
+    Args:
+        joint_name: Full joint name (e.g., 'FL_hip')
+        angle_rad: Target angle in radians
+    """
+    try:
+        # Create calibration movement data
+        calibration_data = {
+            'type': 'calibration',
+            'joint_name': joint_name,
+            'angle_rad': angle_rad
+        }
+        
+        # Queue the calibration data
+        ISAAC_MOVEMENT_QUEUE.put(calibration_data)
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to queue calibration position for {joint_name}: {e}\n")
+
+
+def _apply_single_joint_position_isaac(joint_name, angle_rad):
+    """
+    Apply a single joint position for Isaac Sim calibration.
+    Args:
+        joint_name: Full joint name (e.g., 'FL_hip')
+        angle_rad: Target angle in radians
+    """
+    try:
+        joint_index = config.JOINT_INDEX_MAP.get(joint_name)
+        if joint_index is None:
+            logging.error(f"(fundamental_movement.py): Joint {joint_name} not found in JOINT_INDEX_MAP\n")
+            return
+        
+        joint_count = len(config.ISAAC_ROBOT.dof_names)
+        joint_positions = numpy.zeros(joint_count)
+        joint_velocities = numpy.zeros(joint_count)
+        joint_positions[joint_index] = angle_rad
+        joint_velocities[joint_index] = 0.5  # Slow movement for calibration
+        
+        action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        ARTICULATION_CONTROLLER.apply_action(action)
+        
+    except Exception as e:
+        logging.error(f"(fundamental_movement.py): Failed to apply calibration position for {joint_name}: {e}\n")
 
 
 ########## FOOT TUNING ##########
