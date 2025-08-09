@@ -104,6 +104,11 @@ def set_isaac_dependencies():
     config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
     logging.info(f"(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {config.JOINT_INDEX_MAP}\n")
 
+    # Add coordinate frames for orientation tracking
+    from training.isaac_sim import create_coordinate_frames
+    create_coordinate_frames()
+    logging.info("(control_logic.py) Coordinate frames created for robot orientation tracking.\n")
+
     from utilities.camera import initialize_camera  # import to start camera logic
     CAMERA_PROCESS = initialize_camera()  # create camera process
     if CAMERA_PROCESS is None:
