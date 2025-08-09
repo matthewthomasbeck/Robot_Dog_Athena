@@ -211,6 +211,147 @@ def get_rl_action_blind(state, commands, intensity):
     return target_angles, mid_angles, movement_rates
 
 
+########## RL COMMAND GENERATION ##########
+
+def generate_rl_command():
+    """
+    Generate a command string for the RL agent to execute.
+    Returns command strings compatible with _execute_keyboard_commands format.
+    
+    Returns:
+        str: Command string like 'w', 'w+d', 'w+d+arrowleft+arrowup', or None for neutral
+    
+    Examples of possible outputs:
+        - 'w' (forward)
+        - 's+a' (backward + left)
+        - 'w+d+arrowleft' (forward + right + rotate left)
+        - 'w+d+arrowleft+arrowup' (forward + right + rotate left + tilt up)
+        - None (neutral/no action)
+    """
+    import random
+    
+    # Define possible actions with their probabilities
+    movement_actions = ['w', 's', 'a', 'd']  # forward, backward, left, right
+    rotation_actions = ['arrowleft', 'arrowright']  # rotate left, rotate right
+    tilt_actions = ['arrowup', 'arrowdown']  # tilt up, tilt down
+    
+    # Probability of including each type of action
+    movement_prob = 0.7  # 70% chance of movement
+    rotation_prob = 0.3  # 30% chance of rotation (can combine with movement)
+    tilt_prob = 0.2     # 20% chance of tilt (can combine with movement/rotation)
+    neutral_prob = 0.1  # 10% chance of neutral (no action)
+    
+    # Check for neutral action first
+    if random.random() < neutral_prob:
+        return None  # Neutral command
+    
+    command_parts = []
+    
+    # Add movement action
+    if random.random() < movement_prob:
+        # Decide between single movement or diagonal
+        if random.random() < 0.3:  # 30% chance of diagonal movement
+            # Choose two non-contradictory movements
+            forward_back = random.choice(['w', 's'])
+            left_right = random.choice(['a', 'd'])
+            command_parts.extend([forward_back, left_right])
+        else:
+            # Single movement
+            command_parts.append(random.choice(movement_actions))
+    
+    # Add rotation action (can combine with movement)
+    if random.random() < rotation_prob:
+        command_parts.append(random.choice(rotation_actions))
+    
+    # Add tilt action (can combine with movement and rotation)
+    if random.random() < tilt_prob:
+        command_parts.append(random.choice(tilt_actions))
+    
+    # If no actions were selected, return neutral
+    if not command_parts:
+        return None
+    
+    # Join parts with '+' to create command string
+    return '+'.join(command_parts)
+
+
+def get_rl_command_with_intensity():
+    """
+    Generate both a command and intensity for the RL agent.
+    
+    Returns:
+        tuple: (command_string, intensity_value)
+            command_string: str or None (compatible with _execute_keyboard_commands)
+            intensity_value: int between 1 and 10 (always 10 for neutral commands)
+    """
+    import random
+    
+    command = generate_rl_command()
+    
+    # Special case: neutral commands always have intensity 10 (fast return to neutral)
+    if command is None:
+        return command, 10
+    
+    # Generate intensity between 1 and 10 (integers only) with varied randomness for movement commands
+    rand_value = random.random()
+    
+    if rand_value < 0.15:  # 15% chance of low intensity (1-3)
+        intensity = random.randint(1, 3)
+    elif rand_value < 0.70:  # 55% chance of moderate intensity (4-7)
+        intensity = random.randint(4, 7)
+    else:  # 30% chance of high intensity (8-10)
+        intensity = random.randint(8, 10)
+    
+    return command, intensity
+
+
+def inject_rl_command_into_queue(rl_command_queue, command, intensity):
+    """
+    Inject an RL-generated command into the RL command queue.
+    This follows the same pattern as web commands being injected into COMMAND_QUEUE.
+    
+    Args:
+        rl_command_queue: Queue object for RL commands
+        command: str or None - Command string like 'w+d+arrowleft' or None for neutral
+        intensity: int - Movement intensity (1 to 10)
+    """
+    if rl_command_queue is not None:
+        # Package command with intensity (similar to web command format)
+        command_data = {
+            'command': command,
+            'intensity': intensity
+        }
+        rl_command_queue.put(command_data)
+
+
+
+
+def run_rl_episode_step(rl_command_queue):
+    """
+    Execute one step of RL training by generating a command and putting it in the queue.
+    This follows the same pattern as web commands.
+    
+    Args:
+        rl_command_queue: Queue object for RL commands
+    
+    Returns:
+        dict: Episode step information including:
+            - command: The generated command
+            - intensity: The command intensity
+    """
+    # Generate RL command and intensity
+    command, intensity = get_rl_command_with_intensity()
+    
+    # Put command into queue (same as web command flow)
+    inject_rl_command_into_queue(rl_command_queue, command, intensity)
+    
+    # Return step information for RL training
+    return {
+        'command': command,
+        'intensity': intensity
+    }
+
+
 ########## ISAAC SIM QUEUE PROCESSING ##########
 
 def process_isaac_movement_queue():
@@ -243,242 +384,3 @@ def process_isaac_movement_queue():
                 
         except queue.Empty:
             break
-
-
-########## RL STATE TRACKING ##########
-
-def get_robot_state():
-    """
-    Get the current state of the robot for RL training.
-    Returns:
-        dict: Robot state including position, orientation, velocity, joint angles, etc.
-    """
-    try:
-        # Get robot position and orientation
-        robot_position, robot_orientation = config.ISAAC_ROBOT.get_world_pose()
-        
-        # Get robot velocities
-        linear_velocity = config.ISAAC_ROBOT.get_linear_velocity()
-        angular_velocity = config.ISAAC_ROBOT.get_angular_velocity()
-        
-        # Get joint positions and velocities
-        joint_positions = config.ISAAC_ROBOT.get_joint_positions()
-        joint_velocities = config.ISAAC_ROBOT.get_joint_velocities()
-        
-        # Calculate derived state information
-        height = robot_position[2]  # Z-axis height
-        forward_velocity = linear_velocity[0]  # X-axis velocity (forward/backward)
-        lateral_velocity = linear_velocity[1]  # Y-axis velocity (left/right)
-        
-        # Extract roll, pitch, yaw from quaternion
-        from scipy.spatial.transform import Rotation
-        r = Rotation.from_quat([robot_orientation[1], robot_orientation[2], robot_orientation[3], robot_orientation[0]])  # Isaac uses (w,x,y,z), scipy uses (x,y,z,w)
-        roll, pitch, yaw = r.as_euler('xyz', degrees=False)
-        
-        state = {
-            'position': robot_position,
-            'orientation': robot_orientation,
-            'linear_velocity': linear_velocity,
-            'angular_velocity': angular_velocity,
-            'joint_positions': joint_positions,
-            'joint_velocities': joint_velocities,
-            'height': height,
-            'forward_velocity': forward_velocity,
-            'lateral_velocity': lateral_velocity,
-            'roll': roll,
-            'pitch': pitch,
-            'yaw': yaw,
-            'is_fallen': is_robot_fallen(),
-            'ground_contact': get_ground_contacts()
-        }
-        
-        return state
-        
-    except Exception as e:
-        import logging
-        logging.error(f"(isaac_sim.py): Failed to get robot state: {e}\n")
-        return None
-
-
-def is_robot_fallen(height_threshold=0.05, angle_threshold=0.5):
-    """
-    Check if the robot has fallen over.
-    Args:
-        height_threshold: Minimum height to consider robot upright (meters)
-        angle_threshold: Maximum roll/pitch angle to consider robot upright (radians)
-    Returns:
-        bool: True if robot has fallen, False otherwise
-    """
-    try:
-        robot_position, robot_orientation = config.ISAAC_ROBOT.get_world_pose()
-        height = robot_position[2]
-        
-        # Check height
-        if height < height_threshold:
-            return True
-        
-        # Check orientation
-        from scipy.spatial.transform import Rotation
-        r = Rotation.from_quat([robot_orientation[1], robot_orientation[2], robot_orientation[3], robot_orientation[0]])
-        roll, pitch, yaw = r.as_euler('xyz', degrees=False)
-        
-        # Check if roll or pitch is too extreme
-        if abs(roll) > angle_threshold or abs(pitch) > angle_threshold:
-            return True
-        
-        return False
-        
-    except Exception as e:
-        import logging
-        logging.error(f"(isaac_sim.py): Failed to check if robot fallen: {e}\n")
-        return True  # Assume fallen if we can't determine state
-
-
-def get_ground_contacts():
-    """
-    Get information about which parts of the robot are in contact with the ground.
-    Returns:
-        dict: Contact information for each leg
-    """
-    try:
-        # This is a simplified version - you might need to implement proper contact detection
-        # For now, return basic contact info based on foot positions
-        contacts = {
-            'FL': False,
-            'FR': False,
-            'BL': False,
-            'BR': False
-        }
-        
-        # You can enhance this by checking actual physics contacts
-        # For now, assume contact if the robot hasn't fallen
-        if not is_robot_fallen():
-            contacts = {leg: True for leg in contacts}
-        
-        return contacts
-        
-    except Exception as e:
-        import logging
-        logging.error(f"(isaac_sim.py): Failed to get ground contacts: {e}\n")
-        return {'FL': False, 'FR': False, 'BL': False, 'BR': False}
-
-
-def reset_robot_state():
-    """
-    Reset the robot to its initial state for a new RL episode.
-    """
-    try:
-        # Reset robot position to initial pose
-        initial_position = numpy.array([0.0, 0.0, 0.2])  # Slightly above ground
-        initial_orientation = numpy.array([1.0, 0.0, 0.0, 0.0])  # Upright quaternion (w,x,y,z)
-        
-        config.ISAAC_ROBOT.set_world_pose(initial_position, initial_orientation)
-        
-        # Reset joint positions to neutral
-        neutral_joint_positions = numpy.zeros(len(config.ISAAC_ROBOT.dof_names))
-        config.ISAAC_ROBOT.set_joint_positions(neutral_joint_positions)
-        
-        # Reset velocities
-        zero_velocities = numpy.zeros(len(config.ISAAC_ROBOT.dof_names))
-        config.ISAAC_ROBOT.set_joint_velocities(zero_velocities)
-        
-        # Update SERVO_CONFIG to reflect neutral state
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            for joint_name in ['hip', 'upper', 'lower']:
-                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = 0.0
-        
-        import logging
-        logging.info("(isaac_sim.py): Robot state reset for new RL episode\n")
-        
-    except Exception as e:
-        import logging
-        logging.error(f"(isaac_sim.py): Failed to reset robot state: {e}\n")
-
-
-########## RL TRAINING INFRASTRUCTURE ##########
-
-def should_terminate_episode():
-    """
-    Check if the current RL episode should be terminated.
-    Returns:
-        bool: True if episode should end, False otherwise
-        str: Reason for termination (if any)
-    """
-    try:
-        # Check if robot has fallen
-        if is_robot_fallen():
-            return True, "fallen"
-        
-        # Check if robot has moved too far from origin (optional)
-        robot_position, _ = config.ISAAC_ROBOT.get_world_pose()
-        distance_from_origin = numpy.linalg.norm(robot_position[:2])  # X,Y distance
-        if distance_from_origin > 10.0:  # 10 meter limit
-            return True, "out_of_bounds"
-        
-        # Add more termination conditions as needed
-        return False, None
-        
-    except Exception as e:
-        import logging
-        logging.error(f"(isaac_sim.py): Failed to check episode termination: {e}\n")
-        return True, "error"
-
-
-def compute_rl_reward(previous_state, current_state, action, command):
-    """
-    Compute the reward for the current step in RL training.
-    Args:
-        previous_state: Robot state from previous timestep
-        current_state: Current robot state
-        action: Action taken (joint angles)
-        command: Movement command ('w', 's', 'a', 'd', etc.)
-    Returns:
-        float: Reward value
-    """
-    try:
-        reward = 0.0
-        
-        if current_state is None or previous_state is None:
-            return -10.0  # Penalty for invalid states
-        
-        # Penalty for falling
-        if current_state['is_fallen']:
-            return -100.0
-        
-        # Reward for maintaining height
-        target_height = 0.15  # Desired robot height
-        height_error = abs(current_state['height'] - target_height)
-        reward += 1.0 - (height_error * 10.0)  # Penalty grows with height error
-        
-        # Reward for forward movement if command is 'w'
-        if 'w' in command:
-            reward += current_state['forward_velocity'] * 5.0
-        
-        # Reward for backward movement if command is 's'
-        if 's' in command:
-            reward -= current_state['forward_velocity'] * 5.0
-        
-        # Reward for lateral movement
-        if 'a' in command:
-            reward += current_state['lateral_velocity'] * 3.0
-        elif 'd' in command:
-            reward -= current_state['lateral_velocity'] * 3.0
-        
-        # Penalty for excessive rotation
-        roll_penalty = abs(current_state['roll']) * 2.0
-        pitch_penalty = abs(current_state['pitch']) * 2.0
-        reward -= (roll_penalty + pitch_penalty)
-        
-        # Small penalty for high joint velocities (encourage smooth movement)
-        joint_velocity_penalty = numpy.sum(numpy.abs(current_state['joint_velocities'])) * 0.01
-        reward -= joint_velocity_penalty
-        
-        # Small reward for staying upright
-        reward += 0.1
-        
-        return reward
-        
-    except Exception as e:
-        import logging
-        logging.error(f"(isaac_sim.py): Failed to compute RL reward: {e}\n")
-        return -10.0

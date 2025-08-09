@@ -218,7 +218,8 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     ##### move legs #####
 
     try: # try to update leg gait
-        #logging.info(f"(fundamental_movement.py): Executed move_direction() with intensity: {intensity}\n")
+        # TODO somehow move legs after model has been activated
+        logging.info(f"(fundamental_movement.py): Executed move_direction() with intensity: {intensity}\n")
         time.sleep(0.1) # wait for legs to reach positions
 
     except Exception as e: # if gait update fails...
@@ -556,7 +557,7 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
         )
         ARTICULATION_CONTROLLER.apply_action(action)
         
-        #logging.debug(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim\n")
+        logging.debug(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim\n")
         
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to apply AI agent joint angles for Isaac Sim: {e}\n")
@@ -608,7 +609,7 @@ def _neutral_position_isaac():
             ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
         ]
         
-        #logging.info("(fundamental_movement.py): Moving all joints to neutral position in Isaac Sim...\n")
+        logging.info("(fundamental_movement.py): Moving all joints to neutral position in Isaac Sim...\n")
         
         # Set all joint positions at once
         for leg_id, joint_name in joint_order:

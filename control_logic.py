@@ -109,13 +109,22 @@ def set_isaac_dependencies():
     if CAMERA_PROCESS is None:
         logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
 
-    if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
-        SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
-        COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
-        if SOCK is None:
-            logging.error("(control_logic.py): Failed to initialize SOCK for robot!\n")
-        if COMMAND_QUEUE is None:
-            logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
+    # Create RL command queue for Isaac Sim (similar to web command queue)
+    try:
+        COMMAND_QUEUE = queue.Queue()  # Create RL command queue
+        logging.info("(control_logic.py): RL command queue initialized successfully for Isaac Sim.\n")
+    except Exception as e:
+        logging.error(f"(control_logic.py): Failed to initialize RL command queue: {e}\n")
+        COMMAND_QUEUE = None
+
+    # TODO dont remove the commented out code below, I may need it someday
+    #if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+        #SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
+        #COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+        #if SOCK is None:
+            #logging.error("(control_logic.py): Failed to initialize SOCK for robot!\n")
+        #if COMMAND_QUEUE is None:
+            #logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
 
 def set_pybullet_dependencies():
 
@@ -215,23 +224,17 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
     ##### run robotic logic #####
 
-    if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
-        try:  # try to run robot startup sequence
-            squatting_position(1)
-            time.sleep(3)
-            # tippytoes_position(1)
-            # time.sleep(3)
-            neutral_position(1)
-            time.sleep(3)
-            IS_NEUTRAL = True  # set is_neutral to True
-            time.sleep(3)  # wait for 3 seconds
-
-        except Exception as e:  # if there is an error, log error
-            logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
-
-    elif config.USE_SIMULATION and config.USE_ISAAC_SIM: # if isaac sim...
+    if config.USE_SIMULATION and config.USE_ISAAC_SIM: # if isaac sim...
         for _ in range(3):  # let isaac sim load a few steps for general process
             config.ISAAC_WORLD.step(render=True)
+
+    try:  # try to run robot startup sequence
+        neutral_position(1)
+        time.sleep(3)
+        IS_NEUTRAL = True  # set is_neutral to True
+
+    except Exception as e:  # if there is an error, log error
+        logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
     ##### stream video, run inference, and control the robot #####
 
@@ -246,23 +249,55 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 )
                 command = None  # initially no command
 
-            # TODO create a way for isaac sim to collect frames as well as commands for RL agent
+            # Isaac Sim - collect frames and check for RL agent commands
             if config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if isaac sim...
 
                 mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
                     CAMERA_PROCESS
                 )
                 command = None  # initially no command
+                
+                # Generate RL commands if queue is empty and robot is ready for new commands
+                if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
+                    from training.isaac_sim import run_rl_episode_step
+                    step_info = run_rl_episode_step(COMMAND_QUEUE)
+                    logging.debug(f"(control_logic.py): Generated RL command: {step_info['command']} with intensity {step_info['intensity']}\n")
+                
+                # Check RL command queue for Isaac Sim
+                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
+                    command_data = COMMAND_QUEUE.get()  # Get command data from RL queue
+                    if command_data is not None:
+                        # Extract command and intensity from RL command data
+                        rl_command = command_data.get('command')
+                        rl_intensity = command_data.get('intensity')  # Get intensity from RL agent
+                        
+                        # Convert RL command format to web command format for consistency
+                        if rl_command is None:
+                            command = 'n'  # Neutral command
+                        else:
+                            command = rl_command  # Use RL command directly
+                        
+                        # Store intensity for later use (should always be present from RL agent)
+                        if rl_intensity is not None:
+                            config.RL_COMMAND_INTENSITY = rl_intensity
+                        else:
+                            # Fallback if intensity is missing (shouldn't happen)
+                            config.RL_COMMAND_INTENSITY = 5
+                            logging.warning(f"(control_logic.py): RL command missing intensity, using default 5\n")
+                        
+                        if IS_COMPLETE:
+                            logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (WILL RUN).\n")
+                        else:
+                            logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (BLOCKED).\n")
 
                 # TODO get start pose of robot, may need to move to foundational movement
                 #prev_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
 
             if config.CONTROL_MODE == 'web': # if web control enabled...
 
-                #if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
-                    #internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
-
-                internet.stream_to_backend(SOCK, streamed_frame)
+                if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
+                    internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
+                #internet.stream_to_backend(SOCK, streamed_frame)
 
                 if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty(): # if command queue is not empty...
                     command = COMMAND_QUEUE.get() # get command from queue
@@ -279,13 +314,8 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     logging.debug(f"(control_logic.py): Processing radio commands: {commands}\n")
                     threading.Thread(target=_handle_command, args=(commands, inference_frame), daemon=True).start()
 
-            # RL TRAINING MODE (Isaac Sim only)
-            if config.CONTROL_MODE == 'rl_training' and config.USE_SIMULATION and config.USE_ISAAC_SIM:
-                if IS_COMPLETE:  # if movement is complete, get next RL action
-                    threading.Thread(target=_handle_rl_training, args=(inference_frame,), daemon=True).start()
-
-            # WEB COMMAND HANDLING
-            elif command and IS_COMPLETE: # if command present and movement complete...
+            # WEB COMMAND HANDLING (includes RL commands for Isaac Sim)
+            if command and IS_COMPLETE: # if command present and movement complete...
                 #logging.debug(f"(control_logic.py): Running command: {command}...\n")
                 threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
 
@@ -302,9 +332,9 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     # Process queued movements for Isaac Sim (avoid PhysX threading violations)
                     process_isaac_movement_queue()
 
-                    # RL training integration - track state and compute rewards
-                    if config.CONTROL_MODE == 'rl_training':
-                        _process_rl_step()
+                    # TODO compute reward, may need to move to foundational movement
+                    #curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
+                    #reward = compute_reward('/World/my_robot/base_link', prev_pose, curr_pose, command, intensity)
 
                 else:
                     pybullet.stepSimulation()
@@ -374,12 +404,21 @@ def _handle_command(command, frame):
     elif config.CONTROL_MODE == 'web':
         try:
             #logging.debug(f"(control_logic.py): Executing keyboard command: {keys}\n")
+            
+            # Use RL intensity if available (for Isaac Sim), otherwise use default
+            if config.USE_SIMULATION and config.USE_ISAAC_SIM and hasattr(config, 'RL_COMMAND_INTENSITY'):
+                intensity = config.RL_COMMAND_INTENSITY
+                # Clear the RL intensity after use
+                delattr(config, 'RL_COMMAND_INTENSITY')
+            else:
+                intensity = config.DEFAULT_INTENSITY
+            
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
                 keys,
                 frame,
                 IS_NEUTRAL,
                 CURRENT_LEG,
-                config.DEFAULT_INTENSITY
+                intensity
             )
             logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
             IS_COMPLETE = True
@@ -409,47 +448,63 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
     if 'arrowup' in keys and 'arrowdown' in keys:
         keys = [k for k in keys if k not in ['arrowup', 'arrowdown']]
 
-    # movement direction logic
-    direction = None
+    # build direction parts list (similar to radio commands)
+    direction_parts = []
 
     # movement (WASD and diagonals)
-    if 'w' in keys and 'd' in keys:
-        direction = 'w+d'
-    elif 'w' in keys and 'a' in keys:
-        direction = 'w+a'
-    elif 's' in keys and 'd' in keys:
-        direction = 's+d'
-    elif 's' in keys and 'a' in keys:
-        direction = 's+a'
-    elif 'w' in keys:
-        direction = 'w'
-    elif 's' in keys:
-        direction = 's'
-    elif 'a' in keys:
-        direction = 'a'
-    elif 'd' in keys:
-        direction = 'd'
+    move_forward = 'w' in keys
+    move_backward = 's' in keys
+    shift_left = 'a' in keys
+    shift_right = 'd' in keys
 
-    # rotation (arrow keys)
-    if 'arrowleft' in keys:
-        direction = 'arrowleft'
-    elif 'arrowright' in keys:
-        direction = 'arrowright'
+    # rotation (arrow left/right)
+    rotate_left = 'arrowleft' in keys
+    rotate_right = 'arrowright' in keys
 
     # tilt (arrow up/down)
-    if 'arrowup' in keys:
-        direction = 'arrowup'
-    elif 'arrowdown' in keys:
-        direction = 'arrowdown'
+    tilt_up = 'arrowup' in keys
+    tilt_down = 'arrowdown' in keys
+
+    # handle diagonal movements (combine w/s with a/d)
+    if move_forward and shift_left:
+        direction_parts.append('w+a')
+    elif move_forward and shift_right:
+        direction_parts.append('w+d')
+    elif move_backward and shift_left:
+        direction_parts.append('s+a')
+    elif move_backward and shift_right:
+        direction_parts.append('s+d')
+    # handle single movements
+    elif move_forward:
+        direction_parts.append('w')
+    elif move_backward:
+        direction_parts.append('s')
+    elif shift_left:
+        direction_parts.append('a')
+    elif shift_right:
+        direction_parts.append('d')
+
+    # handle rotation (can combine with movement)
+    if rotate_left:
+        direction_parts.append('arrowleft')
+    elif rotate_right:
+        direction_parts.append('arrowright')
+
+    # handle tilt (can combine with movement and rotation)
+    if tilt_up:
+        direction_parts.append('arrowup')
+    elif tilt_down:
+        direction_parts.append('arrowdown')
+
+    # combine all direction parts
+    direction = None
+    if direction_parts:
+        direction = '+'.join(direction_parts)
 
     # neutral and special actions
     if 'n' in keys or not keys:
         neutral_position(10)
         is_neutral = True
-    elif ' ' in keys:
-        logging.debug(f"(control_logic.py): space: LIE DOWN\n")
-        squatting_position(1)
-        is_neutral = False
     elif direction:
         #logging.debug(f"(control_logic.py): {keys}: {direction}\n")
         # Use trot_forward for all modes (now supports Isaac Sim queue system)
@@ -617,7 +672,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
     return is_neutral, current_leg
 
 
-########## EXECUTE KEYBOARD COMMANDS ##########
+########## ROBOTIC PROCESS ##########
 
 ##### run robotic process #####
 
@@ -658,134 +713,3 @@ def voltage_monitor():
 #voltage_thread = threading.Thread(target=voltage_monitor, daemon=True) # TODO clean up your messy code first!
 #voltage_thread.start()
 _perception_loop(CHANNEL_DATA)  # run robot process
-
-
-########## RL TRAINING INTEGRATION ##########
-
-# RL training state variables
-RL_PREVIOUS_STATE = None
-RL_CURRENT_COMMAND = 'w'  # Default command for training
-RL_EPISODE_STEP = 0
-RL_MAX_EPISODE_STEPS = 1000
-RL_EPISODE_COUNT = 0
-
-def _handle_rl_training(frame):
-    """
-    Handle RL training - get action from agent and execute it.
-    This replaces manual command handling during RL training.
-    """
-    global IS_COMPLETE, IS_NEUTRAL, RL_CURRENT_COMMAND, RL_EPISODE_STEP
-    
-    IS_COMPLETE = False  # block new actions until movement is complete
-    
-    try:
-        # Import RL functions
-        from training.isaac_sim import get_robot_state, get_rl_action_blind, should_terminate_episode, reset_robot_state
-        
-        # Get current robot state
-        current_state = get_robot_state()
-        
-        # Check if episode should terminate
-        should_terminate, reason = should_terminate_episode()
-        if should_terminate:
-            logging.info(f"(control_logic.py): RL episode terminated - {reason}. Resetting robot.\n")
-            reset_robot_state()
-            global RL_EPISODE_COUNT, RL_EPISODE_STEP
-            RL_EPISODE_COUNT += 1
-            RL_EPISODE_STEP = 0
-            IS_COMPLETE = True
-            IS_NEUTRAL = True
-            return
-        
-        # Get action from RL agent (currently using random placeholder)
-        target_angles, mid_angles, movement_rates = get_rl_action_blind(
-            current_state, 
-            RL_CURRENT_COMMAND, 
-            config.DEFAULT_INTENSITY
-        )
-        
-        # Apply the action using existing movement system
-        if config.USE_ISAAC_SIM:
-            # Import Isaac Sim RL functions
-            from training.isaac_sim import get_rl_action_standard, get_rl_action_blind
-            from movement.fundamental_movement import apply_joint_angles_isaac
-            
-            # Apply the joint angles directly
-            apply_joint_angles_isaac(
-                config.SERVO_CONFIG,
-                mid_angles,
-                target_angles,
-                movement_rates
-            )
-            
-        logging.debug(f"(control_logic.py): Applied RL action for episode {RL_EPISODE_COUNT}, step {RL_EPISODE_STEP}\n")
-        RL_EPISODE_STEP += 1
-        IS_COMPLETE = True
-        IS_NEUTRAL = False
-        
-        # Check if max episode steps reached
-        if RL_EPISODE_STEP >= RL_MAX_EPISODE_STEPS:
-            logging.info(f"(control_logic.py): Max episode steps reached. Resetting robot.\n")
-            reset_robot_state()
-            RL_EPISODE_COUNT += 1
-            RL_EPISODE_STEP = 0
-            IS_NEUTRAL = True
-        
-    except Exception as e:
-        logging.error(f"(control_logic.py): Failed to handle RL training: {e}\n")
-        IS_COMPLETE = True
-
-
-def _process_rl_step():
-    """
-    Process RL state tracking and reward computation after each simulation step.
-    This runs every loop iteration during RL training.
-    """
-    global RL_PREVIOUS_STATE
-    
-    try:
-        if config.CONTROL_MODE != 'rl_training':
-            return
-            
-        # Import RL functions
-        from training.isaac_sim import get_robot_state, compute_rl_reward
-        
-        # Get current state
-        current_state = get_robot_state()
-        
-        # Compute reward if we have a previous state
-        if RL_PREVIOUS_STATE is not None and current_state is not None:
-            reward = compute_rl_reward(
-                RL_PREVIOUS_STATE, 
-                current_state, 
-                None,  # Action not needed for basic reward
-                RL_CURRENT_COMMAND
-            )
-            
-            # Log reward occasionally for monitoring
-            if RL_EPISODE_STEP % 50 == 0:  # Every 50 steps
-                logging.info(f"(control_logic.py): RL Episode {RL_EPISODE_COUNT}, Step {RL_EPISODE_STEP}, Reward: {reward:.3f}, Height: {current_state['height']:.3f}m\n")
-        
-        # Update previous state for next iteration
-        RL_PREVIOUS_STATE = current_state
-        
-    except Exception as e:
-        logging.error(f"(control_logic.py): Failed to process RL step: {e}\n")
-
-
-def set_rl_training_mode(enabled=True, command='w'):
-    """
-    Enable or disable RL training mode.
-    Args:
-        enabled: Whether to enable RL training mode
-        command: Default command for training ('w', 's', 'a', 'd', etc.)
-    """
-    global RL_CURRENT_COMMAND
-    
-    if enabled:
-        config.CONTROL_MODE = 'rl_training'
-        RL_CURRENT_COMMAND = command
-        logging.info(f"(control_logic.py): RL training mode enabled with command '{command}'\n")
-    else:
-        config.CONTROL_MODE = 'web'  # Default back to web mode
-        logging.info("(control_logic.py): RL training mode disabled\n")
