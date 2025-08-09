@@ -179,8 +179,7 @@ def get_rl_action_blind(state, commands, intensity):
         movement_rates: dict of movement rate parameters for each leg.
     TODO: Replace this with a call to your RL agent's policy/model (no image input).
     """
-    import random
-    
+    # For now, just return the current angles as both mid and target (no movement)
     target_angles = {}
     mid_angles = {}
     movement_rates = {}
@@ -188,25 +187,12 @@ def get_rl_action_blind(state, commands, intensity):
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
         target_angles[leg_id] = {}
         mid_angles[leg_id] = {}
-        movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}  # 1 rad/s, 0.5 rad/s²
+        movement_rates[leg_id] = {'speed': 1000, 'acceleration': 255}
         
         for joint_name in ['hip', 'upper', 'lower']:
-            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-            
-            # Get the valid range for this joint
-            full_back_angle = servo_data['FULL_BACK_ANGLE']  # Already in radians
-            full_front_angle = servo_data['FULL_FRONT_ANGLE']  # Already in radians
-            
-            # Ensure we have the correct order (back < front)
-            min_angle = min(full_back_angle, full_front_angle)
-            max_angle = max(full_back_angle, full_front_angle)
-            
-            # Generate random angles within the valid range
-            target_angle = random.uniform(min_angle, max_angle)
-            mid_angle = random.uniform(min_angle, max_angle)
-            
-            target_angles[leg_id][joint_name] = target_angle
-            mid_angles[leg_id][joint_name] = mid_angle
+            current_angle = config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']
+            target_angles[leg_id][joint_name] = current_angle
+            mid_angles[leg_id][joint_name] = current_angle
     
     return target_angles, mid_angles, movement_rates
 

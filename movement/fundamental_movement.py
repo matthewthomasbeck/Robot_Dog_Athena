@@ -563,6 +563,54 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
         logging.error(f"(fundamental_movement.py): Failed to apply AI agent joint angles for Isaac Sim: {e}\n")
 
 
+########## RANDOM ACTION FUNCTION (FOR TESTING) ##########
+
+def get_random_action(state, commands, intensity):
+    """
+    Generate random joint movements for testing purposes.
+    This function was moved from get_rl_action_blind to preserve random movement capability.
+    
+    Args:
+        state: The current state of the robot/simulation (to be defined).
+        commands: The movement commands.
+        intensity: The movement intensity.
+    Returns:
+        target_angles: dict of target joint angles for each leg (similar to SERVO_CONFIG structure).
+        mid_angles: dict of mid joint angles for each leg (similar to SERVO_CONFIG structure).
+        movement_rates: dict of movement rate parameters for each leg.
+    """
+    import random
+    
+    target_angles = {}
+    mid_angles = {}
+    movement_rates = {}
+    
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        target_angles[leg_id] = {}
+        mid_angles[leg_id] = {}
+        movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}  # 1 rad/s, 0.5 rad/s²
+        
+        for joint_name in ['hip', 'upper', 'lower']:
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            
+            # Get the valid range for this joint
+            full_back_angle = servo_data['FULL_BACK_ANGLE']  # Already in radians
+            full_front_angle = servo_data['FULL_FRONT_ANGLE']  # Already in radians
+            
+            # Ensure we have the correct order (back < front)
+            min_angle = min(full_back_angle, full_front_angle)
+            max_angle = max(full_back_angle, full_front_angle)
+            
+            # Generate random angles within the valid range
+            target_angle = random.uniform(min_angle, max_angle)
+            mid_angle = random.uniform(min_angle, max_angle)
+            
+            target_angles[leg_id][joint_name] = target_angle
+            mid_angles[leg_id][joint_name] = mid_angle
+    
+    return target_angles, mid_angles, movement_rates
+
+
 ########## NEUTRAL POSITION FUNCTIONS ##########
 
 def neutral_position(intensity):
