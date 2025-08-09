@@ -279,8 +279,13 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     logging.debug(f"(control_logic.py): Processing radio commands: {commands}\n")
                     threading.Thread(target=_handle_command, args=(commands, inference_frame), daemon=True).start()
 
+            # RL TRAINING MODE (Isaac Sim only)
+            if config.CONTROL_MODE == 'rl_training' and config.USE_SIMULATION and config.USE_ISAAC_SIM:
+                if IS_COMPLETE:  # if movement is complete, get next RL action
+                    threading.Thread(target=_handle_rl_training, args=(inference_frame,), daemon=True).start()
+
             # WEB COMMAND HANDLING
-            if command and IS_COMPLETE: # if command present and movement complete...
+            elif command and IS_COMPLETE: # if command present and movement complete...
                 #logging.debug(f"(control_logic.py): Running command: {command}...\n")
                 threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
 
@@ -297,9 +302,9 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     # Process queued movements for Isaac Sim (avoid PhysX threading violations)
                     process_isaac_movement_queue()
 
-                    # TODO compute reward, may need to move to foundational movement
-                    #curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
-                    #reward = compute_reward('/World/my_robot/base_link', prev_pose, curr_pose, command, intensity)
+                    # RL training integration - track state and compute rewards
+                    if config.CONTROL_MODE == 'rl_training':
+                        _process_rl_step()
 
                 else:
                     pybullet.stepSimulation()
@@ -653,3 +658,134 @@ def voltage_monitor():
 #voltage_thread = threading.Thread(target=voltage_monitor, daemon=True) # TODO clean up your messy code first!
 #voltage_thread.start()
 _perception_loop(CHANNEL_DATA)  # run robot process
+
+
+########## RL TRAINING INTEGRATION ##########
+
+# RL training state variables
+RL_PREVIOUS_STATE = None
+RL_CURRENT_COMMAND = 'w'  # Default command for training
+RL_EPISODE_STEP = 0
+RL_MAX_EPISODE_STEPS = 1000
+RL_EPISODE_COUNT = 0
+
+def _handle_rl_training(frame):
+    """
+    Handle RL training - get action from agent and execute it.
+    This replaces manual command handling during RL training.
+    """
+    global IS_COMPLETE, IS_NEUTRAL, RL_CURRENT_COMMAND, RL_EPISODE_STEP
+    
+    IS_COMPLETE = False  # block new actions until movement is complete
+    
+    try:
+        # Import RL functions
+        from training.isaac_sim import get_robot_state, get_rl_action_blind, should_terminate_episode, reset_robot_state
+        
+        # Get current robot state
+        current_state = get_robot_state()
+        
+        # Check if episode should terminate
+        should_terminate, reason = should_terminate_episode()
+        if should_terminate:
+            logging.info(f"(control_logic.py): RL episode terminated - {reason}. Resetting robot.\n")
+            reset_robot_state()
+            global RL_EPISODE_COUNT, RL_EPISODE_STEP
+            RL_EPISODE_COUNT += 1
+            RL_EPISODE_STEP = 0
+            IS_COMPLETE = True
+            IS_NEUTRAL = True
+            return
+        
+        # Get action from RL agent (currently using random placeholder)
+        target_angles, mid_angles, movement_rates = get_rl_action_blind(
+            current_state, 
+            RL_CURRENT_COMMAND, 
+            config.DEFAULT_INTENSITY
+        )
+        
+        # Apply the action using existing movement system
+        if config.USE_ISAAC_SIM:
+            # Import Isaac Sim RL functions
+            from training.isaac_sim import get_rl_action_standard, get_rl_action_blind
+            from movement.fundamental_movement import apply_joint_angles_isaac
+            
+            # Apply the joint angles directly
+            apply_joint_angles_isaac(
+                config.SERVO_CONFIG,
+                mid_angles,
+                target_angles,
+                movement_rates
+            )
+            
+        logging.debug(f"(control_logic.py): Applied RL action for episode {RL_EPISODE_COUNT}, step {RL_EPISODE_STEP}\n")
+        RL_EPISODE_STEP += 1
+        IS_COMPLETE = True
+        IS_NEUTRAL = False
+        
+        # Check if max episode steps reached
+        if RL_EPISODE_STEP >= RL_MAX_EPISODE_STEPS:
+            logging.info(f"(control_logic.py): Max episode steps reached. Resetting robot.\n")
+            reset_robot_state()
+            RL_EPISODE_COUNT += 1
+            RL_EPISODE_STEP = 0
+            IS_NEUTRAL = True
+        
+    except Exception as e:
+        logging.error(f"(control_logic.py): Failed to handle RL training: {e}\n")
+        IS_COMPLETE = True
+
+
+def _process_rl_step():
+    """
+    Process RL state tracking and reward computation after each simulation step.
+    This runs every loop iteration during RL training.
+    """
+    global RL_PREVIOUS_STATE
+    
+    try:
+        if config.CONTROL_MODE != 'rl_training':
+            return
+            
+        # Import RL functions
+        from training.isaac_sim import get_robot_state, compute_rl_reward
+        
+        # Get current state
+        current_state = get_robot_state()
+        
+        # Compute reward if we have a previous state
+        if RL_PREVIOUS_STATE is not None and current_state is not None:
+            reward = compute_rl_reward(
+                RL_PREVIOUS_STATE, 
+                current_state, 
+                None,  # Action not needed for basic reward
+                RL_CURRENT_COMMAND
+            )
+            
+            # Log reward occasionally for monitoring
+            if RL_EPISODE_STEP % 50 == 0:  # Every 50 steps
+                logging.info(f"(control_logic.py): RL Episode {RL_EPISODE_COUNT}, Step {RL_EPISODE_STEP}, Reward: {reward:.3f}, Height: {current_state['height']:.3f}m\n")
+        
+        # Update previous state for next iteration
+        RL_PREVIOUS_STATE = current_state
+        
+    except Exception as e:
+        logging.error(f"(control_logic.py): Failed to process RL step: {e}\n")
+
+
+def set_rl_training_mode(enabled=True, command='w'):
+    """
+    Enable or disable RL training mode.
+    Args:
+        enabled: Whether to enable RL training mode
+        command: Default command for training ('w', 's', 'a', 'd', etc.)
+    """
+    global RL_CURRENT_COMMAND
+    
+    if enabled:
+        config.CONTROL_MODE = 'rl_training'
+        RL_CURRENT_COMMAND = command
+        logging.info(f"(control_logic.py): RL training mode enabled with command '{command}'\n")
+    else:
+        config.CONTROL_MODE = 'web'  # Default back to web mode
+        logging.info("(control_logic.py): RL training mode disabled\n")
