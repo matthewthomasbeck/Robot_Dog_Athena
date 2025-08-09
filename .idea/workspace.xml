@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Saving progress for today" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added world rose">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -165,6 +172,8 @@
       <workItem from="1754702478333" duration="655000" />
       <workItem from="1754707574859" duration="85000" />
       <workItem from="1754709878166" duration="52000" />
+      <workItem from="1754757364753" duration="1217000" />
+      <workItem from="1754769972819" duration="1000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -305,14 +314,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00071" summary="Fixed the World/robot/ import error by adding correct path and purging default names">
-      <option name="closed" value="true" />
-      <created>1753718585567</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1753718585567</updated>
     </task>
     <task id="LOCAL-00072" summary="Fixed articulation paths, robot is (mostly) importing but I need to continue researching and bug-fixing to get all parts importing in">
       <option name="closed" value="true" />
@@ -538,7 +539,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754709920898</updated>
     </task>
-    <option name="localTasksCounter" value="100" />
+    <task id="LOCAL-00100" summary="Added world rose">
+      <option name="closed" value="true" />
+      <created>1754757377251</created>
+      <option name="number" value="00100" />
+      <option name="presentableId" value="LOCAL-00100" />
+      <option name="project" value="LOCAL" />
+      <updated>1754757377251</updated>
+    </task>
+    <option name="localTasksCounter" value="101" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -556,7 +565,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="This code does not work, but saving before ditching articulation objects in favor of higher level fucntions like set_joint_position to move in isaac sim" />
     <MESSAGE value="Solved basic implementation of articulation, I was trying to move before initialization like a doofus" />
     <MESSAGE value="Solved cv2 dependency issue in isaac, going to try to solve '(control_logic.py): Unexpected exception in main loop: cannot access local variable 'command' where it is not associated with a value' next" />
     <MESSAGE value="Got isaac sim camera imported (I think? lmao), logging is somehow broken" />
@@ -581,7 +589,8 @@
     <MESSAGE value="Added a bunch of RL functions and toned down the debug noise a bit" />
     <MESSAGE value="Successfully set up random command pipeline for RL agent" />
     <MESSAGE value="Saving progress for today" />
-    <option name="LAST_COMMIT_MESSAGE" value="Saving progress for today" />
+    <MESSAGE value="Added world rose" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added world rose" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

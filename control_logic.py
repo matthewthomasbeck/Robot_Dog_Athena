@@ -266,7 +266,7 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
                     from training.isaac_sim import run_rl_episode_step
                     step_info = run_rl_episode_step(COMMAND_QUEUE)
-                    logging.debug(f"(control_logic.py): Generated RL command: {step_info['command']} with intensity {step_info['intensity']}\n")
+                    #logging.debug(f"(control_logic.py): Generated RL command: {step_info['command']} with intensity {step_info['intensity']}\n")
                 
                 # Check RL command queue for Isaac Sim
                 if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
@@ -337,9 +337,26 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                     # Process queued movements for Isaac Sim (avoid PhysX threading violations)
                     process_isaac_movement_queue()
 
-                    # TODO compute reward, may need to move to foundational movement
-                    #curr_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
-                    #reward = compute_reward('/World/my_robot/base_link', prev_pose, curr_pose, command, intensity)
+                    # Compute reward for RL training
+                    if command and IS_COMPLETE:
+                        # Get intensity for reward calculation
+                        if hasattr(config, 'RL_COMMAND_INTENSITY'):
+                            intensity = config.RL_COMMAND_INTENSITY
+                        else:
+                            intensity = config.DEFAULT_INTENSITY if hasattr(config, 'DEFAULT_INTENSITY') else 5
+                        
+                        # Calculate reward for this step
+                        from training.isaac_sim import get_step_reward
+                        reward = get_step_reward(command, intensity)
+                        
+                        # Log reward for monitoring training
+                        if reward != 0.0:
+                            logging.info(f"(control_logic.py): Command '{command}' reward: {reward:.3f}\n")
+                        
+                        # SB3 PPO Learning Integration
+                        from training.isaac_sim import update_learning_from_perception_loop
+                        episode_done = reward <= -100.0  # Episode ends if robot falls (gets -100 penalty)
+                        update_learning_from_perception_loop(reward, episode_done)
 
                 else:
                     pybullet.stepSimulation()

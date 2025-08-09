@@ -1,4 +1,910 @@
-2025-08-09 11:35:38 INFO: (log.py): Logging setup complete.
+2025-08-09 16:18:56 INFO: (log.py): Logging setup complete.
 
-2025-08-09 11:35:47 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+2025-08-09 16:19:05 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+
+2025-08-09 16:19:05 INFO: (control_logic.py) Coordinate frames created for robot orientation tracking.
+
+2025-08-09 16:19:05 INFO: (camera.py): Successfully killed existing camera processes.
+
+2025-08-09 16:19:06 INFO: (camera.py) Computed aperture size for isaac camera.
+
+2025-08-09 16:19:06 INFO: (camera.py) Computed focal length for isaac camera.
+
+2025-08-09 16:19:06 INFO: (camera.py) Applied optics to isaac camera.
+
+2025-08-09 16:19:06 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-09 16:19:06 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+
+2025-08-09 16:19:09 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:10 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:10 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:10 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:10 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:11 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:11 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:11 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:11 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:12 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:12 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:12 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:12 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:12 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:12 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:12 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:13 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:13 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:13 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:13 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:14 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:14 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:14 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:14 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:14 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:14 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:14 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:15 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:15 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:15 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:15 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:16 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:16 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:16 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:16 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:16 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:16 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:16 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:17 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:17 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:17 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:17 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:18 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:18 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:18 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:18 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:18 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:18 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:18 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:19 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:19 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:19 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:19 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:20 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:20 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:20 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:20 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:20 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:20 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:20 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:20 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:20 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:21 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:21 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:21 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:21 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:22 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:22 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:22 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:22 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:22 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:22 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:22 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:22 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:22 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:23 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:23 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:23 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:23 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:24 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:24 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:24 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:24 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:24 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:24 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:24 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:24 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:24 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:25 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:25 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:25 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:25 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:25 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:26 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:26 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:26 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:26 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:27 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:27 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:27 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:27 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:28 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:28 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:28 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:28 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:29 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:29 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:29 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:29 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:30 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:30 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:30 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:30 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:31 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:31 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:31 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:31 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:31 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:31 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:31 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:31 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:31 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:32 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:32 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:32 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:32 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:33 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:33 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:33 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:33 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:34 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:34 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:34 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:34 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:35 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:35 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:35 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:35 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:36 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:36 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:36 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:36 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:37 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:37 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:37 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:37 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:38 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:38 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:38 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:38 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:39 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:39 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:39 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:39 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:40 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:40 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:40 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:40 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:41 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:41 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:41 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:41 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:42 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:42 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:42 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:42 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:43 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:43 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:43 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:43 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:43 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:43 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:43 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:43 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:43 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:44 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:44 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:44 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Received RL command 'n' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Command 'n' reward: 0.100
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:44 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:45 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:45 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:45 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:45 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:46 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:46 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:46 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:46 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:47 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:47 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:47 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:47 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:48 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:48 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:48 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:48 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:49 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:49 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:49 INFO: (control_logic.py): Executed keyboard command: ['w']
+
+2025-08-09 16:19:49 INFO: (isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.
+
+2025-08-09 16:19:50 INFO: (isaac_sim.py): Episode reset complete - World and robot state reset.
+
+2025-08-09 16:19:50 INFO: (control_logic.py): Executed keyboard command: []
+
+2025-08-09 16:19:50 INFO: (control_logic.py): Received RL command 'w' with intensity 10 (WILL RUN).
+
+2025-08-09 16:19:50 INFO: (control_logic.py): Executed keyboard command: ['w']
 

@@ -122,9 +122,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
     ##### run inference before moving #####
 
-    logging.debug(
-        f"(fundamental_movement.py): Running inference for command(s) {commands} with intensity {intensity}...\n"
-    )
+    # logging.debug(
+    #     f"(fundamental_movement.py): Running inference for command(s) {commands} with intensity {intensity}...\n"
+    # )
     try: # try to run a model
         if not config.USE_SIMULATION: # if user wants to use real servos...
             if config.RL_NOT_CNN: # if running gait adjustment (production)...
@@ -177,13 +177,34 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
                 ##### rl agent integration point #####
                 # gather state for RL agent (define get_simulation_state later if needed)
-                state = None # TODO replace with actual state extraction if needed
+                current_angles = {
+                    'FL': {
+                        'hip': config.SERVO_CONFIG['FL']['hip']['CURRENT_ANGLE'],
+                        'upper': config.SERVO_CONFIG['FL']['upper']['CURRENT_ANGLE'],
+                        'lower': config.SERVO_CONFIG['FL']['lower']['CURRENT_ANGLE']
+                    },
+                    'FR': {
+                        'hip': config.SERVO_CONFIG['FR']['hip']['CURRENT_ANGLE'],
+                        'upper': config.SERVO_CONFIG['FR']['upper']['CURRENT_ANGLE'],
+                        'lower': config.SERVO_CONFIG['FR']['lower']['CURRENT_ANGLE']
+                    },
+                    'BL': {
+                        'hip': config.SERVO_CONFIG['BL']['hip']['CURRENT_ANGLE'],
+                        'upper': config.SERVO_CONFIG['BL']['upper']['CURRENT_ANGLE'],
+                        'lower': config.SERVO_CONFIG['BL']['lower']['CURRENT_ANGLE']
+                    },
+                    'BR': {
+                        'hip': config.SERVO_CONFIG['BR']['hip']['CURRENT_ANGLE'],
+                        'upper': config.SERVO_CONFIG['BR']['upper']['CURRENT_ANGLE'],
+                        'lower': config.SERVO_CONFIG['BR']['lower']['CURRENT_ANGLE']
+                    }
+                }
                 # Import Isaac Sim RL functions
                 from training.isaac_sim import get_rl_action_standard, get_rl_action_blind
                 
                 if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
                     target_angles, mid_angles, movement_rates = get_rl_action_standard(
-                        state,
+                        current_angles,
                         commands,
                         intensity,
                         frame
@@ -193,13 +214,13 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                     )
                 elif imageless_gait:  # if using imageless gait adjustment (no image)...
                     target_angles, mid_angles, movement_rates = get_rl_action_blind(
-                        state,
+                        current_angles,
                         commands,
                         intensity
                     )
-                    logging.warning(
-                        "(fundamental_movement.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
-                    )
+                    #logging.warning(
+                    #    "(fundamental_movement.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
+                    #)
 
                 ##### apply direct joint control for Isaac Sim #####
 
@@ -210,7 +231,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                     target_angles,
                     movement_rates
                 )
-                logging.debug(f"(fundamental_movement.py): Applied joint angles for Isaac Sim: {commands}\n")
+                # logging.debug(f"(fundamental_movement.py): Applied joint angles for Isaac Sim: {commands}\n")
 
     except Exception as e: # if either model fails...
         logging.error(f"(fundamental_movement.py): Failed to run AI for command: {e}\n")
@@ -219,7 +240,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
     try: # try to update leg gait
         # TODO somehow move legs after model has been activated
-        logging.info(f"(fundamental_movement.py): Executed move_direction() with intensity: {intensity}\n")
+        # logging.info(f"(fundamental_movement.py): Executed move_direction() with intensity: {intensity}\n")
         time.sleep(0.1) # wait for legs to reach positions
 
     except Exception as e: # if gait update fails...
@@ -557,7 +578,7 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
         )
         ARTICULATION_CONTROLLER.apply_action(action)
         
-        logging.debug(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim\n")
+        # logging.debug(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim\n")
         
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to apply AI agent joint angles for Isaac Sim: {e}\n")
@@ -657,7 +678,7 @@ def _neutral_position_isaac():
             ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
         ]
         
-        logging.info("(fundamental_movement.py): Moving all joints to neutral position in Isaac Sim...\n")
+        # logging.info("(fundamental_movement.py): Moving all joints to neutral position in Isaac Sim...\n")
         
         # Set all joint positions at once
         for leg_id, joint_name in joint_order:
@@ -683,7 +704,7 @@ def _neutral_position_isaac():
         )
         ARTICULATION_CONTROLLER.apply_action(action)
         
-        logging.info("(fundamental_movement.py): Applied all joints to neutral positions\n")
+        # logging.info("(fundamental_movement.py): Applied all joints to neutral positions\n")
         
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to move all joints to neutral: {e}\n")

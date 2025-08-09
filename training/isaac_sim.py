@@ -166,35 +166,180 @@ def get_rl_action_standard(state, commands, intensity, frame):
     return target_angles, mid_angles, movement_rates
 
 
-def get_rl_action_blind(state, commands, intensity):
+def get_rl_action_blind(current_angles, commands, intensity):
     """
-    Placeholder for RL agent's policy WITHOUT image input (imageless gait adjustment).
+    SB3 PPO RL agent's policy WITHOUT image input (imageless gait adjustment).
     Args:
-        state: The current state of the robot/simulation (to be defined).
-        commands: The movement commands.
-        intensity: The movement intensity.
+        current_angles: Current joint angles in SERVO_CONFIG format
+        commands: The movement commands (e.g., 'w', 'w+arrowleft', etc.)
+        intensity: The movement intensity (1-10)
     Returns:
         target_angles: dict of target joint angles for each leg (similar to SERVO_CONFIG structure).
         mid_angles: dict of mid joint angles for each leg (similar to SERVO_CONFIG structure).
         movement_rates: dict of movement rate parameters for each leg.
-    TODO: Replace this with a call to your RL agent's policy/model (no image input).
     """
-    # For now, just return the current angles as both mid and target (no movement)
-    target_angles = {}
-    mid_angles = {}
-    movement_rates = {}
+    import numpy as np
+    import utilities.config as config
     
-    for leg_id in ['FL', 'FR', 'BL', 'BR']:
-        target_angles[leg_id] = {}
-        mid_angles[leg_id] = {}
-        movement_rates[leg_id] = {'speed': 1000, 'acceleration': 255}
+    try:
+        ##### INITIALIZE SB3 PPO MODEL (ONCE) #####
+        global PPO_MODEL, MODEL_INITIALIZED
         
-        for joint_name in ['hip', 'upper', 'lower']:
-            current_angle = config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']
-            target_angles[leg_id][joint_name] = current_angle
-            mid_angles[leg_id][joint_name] = current_angle
-    
-    return target_angles, mid_angles, movement_rates
+        if 'PPO_MODEL' not in globals():
+            try:
+                # Import SB3
+                from stable_baselines3 import PPO
+                from stable_baselines3.common.vec_env import DummyVecEnv
+                from stable_baselines3.common.env_util import make_vec_env
+                import gymnasium as gym
+                from gymnasium import spaces
+                
+                # Create simple gym environment
+                class SimpleWalkingEnv:
+                    def __init__(self):
+                        # Observation space: 21D (12 joint angles + 8 commands + 1 intensity)
+                        self.observation_space = spaces.Box(low=-10, high=10, shape=(21,), dtype=np.float32)
+                        # Action space: 36D (12 target + 12 mid + 12 speeds)
+                        self.action_space = spaces.Box(low=-1, high=1, shape=(36,), dtype=np.float32)
+                
+                # Create environment
+                env = DummyVecEnv([lambda: SimpleWalkingEnv()])
+                
+                # Create PPO model
+                PPO_MODEL = PPO("MlpPolicy", env, verbose=0, 
+                               learning_rate=3e-4, n_steps=2048, batch_size=64)
+                MODEL_INITIALIZED = True
+                
+                import logging
+                logging.info("(isaac_sim.py): SB3 PPO model initialized for RL training.\n")
+                
+            except ImportError as e:
+                import logging
+                logging.warning(f"(isaac_sim.py): SB3 not available, using random actions: {e}\n")
+                PPO_MODEL = None
+                MODEL_INITIALIZED = False
+        
+        ##### BUILD OBSERVATION FOR SB3 #####
+        
+        # 1. Extract joint angles (12D)
+        joint_angles = []
+        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+            for joint_name in ['hip', 'upper', 'lower']:
+                angle = current_angles[leg_id][joint_name]
+                joint_angles.append(float(angle))
+        
+        # 2. Encode commands (8D one-hot)
+        if isinstance(commands, list):
+            command_list = commands  # Already a list
+        elif isinstance(commands, str):
+            command_list = commands.split('+') if commands else []
+        else:
+            command_list = []  # Handle None or other types
+        command_encoding = [
+            1.0 if 'w' in command_list else 0.0,
+            1.0 if 's' in command_list else 0.0,
+            1.0 if 'a' in command_list else 0.0,
+            1.0 if 'd' in command_list else 0.0,
+            1.0 if 'arrowleft' in command_list else 0.0,
+            1.0 if 'arrowright' in command_list else 0.0,
+            1.0 if 'arrowup' in command_list else 0.0,
+            1.0 if 'arrowdown' in command_list else 0.0
+        ]
+        
+        # 3. Normalize intensity (1D)
+        intensity_normalized = float(intensity) / 10.0
+        
+        # 4. Combine into observation (21D total)
+        observation = np.array(joint_angles + command_encoding + [intensity_normalized], dtype=np.float32)
+        
+        ##### SB3 PPO INFERENCE OR RANDOM FALLBACK #####
+        
+        if PPO_MODEL is not None and MODEL_INITIALIZED:
+            # Use SB3 PPO model for action prediction
+            action, _states = PPO_MODEL.predict(observation, deterministic=False)
+        else:
+            # Fallback to random actions if SB3 not available
+            action = np.random.uniform(-1.0, 1.0, 36)  # 36D action space
+        
+        # Store observation and action for learning (global access for perception loop)
+        global CURRENT_OBSERVATION, CURRENT_ACTION
+        CURRENT_OBSERVATION = observation.copy()
+        CURRENT_ACTION = action.copy()
+        
+        ##### CONVERT ACTION TO SERVO_CONFIG FORMAT #####
+        
+        target_angles = {}
+        mid_angles = {}
+        movement_rates = {}
+        
+        action_idx = 0
+        
+        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+            target_angles[leg_id] = {}
+            mid_angles[leg_id] = {}
+            movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
+            
+            for joint_name in ['hip', 'upper', 'lower']:
+                # Get joint limits from config
+                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                min_angle = servo_data['FULL_BACK_ANGLE']
+                max_angle = servo_data['FULL_FRONT_ANGLE']
+                
+                # Ensure correct order (min < max)
+                if min_angle > max_angle:
+                    min_angle, max_angle = max_angle, min_angle
+                
+                # Convert target action (-1 to 1) to joint angle (min to max)
+                target_action = action[action_idx]
+                target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
+                target_angle = np.clip(target_angle, min_angle, max_angle)
+                target_angles[leg_id][joint_name] = float(target_angle)
+                
+                # Convert mid action (-1 to 1) to joint angle (min to max)
+                mid_action = action[action_idx + 12]
+                mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
+                mid_angle = np.clip(mid_angle, min_angle, max_angle)
+                mid_angles[leg_id][joint_name] = float(mid_angle)
+                
+                action_idx += 1
+        
+        # Convert movement rates (12D normalized 0-1 to actual speeds)
+        rate_idx = 0
+        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+            # Speed action (-1 to 1) converted to (0.1 to 2.0 rad/s)
+            speed_action = action[24 + rate_idx]  # Last 12 actions are speeds
+            speed = 0.1 + (speed_action + 1.0) * 0.5 * (2.0 - 0.1)  # Map to 0.1-2.0 rad/s
+            speed = np.clip(speed, 0.1, 2.0)
+            
+            movement_rates[leg_id]['speed'] = float(speed)
+            movement_rates[leg_id]['acceleration'] = 0.5  # Fixed for now
+            rate_idx += 1
+            
+            # Note: We're using the same speed for all 3 joints per leg for simplicity
+            # This could be expanded to 12 different speeds later
+        
+        return target_angles, mid_angles, movement_rates
+        
+    except Exception as e:
+        import logging
+        logging.error(f"(isaac_sim.py): Error in get_rl_action_blind: {e}")
+        
+        # Fallback: return current angles as both mid and target (no movement)
+        target_angles = {}
+        mid_angles = {}
+        movement_rates = {}
+        
+        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+            target_angles[leg_id] = {}
+            mid_angles[leg_id] = {}
+            movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
+            
+            for joint_name in ['hip', 'upper', 'lower']:
+                current_angle = current_angles[leg_id][joint_name]
+                target_angles[leg_id][joint_name] = current_angle
+                mid_angles[leg_id][joint_name] = current_angle
+        
+        return target_angles, mid_angles, movement_rates
 
 
 ########## RL COMMAND GENERATION ##########
@@ -272,23 +417,33 @@ def get_rl_command_with_intensity():
     """
     import random
     
-    command = generate_rl_command()
+    # SIMPLIFIED FOR FORWARD WALKING TRAINING - Only generate 'w' commands
+    # TODO: Restore full command generation when ready for complex training
     
-    # Special case: neutral commands always have intensity 10 (fast return to neutral)
-    if command is None:
-        return command, 10
+    # 90% chance of forward command, 10% chance of neutral
+    if random.random() < 0.9:
+        return 'w', 10  # Forward with max intensity
+    else:
+        return None, 10  # Neutral command
     
-    # Generate intensity between 1 and 10 (integers only) with varied randomness for movement commands
-    rand_value = random.random()
-    
-    if rand_value < 0.15:  # 15% chance of low intensity (1-3)
-        intensity = random.randint(1, 3)
-    elif rand_value < 0.70:  # 55% chance of moderate intensity (4-7)
-        intensity = random.randint(4, 7)
-    else:  # 30% chance of high intensity (8-10)
-        intensity = random.randint(8, 10)
-    
-    return command, intensity
+    # ORIGINAL FULL COMMAND GENERATION (commented out for now):
+    # command = generate_rl_command()
+    # 
+    # # Special case: neutral commands always have intensity 10 (fast return to neutral)
+    # if command is None:
+    #     return command, 10
+    # 
+    # # Generate intensity between 1 and 10 (integers only) with varied randomness for movement commands
+    # rand_value = random.random()
+    # 
+    # if rand_value < 0.15:  # 15% chance of low intensity (1-3)
+    #     intensity = random.randint(1, 3)
+    # elif rand_value < 0.70:  # 55% chance of moderate intensity (4-7)
+    #     intensity = random.randint(4, 7)
+    # else:  # 30% chance of high intensity (8-10)
+    #     intensity = random.randint(8, 10)
+    # 
+    # return command, intensity
 
 
 def inject_rl_command_into_queue(rl_command_queue, command, intensity):
@@ -324,7 +479,21 @@ def run_rl_episode_step(rl_command_queue):
         dict: Episode step information including:
             - command: The generated command
             - intensity: The command intensity
+            - episode_done: Whether episode should be reset
     """
+    # Check if episode should be reset (robot has fallen)
+    episode_done = is_robot_fallen()
+    
+    if episode_done:
+        # Reset episode - put robot back to neutral position
+        reset_episode()
+        # Return neutral command to give robot time to stabilize
+        return {
+            'command': None,  # Neutral command 
+            'intensity': 10,
+            'episode_done': True
+        }
+    
     # Generate RL command and intensity
     command, intensity = get_rl_command_with_intensity()
     
@@ -334,8 +503,48 @@ def run_rl_episode_step(rl_command_queue):
     # Return step information for RL training
     return {
         'command': command,
-        'intensity': intensity
+        'intensity': intensity,
+        'episode_done': False
     }
+
+
+def reset_episode():
+    """
+    Reset the RL episode by resetting Isaac Sim world and moving robot to neutral position.
+    """
+    import logging
+    from movement.fundamental_movement import neutral_position
+    
+    try:
+        logging.info("(isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.\n")
+        
+        # Reset Isaac Sim world (position, velocity, physics state)
+        import utilities.config as config
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Reset the world - this resets robot position, velocities, and physics state
+            config.ISAAC_WORLD.reset()
+            
+            # Give Isaac Sim a few steps to stabilize after world reset
+            for _ in range(5):
+                config.ISAAC_WORLD.step(render=True)
+        
+        # Move robot to neutral position (joint angles)
+        neutral_position(10)  # High intensity for quick reset
+        
+        # Give Isaac Sim more steps to stabilize after neutral position
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            for _ in range(5):
+                config.ISAAC_WORLD.step(render=True)
+        
+        # Reset reward tracking after world and position reset
+        global PREV_ROBOT_POSITION, REWARD_TRACKING_ENABLED
+        PREV_ROBOT_POSITION = get_robot_position()
+        REWARD_TRACKING_ENABLED = True
+        
+        logging.info("(isaac_sim.py): Episode reset complete - World and robot state reset.\n")
+        
+    except Exception as e:
+        logging.error(f"(isaac_sim.py): Failed to reset episode: {e}\n")
 
 
 ########## COORDINATE FRAME SYSTEM ##########
@@ -363,15 +572,11 @@ def create_coordinate_frames():
     # Create compass rose arrows for world frame
     _create_compass_arrows(stage, world_frame_path, scale=1.0, color=(1.0, 1.0, 1.0))  # White arrows
     
-    # TODO: Robot-attached local frame (disabled for now - has positioning issues)
-    # robot_frame_path = "/World/robot_dog/RobotReferenceFrame"
-    # robot_frame_prim = UsdGeom.Xform.Define(stage, robot_frame_path)
-    # _create_compass_arrows(stage, robot_frame_path, scale=0.5, color=(1.0, 0.0, 0.0))  # Red arrows
+
     
     # Store frame paths in config for later access
     config.WORLD_FRAME_PATH = world_frame_path
-    # config.ROBOT_FRAME_PATH = robot_frame_path  # Disabled for now
-    config.ROBOT_BODY_PATH = "/World/robot_dog"
+    config.ROBOT_BODY_PATH = "/World/robot_dog"  # Robot itself serves as its own reference frame
 
 
 def _create_compass_arrows(stage, parent_path, scale=1.0, color=(1.0, 1.0, 1.0)):
@@ -411,16 +616,16 @@ def _create_compass_arrows(stage, parent_path, scale=1.0, color=(1.0, 1.0, 1.0))
         # Position arrows to extend FROM center outward (not centered AT center)
         # Each arrow's back end should touch the center, front end extends outward
         if name == "North":  # RED - should extend in +X direction
-            mid_point = Gf.Vec3f(arrow_length * 0.5, 0.0, 0.05)  # Center of cylinder at +5cm X
+            mid_point = Gf.Vec3f(arrow_length * 0.5, 0.0, -0.05)  # Center of cylinder at +5cm X
             rotation = Gf.Rotation(Gf.Vec3d(0, 1, 0), 90)  # Rotate to point in +X
         elif name == "South":  # GREEN - should extend in -X direction
-            mid_point = Gf.Vec3f(-arrow_length * 0.5, 0.0, 0.05)  # Center of cylinder at -5cm X
+            mid_point = Gf.Vec3f(-arrow_length * 0.5, 0.0, -0.05)  # Center of cylinder at -5cm X
             rotation = Gf.Rotation(Gf.Vec3d(0, 1, 0), -90)  # Rotate to point in -X
         elif name == "East":  # BLUE - should extend in -Y direction
-            mid_point = Gf.Vec3f(0.0, -arrow_length * 0.5, 0.05)  # Center of cylinder at -5cm Y
+            mid_point = Gf.Vec3f(0.0, -arrow_length * 0.5, -0.05)  # Center of cylinder at -5cm Y
             rotation = Gf.Rotation(Gf.Vec3d(1, 0, 0), 90)  # Rotate to point in -Y
         elif name == "West":  # YELLOW - should extend in +Y direction
-            mid_point = Gf.Vec3f(0.0, arrow_length * 0.5, 0.05)  # Center of cylinder at +5cm Y
+            mid_point = Gf.Vec3f(0.0, arrow_length * 0.5, -0.05)  # Center of cylinder at +5cm Y
             rotation = Gf.Rotation(Gf.Vec3d(1, 0, 0), -90)  # Rotate to point in +Y
         else:  # "Up" - MAGENTA - should extend in +Z direction
             mid_point = Gf.Vec3f(0.0, 0.0, arrow_length * 0.05)  # Center of cylinder at +5cm Z
@@ -434,215 +639,207 @@ def _create_compass_arrows(stage, parent_path, scale=1.0, color=(1.0, 1.0, 1.0))
         arrow_prim.GetDisplayColorAttr().Set([arrow_color])
 
 
-########## ROBOT POSE EXTRACTION ##########
+########## SIMPLE FORWARD WALKING FUNCTIONS ##########
 
-def get_robot_pose():
+def get_robot_position():
     """
-    Extract robot's current position and orientation from Isaac Sim.
+    Get robot's current position (x, y, z).
     Returns:
-        tuple: ((x, y, z), (qw, qx, qy, qz)) - position and quaternion
+        tuple: (x, y, z) position
     """
     import utilities.config as config
-    from omni.isaac.core.utils.prims import get_prim_at_path
-    from omni.isaac.core.utils.transformations import get_world_pose
     
     try:
-        # Get robot body prim
-        robot_prim = get_prim_at_path(config.ROBOT_BODY_PATH)
-        if robot_prim is None:
-            raise RuntimeError(f"Robot prim not found at {config.ROBOT_BODY_PATH}")
-        
-        # Get world pose (position and rotation)
-        position, rotation = get_world_pose(config.ROBOT_BODY_PATH)
-        
-        # Convert to standard format: position as tuple, rotation as quaternion tuple
-        pos_tuple = (float(position[0]), float(position[1]), float(position[2]))
-        rot_tuple = (float(rotation[0]), float(rotation[1]), float(rotation[2]), float(rotation[3]))  # (w, x, y, z)
-        
-        return pos_tuple, rot_tuple
-        
+        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
+        # get_world_poses() returns arrays - get first element (index 0)
+        position = positions[0]  # First robot position
+        return (float(position[0]), float(position[1]), float(position[2]))
     except Exception as e:
         import logging
-        logging.error(f"(isaac_sim.py): Failed to get robot pose: {e}")
-        return (0.0, 0.0, 0.0), (1.0, 0.0, 0.0, 0.0)  # Default pose
+        logging.error(f"(isaac_sim.py): Failed to get robot position: {e}\n")
+        return (0.0, 0.0, 0.0)
 
 
-def get_robot_transform_matrix():
+def get_robot_forward_direction():
     """
-    Get robot's transform matrix for extracting local coordinate axes.
+    Get robot's current forward direction (face points West initially, toward Yellow).
+    Robot's forward = direction the face is pointing = local +Y direction.
     Returns:
-        numpy.ndarray: 4x4 transform matrix, or None if failed
+        numpy.array: [x, y, z] unit vector showing forward direction
     """
     import numpy as np
     import utilities.config as config
-    from omni.isaac.core.utils.transformations import get_world_pose
     from scipy.spatial.transform import Rotation
     
     try:
-        position, rotation = get_world_pose(config.ROBOT_BODY_PATH)
+        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
+        # get_world_poses() returns arrays - get first element (index 0)
+        rotation = rotations[0]  # First robot rotation
         
-        # Convert quaternion to rotation matrix
+        # Convert quaternion to rotation object
         quat_wxyz = [rotation[0], rotation[1], rotation[2], rotation[3]]  # (w, x, y, z)
         r = Rotation.from_quat([quat_wxyz[1], quat_wxyz[2], quat_wxyz[3], quat_wxyz[0]])  # scipy wants (x, y, z, w)
-        rot_matrix = r.as_matrix()
         
-        # Build 4x4 transform matrix
-        transform = np.eye(4)
-        transform[:3, :3] = rot_matrix
-        transform[:3, 3] = [position[0], position[1], position[2]]
+        # Robot's forward direction is local +Y (initially points toward Yellow/West)
+        local_forward = np.array([0.0, 1.0, 0.0])  # Local +Y
+        world_forward = r.apply(local_forward)
         
-        return transform
+        return world_forward
         
     except Exception as e:
         import logging
-        logging.error(f"(isaac_sim.py): Failed to get robot transform matrix: {e}")
-        return None
+        logging.error(f"(isaac_sim.py): Failed to get robot forward direction: {e}")
+        return np.array([0.0, 1.0, 0.0])  # Default: pointing West
 
 
-def get_robot_local_axes():
+def is_robot_fallen():
     """
-    Extract robot's local coordinate axes in world space.
+    Check if robot has tilted more than 45 degrees from upright.
     Returns:
-        dict: {
-            'forward': numpy.array([x, y, z]),  # Robot's forward direction (+X local)
-            'left': numpy.array([x, y, z]),     # Robot's left direction (+Y local)  
-            'up': numpy.array([x, y, z])        # Robot's up direction (+Z local)
-        }
+        bool: True if robot has fallen over
     """
     import numpy as np
+    import utilities.config as config
+    from scipy.spatial.transform import Rotation
     
-    transform = get_robot_transform_matrix()
-    if transform is None:
-        # Return default axes if transform failed
-        return {
-            'forward': np.array([1.0, 0.0, 0.0]),
-            'left': np.array([0.0, 1.0, 0.0]),
-            'up': np.array([0.0, 0.0, 1.0])
-        }
-    
-    # Extract local axes from rotation matrix
-    return {
-        'forward': transform[:3, 0],  # First column = local +X = forward
-        'left': transform[:3, 1],     # Second column = local +Y = left
-        'up': transform[:3, 2]        # Third column = local +Z = up
-    }
+    try:
+        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
+        # get_world_poses() returns arrays - get first element (index 0)
+        rotation = rotations[0]  # First robot rotation
+        
+        # Convert quaternion to rotation object
+        quat_wxyz = [rotation[0], rotation[1], rotation[2], rotation[3]]  # (w, x, y, z)
+        r = Rotation.from_quat([quat_wxyz[1], quat_wxyz[2], quat_wxyz[3], quat_wxyz[0]])  # scipy wants (x, y, z, w)
+        
+        # Robot's up direction is local +Z
+        local_up = np.array([0.0, 0.0, 1.0])  # Local +Z
+        robot_up = r.apply(local_up)
+        world_up = np.array([0.0, 0.0, 1.0])  # World +Z
+        
+        # Calculate angle between robot up and world up
+        dot_product = np.dot(robot_up, world_up)
+        dot_product = np.clip(dot_product, -1.0, 1.0)  # Ensure valid range
+        angle_rad = np.arccos(dot_product)
+        angle_deg = np.degrees(angle_rad)
+        
+        return angle_deg > 45.0  # Fallen if tilted more than 45 degrees
+        
+    except Exception as e:
+        import logging
+        logging.error(f"(isaac_sim.py): Failed to check if robot fallen: {e}\n")
+        return False  # Assume upright if error
 
 
-########## ROBOT STATE DETECTION ##########
-
-def is_robot_fallen(tilt_threshold_degrees=45.0):
+def calculate_forward_movement(prev_position, curr_position, forward_direction):
     """
-    Check if robot has fallen over by comparing its up vector to world up.
+    Calculate how much robot moved in its forward direction.
     Args:
-        tilt_threshold_degrees: Maximum allowed tilt before considering fallen
+        prev_position: (x, y, z) from previous step
+        curr_position: (x, y, z) from current step  
+        forward_direction: numpy.array([x, y, z]) robot's forward vector
     Returns:
-        bool: True if robot is considered fallen
+        float: Distance moved forward (positive = good, negative = backward)
     """
     import numpy as np
     
-    # Get robot's up vector
-    axes = get_robot_local_axes()
-    robot_up = axes['up']
-    world_up = np.array([0.0, 0.0, 1.0])
+    # Calculate movement vector
+    prev_pos = np.array(prev_position)
+    curr_pos = np.array(curr_position)
+    movement = curr_pos - prev_pos
     
-    # Calculate angle between robot up and world up
-    dot_product = np.dot(robot_up, world_up)
-    # Clamp to valid range for arccos
-    dot_product = np.clip(dot_product, -1.0, 1.0)
-    angle_rad = np.arccos(dot_product)
-    angle_deg = np.degrees(angle_rad)
+    # Project movement onto forward direction
+    forward_distance = np.dot(movement, forward_direction)
     
-    return angle_deg > tilt_threshold_degrees
+    return float(forward_distance)
 
 
-def calculate_forward_progress(previous_pose, current_pose, robot_forward_direction):
+def compute_simple_walking_reward(prev_position, curr_position, command, intensity):
     """
-    Calculate how much the robot moved in its intended forward direction.
+    Simple reward function for training robot to walk forward.
     Args:
-        previous_pose: tuple ((x, y, z), (qw, qx, qy, qz)) from previous timestep
-        current_pose: tuple ((x, y, z), (qw, qx, qy, qz)) from current timestep  
-        robot_forward_direction: numpy.array([x, y, z]) - robot's current forward vector
+        prev_position: (x, y, z) from previous step
+        curr_position: (x, y, z) from current step
+        command: str - command executed ('w', 'n', etc.)
+        intensity: int - movement intensity (1-10)
     Returns:
-        float: Distance moved in forward direction (positive = forward, negative = backward)
+        float: Reward value (positive = good, negative = bad)
     """
-    import numpy as np
+    import logging
     
-    # Calculate position change
-    prev_pos = np.array(previous_pose[0])
-    curr_pos = np.array(current_pose[0])
-    movement_vector = curr_pos - prev_pos
+    reward = 0.0
     
-    # Project movement onto robot's forward direction
-    forward_progress = np.dot(movement_vector, robot_forward_direction)
+    # Check if robot has fallen
+    if is_robot_fallen():
+        reward -= 100.0  # Large penalty for falling
+        logging.debug(f"(isaac_sim.py): Robot fallen! Penalty: -100.0\n")
+        return reward
     
-    return float(forward_progress)
+    # Only reward forward movement for 'w' commands
+    if command == 'w':
+        # Get robot's current forward direction
+        forward_dir = get_robot_forward_direction()
+        
+        # Calculate how much robot moved forward
+        forward_progress = calculate_forward_movement(prev_position, curr_position, forward_dir)
+        
+        # Reward forward movement, penalize backward movement
+        if forward_progress > 0:
+            reward += forward_progress * intensity * 10  # Scale by intensity and amplify
+            logging.debug(f"(isaac_sim.py): Forward progress: {forward_progress:.4f}, reward: +{reward:.2f}")
+        else:
+            reward += forward_progress * intensity * 5  # Smaller penalty for backward movement
+            logging.debug(f"(isaac_sim.py): Backward movement: {forward_progress:.4f}, reward: {reward:.2f}")
+    
+    # Small penalty for not moving when supposed to move forward
+    elif command == 'w':
+        reward -= 1.0
+        logging.debug(f"(isaac_sim.py): No forward movement on 'w' command, penalty: -1.0")
+    
+    # Neutral commands get small positive reward for stability
+    elif command == 'n' or command is None:
+        if not is_robot_fallen():
+            reward += 0.1  # Small reward for staying upright
+        
+    return reward
 
 
-def calculate_movement_efficiency(previous_pose, current_pose, intended_direction_vector):
+# Global variables for tracking robot states
+PREV_ROBOT_POSITION = None
+REWARD_TRACKING_ENABLED = False
+
+def start_reward_tracking():
+    """Initialize reward tracking system."""
+    global PREV_ROBOT_POSITION, REWARD_TRACKING_ENABLED
+    PREV_ROBOT_POSITION = get_robot_position()
+    REWARD_TRACKING_ENABLED = True
+    import logging
+    logging.info("(isaac_sim.py): Reward tracking started.\n")
+
+def get_step_reward(command, intensity):
     """
-    Calculate how efficiently the robot moved toward its intended direction.
+    Get reward for current step and update tracking.
     Args:
-        previous_pose: tuple ((x, y, z), (qw, qx, qy, qz)) from previous timestep
-        current_pose: tuple ((x, y, z), (qw, qx, qy, qz)) from current timestep
-        intended_direction_vector: numpy.array([x, y, z]) - normalized intended movement direction
+        command: str - command executed
+        intensity: int - movement intensity
     Returns:
-        dict: {
-            'alignment': float,      # How aligned actual movement was with intended (0-1)
-            'magnitude': float,      # Total distance moved
-            'efficiency': float      # Combined efficiency score (0-1)
-        }
+        float: Reward for this step
     """
-    import numpy as np
+    global PREV_ROBOT_POSITION, REWARD_TRACKING_ENABLED
     
-    # Calculate actual movement
-    prev_pos = np.array(previous_pose[0])
-    curr_pos = np.array(current_pose[0])
-    movement_vector = curr_pos - prev_pos
-    movement_magnitude = np.linalg.norm(movement_vector)
+    if not REWARD_TRACKING_ENABLED:
+        start_reward_tracking()
+        return 0.0  # No reward for first step
     
-    if movement_magnitude < 1e-6:  # Essentially no movement
-        return {
-            'alignment': 1.0,      # Perfect alignment when not moving
-            'magnitude': 0.0,
-            'efficiency': 0.0      # No efficiency when not moving
-        }
+    # Get current position
+    curr_position = get_robot_position()
     
-    # Normalize movement vector
-    movement_direction = movement_vector / movement_magnitude
+    # Calculate reward
+    reward = compute_simple_walking_reward(PREV_ROBOT_POSITION, curr_position, command, intensity)
     
-    # Calculate alignment with intended direction
-    alignment = np.dot(movement_direction, intended_direction_vector)
-    alignment = np.clip(alignment, -1.0, 1.0)  # Ensure valid range
-    alignment = (alignment + 1.0) / 2.0  # Convert from [-1,1] to [0,1]
+    # Update previous position for next step
+    PREV_ROBOT_POSITION = curr_position
     
-    # Efficiency combines alignment with movement magnitude
-    efficiency = alignment * min(movement_magnitude / 0.1, 1.0)  # Cap efficiency at reasonable movement speed
-    
-    return {
-        'alignment': float(alignment),
-        'magnitude': float(movement_magnitude), 
-        'efficiency': float(efficiency)
-    }
-
-
-def get_robot_orientation_metrics():
-    """
-    Get comprehensive robot orientation metrics for reward calculation.
-    Returns:
-        dict: Complete robot state information for RL training
-    """
-    import time
-    
-    pose = get_robot_pose()
-    axes = get_robot_local_axes()
-    fallen = is_robot_fallen()
-    
-    return {
-        'pose': pose,
-        'local_axes': axes,
-        'is_fallen': fallen,
-        'timestamp': time.time()
-    }
+    return reward
 
 
 ########## ISAAC SIM QUEUE PROCESSING ##########
@@ -677,3 +874,138 @@ def process_isaac_movement_queue():
                 
         except queue.Empty:
             break
+
+# Global variables for SB3 training
+PPO_MODEL = None
+MODEL_INITIALIZED = False
+EXPERIENCE_BUFFER = []
+LAST_OBSERVATION = None
+LAST_ACTION = None
+CURRENT_OBSERVATION = None
+CURRENT_ACTION = None
+TRAINING_STEP_COUNT = 0
+
+def collect_experience_and_train(observation, action, reward, next_observation, done):
+    """
+    Collect experience and train PPO model periodically.
+    Called from the perception loop after each step.
+    """
+    global PPO_MODEL, EXPERIENCE_BUFFER, TRAINING_STEP_COUNT
+    
+    if PPO_MODEL is None or not MODEL_INITIALIZED:
+        return  # Skip if model not ready
+    
+    try:
+        import numpy as np
+        
+        # Store experience
+        experience = {
+            'observation': observation,
+            'action': action, 
+            'reward': reward,
+            'next_observation': next_observation,
+            'done': done
+        }
+        EXPERIENCE_BUFFER.append(experience)
+        TRAINING_STEP_COUNT += 1
+        
+        # Train every 64 steps (batch_size from PPO config)
+        if TRAINING_STEP_COUNT >= 64:
+            
+            # Create simple environment for training
+            class TrainingEnv:
+                def __init__(self, experiences):
+                    self.experiences = experiences
+                    self.current_idx = 0
+                    from gymnasium import spaces
+                    self.observation_space = spaces.Box(low=-10, high=10, shape=(21,), dtype=np.float32)
+                    self.action_space = spaces.Box(low=-1, high=1, shape=(36,), dtype=np.float32)
+                
+                def reset(self):
+                    if self.current_idx < len(self.experiences):
+                        obs = self.experiences[self.current_idx]['observation']
+                        return obs, {}
+                    return np.zeros(21, dtype=np.float32), {}
+                
+                def step(self, action):
+                    if self.current_idx < len(self.experiences):
+                        exp = self.experiences[self.current_idx]
+                        self.current_idx += 1
+                        return exp['next_observation'], exp['reward'], exp['done'], False, {}
+                    return np.zeros(21, dtype=np.float32), 0.0, True, False, {}
+            
+            # Train the model with collected experiences
+            try:
+                # Use PPO's built-in learning with collected experiences
+                # PPO will use its own environment, we just need to trigger learning
+                PPO_MODEL.learn(total_timesteps=len(EXPERIENCE_BUFFER), reset_num_timesteps=False)
+                
+                import logging
+                logging.info(f"(isaac_sim.py): PPO trained on {len(EXPERIENCE_BUFFER)} experiences. Total steps: {TRAINING_STEP_COUNT}\n")
+                
+                # Clear buffer and reset counter
+                EXPERIENCE_BUFFER = []
+                TRAINING_STEP_COUNT = 0
+                
+            except Exception as e:
+                import logging
+                logging.error(f"(isaac_sim.py): Failed to train PPO model: {e}\n")
+                
+    except Exception as e:
+        import logging
+        logging.error(f"(isaac_sim.py): Error collecting experience: {e}\n")
+
+
+def store_step_for_learning(observation, action, reward):
+    """
+    Store the current step data for learning. Called from perception loop.
+    """
+    global LAST_OBSERVATION, LAST_ACTION
+    
+    # Store for next step
+    LAST_OBSERVATION = observation.copy() if observation is not None else None
+    LAST_ACTION = action.copy() if action is not None else None
+
+
+def get_last_step_data():
+    """
+    Get the stored step data for learning.
+    """
+    global LAST_OBSERVATION, LAST_ACTION
+    return LAST_OBSERVATION, LAST_ACTION
+
+
+def update_learning_from_perception_loop(reward, episode_done):
+    """
+    Called from _perception_loop to update learning with current step data.
+    Integrates with existing reward calculation and episode management.
+    """
+    global CURRENT_OBSERVATION, CURRENT_ACTION, LAST_OBSERVATION, LAST_ACTION
+    
+    try:
+        # Check if we have current step data
+        if CURRENT_OBSERVATION is None or CURRENT_ACTION is None:
+            return  # No data to learn from
+        
+        # Check if we have previous step data for experience
+        if LAST_OBSERVATION is not None and LAST_ACTION is not None:
+            # We have a complete experience: (last_obs, last_action, reward, current_obs, done)
+            collect_experience_and_train(
+                observation=LAST_OBSERVATION,
+                action=LAST_ACTION, 
+                reward=reward,
+                next_observation=CURRENT_OBSERVATION,
+                done=episode_done
+            )
+        
+        # Store current step as last step for next iteration
+        LAST_OBSERVATION = CURRENT_OBSERVATION.copy()
+        LAST_ACTION = CURRENT_ACTION.copy()
+        
+        # Clear current step
+        CURRENT_OBSERVATION = None
+        CURRENT_ACTION = None
+        
+    except Exception as e:
+        import logging
+        logging.error(f"(isaac_sim.py): Error in update_learning_from_perception_loop: {e}\n")
