@@ -720,7 +720,7 @@
     <child link="front_left_pelvis_disc"/>
     <origin xyz="0 -0.00995 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -755,7 +755,7 @@
     <child link="front_left_femur_disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -774,7 +774,7 @@
     <child link="front_left_shin_shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1059,7 +1059,7 @@
     <child link="front_right_pelvis_disc"/>
     <origin xyz="0 -0.0106 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1094,7 +1094,7 @@
     <child link="front_right_femur_disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1113,7 +1113,7 @@
     <child link="front_right_shin_shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="-1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1398,7 +1398,7 @@
     <child link="back_left_pelvis_disc"/>
     <origin xyz="0 -0.00995 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1433,7 +1433,7 @@
     <child link="back_left_femur_disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1452,7 +1452,7 @@
     <child link="back_left_shin_shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1737,7 +1737,7 @@
     <child link="back_right_pelvis_disc"/>
     <origin xyz="0 -0.0106 0.04605" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1772,7 +1772,7 @@
     <child link="back_right_femur_disc"/>
     <origin xyz="0 -0.01 0.047" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1791,7 +1791,7 @@
     <child link="back_right_shin_shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="-1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
+    <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
