@@ -96,10 +96,56 @@ def set_isaac_dependencies():
     # Add robot
     usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
     add_reference_to_stage(usd_path, "/World/robot_dog")
+    
+    # Move robot up 30cm using the EXACT same method as the compass rose
+    try:
+        import omni.usd
+        from pxr import UsdGeom, Gf
+        
+        # Get the stage the same way we do in create_coordinate_frames
+        stage = omni.usd.get_context().get_stage()
+        robot_prim = stage.GetPrimAtPath("/World/robot_dog")
+        
+        if robot_prim:
+            # Robot already has transforms, so we need to modify the existing translate
+            xform = UsdGeom.Xformable(robot_prim)
+            if xform:
+                # Get existing transform operations
+                xform_ops = xform.GetOrderedXformOps()
+                
+                # Find the translate operation
+                translate_op = None
+                for op in xform_ops:
+                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
+                        translate_op = op
+                        break
+                
+                if translate_op:
+                    # Get current translate value and add 30cm to Z
+                    current_translate = translate_op.Get()
+                    new_translate = Gf.Vec3d(current_translate[0], current_translate[1], current_translate[2] + 0.14)
+                    translate_op.Set(new_translate)
+                    logging.info(f"(control_logic.py): Robot moved up 30cm. Old pos: {current_translate}, New pos: {new_translate}\n")
+                else:
+                    logging.warning("(control_logic.py): No translate operation found on robot prim.\n")
+            else:
+                logging.warning("(control_logic.py): Robot prim found but not Xformable.\n")
+        else:
+            logging.warning("(control_logic.py): Robot prim not found at /World/robot_dog.\n")
+            
+    except Exception as e:
+        logging.error(f"(control_logic.py): Failed to move robot up: {e}\n")
+        # Continue anyway - robot will spawn at default height
+    
     for _ in range(3): # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
     config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")
     config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
+    
+    # For now, let's just use the default spawn position and see if the robot clipping issue persists
+    # We can revisit the height adjustment once we understand the Isaac Sim 5 API better
+    logging.info("(control_logic.py): Robot added to Isaac Sim scene.\n")
+    
     config.ISAAC_WORLD.reset()
     config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
     logging.info(f"(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {config.JOINT_INDEX_MAP}\n")
@@ -290,10 +336,10 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                             config.RL_COMMAND_INTENSITY = 5
                             logging.warning(f"(control_logic.py): RL command missing intensity, using default 5\n")
                         
-                        if IS_COMPLETE:
-                            logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (WILL RUN).\n")
-                        else:
-                            logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (BLOCKED).\n")
+                        #if IS_COMPLETE:
+                            #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (WILL RUN).\n")
+                        #else:
+                            #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (BLOCKED).\n")
 
                 # TODO get start pose of robot, may need to move to foundational movement
                 #prev_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
@@ -442,7 +488,7 @@ def _handle_command(command, frame):
                 CURRENT_LEG,
                 intensity
             )
-            logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
+            #logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
             IS_COMPLETE = True
         except Exception as e:
             logging.error(f"(control_logic.py): Failed to execute keyboard command: {e}\n")

@@ -528,7 +528,7 @@
     </collision>
 
     <inertial>
-      <mass value="0.004"/>
+      <mass value="0.017"/>
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
@@ -774,7 +774,7 @@
     <child link="front_left_shin_shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -867,7 +867,7 @@
     </collision>
 
     <inertial>
-      <mass value="0.004"/>
+      <mass value="0.017"/>
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
@@ -1113,7 +1113,7 @@
     <child link="front_right_shin_shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="-1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1206,7 +1206,7 @@
     </collision>
 
     <inertial>
-      <mass value="0.004"/>
+      <mass value="0.017"/>
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
@@ -1452,7 +1452,7 @@
     <child link="back_left_shin_shin"/>
     <origin xyz="0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 
@@ -1545,7 +1545,7 @@
     </collision>
 
     <inertial>
-      <mass value="0.004"/>
+      <mass value="0.017"/>
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
@@ -1791,7 +1791,7 @@
     <child link="back_right_shin_shin"/>
     <origin xyz="-0.0076 0.07777 -0.07777" rpy="0 0 0"/>
     <axis xyz="-1 0 0"/>
-    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="9.52"/>
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="3.173"/>
     <dynamics friction="0.1" damping="0.005"/>
   </joint>
 

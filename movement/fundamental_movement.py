@@ -550,7 +550,38 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
             ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
         ]
         
-        # Set all joint positions at once
+        # STEP 1: Move to mid angles first
+        for leg_id, joint_name in joint_order:
+            joint_full_name = f"{leg_id}_{joint_name}"
+            joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
+            
+            if joint_index is not None:
+                # Get mid angle from the AI agent's output
+                mid_angle = mid_angles[leg_id][joint_name]
+                
+                # Get velocity from movement_rates (already in rad/s, no scaling needed)
+                # Default to 1.0 if not specified, similar to working functions
+                velocity = movement_rates[leg_id].get('speed', 1.0)  # Already in rad/s
+                
+                joint_positions[joint_index] = mid_angle
+                joint_velocities[joint_index] = velocity
+                
+                # Update the current angle in config
+                config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = mid_angle
+            else:
+                logging.error(f"(fundamental_movement.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
+        
+        # Apply mid angle positions
+        mid_action = ArticulationAction(
+            joint_positions=joint_positions,
+            joint_velocities=joint_velocities
+        )
+        
+        ARTICULATION_CONTROLLER.apply_action(mid_action)
+
+        time.sleep(0.1)
+        
+        # STEP 2: Move to target angles
         for leg_id, joint_name in joint_order:
             joint_full_name = f"{leg_id}_{joint_name}"
             joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
@@ -559,9 +590,9 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
                 # Get target angle from the AI agent's output
                 target_angle = target_angles[leg_id][joint_name]
                 
-                # Get velocity from movement_rates (convert to reasonable range)
+                # Get velocity from movement_rates (already in rad/s, no scaling needed)
                 # Default to 1.0 if not specified, similar to working functions
-                velocity = movement_rates[leg_id].get('speed', 1000) / 1000.0  # Convert to reasonable velocity
+                velocity = movement_rates[leg_id].get('speed', 1.0)  # Already in rad/s
                 
                 joint_positions[joint_index] = target_angle
                 joint_velocities[joint_index] = velocity
@@ -571,14 +602,17 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
             else:
                 logging.error(f"(fundamental_movement.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
         
-        # Apply all joint positions in a single action (same as working functions)
-        action = ArticulationAction(
+        # Apply target angle positions
+        target_action = ArticulationAction(
             joint_positions=joint_positions,
             joint_velocities=joint_velocities
         )
-        ARTICULATION_CONTROLLER.apply_action(action)
         
-        # logging.debug(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim\n")
+        ARTICULATION_CONTROLLER.apply_action(target_action)
+        
+        logging.info(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)")
+
+        time.sleep(0.1)
         
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to apply AI agent joint angles for Isaac Sim: {e}\n")

@@ -30,6 +30,25 @@ import utilities.config as config
 
 from pxr import Gf
 
+##### global variables #####
+
+# Global variables for tracking robot states
+PREV_ROBOT_POSITION = None
+REWARD_TRACKING_ENABLED = False
+EPISODE_COUNTER = 0  # Track episode number
+EPISODE_STEP_COUNT = 0  # Track steps within current episode
+TOTAL_FORWARD_PROGRESS = 0.0  # Track total forward progress across episodes
+
+# Global variables for SB3 training
+PPO_MODEL = None
+MODEL_INITIALIZED = False
+EXPERIENCE_BUFFER = []
+LAST_OBSERVATION = None
+LAST_ACTION = None
+CURRENT_OBSERVATION = None
+CURRENT_ACTION = None
+TRAINING_STEP_COUNT = 0
+
 
 
 
@@ -304,12 +323,17 @@ def get_rl_action_blind(current_angles, commands, intensity):
                 action_idx += 1
         
         # Convert movement rates (12D normalized 0-1 to actual speeds)
+        # PPO now outputs direct rad/s values (no scaling needed)
         rate_idx = 0
         for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            # Speed action (-1 to 1) converted to (0.1 to 2.0 rad/s)
+            # Speed action (-1 to 1) converted to direct rad/s values
             speed_action = action[24 + rate_idx]  # Last 12 actions are speeds
-            speed = 0.1 + (speed_action + 1.0) * 0.5 * (2.0 - 0.1)  # Map to 0.1-2.0 rad/s
-            speed = np.clip(speed, 0.1, 2.0)
+            # START WITH SLOW LEARNING SPEEDS: Map to 0.01-0.5 rad/s for initial stability
+            # URDF limit is 9.52 rad/s, so we stay well below that during learning
+            speed = 0.01 + (speed_action + 1.0) * 0.5 * (0.5 - 0.01)  # Map to 0.01-0.5 rad/s
+            speed = np.clip(speed, 0.01, 0.5)  # Never exceed 0.5 rad/s during learning
+            # Safety check: Never exceed URDF velocity limit of 9.52 rad/s
+            speed = min(speed, 9.52)
             
             movement_rates[leg_id]['speed'] = float(speed)
             movement_rates[leg_id]['acceleration'] = 0.5  # Fixed for now
@@ -325,21 +349,21 @@ def get_rl_action_blind(current_angles, commands, intensity):
         logging.error(f"(isaac_sim.py): Error in get_rl_action_blind: {e}")
         
         # Fallback: return current angles as both mid and target (no movement)
-        target_angles = {}
-        mid_angles = {}
-        movement_rates = {}
+    target_angles = {}
+    mid_angles = {}
+    movement_rates = {}
+    
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        target_angles[leg_id] = {}
+        mid_angles[leg_id] = {}
+        movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
         
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            target_angles[leg_id] = {}
-            mid_angles[leg_id] = {}
-            movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
-            
-            for joint_name in ['hip', 'upper', 'lower']:
-                current_angle = current_angles[leg_id][joint_name]
-                target_angles[leg_id][joint_name] = current_angle
-                mid_angles[leg_id][joint_name] = current_angle
-        
-        return target_angles, mid_angles, movement_rates
+        for joint_name in ['hip', 'upper', 'lower']:
+            current_angle = current_angles[leg_id][joint_name]
+            target_angles[leg_id][joint_name] = current_angle
+            mid_angles[leg_id][joint_name] = current_angle
+    
+    return target_angles, mid_angles, movement_rates
 
 
 ########## RL COMMAND GENERATION ##########
@@ -512,11 +536,13 @@ def reset_episode():
     """
     Reset the RL episode by resetting Isaac Sim world and moving robot to neutral position.
     """
+    global PREV_ROBOT_POSITION, REWARD_TRACKING_ENABLED, EPISODE_COUNTER
+    
     import logging
     from movement.fundamental_movement import neutral_position
     
     try:
-        logging.info("(isaac_sim.py): Episode reset - Robot fallen, resetting Isaac Sim world.\n")
+        logging.info(f"(isaac_sim.py): Episode {EPISODE_COUNTER + 1} starting - Robot fallen, resetting Isaac Sim world.\n")
         
         # Reset Isaac Sim world (position, velocity, physics state)
         import utilities.config as config
@@ -537,11 +563,24 @@ def reset_episode():
                 config.ISAAC_WORLD.step(render=True)
         
         # Reset reward tracking after world and position reset
-        global PREV_ROBOT_POSITION, REWARD_TRACKING_ENABLED
         PREV_ROBOT_POSITION = get_robot_position()
         REWARD_TRACKING_ENABLED = True
         
-        logging.info("(isaac_sim.py): Episode reset complete - World and robot state reset.\n")
+        # Increment episode counter and reset step counter
+        EPISODE_COUNTER += 1
+        EPISODE_STEP_COUNT = 0
+        
+        # Log episode summary before resetting step count
+        if EPISODE_STEP_COUNT > 0:
+            logging.info(f"(isaac_sim.py): Episode {EPISODE_COUNTER} completed with {EPISODE_STEP_COUNT} forward steps. Total forward progress: {TOTAL_FORWARD_PROGRESS:.4f}")
+        else:
+            logging.info(f"(isaac_sim.py): Episode {EPISODE_COUNTER} failed - no forward movement. Total forward progress: {TOTAL_FORWARD_PROGRESS:.4f}")
+        
+        logging.info(f"(isaac_sim.py): Episode {EPISODE_COUNTER} reset complete - World and robot state reset.\n")
+        
+        # Log learning progress every 10 episodes
+        if EPISODE_COUNTER % 10 == 0:
+            logging.info(f"(isaac_sim.py): LEARNING PROGRESS - Episodes: {EPISODE_COUNTER}, Total Forward Progress: {TOTAL_FORWARD_PROGRESS:.4f}")
         
     except Exception as e:
         logging.error(f"(isaac_sim.py): Failed to reset episode: {e}\n")
@@ -782,30 +821,90 @@ def compute_simple_walking_reward(prev_position, curr_position, command, intensi
         # Calculate how much robot moved forward
         forward_progress = calculate_forward_movement(prev_position, curr_position, forward_dir)
         
-        # Reward forward movement, penalize backward movement
+                # Reward forward movement, penalize backward movement
         if forward_progress > 0:
             reward += forward_progress * intensity * 10  # Scale by intensity and amplify
             logging.debug(f"(isaac_sim.py): Forward progress: {forward_progress:.4f}, reward: +{reward:.2f}")
+            
+            # Track total forward progress across episodes
+            global TOTAL_FORWARD_PROGRESS
+            TOTAL_FORWARD_PROGRESS += forward_progress
+            logging.debug(f"(isaac_sim.py): Total forward progress: {TOTAL_FORWARD_PROGRESS:.4f}")
         else:
             reward += forward_progress * intensity * 5  # Smaller penalty for backward movement
             logging.debug(f"(isaac_sim.py): Backward movement: {forward_progress:.4f}, reward: {reward:.2f}")
+        
+        # Penalty for not moving forward when commanded
+        if abs(forward_progress) < 0.001:  # Very small movement threshold
+            penalty = -5.0  # Stronger penalty for standing still when should move forward
+            reward += penalty
+            logging.debug(f"(isaac_sim.py): No forward movement on 'w' command, penalty: {penalty}")
+            
+            # Additional penalty that increases over time if robot keeps standing still
+            if command == 'w':
+                standing_still_penalty = -1.0  # Small penalty for each step of standing still
+                reward += standing_still_penalty
+                logging.debug(f"(isaac_sim.py): Standing still penalty: {standing_still_penalty}")
     
-    # Small penalty for not moving when supposed to move forward
-    elif command == 'w':
-        reward -= 1.0
-        logging.debug(f"(isaac_sim.py): No forward movement on 'w' command, penalty: -1.0")
+ 
     
     # Neutral commands get small positive reward for stability
     elif command == 'n' or command is None:
         if not is_robot_fallen():
             reward += 0.1  # Small reward for staying upright
+    
+    # Large reward for staying upright and moving forward successfully
+    if command == 'w' and not is_robot_fallen():
+        # Bonus for staying upright while executing forward command
+        reward += 5.0
+        logging.debug(f"(isaac_sim.py): Staying upright during forward movement! Bonus: +5.0")
+    
+    # Reward for staying upright longer (encourages longer episodes)
+    if not is_robot_fallen():
+        # Small reward that accumulates over time
+        reward += 0.05
+        logging.debug(f"(isaac_sim.py): Staying upright! Episode length reward: +0.05")
+        
+        # Only count steps when robot is actually moving (not just standing still)
+        global EPISODE_STEP_COUNT
+        if command == 'w' and abs(forward_progress) > 0.001:  # Only count steps when moving forward
+            EPISODE_STEP_COUNT += 1
+            logging.debug(f"(isaac_sim.py): Forward movement step! Step count: {EPISODE_STEP_COUNT}")
+            
+            if EPISODE_STEP_COUNT % 10 == 0:  # Every 10 forward steps
+                milestone_bonus = min(EPISODE_STEP_COUNT * 0.1, 5.0)  # Cap at 5.0
+                reward += milestone_bonus
+                logging.debug(f"(isaac_sim.py): Forward movement milestone! Step {EPISODE_STEP_COUNT}, bonus: +{milestone_bonus:.2f}")
+            
+            # Episode success reward (robot successfully moves forward for extended period)
+            if EPISODE_STEP_COUNT >= 20:  # 20 forward steps = successful episode
+                success_bonus = 100.0  # Large bonus for completing forward movement episode
+                reward += success_bonus
+                logging.info(f"(isaac_sim.py): FORWARD MOVEMENT SUCCESS! Robot moved forward for {EPISODE_STEP_COUNT} steps! Bonus: +{success_bonus}")
+    
+    # Add velocity penalty to encourage slower, more controlled movements
+    try:
+        # Get the current action that was applied (includes velocities)
+        if 'CURRENT_ACTION' in globals() and CURRENT_ACTION is not None:
+            # The last 12 values in the action are movement rates (velocities)
+            velocities = CURRENT_ACTION[24:36]  # Last 12 actions are speeds
+            
+            # Calculate average velocity and penalize high speeds
+            avg_velocity = sum(abs(v) for v in velocities) / len(velocities)
+            
+            # Stronger penalty for high velocities (encourages much slower, more controlled movement)
+            # Scale penalty to be more impactful - 25% penalty on average velocity
+            velocity_penalty = avg_velocity * 0.25  # 25% penalty on average velocity
+            reward -= velocity_penalty
+            
+            logging.debug(f"(isaac_sim.py): Velocity penalty: -{velocity_penalty:.4f} (avg vel: {avg_velocity:.4f})\n")
+    except Exception as e:
+        # If we can't get velocity info, just continue without penalty
+        pass
         
     return reward
 
 
-# Global variables for tracking robot states
-PREV_ROBOT_POSITION = None
-REWARD_TRACKING_ENABLED = False
 
 def start_reward_tracking():
     """Initialize reward tracking system."""
@@ -813,7 +912,7 @@ def start_reward_tracking():
     PREV_ROBOT_POSITION = get_robot_position()
     REWARD_TRACKING_ENABLED = True
     import logging
-    logging.info("(isaac_sim.py): Reward tracking started.\n")
+    # logging.info("(isaac_sim.py): Reward tracking started.\n")
 
 def get_step_reward(command, intensity):
     """
@@ -874,16 +973,6 @@ def process_isaac_movement_queue():
                 
         except queue.Empty:
             break
-
-# Global variables for SB3 training
-PPO_MODEL = None
-MODEL_INITIALIZED = False
-EXPERIENCE_BUFFER = []
-LAST_OBSERVATION = None
-LAST_ACTION = None
-CURRENT_OBSERVATION = None
-CURRENT_ACTION = None
-TRAINING_STEP_COUNT = 0
 
 def collect_experience_and_train(observation, action, reward, next_observation, done):
     """
