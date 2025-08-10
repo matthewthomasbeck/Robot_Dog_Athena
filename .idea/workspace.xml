@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Saving checkpoint, going to see why velocity is giving me such massive problems in issac" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Saving checkpoint, going to see why velocity is giving me such massive problems in issac">
+      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
