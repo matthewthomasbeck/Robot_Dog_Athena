@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Saving checkpoint, going to see why velocity is giving me such massive problems in issac">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made distal movement half as fast as proximal for realistic actuation (because the servos that control the lower parts of the legs are top-mounted, they dont get twice the leverage an animals leg normally would... *sicence*)">
+      <change afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/fundamental_movement.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -174,6 +178,7 @@
       <workItem from="1754774502277" duration="27000" />
       <workItem from="1754776952678" duration="612000" />
       <workItem from="1754791794311" duration="35000" />
+      <workItem from="1754875722612" duration="1163000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>

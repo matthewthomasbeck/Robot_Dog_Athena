@@ -1,634 +1,96 @@
-2025-08-10 16:31:59 INFO: (log.py): Logging setup complete.
-
-2025-08-10 16:32:07 INFO: (control_logic.py): Robot moved up 30cm. Old pos: (0, 0, 0), New pos: (0, 0, 0.14)
-
-2025-08-10 16:32:08 INFO: (control_logic.py): Robot added to Isaac Sim scene.
-
-2025-08-10 16:32:08 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
-
-2025-08-10 16:32:08 INFO: (control_logic.py) Coordinate frames created for robot orientation tracking.
-
-2025-08-10 16:32:08 INFO: (camera.py): Successfully killed existing camera processes.
-
-2025-08-10 16:32:09 INFO: (camera.py) Computed aperture size for isaac camera.
-
-2025-08-10 16:32:09 INFO: (camera.py) Computed focal length for isaac camera.
-
-2025-08-10 16:32:09 INFO: (camera.py) Applied optics to isaac camera.
-
-2025-08-10 16:32:09 INFO: (camera.py) Initialized isaac camera.
-
-2025-08-10 16:32:09 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
-
-2025-08-10 16:32:12 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:13 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:13 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:13 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:14 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:14 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:14 INFO: (isaac_sim.py): Episode 1 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:15 INFO: (isaac_sim.py): Episode 1 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:15 INFO: (isaac_sim.py): Episode 1 reset complete - World and robot state reset.
-
-2025-08-10 16:32:15 INFO: (control_logic.py): Command 'n' reward: 0.033
-
-2025-08-10 16:32:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:15 INFO: (control_logic.py): Command 'n' reward: -0.001
-
-2025-08-10 16:32:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:16 INFO: (control_logic.py): Command 'n' reward: 0.016
-
-2025-08-10 16:32:16 INFO: (control_logic.py): Command 'n' reward: 0.150
-
-2025-08-10 16:32:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:16 INFO: (isaac_sim.py): Episode 2 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:17 INFO: (isaac_sim.py): Episode 2 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:17 INFO: (isaac_sim.py): Episode 2 reset complete - World and robot state reset.
-
-2025-08-10 16:32:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:18 INFO: (control_logic.py): Command 'n' reward: 0.060
-
-2025-08-10 16:32:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:18 INFO: (isaac_sim.py): Episode 3 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:18 INFO: (isaac_sim.py): Episode 3 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:18 INFO: (isaac_sim.py): Episode 3 reset complete - World and robot state reset.
-
-2025-08-10 16:32:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:20 INFO: (control_logic.py): Command 'n' reward: 0.010
-
-2025-08-10 16:32:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:21 INFO: (control_logic.py): Command 'n' reward: 0.035
-
-2025-08-10 16:32:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:22 INFO: (control_logic.py): Command 'n' reward: 0.023
-
-2025-08-10 16:32:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:23 INFO: (control_logic.py): Command 'n' reward: 0.040
-
-2025-08-10 16:32:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:25 INFO: (control_logic.py): Command 'n' reward: 0.006
-
-2025-08-10 16:32:25 INFO: (control_logic.py): Command 'n' reward: 0.150
-
-2025-08-10 16:32:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:25 INFO: (control_logic.py): Command 'n' reward: 0.060
-
-2025-08-10 16:32:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:26 INFO: (control_logic.py): Command 'n' reward: -0.009
-
-2025-08-10 16:32:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:27 INFO: (isaac_sim.py): Episode 4 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:28 INFO: (isaac_sim.py): Episode 4 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:28 INFO: (isaac_sim.py): Episode 4 reset complete - World and robot state reset.
-
-2025-08-10 16:32:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:30 INFO: (control_logic.py): Command 'n' reward: -0.001
-
-2025-08-10 16:32:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:31 INFO: (isaac_sim.py): Episode 5 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:31 INFO: (isaac_sim.py): Episode 5 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:31 INFO: (isaac_sim.py): Episode 5 reset complete - World and robot state reset.
-
-2025-08-10 16:32:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:34 INFO: (control_logic.py): Command 'n' reward: -0.008
-
-2025-08-10 16:32:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:35 INFO: (isaac_sim.py): Episode 6 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:35 INFO: (isaac_sim.py): Episode 6 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:35 INFO: (isaac_sim.py): Episode 6 reset complete - World and robot state reset.
-
-2025-08-10 16:32:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:36 INFO: (isaac_sim.py): Episode 7 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:36 INFO: (isaac_sim.py): Episode 7 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:36 INFO: (isaac_sim.py): Episode 7 reset complete - World and robot state reset.
-
-2025-08-10 16:32:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:38 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:38 INFO: (isaac_sim.py): Episode 8 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:38 INFO: (isaac_sim.py): Episode 8 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:38 INFO: (isaac_sim.py): Episode 8 reset complete - World and robot state reset.
-
-2025-08-10 16:32:38 INFO: (control_logic.py): Command 'n' reward: 0.039
-
-2025-08-10 16:32:38 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:39 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:39 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:39 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:40 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:40 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:40 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:40 INFO: (isaac_sim.py): Episode 9 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:41 INFO: (isaac_sim.py): Episode 9 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:41 INFO: (isaac_sim.py): Episode 9 reset complete - World and robot state reset.
-
-2025-08-10 16:32:41 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:41 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:42 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:42 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:42 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:42 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:43 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:43 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:43 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:44 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:44 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:44 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:46 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:46 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:46 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:47 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:47 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:47 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:48 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:48 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:48 INFO: (isaac_sim.py): Episode 10 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:49 INFO: (isaac_sim.py): Episode 10 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:49 INFO: (isaac_sim.py): Episode 10 reset complete - World and robot state reset.
-
-2025-08-10 16:32:49 INFO: (isaac_sim.py): LEARNING PROGRESS - Episodes: 10, Total Forward Progress: 0.0000
-2025-08-10 16:32:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:50 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:50 INFO: (control_logic.py): Command 'n' reward: 0.002
-
-2025-08-10 16:32:50 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:50 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:52 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:52 INFO: (isaac_sim.py): Episode 11 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:52 INFO: (isaac_sim.py): Episode 11 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:52 INFO: (isaac_sim.py): Episode 11 reset complete - World and robot state reset.
-
-2025-08-10 16:32:52 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:53 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:53 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:53 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:54 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:54 INFO: (isaac_sim.py): Episode 12 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:54 INFO: (isaac_sim.py): Episode 12 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:54 INFO: (isaac_sim.py): Episode 12 reset complete - World and robot state reset.
-
-2025-08-10 16:32:54 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:55 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:55 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:55 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:56 INFO: (isaac_sim.py): Episode 13 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:56 INFO: (isaac_sim.py): Episode 13 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:56 INFO: (isaac_sim.py): Episode 13 reset complete - World and robot state reset.
-
-2025-08-10 16:32:56 INFO: (control_logic.py): Command 'n' reward: 0.046
-
-2025-08-10 16:32:56 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:56 INFO: (control_logic.py): Command 'n' reward: 0.037
-
-2025-08-10 16:32:56 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:57 INFO: (control_logic.py): Command 'n' reward: 0.033
-
-2025-08-10 16:32:57 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:57 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:57 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:58 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:58 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:58 INFO: (isaac_sim.py): Episode 14 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:32:59 INFO: (isaac_sim.py): Episode 14 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:32:59 INFO: (isaac_sim.py): Episode 14 reset complete - World and robot state reset.
-
-2025-08-10 16:32:59 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:59 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:32:59 INFO: (isaac_sim.py): Episode 15 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:00 INFO: (isaac_sim.py): Episode 15 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:00 INFO: (isaac_sim.py): Episode 15 reset complete - World and robot state reset.
-
-2025-08-10 16:33:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:00 INFO: (control_logic.py): Command 'n' reward: 0.023
-
-2025-08-10 16:33:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:01 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:01 INFO: (isaac_sim.py): Episode 16 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:01 INFO: (isaac_sim.py): Episode 16 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:01 INFO: (isaac_sim.py): Episode 16 reset complete - World and robot state reset.
-
-2025-08-10 16:33:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:02 INFO: (control_logic.py): Command 'n' reward: 0.021
-
-2025-08-10 16:33:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:03 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:03 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:03 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:04 INFO: (isaac_sim.py): Episode 17 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:04 INFO: (isaac_sim.py): Episode 17 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:04 INFO: (isaac_sim.py): Episode 17 reset complete - World and robot state reset.
-
-2025-08-10 16:33:04 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:04 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:05 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:05 INFO: (control_logic.py): Command 'n' reward: 0.067
-
-2025-08-10 16:33:05 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:05 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:06 INFO: (isaac_sim.py): Episode 18 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:06 INFO: (isaac_sim.py): Episode 18 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:06 INFO: (isaac_sim.py): Episode 18 reset complete - World and robot state reset.
-
-2025-08-10 16:33:06 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:06 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:07 INFO: (control_logic.py): Command 'n' reward: 0.048
-
-2025-08-10 16:33:07 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:07 INFO: (isaac_sim.py): Episode 19 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:07 INFO: (isaac_sim.py): Episode 19 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:07 INFO: (isaac_sim.py): Episode 19 reset complete - World and robot state reset.
-
-2025-08-10 16:33:07 INFO: (control_logic.py): Command 'n' reward: 0.025
-
-2025-08-10 16:33:08 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:08 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:08 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:08 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:09 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:09 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:09 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:10 INFO: (isaac_sim.py): Episode 20 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:10 INFO: (isaac_sim.py): Episode 20 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:10 INFO: (isaac_sim.py): Episode 20 reset complete - World and robot state reset.
-
-2025-08-10 16:33:10 INFO: (isaac_sim.py): LEARNING PROGRESS - Episodes: 20, Total Forward Progress: 0.0000
-2025-08-10 16:33:10 INFO: (control_logic.py): Command 'n' reward: 0.005
-
-2025-08-10 16:33:10 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:10 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:11 INFO: (control_logic.py): Command 'n' reward: 0.022
-
-2025-08-10 16:33:11 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:11 INFO: (control_logic.py): Command 'n' reward: -0.003
-
-2025-08-10 16:33:11 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:11 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:12 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:12 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:12 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:13 INFO: (isaac_sim.py): Episode 21 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:13 INFO: (isaac_sim.py): Episode 21 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:13 INFO: (isaac_sim.py): Episode 21 reset complete - World and robot state reset.
-
-2025-08-10 16:33:13 INFO: (control_logic.py): Command 'n' reward: -0.014
-
-2025-08-10 16:33:13 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:13 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:14 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:14 INFO: (isaac_sim.py): Episode 22 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:14 INFO: (isaac_sim.py): Episode 22 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:14 INFO: (isaac_sim.py): Episode 22 reset complete - World and robot state reset.
-
-2025-08-10 16:33:14 INFO: (control_logic.py): Command 'n' reward: 0.016
-
-2025-08-10 16:33:14 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:17 INFO: (isaac_sim.py): Episode 23 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:17 INFO: (isaac_sim.py): Episode 23 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:17 INFO: (isaac_sim.py): Episode 23 reset complete - World and robot state reset.
-
-2025-08-10 16:33:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:19 INFO: (isaac_sim.py): Episode 24 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:20 INFO: (isaac_sim.py): Episode 24 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:20 INFO: (isaac_sim.py): Episode 24 reset complete - World and robot state reset.
-
-2025-08-10 16:33:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:24 INFO: (control_logic.py): Command 'n' reward: 0.013
-
-2025-08-10 16:33:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:25 INFO: (control_logic.py): Command 'n' reward: 0.034
-
-2025-08-10 16:33:25 INFO: (control_logic.py): Command 'n' reward: 0.150
-
-2025-08-10 16:33:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:27 INFO: (control_logic.py): Command 'n' reward: 0.041
-
-2025-08-10 16:33:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:28 INFO: (isaac_sim.py): Episode 25 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:28 INFO: (isaac_sim.py): Episode 25 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:28 INFO: (isaac_sim.py): Episode 25 reset complete - World and robot state reset.
-
-2025-08-10 16:33:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:29 INFO: (isaac_sim.py): Episode 26 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:29 INFO: (isaac_sim.py): Episode 26 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:29 INFO: (isaac_sim.py): Episode 26 reset complete - World and robot state reset.
-
-2025-08-10 16:33:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:32 INFO: (isaac_sim.py): Episode 27 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:33 INFO: (isaac_sim.py): Episode 27 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:33 INFO: (isaac_sim.py): Episode 27 reset complete - World and robot state reset.
-
-2025-08-10 16:33:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:34 INFO: (isaac_sim.py): Episode 28 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:34 INFO: (isaac_sim.py): Episode 28 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:34 INFO: (isaac_sim.py): Episode 28 reset complete - World and robot state reset.
-
-2025-08-10 16:33:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:35 INFO: (control_logic.py): Command 'n' reward: 0.035
-
-2025-08-10 16:33:35 INFO: (control_logic.py): Command 'n' reward: 0.150
-
-2025-08-10 16:33:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:36 INFO: (control_logic.py): Command 'n' reward: 0.017
-
-2025-08-10 16:33:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:37 INFO: (isaac_sim.py): Episode 29 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:38 INFO: (isaac_sim.py): Episode 29 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:38 INFO: (isaac_sim.py): Episode 29 reset complete - World and robot state reset.
-
-2025-08-10 16:33:38 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:38 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:38 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:39 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:39 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:39 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:39 INFO: (isaac_sim.py): Episode 30 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:40 INFO: (isaac_sim.py): Episode 30 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:40 INFO: (isaac_sim.py): Episode 30 reset complete - World and robot state reset.
-
-2025-08-10 16:33:40 INFO: (isaac_sim.py): LEARNING PROGRESS - Episodes: 30, Total Forward Progress: 0.0000
-2025-08-10 16:33:40 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:40 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:41 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:41 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:41 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:41 INFO: (isaac_sim.py): Episode 31 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:42 INFO: (isaac_sim.py): Episode 31 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:42 INFO: (isaac_sim.py): Episode 31 reset complete - World and robot state reset.
-
-2025-08-10 16:33:42 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:42 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:43 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:43 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:43 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:43 INFO: (isaac_sim.py): Episode 32 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:44 INFO: (isaac_sim.py): Episode 32 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:44 INFO: (isaac_sim.py): Episode 32 reset complete - World and robot state reset.
-
-2025-08-10 16:33:44 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:44 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:45 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:45 INFO: (isaac_sim.py): Episode 33 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:46 INFO: (isaac_sim.py): Episode 33 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:46 INFO: (isaac_sim.py): Episode 33 reset complete - World and robot state reset.
-
-2025-08-10 16:33:46 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:46 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:47 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:47 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:47 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:48 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:48 INFO: (control_logic.py): Command 'n' reward: 0.031
-
-2025-08-10 16:33:48 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:48 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:49 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:50 INFO: (control_logic.py): Command 'n' reward: 0.013
-
-2025-08-10 16:33:50 INFO: (control_logic.py): Command 'n' reward: 0.150
-
-2025-08-10 16:33:50 INFO: (control_logic.py): Command 'n' reward: 0.150
-
-2025-08-10 16:33:50 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:50 INFO: (control_logic.py): Command 'n' reward: 0.008
-
-2025-08-10 16:33:50 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:50 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:51 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:52 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:52 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:52 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:53 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:53 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:53 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:53 INFO: (isaac_sim.py): Episode 34 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:54 INFO: (isaac_sim.py): Episode 34 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:54 INFO: (isaac_sim.py): Episode 34 reset complete - World and robot state reset.
-
-2025-08-10 16:33:54 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:54 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:55 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:55 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:55 INFO: (isaac_sim.py): Episode 35 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:56 INFO: (isaac_sim.py): Episode 35 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:56 INFO: (isaac_sim.py): Episode 35 reset complete - World and robot state reset.
-
-2025-08-10 16:33:56 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:56 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:56 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:57 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:57 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:57 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:57 INFO: (isaac_sim.py): Episode 36 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:33:58 INFO: (isaac_sim.py): Episode 36 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:33:58 INFO: (isaac_sim.py): Episode 36 reset complete - World and robot state reset.
-
-2025-08-10 16:33:58 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:58 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:59 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:59 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:33:59 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:00 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:01 INFO: (control_logic.py): Command 'n' reward: 0.012
-
-2025-08-10 16:34:01 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:01 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:01 INFO: (isaac_sim.py): Episode 37 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:34:02 INFO: (isaac_sim.py): Episode 37 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:34:02 INFO: (isaac_sim.py): Episode 37 reset complete - World and robot state reset.
-
-2025-08-10 16:34:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:02 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:03 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:03 INFO: (control_logic.py): Command 'n' reward: 0.001
-
-2025-08-10 16:34:03 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:03 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:04 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:04 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:04 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:05 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:05 INFO: (isaac_sim.py): Episode 38 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:34:05 INFO: (isaac_sim.py): Episode 38 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:34:05 INFO: (isaac_sim.py): Episode 38 reset complete - World and robot state reset.
-
-2025-08-10 16:34:05 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:06 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:06 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:06 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:07 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:07 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:07 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:08 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:08 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:08 INFO: (isaac_sim.py): Episode 39 starting - Robot fallen, resetting Isaac Sim world.
-
-2025-08-10 16:34:09 INFO: (isaac_sim.py): Episode 39 failed - no forward movement. Total forward progress: 0.0000
-2025-08-10 16:34:09 INFO: (isaac_sim.py): Episode 39 reset complete - World and robot state reset.
-
-2025-08-10 16:34:09 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:09 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:09 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:10 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:10 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:10 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
-2025-08-10 16:34:10 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:01 INFO: (log.py): Logging setup complete.
+
+2025-08-10 20:23:09 INFO: (control_logic.py): Robot moved up 30cm. Old pos: (0, 0, 0), New pos: (0, 0, 0.14)
+
+2025-08-10 20:23:10 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+
+2025-08-10 20:23:10 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+
+2025-08-10 20:23:10 INFO: (control_logic.py) Coordinate frames created for robot orientation tracking.
+
+2025-08-10 20:23:10 INFO: (camera.py): Successfully killed existing camera processes.
+
+2025-08-10 20:23:11 INFO: (camera.py) Computed aperture size for isaac camera.
+
+2025-08-10 20:23:11 INFO: (camera.py) Computed focal length for isaac camera.
+
+2025-08-10 20:23:11 INFO: (camera.py) Applied optics to isaac camera.
+
+2025-08-10 20:23:11 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-10 20:23:11 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+
+2025-08-10 20:23:14 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:15 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:16 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:17 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:18 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:19 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:20 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:21 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:22 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:23 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:24 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:25 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:26 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:27 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:28 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:29 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:30 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:31 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:32 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:33 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:34 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:35 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:36 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)
+2025-08-10 20:23:37 INFO: (fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)

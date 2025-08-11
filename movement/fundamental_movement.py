@@ -200,7 +200,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                     }
                 }
                 # Import Isaac Sim RL functions
-                from training.isaac_sim import get_rl_action_standard, get_rl_action_blind
+                from training.training import get_rl_action_standard, get_rl_action_blind
                 
                 if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
                     target_angles, mid_angles, movement_rates = get_rl_action_standard(
@@ -333,8 +333,8 @@ def move_joint(leg_id, joint_name, target_angle, speed, acceleration):
         set_target(servo_data['servo'], pwm, speed, acceleration)
         
     elif config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # PyBullet
-        # Import simulation variables from isaac_sim.py
-        from training.isaac_sim import ROBOT_ID, JOINT_MAP
+        # Import simulation variables from training.py
+        from training.training import ROBOT_ID, JOINT_MAP
         angle_rad = target_angle  # Already in radians
         joint_key = (leg_id, joint_name)
         if joint_key in JOINT_MAP:
