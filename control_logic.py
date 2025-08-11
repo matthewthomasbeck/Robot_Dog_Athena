@@ -42,11 +42,11 @@ ROBOT_ID = None
 JOINT_MAP = {}
 
 
-########## SET REAL ROBOT DEPENDENCIES ##########
+########## PREPARE ROBOT ##########
+
+##### prepare real robot #####
 
 def set_real_robot_dependencies():
-
-    ##### import/create dependencies #####
 
     global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP, internet
     from utilities.receiver import initialize_receiver  # import receiver initialization functions
@@ -70,8 +70,7 @@ def set_real_robot_dependencies():
         if CHANNEL_DATA == None:
             logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA for robot!\n")
 
-
-########## SET SIMULATED ROBOT DEPENDENCIES ##########
+##### prepare isaac sim #####
 
 def set_isaac_dependencies():
 
@@ -177,6 +176,8 @@ def set_isaac_dependencies():
         #if COMMAND_QUEUE is None:
             #logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
 
+##### prepare pybullet #####
+
 def set_pybullet_dependencies():
 
     ##### import/create dependencies #####
@@ -227,7 +228,7 @@ def set_pybullet_dependencies():
     from training.training import set_simulation_variables
     set_simulation_variables(ROBOT_ID, JOINT_MAP)
 
-##### import/create necessary dependencies based on detected environment #####
+########## PREPARE ROBOT ##########
 
 if not config.USE_SIMULATION:
     set_real_robot_dependencies()
@@ -255,7 +256,7 @@ if config.USE_SIMULATION and config.USE_ISAAC_SIM:
 #########################################
 
 
-########## RUN ROBOTIC PROCESS ##########
+########## STATE MACHINE LOOPS ##########
 
 ##### set global variables #####
 
@@ -264,9 +265,9 @@ IS_COMPLETE = True  # boolean that tracks if the robot is done moving, independe
 IS_NEUTRAL = False  # set global neutral standing boolean
 CURRENT_LEG = 'FL'  # set global current leg
 
-##### run robotic process #####
+##### physical loop #####
 
-def _perception_loop(CHANNEL_DATA):  # central function that runs robot
+def _physical_loop(CHANNEL_DATA):  # central function that runs robot in real life
 
     ##### set/initialize variables #####
 
@@ -274,10 +275,6 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
 
     ##### run robotic logic #####
-
-    if config.USE_SIMULATION and config.USE_ISAAC_SIM: # if isaac sim...
-        for _ in range(3):  # let isaac sim load a few steps for general process
-            config.ISAAC_WORLD.step(render=True)
 
     try:  # try to run robot startup sequence
         neutral_position(1)
@@ -293,64 +290,15 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
 
         while True:  # central loop to entire process, commenting out of importance
 
-            if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # if physical robot...
-                mjpeg_buffer, streamed_frame, inference_frame = decode_real_frame( # run camera and decode frame
-                    CAMERA_PROCESS,
-                    mjpeg_buffer
-                )
-                command = None  # initially no command
-
-            # Isaac Sim - collect frames and check for RL agent commands
-            if config.USE_SIMULATION and config.USE_ISAAC_SIM:  # if isaac sim...
-
-                mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
-                    CAMERA_PROCESS
-                )
-                command = None  # initially no command
-                
-                # Generate RL commands if queue is empty and robot is ready for new commands
-                if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
-                    from training.isaac_sim import get_rl_command_with_intensity, inject_rl_command_into_queue
-                    command, intensity = get_rl_command_with_intensity()
-                    inject_rl_command_into_queue(COMMAND_QUEUE, command, intensity)
-                    #logging.debug(f"(control_logic.py): Generated RL command: {command} with intensity {intensity}\n")
-                
-                # Check RL command queue for Isaac Sim
-                if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
-                    command_data = COMMAND_QUEUE.get()  # Get command data from RL queue
-                    if command_data is not None:
-                        # Extract command and intensity from RL command data
-                        rl_command = command_data.get('command')
-                        rl_intensity = command_data.get('intensity')  # Get intensity from RL agent
-                        
-                        # Convert RL command format to web command format for consistency
-                        if rl_command is None:
-                            command = 'n'  # Neutral command
-                        else:
-                            command = rl_command  # Use RL command directly
-                        
-                        # Store intensity for later use (should always be present from RL agent)
-                        if rl_intensity is not None:
-                            config.RL_COMMAND_INTENSITY = rl_intensity
-                        else:
-                            # Fallback if intensity is missing (shouldn't happen)
-                            config.RL_COMMAND_INTENSITY = 5
-                            logging.warning(f"(control_logic.py): RL command missing intensity, using default 5\n")
-                        
-                        #if IS_COMPLETE:
-                            #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (WILL RUN).\n")
-                        #else:
-                            #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (BLOCKED).\n")
-
-                # TODO get start pose of robot, may need to move to foundational movement
-                #prev_pose = get_world_pose(get_prim_at_path('/World/my_robot/base_link'))
+            mjpeg_buffer, streamed_frame, inference_frame = decode_real_frame( # run camera and decode frame
+                CAMERA_PROCESS,
+                mjpeg_buffer
+            )
+            command = None  # initially no command
 
             if config.CONTROL_MODE == 'web': # if web control enabled...
-
-                if not config.USE_SIMULATION and not config.USE_ISAAC_SIM: # if physical robot...
-                    internet.stream_to_backend(SOCK, streamed_frame)  # stream frame data to backend
-                #internet.stream_to_backend(SOCK, streamed_frame)
-
+                internet.stream_to_backend(SOCK, streamed_frame)
+                
                 if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty(): # if command queue is not empty...
                     command = COMMAND_QUEUE.get() # get command from queue
                     if command is not None:
@@ -376,16 +324,115 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
                 logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
                 threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
 
-            # step simulation if enabled
-            if config.USE_SIMULATION:
-                if config.USE_ISAAC_SIM:
-                    config.ISAAC_WORLD.step(render=True)
-                    
-                    # Process queued movements for Isaac Sim (avoid PhysX threading violations)
-                    process_isaac_movement_queue()
+    except KeyboardInterrupt:  # if user ends program...
+        logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
 
-                else:
-                    pybullet.stepSimulation()
+    except Exception as e:  # if something breaks and only God knows what it is...
+        logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
+        exit(1)
+
+##### isaac sim loop #####
+
+def _isaac_sim_loop():  # central function that runs robot in simulation
+
+    ##### loop pre-check #####
+
+    if config.CONTROL_MODE != 'web':
+        logging.error(f"(control_logic.py): Isaac Sim loop only works with web control mode, exiting.\n")
+        return
+
+    ##### set/initialize variables #####
+
+    global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG # declare as global as these will be edited by function
+    mjpeg_buffer = b''  # initialize buffer for MJPEG frames
+
+    ##### run robotic logic #####
+
+    for _ in range(3):  # let isaac sim load a few steps for general process
+        config.ISAAC_WORLD.step(render=True)
+
+    try:  # try to run robot startup sequence
+        neutral_position(1)
+        time.sleep(3)
+        IS_NEUTRAL = True  # set is_neutral to True
+
+    except Exception as e:  # if there is an error, log error
+        logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
+
+    ##### stream video, run inference, and control the robot #####
+
+    try:  # try to run main robotic process
+
+        while True:  # central loop to entire process, commenting out of importance
+
+            ##### decode frame #####
+
+            mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
+                CAMERA_PROCESS
+            )
+
+            ##### get command #####
+
+            command = None  # initially no command
+            
+            # Generate RL commands if queue is empty and robot is ready for new commands
+            if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
+                from training.isaac_sim import get_rl_command_with_intensity, inject_rl_command_into_queue
+                command, intensity = get_rl_command_with_intensity()
+                inject_rl_command_into_queue(COMMAND_QUEUE, command, intensity)
+                #logging.debug(f"(control_logic.py): Generated RL command: {command} with intensity {intensity}\n")
+            
+            # Check RL command queue for Isaac Sim
+            if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
+                command_data = COMMAND_QUEUE.get()  # Get command data from RL queue
+                if command_data is not None:
+                    # Extract command and intensity from RL command data
+                    rl_command = command_data.get('command')
+                    rl_intensity = command_data.get('intensity')  # Get intensity from RL agent
+                    
+                    # Convert RL command format to web command format for consistency
+                    if rl_command is None:
+                        command = 'n'  # Neutral command
+                    else:
+                        command = rl_command  # Use RL command directly
+                    
+                    # Store intensity for later use (should always be present from RL agent)
+                    if rl_intensity is not None:
+                        config.RL_COMMAND_INTENSITY = rl_intensity
+                    else:
+                        # Fallback if intensity is missing (shouldn't happen)
+                        config.RL_COMMAND_INTENSITY = 5
+                        logging.warning(f"(control_logic.py): RL command missing intensity, using default 5\n")
+                    
+                    #if IS_COMPLETE:
+                        #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (WILL RUN).\n")
+                    #else:
+                        #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (BLOCKED).\n")
+
+
+            if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty(): # if command queue is not empty...
+                command = COMMAND_QUEUE.get() # get command from queue
+                if command is not None:
+                    if IS_COMPLETE: # if movement is complete, run command
+                        logging.info(f"(control_logic.py): Received command '{command}' from queue (WILL RUN).\n")
+                    else:
+                        logging.info(f"(control_logic.py): Received command '{command}' from queue (BLOCKED).\n")
+
+            ##### command handling #####
+
+            if command and IS_COMPLETE: # if command present and movement complete...
+                #logging.debug(f"(control_logic.py): Running command: {command}...\n")
+                threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
+
+            # NEUTRAL POSITION HANDLING (for both modes)
+            elif not command and IS_COMPLETE and not IS_NEUTRAL: # if no command and movement complete and not neutral...
+                logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
+                threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
+
+            ##### step simulation #####
+
+            config.ISAAC_WORLD.step(render=True)
+            process_isaac_movement_queue()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
@@ -393,6 +440,11 @@ def _perception_loop(CHANNEL_DATA):  # central function that runs robot
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
         exit(1)
+
+
+
+
+
 
 
 ########## HANDLE COMMANDS ##########
@@ -475,7 +527,10 @@ def _handle_command(command, frame):
             IS_NEUTRAL = False
             IS_COMPLETE = True
 
-##### keyboard commands for tuning mode and normal operation #####
+
+########## EXECUTE COMMANDS ##########
+
+##### keyboard commands #####
 
 def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
 
@@ -564,8 +619,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
 
     return is_neutral, current_leg
 
-
-##### radio commands for multi-channel processing #####
+##### radio commands #####
 
 def _execute_radio_commands(commands, frame, is_neutral, current_leg):
 
@@ -720,9 +774,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
     return is_neutral, current_leg
 
 
-########## ROBOTIC PROCESS ##########
-
-##### run robotic process #####
+########## MISCELLANEOUS CONTROL FUNCTIONS ##########
 
 def restart_process(): # start background thread to restart robot_dog.service every 30 minutes by checking elapsed time
     start_time = time.time()
@@ -756,8 +808,18 @@ def voltage_monitor():
             logging.error(f"(control_logic.py) Failed to parse voltage: {voltage_output}\n")
         time.sleep(10)  # check every 10 seconds
 
+
+########## RUN ROBOTIC PROCESS ##########
+
 #restart_thread = threading.Thread(target=restart_process, daemon=True) # TODO disabling for endurance testing
 #restart_thread.start()
 #voltage_thread = threading.Thread(target=voltage_monitor, daemon=True) # TODO clean up your messy code first!
 #voltage_thread.start()
-_perception_loop(CHANNEL_DATA)  # run robot process
+
+if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:
+    _physical_loop(CHANNEL_DATA)  # run robot process
+elif config.USE_SIMULATION and config.USE_ISAAC_SIM:
+    _isaac_sim_loop()  # run robot process
+else:
+    logging.error(f"(control_logic.py): Invalid configuration: {config.USE_SIMULATION} and {config.USE_ISAAC_SIM}\n")
+    exit(1)
