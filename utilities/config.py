@@ -130,7 +130,6 @@ LINK_CONFIG = { # dictionary of leg linkages # TODO rename anything 'hip' relate
 
 ##### set dictionary of servos and their ranges #####
 
-
 SERVO_CONFIG = { # dictionary of leg configurations
 
     'FL': {'hip': {'servo': 3, 'FULL_FRONT': 1892.25, 'FULL_BACK': 1236.50, 'NEUTRAL': 1564.375, 'CURRENT': 1564.375, 'FULL_FRONT_ANGLE': 0.958934, 'FULL_BACK_ANGLE': -0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
@@ -149,6 +148,7 @@ SERVO_CONFIG = { # dictionary of leg configurations
            'upper': {'servo': 10, 'FULL_FRONT': 1701.50, 'FULL_BACK': 1065.25, 'NEUTRAL': 1283.375, 'CURRENT': 1283.375, 'FULL_FRONT_ANGLE': 0.654, 'FULL_BACK_ANGLE': -0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 9, 'FULL_FRONT': 2000.00, 'FULL_BACK': 1221.75, 'NEUTRAL': 1610.875, 'CURRENT': 1610.875, 'FULL_FRONT_ANGLE': 0.698, 'FULL_BACK_ANGLE': -0.698, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0}},
 }
+
 
 
 

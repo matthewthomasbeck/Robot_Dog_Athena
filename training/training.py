@@ -24,6 +24,20 @@
 ##################################################
 
 
+########## SIMULATION VARIABLES ##########
+
+def set_simulation_variables(robot_id, joint_map): # for pybullet, ignore me
+    """
+    Set global simulation variables for PyBullet.
+    Args:
+        robot_id: PyBullet robot body ID
+        joint_map: Dictionary mapping joint names to indices
+    """
+    global ROBOT_ID, JOINT_MAP
+    ROBOT_ID = robot_id
+    JOINT_MAP = joint_map
+
+
 ########## FALLEN ROBOT ##########
 
 def is_robot_fallen():  # TODO this function does a good job at telling when the robot has fallen, DO NOT TOUCH
@@ -62,20 +76,6 @@ def is_robot_fallen():  # TODO this function does a good job at telling when the
         import logging
         logging.error(f"(training.py): Failed to check if robot fallen: {e}\n")
         return False  # Assume upright if error
-
-
-########## SIMULATION VARIABLES ##########
-
-def set_simulation_variables(robot_id, joint_map):
-    """
-    Set global simulation variables for PyBullet.
-    Args:
-        robot_id: PyBullet robot body ID
-        joint_map: Dictionary mapping joint names to indices
-    """
-    global ROBOT_ID, JOINT_MAP
-    ROBOT_ID = robot_id
-    JOINT_MAP = joint_map
 
 
 ########## STANDARD RL AGENT INTERFACE ##########
