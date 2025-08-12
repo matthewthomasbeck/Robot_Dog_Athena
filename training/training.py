@@ -25,6 +25,18 @@ This will automatically:
 
 The key difference from your old system is that this properly resets the Isaac Sim world
 and robot position, not just Python variables.
+
+REWARD SYSTEM STRUCTURE:
+
+The reward system is designed to be easily extended:
+
+1. FALLING PENALTY (-10.0): Foundation reward - robot must stay upright
+2. STABILITY REWARD (+0.1): Base reward for staying upright each step
+3. FORWARD MOVEMENT REWARD (future): Reward for moving forward when commanded
+4. COMMAND EXECUTION REWARD (future): Reward for successfully executing commands
+
+To add forward movement rewards later, uncomment and implement the marked sections
+in calculate_step_reward() function.
 """
 
 
@@ -90,7 +102,7 @@ def is_robot_fallen():  # TODO this function does a good job at telling when the
         angle_rad = np.arccos(dot_product)
         angle_deg = np.degrees(angle_rad)
 
-        return angle_deg > 45.0  # Fallen if tilted more than 45 degrees
+        return angle_deg > 25.0  # Fallen if tilted more than 25 degrees
 
     except Exception as e:
         import logging
@@ -300,18 +312,18 @@ def end_episode():
     """End current episode and save progress"""
     global episode_counter, episode_reward
     
-    print(f"Episode {episode_counter} ended:")
-    print(f"  - Steps: {episode_step}")
-    print(f"  - Reward: {episode_reward:.4f}")
+    print(f"🎯 Episode {episode_counter} ended:")
+    print(f"   📊 Steps: {episode_step}")
+    print(f"   📊 Final Reward: {episode_reward:.3f}")
     
     # Save model periodically (only if TD3 policy is initialized)
     if episode_counter % TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
         save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
-        print(f"Model saved: episode_{episode_counter}")
+        print(f"💾 Model saved: episode_{episode_counter}")
     elif td3_policy is None:
-        print(f"Warning: TD3 policy not initialized yet, skipping model save for episode {episode_counter}")
+        print(f"⚠️  Warning: TD3 policy not initialized yet, skipping model save for episode {episode_counter}")
     else:
-        print(f"Episode {episode_counter} completed but not at save frequency ({TRAINING_CONFIG['save_frequency']})")
+        print(f"📝 Episode {episode_counter} completed but not at save frequency ({TRAINING_CONFIG['save_frequency']})")
 
 
 
@@ -457,6 +469,45 @@ def check_and_reset_episode_if_needed():
     return False
 
 
+def calculate_step_reward(current_angles, commands, intensity):
+    """
+    Calculate reward for the current step.
+    This is the foundation for the reward system that can be easily extended.
+    
+    Args:
+        current_angles: Current joint angles
+        commands: Movement commands (e.g., 'w', 's', 'a', 'd')
+        intensity: Movement intensity (1-10)
+    
+    Returns:
+        float: Reward value for this step
+    """
+    reward = 0.0
+    
+    # 1. FALLING PENALTY (Foundation reward)
+    if is_robot_fallen():
+        reward -= 10.0  # Heavy penalty for falling
+        print(f"🚨 Robot fell! Penalty: -10.0 points")
+        return reward  # Return immediately - episode is over
+    
+    # 2. STABILITY REWARD (Base reward for staying upright)
+    reward += 0.1  # Small positive reward for staying upright
+    
+    # 3. FUTURE: FORWARD MOVEMENT REWARD (To be implemented later)
+    # if commands == 'w':  # Forward command
+    #     # Calculate forward progress and reward accordingly
+    #     # reward += forward_progress * intensity * 0.1
+    #     pass
+    
+    # 4. FUTURE: COMMAND EXECUTION REWARD (To be implemented later)
+    # if commands and not is_robot_fallen():
+    #     # Reward for successfully executing commands while staying upright
+    #     # reward += 0.05
+    #     pass
+    
+    return reward
+
+
 def get_rl_action_blind(current_angles, commands, intensity):
     """
     TD3 RL agent that takes current joint angles, commands, and intensity as state
@@ -541,12 +592,15 @@ def get_rl_action_blind(current_angles, commands, intensity):
     
     # Store experience for training
     if last_state is not None and last_action is not None:
-        # Calculate reward based on robot state
-        if is_robot_fallen():
-            reward = -10.0  # Heavy penalty for falling
-            print(f"Robot fell! Applying penalty reward: {reward}")
-        else:
-            reward = 0.1  # Small positive reward for staying upright
+        # Calculate reward using the dedicated reward function
+        reward = calculate_step_reward(current_angles, commands, intensity)
+        
+        # Update episode reward for tracking
+        episode_reward += reward
+        
+        # Log reward progression every 50 steps for monitoring
+        if episode_step % 50 == 0:
+            print(f"📊 Episode {episode_counter}, Step {episode_step}: Reward = {reward:.3f}, Total Episode Reward = {episode_reward:.3f}")
         
         # Check if episode ended due to fall or completion
         done = is_robot_fallen() or episode_step >= TRAINING_CONFIG['max_steps_per_episode']
