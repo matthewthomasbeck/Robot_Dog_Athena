@@ -369,7 +369,7 @@ def get_rl_action_blind(current_angles, commands, intensity):
 
     # 2. Encode commands (8D one-hot)
     if isinstance(commands, list):
-    command_list = commands
+        command_list = commands
     elif isinstance(commands, str):
         command_list = commands.split('+') if commands else []
     else:
