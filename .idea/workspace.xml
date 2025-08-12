@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed broken indent x2" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed broken indent x3 THIS ONE WORKED" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -174,6 +174,7 @@
       <workItem from="1754967276919" duration="1094000" />
       <workItem from="1754968475792" duration="19000" />
       <workItem from="1754968626567" duration="17000" />
+      <workItem from="1754969382926" duration="137000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -314,14 +315,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00077" summary="Solved basic implementation of articulation, I was trying to move before initialization like a doofus">
-      <option name="closed" value="true" />
-      <created>1753826707668</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1753826707669</updated>
     </task>
     <task id="LOCAL-00078" summary="Solved cv2 dependency issue in isaac, going to try to solve '(control_logic.py): Unexpected exception in main loop: cannot access local variable 'command' where it is not associated with a value' next">
       <option name="closed" value="true" />
@@ -547,7 +540,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754968635471</updated>
     </task>
-    <option name="localTasksCounter" value="106" />
+    <task id="LOCAL-00106" summary="Fixed broken indent x3 THIS ONE WORKED">
+      <option name="closed" value="true" />
+      <created>1754969394572</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
+      <option name="project" value="LOCAL" />
+      <updated>1754969394572</updated>
+    </task>
+    <option name="localTasksCounter" value="107" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -565,7 +566,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete" />
     <MESSAGE value="Got velocity integrated with isaac movement" />
     <MESSAGE value="Fixed failing camera error" />
     <MESSAGE value="Got basic implementation of a reward function, exhausted and calling it for today" />
@@ -590,7 +590,8 @@
     <MESSAGE value="Cleaned up isaac_sim and made training.py for fresh slate" />
     <MESSAGE value="Fixed broken indent" />
     <MESSAGE value="Fixed broken indent x2" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed broken indent x2" />
+    <MESSAGE value="Fixed broken indent x3 THIS ONE WORKED" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed broken indent x3 THIS ONE WORKED" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

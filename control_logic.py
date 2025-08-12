@@ -403,9 +403,26 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             
             # Generate RL commands if queue is empty and robot is ready for new commands
             if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
-                from training.isaac_sim import get_rl_command_with_intensity, inject_rl_command_into_queue
-                command, intensity = get_rl_command_with_intensity()
-                inject_rl_command_into_queue(COMMAND_QUEUE, command, intensity)
+                # Use the new training system instead of the old isaac_sim functions
+                from training.training import get_rl_action_blind
+                
+                # Get current joint angles for the RL agent
+                current_angles = {}
+                for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                    current_angles[leg_id] = {}
+                    for joint_name in ['hip', 'upper', 'lower']:
+                        current_angles[leg_id][joint_name] = config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']
+                
+                # Generate a simple forward command for training
+                command = 'w'  # Forward command
+                intensity = 5   # Medium intensity
+                
+                # Get RL action (this will handle episode management internally)
+                target_angles, mid_angles, movement_rates = get_rl_action_blind(current_angles, command, intensity)
+                
+                # Store the action data for later use
+                config.RL_COMMAND_INTENSITY = intensity
+                
                 #logging.debug(f"(control_logic.py): Generated RL command: {command} with intensity {intensity}\n")
             
             # Check RL command queue for Isaac Sim
@@ -459,6 +476,20 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             config.ISAAC_WORLD.step(render=True)
             process_isaac_movement_queue()
+
+            ##### CRITICAL: Episode Management in Main Thread #####
+            # Check for episode resets in the main thread (NOT in worker threads)
+            if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+                from training.training import integrate_with_main_loop
+                episode_reset_occurred = integrate_with_main_loop()
+                
+                if episode_reset_occurred:
+                    # Episode was reset, give robot time to stabilize
+                    logging.info(f"(control_logic.py): Episode reset occurred, allowing robot to stabilize...\n")
+                    # Wait a few simulation steps for stability
+                    for _ in range(3):
+                        config.ISAAC_WORLD.step(render=True)
+                    process_isaac_movement_queue()
 
             ##### TODO: calculate_training_reward(): Compute reward based on robot progress #####
             # TODO: calculate_training_reward(): Measure forward progress (Y-axis movement)

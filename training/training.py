@@ -7,13 +7,33 @@
 # Matthew Thomas Beck.                                                           #
 ##################################################################################
 
+"""
+INTEGRATION WITH MAIN LOOP:
 
+To use this training system, add this to your main loop after each simulation step:
 
+if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+    from training.training import integrate_with_main_loop
+    integrate_with_main_loop()
+
+This will automatically:
+1. Check if robot has fallen
+2. Reset Isaac Sim world when episodes end
+3. Move robot back to neutral position
+4. Reset episode tracking variables
+5. Continue training seamlessly
+
+The key difference from your old system is that this properly resets the Isaac Sim world
+and robot position, not just Python variables.
+"""
 
 
 ############################################################
 ############### IMPORT / CREATE DEPENDENCIES ###############
 ############################################################
+
+
+import utilities.config as config
 
 
 
@@ -240,6 +260,8 @@ def initialize_training():
     """Initialize the complete training system"""
     global td3_policy, replay_buffer
     
+    print("Initializing training system...")
+    
     # Create models directory
     import os
     models_dir = "/home/matthewthomasbeck/Projects/Robot_Dog/model"
@@ -259,6 +281,8 @@ def initialize_training():
     print(f"  - State dimension: {state_dim}")
     print(f"  - Action dimension: {action_dim}")
     print(f"  - Models directory: {models_dir}")
+    print(f"  - TD3 policy created: {td3_policy is not None}")
+    print(f"  - Replay buffer created: {replay_buffer is not None}")
 
 def start_episode():
     """Start a new training episode"""
@@ -280,10 +304,14 @@ def end_episode():
     print(f"  - Steps: {episode_step}")
     print(f"  - Reward: {episode_reward:.4f}")
     
-    # Save model periodically
-    if episode_counter % TRAINING_CONFIG['save_frequency'] == 0:
+    # Save model periodically (only if TD3 policy is initialized)
+    if episode_counter % TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
         save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
         print(f"Model saved: episode_{episode_counter}")
+    elif td3_policy is None:
+        print(f"Warning: TD3 policy not initialized yet, skipping model save for episode {episode_counter}")
+    else:
+        print(f"Episode {episode_counter} completed but not at save frequency ({TRAINING_CONFIG['save_frequency']})")
 
 def save_model(filepath):
     """Save the current TD3 model"""
@@ -336,13 +364,73 @@ def load_model(filepath):
     return False
 
 
+def get_neutral_action():
+    """
+    Return neutral joint angles when episodes are reset.
+    This gives the robot time to stabilize after reset.
+    """
+    import utilities.config as config
+    
+    target_angles = {}
+    mid_angles = {}
+    movement_rates = {}
+    
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        target_angles[leg_id] = {}
+        mid_angles[leg_id] = {}
+        movement_rates[leg_id] = {'speed': 0.1, 'acceleration': 0.5}  # Very slow for stability
+        
+        for joint_name in ['hip', 'upper', 'lower']:
+            # Get neutral angles from config
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            neutral_angle = servo_data.get('NEUTRAL_ANGLE', 0.0)  # Default to 0 if not defined
+            
+            target_angles[leg_id][joint_name] = neutral_angle
+            mid_angles[leg_id][joint_name] = neutral_angle
+    
+    return target_angles, mid_angles, movement_rates
+
+
+def check_and_reset_episode_if_needed():
+    """
+    Check if episode should be reset and trigger reset if needed.
+    This function should be called from the main thread to integrate episode management.
+    
+    Returns:
+        bool: True if episode was reset, False otherwise
+    """
+    global episode_step, episode_counter
+    
+    # Check if robot has fallen (episode should end)
+    if is_robot_fallen():
+        print(f"Robot fallen! Ending episode {episode_counter} at step {episode_step}")
+        # Save model before resetting
+        if episode_step > 0:
+            end_episode()
+        reset_episode()
+        return True
+    
+    # Check if episode has reached max steps
+    if episode_step >= TRAINING_CONFIG['max_steps_per_episode']:
+        print(f"Episode {episode_counter} completed after {episode_step} steps!")
+        # Save model before resetting
+        end_episode()
+        reset_episode()
+        return True
+    
+    return False
+
+
 def get_rl_action_blind(current_angles, commands, intensity):
     """
     TD3 RL agent that takes current joint angles, commands, and intensity as state
     and outputs 24 values (12 mid angles + 12 target angles)
+    
+    NOTE: This function runs in worker threads, so it CANNOT call Isaac Sim reset functions.
+    It only signals that a reset is needed - the main thread handles actual resets.
     """
     global td3_policy, replay_buffer, episode_step, episode_reward, episode_counter
-    global last_state, last_action, total_steps, respawn_cooldown
+    global last_state, last_action, total_steps
     
     # Import config at the top to avoid importing in loops
     import utilities.config as config
@@ -352,11 +440,20 @@ def get_rl_action_blind(current_angles, commands, intensity):
         initialize_training()
         start_episode()
     
-    # Check episode completion
+    # CRITICAL: Check episode completion but DON'T reset from worker thread
+    # Just signal that a reset is needed - main thread will handle it
+    episode_needs_reset = False
+    
+    if is_robot_fallen():
+        episode_needs_reset = True
+        print(f"Robot fallen! Episode {episode_counter} needs reset (signaling main thread)")
+    
     if episode_step >= TRAINING_CONFIG['max_steps_per_episode']:
-        print(f"Episode {episode_counter} completed after {episode_step} steps!")
-        end_episode()
-        start_episode()
+        episode_needs_reset = True
+        print(f"Episode {episode_counter} completed after {episode_step} steps! (signaling main thread)")
+    
+    # Store reset signal for main thread to check
+    config.EPISODE_NEEDS_RESET = episode_needs_reset
     
     # Log episode progress every 100 steps
     if episode_step % 100 == 0:
@@ -477,13 +574,97 @@ def update_reward(reward):
     episode_reward += reward
 
 def reset_episode():
-    """Reset the current episode (called when robot falls or episode ends)"""
-    global episode_step, episode_reward, last_state, last_action
-    episode_step = 0
-    episode_reward = 0.0
-    last_state = None
-    last_action = None
-    print("Episode reset due to robot fall or episode end")
+    """
+    Reset the current episode by resetting Isaac Sim world and moving robot to neutral position.
+    This is the critical function that was working in working_robot_reset.py
+    """
+    global episode_step, episode_reward, last_state, last_action, episode_counter, total_steps
+    
+    import logging
+    from movement.fundamental_movement import neutral_position
+    import utilities.config as config
+    
+    try:
+        logging.info(f"(training.py): Episode {episode_counter} ending - Robot fallen or episode complete, resetting Isaac Sim world.\n")
+        
+        # CRITICAL: Save the model before resetting (if episode had any progress)
+        if episode_step > 0:
+            end_episode()
+        
+        # CRITICAL: Reset Isaac Sim world (position, velocity, physics state)
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            # Reset the world - this resets robot position, velocities, and physics state
+            config.ISAAC_WORLD.reset()
+            
+            # Give Isaac Sim a few steps to stabilize after world reset
+            for _ in range(5):
+                config.ISAAC_WORLD.step(render=True)
+        
+        # CRITICAL: Move robot to neutral position (joint angles)
+        neutral_position(10)  # High intensity for quick reset
+        
+        # Give Isaac Sim more steps to stabilize after neutral position
+        if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+            for _ in range(5):
+                config.ISAAC_WORLD.step(render=True)
+        
+        # Reset Python tracking variables
+        episode_step = 0
+        episode_reward = 0.0
+        last_state = None
+        last_action = None
+        
+        # Increment episode counter
+        episode_counter += 1
+        
+        logging.info(f"(training.py): Episode {episode_counter} reset complete - World and robot state reset.\n")
+        
+        # Log learning progress every 10 episodes
+        if episode_counter % 10 == 0:
+            logging.info(f"(training.py): LEARNING PROGRESS - Episodes: {episode_counter}, Total Steps: {total_steps}")
+        
+    except Exception as e:
+        logging.error(f"(training.py): Failed to reset episode: {e}\n")
+        # Fallback: just reset Python variables if Isaac Sim reset fails
+        episode_step = 0
+        episode_reward = 0.0
+        last_state = None
+        last_action = None
+        episode_counter += 1
+
+def integrate_with_main_loop():
+    """
+    This function should be called from your main loop to integrate episode management.
+    Call this function after each simulation step to check for episode resets.
+    
+    Usage in main loop:
+    if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+        from training.training import integrate_with_main_loop
+        integrate_with_main_loop()
+    """
+    global episode_step, episode_counter, total_steps
+    
+    import utilities.config as config
+    
+    # Check if worker thread has signaled that episode needs reset
+    if hasattr(config, 'EPISODE_NEEDS_RESET') and config.EPISODE_NEEDS_RESET:
+        # Clear the signal
+        config.EPISODE_NEEDS_RESET = False
+        
+        # Perform the actual reset in the main thread (safe for Isaac Sim)
+        print(f"Main thread: Episode reset signal received, performing reset...")
+        reset_episode()
+        return True
+    
+    # Also check directly if episode should be reset (backup check)
+    if check_and_reset_episode_if_needed():
+        # Episode was reset, log the event
+        import logging
+        logging.info(f"(training.py): Episode {episode_counter} reset in main loop integration\n")
+        return True
+    
+    return False
+
 
 def get_training_status():
     """Get current training status for monitoring"""
