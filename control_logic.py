@@ -346,6 +346,12 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG # declare as global as these will be edited by function
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
 
+    ##### TODO: initialize_training(): Setup TD3 policy, replay buffer, episode tracking #####
+    # TODO: initialize_training(): Create TD3 policy network with state_dim=12, action_dim=8
+    # TODO: initialize_training(): Initialize replay buffer with max_size=1_000_000
+    # TODO: initialize_training(): Setup episode counters and reward tracking
+    # TODO: initialize_training(): Load pre-trained model if LOAD_MODEL is True
+
     ##### run robotic logic #####
 
     for _ in range(3):  # let isaac sim load a few steps for general process
@@ -359,11 +365,20 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
     except Exception as e:  # if there is an error, log error
         logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
+    ##### TODO: start_training_episode(): Reset robot positions, initialize episode tracking #####
+    # TODO: start_training_episode(): Reset all robots to starting positions
+    # TODO: start_training_episode(): Clear episode step counters and reward tracking
+    # TODO: start_training_episode(): Determine if this is random/exploration/exploitation episode
+
     ##### stream video, run inference, and control the robot #####
 
     try:  # try to run main robotic process
 
         while True:  # central loop to entire process, commenting out of importance
+
+            ##### TODO: check_episode_completion(): Check if episode should end #####
+            # TODO: check_episode_completion(): Check if MAX_STEPS reached or robot fell over
+            # TODO: check_episode_completion(): If episode complete, call end_training_episode()
 
             ##### decode frame #####
 
@@ -371,9 +386,20 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 CAMERA_PROCESS
             )
 
+            ##### TODO: get_training_observation(): Extract robot state for RL agent #####
+            # TODO: get_training_observation(): Get joint positions (8 values)
+            # TODO: get_training_observation(): Get robot orientation quaternion (4 values)
+            # TODO: get_training_observation(): Combine into 12-dimensional state vector
+
             ##### get command #####
 
             command = None  # initially no command
+
+            ##### TODO: select_training_action(): Choose action using TD3 policy or random #####
+            # TODO: select_training_action(): If random episode: generate random actions
+            # TODO: select_training_action(): If exploration episode: policy action + noise
+            # TODO: select_training_action(): If exploitation episode: pure policy action
+            # TODO: select_training_action(): Convert continuous actions to discrete commands
             
             # Generate RL commands if queue is empty and robot is ready for new commands
             if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
@@ -433,6 +459,32 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             config.ISAAC_WORLD.step(render=True)
             process_isaac_movement_queue()
+
+            ##### TODO: calculate_training_reward(): Compute reward based on robot progress #####
+            # TODO: calculate_training_reward(): Measure forward progress (Y-axis movement)
+            # TODO: calculate_training_reward(): Measure sideways deviation penalty (X-axis movement)
+            # TODO: calculate_training_reward(): Check for movement stagnation penalty
+            # TODO: calculate_training_reward(): Store reward in episode tracking
+
+            ##### TODO: store_training_experience(): Add experience to replay buffer #####
+            # TODO: store_training_experience(): Store (state, action, reward, next_state, done)
+            # TODO: store_training_experience(): Handle episode termination flags
+
+            ##### TODO: train_policy_network(): Update TD3 networks #####
+            # TODO: train_policy_network(): Sample batch from replay buffer
+            # TODO: train_policy_network(): Update actor and critic networks
+            # TODO: train_policy_network(): Soft update target networks
+            # TODO: train_policy_network(): Handle training frequency (every N steps)
+
+            ##### TODO: log_training_progress(): Track and display training metrics #####
+            # TODO: log_training_progress(): Log episode rewards and losses
+            # TODO: log_training_progress(): Display average performance
+            # TODO: log_training_progress(): Save training curves to files
+
+            ##### TODO: episode_cleanup(): Handle episode termination and restart #####
+            # TODO: episode_cleanup(): If episode complete, save model and start new episode
+            # TODO: episode_cleanup(): Reset robot positions and episode counters
+            # TODO: episode_cleanup(): Handle training completion (max episodes reached)
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")

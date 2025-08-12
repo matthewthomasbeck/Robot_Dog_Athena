@@ -579,7 +579,7 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
         
         ARTICULATION_CONTROLLER.apply_action(mid_action)
 
-        time.sleep(0.1)
+        time.sleep(0.05)
         
         # STEP 2: Move to target angles
         for leg_id, joint_name in joint_order:
@@ -610,9 +610,9 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
         
         ARTICULATION_CONTROLLER.apply_action(target_action)
         
-        logging.info(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)")
+        #logging.info(f"(fundamental_movement.py): Applied AI agent joint angles for Isaac Sim (mid -> target)")
 
-        time.sleep(0.1)
+        time.sleep(0.05)
         
     except Exception as e:
         logging.error(f"(fundamental_movement.py): Failed to apply AI agent joint angles for Isaac Sim: {e}\n")
