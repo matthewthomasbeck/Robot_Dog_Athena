@@ -246,7 +246,7 @@ total_steps = 0
 TRAINING_CONFIG = {
     'max_episodes': 1000000,
     'max_steps_per_episode': 500,  # ~8.3 seconds at 60 FPS
-    'save_frequency': 1,  # Save model every episode (for testing)
+    'save_frequency': 10,  # Save model every 10 episodes
     'training_frequency': 10,  # Train every 10 steps
     'batch_size': 64,
     'learning_rate': 3e-4,
@@ -313,11 +313,22 @@ def end_episode():
     else:
         print(f"Episode {episode_counter} completed but not at save frequency ({TRAINING_CONFIG['save_frequency']})")
 
+
+
+
 def save_model(filepath):
     """Save the current TD3 model"""
     if td3_policy:
         import torch
-        torch.save({
+        
+        print(f"💾 Saving TD3 model to: {filepath}")
+        print(f"   📊 Current episode: {episode_counter}")
+        print(f"   📊 Current step: {episode_step}")
+        print(f"   📊 Total steps: {total_steps}")
+        print(f"   📊 Episode reward: {episode_reward:.4f}")
+        
+        # Create the checkpoint data
+        checkpoint = {
             'actor_state_dict': td3_policy.actor.state_dict(),
             'critic_1_state_dict': td3_policy.critic_1.state_dict(),
             'critic_2_state_dict': td3_policy.critic_2.state_dict(),
@@ -330,8 +341,33 @@ def save_model(filepath):
             'episode_counter': episode_counter,
             'total_steps': total_steps,
             'episode_reward': episode_reward,
-        }, filepath)
+        }
+        
+        # Verify checkpoint data before saving
+        print(f"   🔍 Checkpoint contains {len(checkpoint)} keys:")
+        for key, value in checkpoint.items():
+            if 'state_dict' in key:
+                if isinstance(value, dict):
+                    print(f"      ✅ {key}: {len(value)} layers")
+                else:
+                    print(f"      ❌ {key}: Invalid type {type(value)}")
+            else:
+                print(f"      📊 {key}: {value}")
+        
+        # Save the model
+        torch.save(checkpoint, filepath)
+        
+        # Verify the file was created and has content
+        import os
+        if os.path.exists(filepath):
+            file_size = os.path.getsize(filepath) / (1024*1024)
+            print(f"   ✅ Model saved successfully! File size: {file_size:.1f} MB")
+        else:
+            print(f"   ❌ Failed to save model - file not created")
+            
         print(f"Model saved to: {filepath}")
+    else:
+        print(f"❌ Cannot save model - TD3 policy not initialized")
 
 def load_model(filepath):
     """Load a TD3 model from file"""
