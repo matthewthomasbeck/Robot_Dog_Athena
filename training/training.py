@@ -335,14 +335,18 @@ def load_model(filepath):
         return True
     return False
 
+
 def get_rl_action_blind(current_angles, commands, intensity):
     """
     TD3 RL agent that takes current joint angles, commands, and intensity as state
     and outputs 24 values (12 mid angles + 12 target angles)
     """
     global td3_policy, replay_buffer, episode_step, episode_reward, episode_counter
-    global last_state, last_action, total_steps
+    global last_state, last_action, total_steps, respawn_cooldown
     
+    # Import config at the top to avoid importing in loops
+    import utilities.config as config
+
     # Initialize training system if not done yet
     if td3_policy is None:
         initialize_training()
@@ -360,21 +364,21 @@ def get_rl_action_blind(current_angles, commands, intensity):
     
     # Build state vector
     state = []
-
+    
     # 1. Extract joint angles (12D)
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
         for joint_name in ['hip', 'upper', 'lower']:
             angle = current_angles[leg_id][joint_name]
-        state.append(float(angle))
-
+            state.append(float(angle))
+    
     # 2. Encode commands (8D one-hot)
     if isinstance(commands, list):
         command_list = commands
     elif isinstance(commands, str):
         command_list = commands.split('+') if commands else []
     else:
-    command_list = []
-
+        command_list = []
+    
     command_encoding = [
         1.0 if 'w' in command_list else 0.0,
         1.0 if 's' in command_list else 0.0,
@@ -386,7 +390,7 @@ def get_rl_action_blind(current_angles, commands, intensity):
         1.0 if 'arrowdown' in command_list else 0.0
     ]
     state.extend(command_encoding)
-
+    
     # 3. Normalize intensity (1D)
     intensity_normalized = float(intensity) / 10.0
     state.append(intensity_normalized)
@@ -404,9 +408,15 @@ def get_rl_action_blind(current_angles, commands, intensity):
     
     # Store experience for training
     if last_state is not None and last_action is not None:
-        # Placeholder reward (will be replaced with proper reward function)
-        reward = 0.1
-        done = False
+        # Calculate reward based on robot state
+        if is_robot_fallen():
+            reward = -10.0  # Heavy penalty for falling
+            print(f"Robot fell! Applying penalty reward: {reward}")
+        else:
+            reward = 0.1  # Small positive reward for staying upright
+        
+        # Check if episode ended due to fall or completion
+        done = is_robot_fallen() or episode_step >= TRAINING_CONFIG['max_steps_per_episode']
         
         # Add to replay buffer
         replay_buffer.add(last_state, last_action, reward, state, done)
@@ -423,28 +433,27 @@ def get_rl_action_blind(current_angles, commands, intensity):
     total_steps += 1
     
     # Convert action (-1 to 1) to joint angles
-        target_angles = {}
-        mid_angles = {}
-        movement_rates = {}
-
-        action_idx = 0
-
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            target_angles[leg_id] = {}
-            mid_angles[leg_id] = {}
-            movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
-
-            for joint_name in ['hip', 'upper', 'lower']:
-                # Get joint limits from config
-            import utilities.config as config
-                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-                min_angle = servo_data['FULL_BACK_ANGLE']
-                max_angle = servo_data['FULL_FRONT_ANGLE']
-
+    target_angles = {}
+    mid_angles = {}
+    movement_rates = {}
+    
+    action_idx = 0
+    
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        target_angles[leg_id] = {}
+        mid_angles[leg_id] = {}
+        movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
+        
+        for joint_name in ['hip', 'upper', 'lower']:
+            # Get joint limits from config
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            min_angle = servo_data['FULL_BACK_ANGLE']
+            max_angle = servo_data['FULL_FRONT_ANGLE']
+            
             # Ensure correct order
             if min_angle > max_angle:
                 min_angle, max_angle = max_angle, min_angle
-
+            
             # Convert mid action (-1 to 1) to joint angle
             mid_action = action[action_idx]
             mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
@@ -456,10 +465,11 @@ def get_rl_action_blind(current_angles, commands, intensity):
             target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
             target_angle = np.clip(target_angle, min_angle, max_angle)
             target_angles[leg_id][joint_name] = float(target_angle)
-
+            
             action_idx += 1
 
     return target_angles, mid_angles, movement_rates
+
 
 def update_reward(reward):
     """Update the current episode reward (called from external reward calculation)"""

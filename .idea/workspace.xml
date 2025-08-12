@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed broken indent" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed broken indent x2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -173,6 +173,7 @@
       <workItem from="1754875722612" duration="1183000" />
       <workItem from="1754967276919" duration="1094000" />
       <workItem from="1754968475792" duration="19000" />
+      <workItem from="1754968626567" duration="17000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -313,14 +314,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00076" summary="This code does not work, but saving before ditching articulation objects in favor of higher level fucntions like set_joint_position to move in isaac sim">
-      <option name="closed" value="true" />
-      <created>1753824031830</created>
-      <option name="number" value="00076" />
-      <option name="presentableId" value="LOCAL-00076" />
-      <option name="project" value="LOCAL" />
-      <updated>1753824031831</updated>
     </task>
     <task id="LOCAL-00077" summary="Solved basic implementation of articulation, I was trying to move before initialization like a doofus">
       <option name="closed" value="true" />
@@ -546,7 +539,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754968485572</updated>
     </task>
-    <option name="localTasksCounter" value="105" />
+    <task id="LOCAL-00105" summary="Fixed broken indent x2">
+      <option name="closed" value="true" />
+      <created>1754968635471</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1754968635471</updated>
+    </task>
+    <option name="localTasksCounter" value="106" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -564,7 +565,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Massive milestone, isaac sim no longer crashes and I can successfully joints to 0.0 values" />
     <MESSAGE value="Added an isaac_sim file to store isaac-specific files, isaac movement pipeline (seemingly) complete" />
     <MESSAGE value="Got velocity integrated with isaac movement" />
     <MESSAGE value="Fixed failing camera error" />
@@ -589,7 +589,8 @@
     <MESSAGE value="Saving checkpoint, going to see why velocity is giving me such massive problems in issac" />
     <MESSAGE value="Cleaned up isaac_sim and made training.py for fresh slate" />
     <MESSAGE value="Fixed broken indent" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed broken indent" />
+    <MESSAGE value="Fixed broken indent x2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed broken indent x2" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
