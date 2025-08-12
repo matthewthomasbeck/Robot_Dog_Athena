@@ -361,34 +361,34 @@ def get_rl_action_blind(current_angles, commands, intensity):
     # Build state vector
     state = []
 
-        # 1. Extract joint angles (12D)
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            for joint_name in ['hip', 'upper', 'lower']:
-                angle = current_angles[leg_id][joint_name]
-            state.append(float(angle))
+    # 1. Extract joint angles (12D)
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        for joint_name in ['hip', 'upper', 'lower']:
+            angle = current_angles[leg_id][joint_name]
+        state.append(float(angle))
 
-        # 2. Encode commands (8D one-hot)
-        if isinstance(commands, list):
-        command_list = commands
-        elif isinstance(commands, str):
-            command_list = commands.split('+') if commands else []
-        else:
-        command_list = []
-    
-        command_encoding = [
-            1.0 if 'w' in command_list else 0.0,
-            1.0 if 's' in command_list else 0.0,
-            1.0 if 'a' in command_list else 0.0,
-            1.0 if 'd' in command_list else 0.0,
-            1.0 if 'arrowleft' in command_list else 0.0,
-            1.0 if 'arrowright' in command_list else 0.0,
-            1.0 if 'arrowup' in command_list else 0.0,
-            1.0 if 'arrowdown' in command_list else 0.0
-        ]
+    # 2. Encode commands (8D one-hot)
+    if isinstance(commands, list):
+    command_list = commands
+    elif isinstance(commands, str):
+        command_list = commands.split('+') if commands else []
+    else:
+    command_list = []
+
+    command_encoding = [
+        1.0 if 'w' in command_list else 0.0,
+        1.0 if 's' in command_list else 0.0,
+        1.0 if 'a' in command_list else 0.0,
+        1.0 if 'd' in command_list else 0.0,
+        1.0 if 'arrowleft' in command_list else 0.0,
+        1.0 if 'arrowright' in command_list else 0.0,
+        1.0 if 'arrowup' in command_list else 0.0,
+        1.0 if 'arrowdown' in command_list else 0.0
+    ]
     state.extend(command_encoding)
 
-        # 3. Normalize intensity (1D)
-        intensity_normalized = float(intensity) / 10.0
+    # 3. Normalize intensity (1D)
+    intensity_normalized = float(intensity) / 10.0
     state.append(intensity_normalized)
     
     state = np.array(state, dtype=np.float32)
@@ -442,8 +442,8 @@ def get_rl_action_blind(current_angles, commands, intensity):
                 max_angle = servo_data['FULL_FRONT_ANGLE']
 
             # Ensure correct order
-                if min_angle > max_angle:
-                    min_angle, max_angle = max_angle, min_angle
+            if min_angle > max_angle:
+                min_angle, max_angle = max_angle, min_angle
 
             # Convert mid action (-1 to 1) to joint angle
             mid_action = action[action_idx]
@@ -453,11 +453,11 @@ def get_rl_action_blind(current_angles, commands, intensity):
             
             # Convert target action (-1 to 1) to joint angle
             target_action = action[action_idx + 12]  # Target angles are second half
-                target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
-                target_angle = np.clip(target_angle, min_angle, max_angle)
-                target_angles[leg_id][joint_name] = float(target_angle)
+            target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
+            target_angle = np.clip(target_angle, min_angle, max_angle)
+            target_angles[leg_id][joint_name] = float(target_angle)
 
-                action_idx += 1
+            action_idx += 1
 
     return target_angles, mid_angles, movement_rates
 
