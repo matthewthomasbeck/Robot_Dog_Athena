@@ -52,29 +52,33 @@ last_state = None
 last_action = None
 total_steps = 0
 
-##### forward movement tracking #####
-
-episode_start_position = None  # Store starting position for each episode
-episode_start_orientation = None  # Store starting orientation for each episode
+# COMPLETELY GUTTED - No more forward movement tracking
+# You now have complete control over movement detection and rewards
 
 ##### training config ##### TODO move me to config.py when ready
 
 TRAINING_CONFIG = {
     'max_episodes': 1000000,
-    'max_steps_per_episode': 500,  # ~8.3 seconds at 60 FPS
-    'save_frequency': 10,  # Save model every 10 episodes
-    'training_frequency': 10,  # Train every 10 steps
-    'batch_size': 64,
-    'learning_rate': 3e-4,
+    'max_steps_per_episode': 1000,  # GPT-5 recommendation: 600-1200 steps (~10-20 seconds)
+    'save_frequency': 10000,  # Save model every 10,000 steps (instead of every 10 episodes)
+    'training_frequency': 2,  # Train every 2 steps (GPT-5: more frequent training)
+    'batch_size': 64,  # GPT-5 recommendation: standard batch size
+    'learning_rate': 3e-4,  # Back to standard learning rate
     'gamma': 0.99,  # Discount factor
-    'tau': 0.005,  # Target network update rate
-    'exploration_noise': 0.1,
+    'tau': 0.005,  # Standard target network update rate
+    'exploration_noise': 0.1,  # Standard exploration noise
     'max_action': 1.0
 }
 
 ##### models derectory #####
 
 models_dir = "/home/matthewthomasbeck/Projects/Robot_Dog/model"
+
+# COMPLETELY GUTTED - No more desired pitch tracking
+# You now control pitch behavior through your reward function
+
+
+
 
 
 ##################################################
@@ -308,10 +312,9 @@ def get_rl_action_blind(current_angles, commands, intensity):
     # Just signal that a reset is needed - main thread will handle it
     episode_needs_reset = False
 
-    if is_robot_fallen():
-        episode_needs_reset = True
-        print(f"Robot fallen! Episode {episode_counter} needs reset (signaling main thread)")
-
+    # COMPLETELY GUTTED - No more automatic episode termination due to falling
+    # You now control when episodes end through your reward system
+    
     if episode_step >= TRAINING_CONFIG['max_steps_per_episode']:
         episode_needs_reset = True
         print(f"Episode {episode_counter} completed after {episode_step} steps! (signaling main thread)")
@@ -359,12 +362,19 @@ def get_rl_action_blind(current_angles, commands, intensity):
 
     # Get action from TD3 (add exploration noise in early episodes)
     add_noise = episode_counter < 100  # Add noise for first 100 episodes
+    
+    # COMPLETELY GUTTED - No more automatic fall tracking and exploration forcing
+    # You now control exploration and fall recovery through your reward system
+    
     if add_noise:
         action = td3_policy.select_action(state)
         noise = np.random.normal(0, TRAINING_CONFIG['exploration_noise'], size=action.shape)
         action = np.clip(action + noise, -TRAINING_CONFIG['max_action'], TRAINING_CONFIG['max_action'])
     else:
         action = td3_policy.select_action(state)
+    
+    # COMPLETELY GUTTED - No more automatic fall tracking
+    # You now control fall recovery through your reward system
 
     # Store experience for training
     if last_state is not None and last_action is not None:
@@ -374,22 +384,35 @@ def get_rl_action_blind(current_angles, commands, intensity):
         # Update episode reward for tracking
         episode_reward += reward
 
-        # Log reward progression every 50 steps for monitoring
-        if episode_step % 50 == 0:
-            pass
-            # print(f"📊 Episode {episode_counter}, Step {episode_step}: Reward = {reward:.3f}, Total Episode Reward = {episode_reward:.3f}")
+        # COMPLETELY GUTTED - No more automatic episode termination due to falling
+        # You now control when episodes end through your reward system
+        done = episode_step >= TRAINING_CONFIG['max_steps_per_episode']
 
-        # Check if episode ended due to fall or completion
-        done = is_robot_fallen() or episode_step >= TRAINING_CONFIG['max_steps_per_episode']
-
-        # Add to replay buffer
+        # CRITICAL: Add to replay buffer BEFORE checking for episode reset
+        # This ensures the falling experience is captured
         replay_buffer.add(last_state, last_action, reward, state, done)
+        
+        # Log experience collection for debugging
+        if done:
+            print(f"💾 Experience collected: State={len(last_state)}D, Action={len(last_action)}D, Reward={reward:.3f}, Done={done}")
+            print(f"   📊 Replay buffer size: {len(replay_buffer)}")
 
         # Train TD3 periodically
         if total_steps % TRAINING_CONFIG['training_frequency'] == 0 and len(replay_buffer) >= TRAINING_CONFIG[
             'batch_size']:
-            # logging.debug(f"Training TD3 at step {total_steps}, buffer size: {len(replay_buffer)}")
+            # Train the agent and log the experience (reduced frequency to avoid spam)
+            if total_steps % 50 == 0:  # Only log every 50 steps
+                print(f"🧠 Training TD3 at step {total_steps}, buffer size: {len(replay_buffer)}")
             td3_policy.train(replay_buffer, TRAINING_CONFIG['batch_size'])
+            
+            # COMPLETELY GUTTED - No more automatic fall-related logging
+            # You now control what gets logged through your reward system
+
+        # Save model periodically based on total steps
+        if total_steps % TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
+            save_model(
+                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_steps_{total_steps}_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
+            print(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}")
 
     # Update tracking variables
     last_state = state.copy()
@@ -444,153 +467,81 @@ def get_rl_action_blind(current_angles, commands, intensity):
 
 def calculate_step_reward(current_angles, commands, intensity):
     """
-    Calculate reward for the current step.
-    This is the foundation for the reward system that can be easily extended.
-
+    COMPLETELY GUTTED - You now have complete control to implement your own reward system from scratch.
+    
+    This function is called every step to calculate the reward for the current state.
+    
     Args:
-        current_angles: Current joint angles
+        current_angles: Current joint angles for all legs
         commands: Movement commands (e.g., 'w', 's', 'a', 'd')
         intensity: Movement intensity (1-10)
 
     Returns:
-        float: Reward value for this step
+        float: Your custom reward value for this step
     """
-    global episode_start_position, episode_start_orientation
-
+    # TODO: Implement your custom reward system here
+    # You have complete control over what gets rewarded and punished
+    
+    # Example placeholder - replace with your own logic:
     reward = 0.0
-
-    # 1. FALLING PENALTY (Foundation reward)
-    if is_robot_fallen():
-        reward -= 10.0  # Heavy penalty for falling
-        print(f"🚨 Robot fell! Penalty: -10.0 points")
-        # Note: This penalty will also be applied in check_and_reset_episode_if_needed()
-        # to ensure it gets added to the episode reward
-        return reward  # Return immediately - episode is over
-
-    # 2. STABILITY REWARD (Base reward for staying upright)
-    reward += 0.1  # Small positive reward for staying upright
-
-    # 3. FORWARD MOVEMENT REWARD (Based on Bittle training)
-    if episode_start_position is not None:
-        current_pos = get_robot_position()
-
-        # Extract positions (adjust based on your coordinate system)
-        start_x = episode_start_position[0]  # Starting X position
-        start_y = episode_start_position[1]  # Starting Y position
-        start_z = episode_start_position[2]  # Starting Z position
-
-        current_x = current_pos[0]  # Current X position
-        current_y = current_pos[1]  # Current Y position
-        current_z = current_pos[2]  # Current Z position
-
-        # Calculate forward progress and lateral deviation
-        # Adjust these axes based on your robot's coordinate system
-        forward_progress = current_y - start_y  # Y-axis = forward/backward
-        lateral_deviation = abs(current_x - start_x)  # X-axis = left/right
-        height_change = abs(current_z - start_z)  # Z-axis = up/down
-
-        # Forward movement reward (reward forward progress, penalize lateral drift)
-        movement_reward = (forward_progress - lateral_deviation) / 10.0
-
-        # Add movement reward to total reward
-        reward += movement_reward
-
-        # Log movement progress every 100 steps
-        if episode_step % 100 == 0:
-            print(
-                f"📊 Movement: Forward={forward_progress:.3f}, Lateral={lateral_deviation:.3f}, Height={height_change:.3f}, Reward={movement_reward:.3f}")
-
-    # 4. COMMAND EXECUTION REWARD (Future enhancement)
-    # if commands and not is_robot_fallen():
-    #     # Reward for successfully executing commands while staying upright
-    #     # reward += 0.05
-    #     pass
-
+    
+    # Add your reward logic here:
+    # - What behaviors do you want to encourage?
+    # - What behaviors do you want to discourage?
+    # - How do you want to measure success?
+    # - What are your training objectives?
+    
     return reward
 
 
 def get_robot_position():
     """
-    Get robot's current position (x, y, z).
+    COMPLETELY GUTTED - You now have complete control over position tracking.
+    
+    This function was used for forward movement detection. You can implement
+    your own position tracking logic here if desired.
+    
     Returns:
-        tuple: (x, y, z) position
+        tuple: (0.0, 0.0, 0.0) by default - implement your own logic if desired
     """
-
-    try:
-        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
-        # get_world_poses() returns arrays - get first element (index 0)
-        position = positions[0]  # First robot position
-        return (float(position[0]), float(position[1]), float(position[2]))
-    except Exception as e:
-        import logging
-        logging.error(f"(training.py): Failed to get robot position: {e}\n")
-        return (0.0, 0.0, 0.0)
+    # TODO: Implement your own position tracking logic here if desired
+    return (0.0, 0.0, 0.0)  # No position tracking by default
 
 
 def get_robot_orientation():
     """
-    Get robot's current orientation quaternion.
+    COMPLETELY GUTTED - You now have complete control over orientation tracking.
+    
+    This function was used for forward movement detection. You can implement
+    your own orientation tracking logic here if desired.
+    
     Returns:
-        tuple: (w, x, y, z) quaternion
+        tuple: (1.0, 0.0, 0.0, 0.0) by default - implement your own logic if desired
     """
-
-    try:
-        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
-        # get_world_poses() returns arrays - get first element (index 0)
-        rotation = rotations[0]  # First robot rotation
-        return (float(rotation[0]), float(rotation[1]), float(rotation[2]), float(rotation[3]))
-    except Exception as e:
-        import logging
-        logging.error(f"(training.py): Failed to get robot orientation: {e}\n")
-        return (1.0, 0.0, 0.0, 0.0)  # Default: no rotation
+    # TODO: Implement your own orientation tracking logic here if desired
+    return (1.0, 0.0, 0.0, 0.0)  # No orientation tracking by default
 
 
-##### moved vector direction #####
-
-# TODO this will be the function for rewarding movement if in the direction of vector
-
-##### has rotated #####
-
-# TODO this will be the function for rewarding rotation if in the direction of rotation
-
-##### has tilted #####
-
-# TODO this will be the function that rewards tilting if in the direction of tilt
+# COMPLETELY GUTTED - No more movement detection functions
+# You now have complete control over movement rewards and detection
 
 ##### fallen robot #####
 
-def is_robot_fallen():  # TODO this function does a good job at telling when the robot has fallen, DO NOT TOUCH
+def is_robot_fallen():
     """
-    Check if robot has tilted more than 45 degrees from upright.
+    COMPLETELY GUTTED - You now have complete control over fall detection and episode termination.
+    
+    This function no longer automatically ends episodes. You can implement your own fall logic
+    or return False to never consider the robot "fallen" for episode termination purposes.
+    
     Returns:
-        bool: True if robot has fallen over
+        bool: False by default - implement your own fall logic if desired
     """
-
-    try:
-        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
-        # get_world_poses() returns arrays - get first element (index 0)
-        rotation = rotations[0]  # First robot rotation
-
-        # Convert quaternion to rotation object
-        quat_wxyz = [rotation[0], rotation[1], rotation[2], rotation[3]]  # (w, x, y, z)
-        r = Rotation.from_quat([quat_wxyz[1], quat_wxyz[2], quat_wxyz[3], quat_wxyz[0]])  # scipy wants (x, y, z, w)
-
-        # Robot's up direction is local +Z
-        local_up = np.array([0.0, 0.0, 1.0])  # Local +Z
-        robot_up = r.apply(local_up)
-        world_up = np.array([0.0, 0.0, 1.0])  # World +Z
-
-        # Calculate angle between robot up and world up
-        dot_product = np.dot(robot_up, world_up)
-        dot_product = np.clip(dot_product, -1.0, 1.0)  # Ensure valid range
-        angle_rad = np.arccos(dot_product)
-        angle_deg = np.degrees(angle_rad)
-
-        return angle_deg > 45.0  # Fallen if tilted more than 45 degrees
-
-    except Exception as e:
-        logging.error(f"(training.py): Failed to check if robot fallen: {e}\n")
-        return False  # Assume upright if error
+    # TODO: Implement your own fall detection logic here if desired
+    # Return False to never end episodes due to falling
+    # Return True only when you want episodes to end
+    
+    return False  # Episodes will never end due to falling
 
 
 ########## EPISODE MANAGEMENT ##########
@@ -600,7 +551,6 @@ def is_robot_fallen():  # TODO this function does a good job at telling when the
 def start_episode():
     """Start a new training episode"""
     global episode_counter, episode_step, episode_reward, last_state, last_action
-    global episode_start_position, episode_start_orientation
 
     episode_counter += 1
     episode_step = 0
@@ -608,13 +558,11 @@ def start_episode():
     last_state = None
     last_action = None
 
-    # Reset movement tracking and penalty flags
-    episode_start_position = get_robot_position()
-    episode_start_orientation = get_robot_orientation()
+    # COMPLETELY GUTTED - No more movement tracking
+    # You now control movement rewards through your reward function
 
     print(f"🚀 Starting episode {episode_counter}")
-    print(f"   📍 Starting position: {episode_start_position}")
-    print(f"   🧭 Starting orientation: {episode_start_orientation}")
+    print(f"   🎯 Episode started - implement your own movement tracking if desired")
 
 
 ##### end episode #####
@@ -627,15 +575,15 @@ def end_episode():
     print(f"   📊 Steps: {episode_step}")
     print(f"   📊 Final Reward: {episode_reward:.3f}")
 
-    # Save model periodically (only if TD3 policy is initialized)
-    if episode_counter % TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
+    # Save model periodically based on total steps (only if TD3 policy is initialized)
+    if total_steps % TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
         save_model(
-            f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
-        print(f"💾 Model saved: episode_{episode_counter}")
+            f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_steps_{total_steps}_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
+        print(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}")
     elif td3_policy is None:
         print(f"⚠️  Warning: TD3 policy not initialized yet, skipping model save for episode {episode_counter}")
     else:
-        print(f"📝 Episode {episode_counter} completed but not at save frequency ({TRAINING_CONFIG['save_frequency']})")
+        print(f"📝 Episode {episode_counter} completed but not at save frequency ({TRAINING_CONFIG['save_frequency']} steps)")
 
 
 ##### check/reset episode #####
@@ -652,25 +600,22 @@ def check_and_reset_episode_if_needed():  # TODO compare with reset_episode()
 
     import utilities.config as config
 
-    # Check if robot has fallen (episode should end)
-    if is_robot_fallen():
-        print(f"🚨 Robot fallen! Ending episode {episode_counter} at step {episode_step}")
+    # COMPLETELY GUTTED - No more automatic episode termination due to falling
+    # You now control when episodes end through your reward system
+    # The robot can fall and recover without ending the episode
 
-        # CRITICAL: Apply falling penalty immediately to episode reward
-        episode_reward -= 10.0
-        print(f"💥 Applied falling penalty: -10.0 points. Final episode reward: {episode_reward:.3f}")
-
-        # Save model before resetting (if episode had any progress)
-        if episode_step > 0:
-            end_episode()
-        reset_episode()
-        return True
+    # COMPLETELY GUTTED - You now have complete control over warning systems
+    # Add your custom warning logic here if desired
 
     # Check if episode has reached max steps
     if episode_step >= TRAINING_CONFIG['max_steps_per_episode']:
         print(f"🎯 Episode {episode_counter} completed after {episode_step} steps!")
         # Save model before resetting
         end_episode()
+        
+        # Monitor learning progress before resetting
+        monitor_learning_progress()
+        
         reset_episode()
         return True
 
@@ -688,12 +633,17 @@ def reset_episode():
 
     try:
         logging.info(
-            f"(training.py): Episode {episode_counter} ending - Robot fallen or episode complete, resetting Isaac Sim world.\n")
+            f"(training.py): Episode {episode_counter} ending - Episode complete, resetting Isaac Sim world.\n")
 
         # CRITICAL: Save the model before resetting (if episode had any progress)
         if episode_step > 0:
             end_episode()
 
+        # CRITICAL: Small delay to ensure all experiences are processed
+        # This gives the agent time to learn from the falling experience
+        import time
+        time.sleep(0.2)  # 200ms delay for experience processing
+        
         # CRITICAL: Reset Isaac Sim world (position, velocity, physics state)
         if config.USE_SIMULATION and config.USE_ISAAC_SIM:
             # Reset the world - this resets robot position, velocities, and physics state
@@ -717,9 +667,8 @@ def reset_episode():
         last_state = None
         last_action = None
 
-        # Reset movement tracking and penalty flags
-        episode_start_position = None
-        episode_start_orientation = None
+        # COMPLETELY GUTTED - No more movement tracking reset
+        # You now control movement tracking through your reward function
 
         # Increment episode counter
         episode_counter += 1
@@ -728,16 +677,18 @@ def reset_episode():
 
         # Log learning progress every 10 episodes
         if episode_counter % 10 == 0:
-            logging.info(f"(training.py): LEARNING PROGRESS - Episodes: {episode_counter}, Total Steps: {total_steps}")
+            print(f"🎯 Training Progress: {episode_counter} episodes completed")
+            if replay_buffer is not None:
+                print(f"   📊 Replay buffer size: {len(replay_buffer)}")
+            if td3_policy is not None:
+                print(f"   🧠 TD3 policy ready for training")
 
     except Exception as e:
         logging.error(f"(training.py): Failed to reset episode: {e}\n")
-        # Fallback: just reset Python variables if Isaac Sim reset fails
+        # Don't crash - try to continue with next episode
+        episode_counter += 1
         episode_step = 0
         episode_reward = 0.0
-        last_state = None
-        last_action = None
-        episode_counter += 1
 
 
 ########## MODEL FUNCTIONS ##########
@@ -825,3 +776,55 @@ def load_model(filepath):  # TODO find out how this can be used???
         print(f"  - Episode reward: {episode_reward:.4f}")
         return True
     return False
+
+
+def monitor_learning_progress():
+    """
+    Monitor the agent's learning progress and detect potential issues.
+    This helps identify if the agent is stuck in a loop of falling behaviors.
+    """
+    global episode_counter, episode_reward, replay_buffer
+    
+    if replay_buffer is None or len(replay_buffer) == 0:
+        return
+    
+    # Calculate average reward over last few episodes
+    recent_rewards = []
+    if hasattr(monitor_learning_progress, 'episode_rewards'):
+        recent_rewards = monitor_learning_progress.episode_rewards[-5:]  # Last 5 episodes
+    
+    # Store current episode reward
+    if not hasattr(monitor_learning_progress, 'episode_rewards'):
+        monitor_learning_progress.episode_rewards = []
+    
+    monitor_learning_progress.episode_rewards.append(episode_reward)
+    
+    # Keep only last 20 episodes
+    if len(monitor_learning_progress.episode_rewards) > 20:
+        monitor_learning_progress.episode_rewards.pop(0)
+    
+    # Analyze learning progress
+    if len(recent_rewards) >= 3:
+        avg_reward = sum(recent_rewards) / len(recent_rewards)
+        min_reward = min(recent_rewards)
+        
+        print(f"📊 Learning Progress Analysis:")
+        print(f"   🎯 Recent episodes: {len(recent_rewards)}")
+        print(f"   📈 Average reward: {avg_reward:.3f}")
+        print(f"   📉 Worst reward: {min_reward:.3f}")
+        print(f"   🧠 Replay buffer: {len(replay_buffer)} experiences")
+        
+        # COMPLETELY GUTTED - No more automatic fall loop detection
+        # You now control what constitutes problematic behavior through your reward system
+        
+        # Detect if agent is improving
+        if len(monitor_learning_progress.episode_rewards) >= 10:
+            first_half = monitor_learning_progress.episode_rewards[:10]
+            second_half = monitor_learning_progress.episode_rewards[-10:]
+            first_avg = sum(first_half) / len(first_half)
+            second_avg = sum(second_half) / len(second_half)
+            
+            if second_avg > first_avg:
+                print(f"✅ Agent is improving! First 10: {first_avg:.3f}, Last 10: {second_avg:.3f}")
+            else:
+                print(f"❌ Agent not improving. First 10: {first_avg:.3f}, Last 10: {second_avg:.3f}")
