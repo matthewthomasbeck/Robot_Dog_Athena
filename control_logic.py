@@ -177,6 +177,25 @@ def set_isaac_dependencies():
             #logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
 
 
+########## PREPARE ROBOT ##########
+
+if not config.USE_SIMULATION:
+    set_real_robot_dependencies()
+elif config.USE_SIMULATION:
+    if config.USE_ISAAC_SIM:
+        set_isaac_dependencies()
+    elif not config.USE_ISAAC_SIM:
+        set_pybullet_dependencies()
+
+##### post-initialization dependencies #####
+
+from movement.fundamental_movement import *
+from utilities.camera import decode_real_frame, decode_isaac_frame
+
+# Import Isaac Sim specific functions
+if config.USE_SIMULATION and config.USE_ISAAC_SIM:
+    from training.isaac_sim import process_isaac_movement_queue
+
 
 
 
@@ -289,7 +308,6 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
     except Exception as e:  # if there is an error, log error
         logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
 
-
     ##### stream video, run inference, and control the robot #####
 
     try:  # try to run main robotic process
@@ -356,6 +374,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                         #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (WILL RUN).\n")
                     #else:
                         #logging.info(f"(control_logic.py): Received RL command '{command}' with intensity {config.RL_COMMAND_INTENSITY} (BLOCKED).\n")
+
 
             if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty(): # if command queue is not empty...
                 command = COMMAND_QUEUE.get() # get command from queue
