@@ -325,6 +325,10 @@ def get_rl_action_blind(current_angles, commands, intensity):
     # Log episode progress every 100 steps
     if episode_step % 100 == 0:
         print(f"Episode {episode_counter}, Step {episode_step}, Total Steps: {total_steps}")
+    
+    # Track orientation every 50 steps to understand robot facing direction
+    if episode_step % 50 == 0:
+        track_orientation()
 
     # Build state vector
     state = []
@@ -463,7 +467,7 @@ def get_rl_action_blind(current_angles, commands, intensity):
 
 ########## MOVEMENT DETECTION FUNCTIONS ##########
 
-##### functions cursor made I dont fully understand #####
+##### reward function #####
 
 def calculate_step_reward(current_angles, commands, intensity):
     """
@@ -493,55 +497,131 @@ def calculate_step_reward(current_angles, commands, intensity):
     
     return reward
 
+##### orientation tracking #####
 
-def get_robot_position():
+def track_orientation():
     """
-    COMPLETELY GUTTED - You now have complete control over position tracking.
-    
-    This function was used for forward movement detection. You can implement
-    your own position tracking logic here if desired.
-    
-    Returns:
-        tuple: (0.0, 0.0, 0.0) by default - implement your own logic if desired
+    Track the robot's position and orientation (facing direction).
+    Robot spawns facing -Y (forward), so we measure rotation from that direction.
     """
-    # TODO: Implement your own position tracking logic here if desired
-    return (0.0, 0.0, 0.0)  # No position tracking by default
-
-
-def get_robot_orientation():
-    """
-    COMPLETELY GUTTED - You now have complete control over orientation tracking.
+    global episode_step
     
-    This function was used for forward movement detection. You can implement
-    your own orientation tracking logic here if desired.
-    
-    Returns:
-        tuple: (1.0, 0.0, 0.0, 0.0) by default - implement your own logic if desired
-    """
-    # TODO: Implement your own orientation tracking logic here if desired
-    return (1.0, 0.0, 0.0, 0.0)  # No orientation tracking by default
-
-
-# COMPLETELY GUTTED - No more movement detection functions
-# You now have complete control over movement rewards and detection
-
-##### fallen robot #####
-
-def is_robot_fallen():
-    """
-    COMPLETELY GUTTED - You now have complete control over fall detection and episode termination.
-    
-    This function no longer automatically ends episodes. You can implement your own fall logic
-    or return False to never consider the robot "fallen" for episode termination purposes.
-    
-    Returns:
-        bool: False by default - implement your own fall logic if desired
-    """
-    # TODO: Implement your own fall detection logic here if desired
-    # Return False to never end episodes due to falling
-    # Return True only when you want episodes to end
-    
-    return False  # Episodes will never end due to falling
+    try:
+        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
+        center_pos = positions[0]
+        rotation = rotations[0]
+        
+        # Convert quaternion to euler angles to get yaw (rotation around Z-axis)
+        from scipy.spatial.transform import Rotation
+        quat_wxyz = [rotation[0], rotation[1], rotation[2], rotation[3]]
+        r = Rotation.from_quat([quat_wxyz[1], quat_wxyz[2], quat_wxyz[3], quat_wxyz[0]])
+        euler_angles = r.as_euler('xyz', degrees=True)
+        yaw_deg = euler_angles[2]  # Yaw is rotation around Z-axis
+        
+        # Robot spawns facing -Y (forward), so we need to calculate relative rotation
+        # -Y direction = 0 degrees
+        # Left rotation = positive degrees (10° = facing slightly left of -Y)
+        # Right rotation = negative degrees, but we convert to 360° system
+        
+        # Convert to 0-360 degree system where 0° = facing -Y (forward)
+        if yaw_deg < 0:
+            facing_deg = 360 + yaw_deg
+        else:
+            facing_deg = yaw_deg
+        
+        # Calculate off-balance (combined pitch and roll deviation from vertical)
+        roll_deg = abs(euler_angles[0])  # Roll around X-axis
+        pitch_deg = abs(euler_angles[1])  # Pitch around Y-axis
+        
+        # Combined off-balance is the sum of roll and pitch deviations from vertical
+        # Perfectly upright = 0°, maximum tilt = 180° (though robot would fall before then)
+        off_balance = roll_deg + pitch_deg
+        
+        # Height off the ground (Z coordinate)
+        height = center_pos[2]
+        
+        # Calculate current directions relative to robot's current facing (WASD format)
+        # These change as the robot rotates
+        curr_w = facing_deg  # Current forward direction (W key)
+        curr_s = (facing_deg + 180) % 360  # Opposite of forward (S key)
+        curr_a = (facing_deg + 90) % 360  # 90° left of forward (A key)
+        curr_d = (facing_deg + 270) % 360  # 90° right of forward (D key)
+        
+        # Print position, facing direction, balance, height, and current WASD directions
+        print(f"center: x {center_pos[0]:.3f}, y {center_pos[1]:.3f}, z {center_pos[2]:.3f} facing(deg): {facing_deg:.0f} off_balance(deg): {off_balance:.1f} height(m): {height:.3f} curr_w(deg): {curr_w:.0f} curr_s(deg): {curr_s:.0f} curr_a(deg): {curr_a:.0f} curr_d(deg): {curr_d:.0f}")
+        
+        # Check if position is changing (robot is actually moving)
+        if not hasattr(track_orientation, 'last_position'):
+            track_orientation.last_position = center_pos
+            track_orientation.static_count = 0
+        else:
+            # Calculate horizontal distance moved (ignore Z-axis bouncing)
+            dx = center_pos[0] - track_orientation.last_position[0]  # X movement
+            dy = center_pos[1] - track_orientation.last_position[1]  # Y movement
+            
+            horizontal_distance = np.sqrt(dx**2 + dy**2)
+            
+            if horizontal_distance < 0.001:  # Less than 1mm horizontal movement
+                track_orientation.static_count += 1
+                if track_orientation.static_count > 10:
+                    print(f"   ⚠️  Robot hasn't moved horizontally in {track_orientation.static_count} steps!")
+            else:
+                track_orientation.static_count = 0
+                
+                # Calculate directional movement components relative to robot's current facing (WASD format)
+                facing_rad = np.radians(facing_deg)
+                
+                # Project movement onto robot's current WASD directions
+                # W = forward, S = backward, A = left, D = right
+                w_movement = -dy * np.cos(facing_rad) - dx * np.sin(facing_rad)  # W direction (forward)
+                s_movement = -w_movement  # S direction (backward) - opposite of W
+                a_movement = -dx * np.cos(facing_rad) + dy * np.sin(facing_rad)  # A direction (left)
+                d_movement = -a_movement  # D direction (right) - opposite of A
+                
+                # Determine movement direction string (WASD format)
+                movement_direction = ""
+                if abs(w_movement) > 0.001:
+                    if w_movement > 0:
+                        movement_direction += "w"
+                    else:
+                        movement_direction += "s"
+                
+                if abs(a_movement) > 0.001:
+                    if a_movement > 0:
+                        movement_direction += "a"
+                    else:
+                        movement_direction += "d"
+                
+                if not movement_direction:
+                    movement_direction = "n"  # No significant movement
+                
+                # Calculate rotation (change in facing direction)
+                if not hasattr(track_orientation, 'last_facing'):
+                    track_orientation.last_facing = facing_deg
+                    rotation_deg = 0.0
+                else:
+                    # Calculate rotation as change in facing direction
+                    rotation_change = facing_deg - track_orientation.last_facing
+                    
+                    # Handle wrapping around 360° boundary
+                    if rotation_change > 180:
+                        rotation_change -= 360
+                    elif rotation_change < -180:
+                        rotation_change += 360
+                    
+                    rotation_deg = rotation_change
+                    track_orientation.last_facing = facing_deg
+                
+                print(f"   moved(m): {horizontal_distance:.3f} ({movement_direction}) w: {w_movement:.3f} s: {s_movement:.3f} a: {a_movement:.3f} d: {d_movement:.3f}")
+                print(f"   rotated(deg): {rotation_deg:.1f}")
+            
+            track_orientation.last_position = center_pos
+        
+        return center_pos, facing_deg
+        
+    except Exception as e:
+        print(f"❌ Failed to track orientation: {e}")
+        return None, None
 
 
 ########## EPISODE MANAGEMENT ##########
@@ -563,6 +643,8 @@ def start_episode():
 
     print(f"🚀 Starting episode {episode_counter}")
     print(f"   🎯 Episode started - implement your own movement tracking if desired")
+    # Show initial orientation at episode start
+    track_orientation()
 
 
 ##### end episode #####

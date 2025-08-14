@@ -343,6 +343,8 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 # Get RL action (this will handle episode management internally)
                 target_angles, mid_angles, movement_rates = get_rl_action_blind(current_angles, command, intensity)
                 
+                # TODO we can put get_results() here to get the results of the RL action
+
                 # Store the action data for later use
                 config.RL_COMMAND_INTENSITY = intensity
                 
