@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Cleaned up control_logic" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Created accurate orientation tracking" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -178,6 +178,7 @@
       <workItem from="1754971191187" duration="515000" />
       <workItem from="1754972446182" duration="208000" />
       <workItem from="1755202687331" duration="155000" />
+      <workItem from="1755210397151" duration="194000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -318,14 +319,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00084" summary="Fixed failing camera error">
-      <option name="closed" value="true" />
-      <created>1754066365422</created>
-      <option name="number" value="00084" />
-      <option name="presentableId" value="LOCAL-00084" />
-      <option name="project" value="LOCAL" />
-      <updated>1754066365422</updated>
     </task>
     <task id="LOCAL-00085" summary="Got basic implementation of a reward function, exhausted and calling it for today">
       <option name="closed" value="true" />
@@ -551,7 +544,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755202835793</updated>
     </task>
-    <option name="localTasksCounter" value="113" />
+    <task id="LOCAL-00113" summary="Created accurate orientation tracking">
+      <option name="closed" value="true" />
+      <created>1755210412330</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1755210412331</updated>
+    </task>
+    <option name="localTasksCounter" value="114" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -569,7 +570,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Toning down logging to make debugging easier" />
     <MESSAGE value="Changed the urdf to have no joint restriction" />
     <MESSAGE value="Finally have a reliable way to move all joints in isaac sim" />
     <MESSAGE value="Calibration completely accurate" />
@@ -594,7 +594,8 @@
     <MESSAGE value="Restructured training.py" />
     <MESSAGE value="Cleaned up control_logic and training" />
     <MESSAGE value="Cleaned up control_logic" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up control_logic" />
+    <MESSAGE value="Created accurate orientation tracking" />
+    <option name="LAST_COMMIT_MESSAGE" value="Created accurate orientation tracking" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

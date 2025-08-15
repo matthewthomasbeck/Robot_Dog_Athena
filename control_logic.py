@@ -339,12 +339,12 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 # Generate a simple forward command for training
                 command = 'w'  # Forward command
                 intensity = 5   # Medium intensity
+
+                # TODO do I call the orientation tracking here?
                 
-                # Get RL action (this will handle episode management internally)
+                # TODO then inout that data here?
                 target_angles, mid_angles, movement_rates = get_rl_action_blind(current_angles, command, intensity)
                 
-                # TODO we can put get_results() here to get the results of the RL action
-
                 # Store the action data for later use
                 config.RL_COMMAND_INTENSITY = intensity
                 
