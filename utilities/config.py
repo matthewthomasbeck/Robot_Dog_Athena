@@ -38,7 +38,7 @@ import logging # import logging library for debugging
 
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
 CONTROL_MODE = 'web' # current control mode of the robot (web or radio)
-RL_NOT_CNN = False  # boolean to switch between testing and RL models (true is RL, false is testing)
+RL_NOT_CNN = True  # boolean to switch between testing and RL models (true is RL, false is testing)
 USE_SIMULATION = False  # boolean to switch between using simulator or not
 USE_ISAAC_SIM = False # boolean to switch between using pybullet and isaac sim
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
@@ -49,6 +49,8 @@ LOG_CONFIG = {
     'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
     'LOG_LEVEL': logging.INFO # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
 }
+
+########## CAMERA CONFIGURATION ##########
 
 ##### set camera configuration #####
 
@@ -69,14 +71,20 @@ CAMERA_CONFIG = { # TODO BE VERY CAREFUL WITH OUTPUT WIDTHxHEIGHT! Remember, the
     'OUTPUT_HEIGHT': 48, # height of the image for ML inference
 }
 
+
+########## INFERENCE CONFIGURATIONS ##########
+
 ##### set ML configurations #####
 
 INFERENCE_CONFIG = {
     'TPU_NAME': "MYRIAD",  # literal device name in code
     'STANDARD_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/standard", # standard all terrain RL model
-    'BLIND_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/blind", # speedy imageless RL model
+    'BLIND_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/blind_rl_model.onnx", # speedy imageless RL model
     'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
+
+
+########## ROBOT CONTROL CONFIGURATIONS (internet and radio) ##########
 
 ##### declare movement channel GPIO pins #####
 
@@ -87,6 +95,8 @@ SIGNAL_TUNING_CONFIG = { # dictionary of signal tuning configuration for sensiti
     'DEADBAND_HIGH': 1600, # deadband high for PWM signal
     'DEADBAND_LOW': 1400 # deadband low for PWM signal
 }
+
+##### set receiver channels #####
 
 RECEIVER_CHANNELS = { # dictionary of receiver channels' names, GPIO pins, and states
     'channel_0': {'name': 'tilt_up_down', 'gpio_pin': 17, 'counter': 0, 'timestamp': time.time()},
@@ -150,16 +160,18 @@ SERVO_CONFIG = { # dictionary of leg configurations
 }
 
 
-
-
-
 ########## ISAAC SIM CONFIGURATION ##########
+
+##### isaac sim paths #####
+
+ISAAC_ROBOT_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd"
 
 ##### isaac sim objects #####
 
 ISAAC_SIM_APP = None # isaac sim application instance
 ISAAC_WORLD = None # isaac sim world
 ISAAC_ROBOT = None # isaac sim robot articulation
+ISAAC_ROBOT_ARTICULATION_CONTROLLER = None # isaac sim robot articulation controller
 
 ##### isaac sim joint config #####
 

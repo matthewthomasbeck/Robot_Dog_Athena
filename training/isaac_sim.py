@@ -211,98 +211,6 @@ def inject_rl_command_into_queue(rl_command_queue, command, intensity):
         rl_command_queue.put(command_data)
 
 
-########## COORDINATE FRAME SYSTEM ##########
-
-def create_coordinate_frames():
-    """
-    Create visual coordinate frames for robot orientation tracking:
-    1. Static world reference frame (fixed NSEW compass)
-    2. Robot-attached local frame (moves with robot)
-    """
-    import utilities.config as config
-    from pxr import UsdGeom, Gf, UsdShade
-    import omni.usd
-    
-    # Get the current stage
-    stage = omni.usd.get_context().get_stage()
-    
-    # Create static world reference frame (compass rose at origin, elevated above ground)
-    world_frame_path = "/World/WorldReferenceFrame"
-    world_frame_prim = UsdGeom.Xform.Define(stage, world_frame_path)
-    
-    # Position the world frame 30cm above ground
-    world_frame_prim.AddTranslateOp().Set(Gf.Vec3d(0.0, 0.0, 0.30))
-    
-    # Create compass rose arrows for world frame
-    _create_compass_arrows(stage, world_frame_path, scale=1.0, color=(1.0, 1.0, 1.0))  # White arrows
-    
-
-    
-    # Store frame paths in config for later access
-    config.WORLD_FRAME_PATH = world_frame_path
-    config.ROBOT_BODY_PATH = "/World/robot_dog"  # Robot itself serves as its own reference frame
-
-
-def _create_compass_arrows(stage, parent_path, scale=1.0, color=(1.0, 1.0, 1.0)):
-    """
-    Create compass rose arrows (N, S, E, W) under the given parent path.
-    Args:
-        stage: USD stage
-        parent_path: Parent prim path
-        scale: Size scaling factor
-        color: RGB color tuple
-    """
-    from pxr import UsdGeom, Gf, UsdShade
-    
-    # Define arrow directions with unique colors for easy identification
-    arrows = [
-        ("North", (1.0, 0.0, 0.0), "X+", (1.0, 0.0, 0.0)),   # Forward/North = +X, RED
-        ("South", (-1.0, 0.0, 0.0), "X-", (0.0, 1.0, 0.0)),  # Backward/South = -X, GREEN  
-        ("East", (0.0, -1.0, 0.0), "Y-", (0.0, 0.0, 1.0)),   # Right/East = -Y, BLUE
-        ("West", (0.0, 1.0, 0.0), "Y+", (1.0, 1.0, 0.0)),    # Left/West = +Y, YELLOW
-        ("Up", (0.0, 0.0, 1.0), "Z+", (1.0, 0.0, 1.0))       # Up = +Z, MAGENTA
-    ]
-    
-    for name, direction, label, arrow_color in arrows:
-        # Create arrow as a cylinder (more visible than curves)
-        arrow_path = f"{parent_path}/{name}Arrow"
-        arrow_prim = UsdGeom.Cylinder.Define(stage, arrow_path)
-        
-        # Set cylinder properties (10cm long, 1cm thick)
-        arrow_prim.GetRadiusAttr().Set(0.005)  # 1cm radius = 1cm thick
-        arrow_prim.GetHeightAttr().Set(0.1)    # 10cm long
-        arrow_prim.GetAxisAttr().Set("Z")      # Default axis is Z
-        
-        # Calculate position and rotation for each arrow
-        arrow_length = 0.1  # 10cm
-        dx, dy, dz = direction
-        
-        # Position arrows to extend FROM center outward (not centered AT center)
-        # Each arrow's back end should touch the center, front end extends outward
-        if name == "North":  # RED - should extend in +X direction
-            mid_point = Gf.Vec3f(arrow_length * 0.5, 0.0, -0.05)  # Center of cylinder at +5cm X
-            rotation = Gf.Rotation(Gf.Vec3d(0, 1, 0), 90)  # Rotate to point in +X
-        elif name == "South":  # GREEN - should extend in -X direction
-            mid_point = Gf.Vec3f(-arrow_length * 0.5, 0.0, -0.05)  # Center of cylinder at -5cm X
-            rotation = Gf.Rotation(Gf.Vec3d(0, 1, 0), -90)  # Rotate to point in -X
-        elif name == "East":  # BLUE - should extend in -Y direction
-            mid_point = Gf.Vec3f(0.0, -arrow_length * 0.5, -0.05)  # Center of cylinder at -5cm Y
-            rotation = Gf.Rotation(Gf.Vec3d(1, 0, 0), 90)  # Rotate to point in -Y
-        elif name == "West":  # YELLOW - should extend in +Y direction
-            mid_point = Gf.Vec3f(0.0, arrow_length * 0.5, -0.05)  # Center of cylinder at +5cm Y
-            rotation = Gf.Rotation(Gf.Vec3d(1, 0, 0), -90)  # Rotate to point in +Y
-        else:  # "Up" - MAGENTA - should extend in +Z direction
-            mid_point = Gf.Vec3f(0.0, 0.0, arrow_length * 0.05)  # Center of cylinder at +5cm Z
-            rotation = Gf.Rotation()  # No rotation needed for Z-axis
-        
-        # Apply transform
-        transform_matrix = Gf.Matrix4d().SetTranslate(Gf.Vec3d(mid_point)) * Gf.Matrix4d().SetRotate(rotation)
-        arrow_prim.AddTransformOp().Set(transform_matrix)
-        
-        # Set color using displayColor (use individual arrow color, not the passed color parameter)
-        arrow_prim.GetDisplayColorAttr().Set([arrow_color])
-
-
 ########## ISAAC SIM QUEUE PROCESSING ##########
 
 def process_isaac_movement_queue():
@@ -314,7 +222,7 @@ def process_isaac_movement_queue():
         return
     
     # Import here to avoid circular imports
-    from movement.fundamental_movement import ISAAC_MOVEMENT_QUEUE, ISAAC_CALIBRATION_COMPLETE, _apply_single_joint_position_isaac
+    from movement.movement_coordinator import ISAAC_MOVEMENT_QUEUE, ISAAC_CALIBRATION_COMPLETE, _apply_single_joint_position_isaac
     import queue
     
     # Process any new movement data

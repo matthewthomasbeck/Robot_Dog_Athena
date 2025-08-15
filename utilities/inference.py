@@ -26,6 +26,9 @@ from utilities.config import INFERENCE_CONFIG, USE_SIMULATION
 
 import numpy as np # import NumPy for array manipulation
 import logging # import logging for logging messages
+
+##### get physical robot dependencies #####
+
 if not USE_SIMULATION: # if not using simulation...
     from openvino.runtime import Core  # import OpenVINO runtime
     import cv2 # import OpenCV for image processing

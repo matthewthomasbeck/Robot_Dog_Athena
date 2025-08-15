@@ -4,15 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to start integrating mock-reward system into code, but tired atm because manual labor L lmao">
-      <change afterPath="$PROJECT_DIR$/training/agents.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training/rewards.py" afterDir="false" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to remove the backend files as the context is no longer needed, added model testing and exporting">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_to_frontend/controller.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_to_frontend/server.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/td3_steps_300000_episode_464_reward_376.97.onnx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -190,6 +190,9 @@
       <workItem from="1755210397151" duration="194000" />
       <workItem from="1755279297989" duration="672000" />
       <workItem from="1755280742743" duration="77000" />
+      <workItem from="1755281425870" duration="224000" />
+      <workItem from="1755283033694" duration="113000" />
+      <workItem from="1755287449301" duration="3964000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -330,14 +333,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00085" summary="Got basic implementation of a reward function, exhausted and calling it for today">
-      <option name="closed" value="true" />
-      <created>1754188090280</created>
-      <option name="number" value="00085" />
-      <option name="presentableId" value="LOCAL-00085" />
-      <option name="project" value="LOCAL" />
-      <updated>1754188090281</updated>
     </task>
     <task id="LOCAL-00086" summary="Going to sack the thread based movement because isaac sim is doesnt like it, saving before cursor">
       <option name="closed" value="true" />
@@ -563,7 +558,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755210412331</updated>
     </task>
-    <option name="localTasksCounter" value="114" />
+    <task id="LOCAL-00114" summary="Going to remove the backend files as the context is no longer needed, added model testing and exporting">
+      <option name="closed" value="true" />
+      <created>1755281565696</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1755281565696</updated>
+    </task>
+    <option name="localTasksCounter" value="115" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -581,7 +584,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Changed the urdf to have no joint restriction" />
     <MESSAGE value="Finally have a reliable way to move all joints in isaac sim" />
     <MESSAGE value="Calibration completely accurate" />
     <MESSAGE value="Removed useless functions from fundamental_movement.py" />
@@ -606,7 +608,8 @@
     <MESSAGE value="Cleaned up control_logic and training" />
     <MESSAGE value="Cleaned up control_logic" />
     <MESSAGE value="Created accurate orientation tracking" />
-    <option name="LAST_COMMIT_MESSAGE" value="Created accurate orientation tracking" />
+    <MESSAGE value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
+    <option name="LAST_COMMIT_MESSAGE" value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />

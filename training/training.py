@@ -36,7 +36,7 @@ import torch.nn.functional as F
 
 ##### movement functions #####
 
-from movement.fundamental_movement import neutral_position
+from movement.movement_coordinator import neutral_position
 
 ##### import config #####
 
