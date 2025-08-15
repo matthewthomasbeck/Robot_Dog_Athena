@@ -655,21 +655,21 @@ def calculate_step_reward(current_angles, commands, intensity):
                             # Reward forward movement (commanded direction)
                             if forward_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
                                 if forward_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                    movement_reward = 1.0
+                                    movement_reward = 3.0
                                     print(f"�� PERFECT FORWARD: +{movement_reward:.1f} reward - Forward: {forward_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
                                     movement_progress = 1.0 - ((5.0 - forward_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * movement_progress
+                                    movement_reward = 0.3 + 2.7 * movement_progress
                                     print(f"🎯 GOOD FORWARD: +{movement_reward:.2f} reward - Forward: {forward_movement:.3f}m")
                                     was_perfect = False
                             elif forward_movement < 0.0:  # Moving backward (wrong direction)
                                 if forward_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                    movement_reward = -1.0
+                                    movement_reward = -3.0
                                     print(f"❌ PERFECT BACKWARD: {movement_reward:.1f} penalty - Forward: {forward_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
                                     movement_progress = max(0.0, min(1.0, 1.0 - ((forward_movement + 5.0) / 4.5) ** 2))
-                                    movement_reward = -0.1 - 0.9 * movement_progress
+                                    movement_reward = -0.3 - 2.7 * movement_progress
                                     print(f"❌ POOR FORWARD: {movement_reward:.2f} penalty - Forward: {forward_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -681,19 +681,19 @@ def calculate_step_reward(current_angles, commands, intensity):
                             
                             # PUNISH movement in wrong directions (even if not commanded)
                             if abs(left_movement) > 0.5:  # Moving left when should go forward
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving LEFT: {left_movement:.3f}m when FORWARD commanded")
                                 was_perfect = False
                             
                             if abs(right_movement) > 0.5:  # Moving right when should go forward
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving RIGHT: {right_movement:.3f}m when FORWARD commanded")
                                 was_perfect = False
                             
                             if abs(backward_movement) > 0.5:  # Moving backward when should go forward
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving BACKWARD: {backward_movement:.3f}m when FORWARD commanded")
                                 was_perfect = False
@@ -708,21 +708,21 @@ def calculate_step_reward(current_angles, commands, intensity):
                             # Reward backward movement (commanded direction)
                             if backward_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
                                 if backward_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                    movement_reward = 1.0
+                                    movement_reward = 3.0
                                     print(f"🎯 PERFECT BACKWARD: +{movement_reward:.1f} reward - Backward: {backward_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
                                     movement_progress = 1.0 - ((5.0 - backward_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * movement_progress
+                                    movement_reward = 0.3 + 2.7 * movement_progress
                                     print(f"🎯 GOOD BACKWARD: +{movement_reward:.2f} reward - Backward: {backward_movement:.3f}m")
                                     was_perfect = False
                             elif backward_movement < 0.0:  # Moving forward (wrong direction)
                                 if backward_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                    movement_reward = -1.0
+                                    movement_reward = -3.0
                                     print(f"❌ PERFECT FORWARD: {movement_reward:.1f} penalty - Backward: {backward_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
                                     movement_progress = max(0.0, min(1.0, 1.0 - ((backward_movement + 5.0) / 4.5) ** 2))
-                                    movement_reward = -0.1 - 0.9 * movement_progress
+                                    movement_reward = -0.3 - 2.7 * movement_progress
                                     print(f"❌ POOR BACKWARD: {movement_reward:.2f} penalty - Backward: {backward_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -734,19 +734,19 @@ def calculate_step_reward(current_angles, commands, intensity):
                             
                             # PUNISH movement in wrong directions
                             if abs(forward_movement) > 0.5:  # Moving forward when should go backward
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving FORWARD: {forward_movement:.3f}m when BACKWARD commanded")
                                 was_perfect = False
                             
                             if abs(left_movement) > 0.5:  # Moving left when should go backward
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving LEFT: {left_movement:.3f}m when BACKWARD commanded")
                                 was_perfect = False
                             
                             if abs(right_movement) > 0.5:  # Moving right when should go backward
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving RIGHT: {right_movement:.3f}m when BACKWARD commanded")
                                 was_perfect = False
@@ -761,21 +761,21 @@ def calculate_step_reward(current_angles, commands, intensity):
                             # Reward left movement (commanded direction)
                             if left_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
                                 if left_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                    movement_reward = 1.0
+                                    movement_reward = 3.0
                                     print(f"🎯 PERFECT LEFT: +{movement_reward:.1f} reward - Left: {left_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
                                     movement_progress = 1.0 - ((5.0 - left_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * movement_progress
+                                    movement_reward = 0.3 + 2.7 * movement_progress
                                     print(f"🎯 GOOD LEFT: +{movement_reward:.2f} reward - Left: {left_movement:.3f}m")
                                     was_perfect = False
                             elif left_movement < 0.0:  # Moving right (wrong direction)
                                 if left_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                    movement_reward = -1.0
+                                    movement_reward = -3.0
                                     print(f"❌ PERFECT RIGHT: {movement_reward:.1f} penalty - Left: {left_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
                                     movement_progress = max(0.0, min(1.0, 1.0 - ((left_movement + 5.0) / 4.5) ** 2))
-                                    movement_reward = -0.1 - 0.9 * movement_progress
+                                    movement_reward = -0.3 - 2.7 * movement_progress
                                     print(f"❌ POOR LEFT: {movement_reward:.2f} penalty - Left: {left_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -787,19 +787,19 @@ def calculate_step_reward(current_angles, commands, intensity):
                             
                             # PUNISH movement in wrong directions
                             if abs(forward_movement) > 0.5:  # Moving forward when should go left
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving FORWARD: {forward_movement:.3f}m when LEFT commanded")
                                 was_perfect = False
                             
                             if abs(backward_movement) > 0.5:  # Moving backward when should go left
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving BACKWARD: {backward_movement:.3f}m when LEFT commanded")
                                 was_perfect = False
                             
                             if abs(right_movement) > 0.5:  # Moving right when should go left
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving RIGHT: {right_movement:.3f}m when LEFT commanded")
                                 was_perfect = False
@@ -814,21 +814,21 @@ def calculate_step_reward(current_angles, commands, intensity):
                             # Reward right movement (commanded direction)
                             if right_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
                                 if right_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                    movement_reward = 1.0
+                                    movement_reward = 3.0
                                     print(f"🎯 PERFECT RIGHT: +{movement_reward:.1f} reward - Right: {right_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
                                     movement_progress = 1.0 - ((5.0 - right_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * movement_progress
+                                    movement_reward = 0.3 + 2.7 * movement_progress
                                     print(f"🎯 GOOD RIGHT: +{movement_reward:.2f} reward - Right: {right_movement:.3f}m")
                                     was_perfect = False
                             elif right_movement < 0.0:  # Moving left (wrong direction)
                                 if right_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                    movement_reward = -1.0
+                                    movement_reward = -3.0
                                     print(f"❌ PERFECT LEFT: {movement_reward:.1f} penalty - Right: {right_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
-                                    mmovement_progress = max(0.0, min(1.0, 1.0 - ((right_movement + 5.0) / 4.5) ** 2))
-                                    movement_reward = -0.1 - 0.9 * movement_progress
+                                    movement_progress = max(0.0, min(1.0, 1.0 - ((right_movement + 5.0) / 4.5) ** 2))
+                                    movement_reward = -0.3 - 2.7 * movement_progress
                                     print(f"❌ POOR RIGHT: {movement_reward:.2f} penalty - Right: {right_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -840,19 +840,19 @@ def calculate_step_reward(current_angles, commands, intensity):
                             
                             # PUNISH movement in wrong directions
                             if abs(forward_movement) > 0.5:  # Moving forward when should go right
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving FORWARD: {forward_movement:.3f}m when RIGHT commanded")
                                 was_perfect = False
                             
                             if abs(backward_movement) > 0.5:  # Moving backward when should go right
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving BACKWARD: {backward_movement:.3f}m when RIGHT commanded")
                                 was_perfect = False
                             
                             if abs(left_movement) > 0.5:  # Moving left when should go right
-                                wrong_direction_penalty = -0.5
+                                wrong_direction_penalty = -1.5
                                 reward += wrong_direction_penalty
                                 print(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving LEFT: {left_movement:.3f}m when RIGHT commanded")
                                 was_perfect = False
@@ -882,25 +882,25 @@ def calculate_step_reward(current_angles, commands, intensity):
             if rotation_magnitude < 10.0:  # Within 33% of perfect stability (0° to 10°)
                 # Reward being close to perfect stability
                 if rotation_magnitude < 1.0:  # Within 10% of perfect (0° to 1°)
-                    rotation_reward = 1.0  # Perfect stability
+                    rotation_reward = 2.0  # Perfect stability
                     print(f"�� PERFECT STABILITY: +1.0 reward - Rotation: {rotation_magnitude:.1f}°")
                 else:  # Within 33% of perfect (1° to 10°)
-                    # Logarithmic scaling: 0.1 at 33% error, 1.0 at 10% error
+                    # Logarithmic scaling: 0.2 at 33% error, 2.0 at 10% error
                     rotation_progress = 1.0 - (rotation_magnitude / 10.0) ** 2
-                    rotation_reward = 0.1 + 0.9 * rotation_progress
+                    rotation_reward = 0.2 + 1.8 * rotation_progress
                     print(f"�� GOOD STABILITY: +{rotation_reward:.2f} reward - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
             elif rotation_magnitude > 20.0:  # Within 33% of bad rotation (20° to 30°)
                 # Punish being close to excessive rotation
                 if rotation_magnitude > 29.0:  # Within 10% of bad (29° to 30°)
-                    rotation_reward = -1.0  # Maximum penalty for excessive rotation
+                    rotation_reward = -2.0  # Maximum penalty for excessive rotation
                     print(f"❌ EXCESSIVE ROTATION: {rotation_reward:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
                 else:  # Within 33% of bad (20° to 29°)
-                    # Logarithmic scaling: -0.1 at 33% from bad, -1.0 at 10% from bad
+                    # Logarithmic scaling: -0.2 at 33% from bad, -2.0 at 10% from bad
                     rotation_progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
-                    rotation_reward = -0.1 - 0.9 * rotation_progress
+                    rotation_reward = -0.2 - 1.8 * rotation_progress
                     print(f"❌ POOR STABILITY: {rotation_reward:.2f} penalty - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
@@ -919,25 +919,25 @@ def calculate_step_reward(current_angles, commands, intensity):
             if rotation_magnitude > 20.0:  # Within 33% of target rotation (20° to 30°)
                 # Reward being close to target rotation
                 if rotation_magnitude > 29.0:  # Within 10% of target (29° to 30°)
-                    rotation_reward = 1.0  # Perfect rotation execution
+                    rotation_reward = 2.0  # Perfect rotation execution
                     print(f"🎯 PERFECT ROTATION: +1.0 reward - Rotation: {rotation_magnitude:.1f}°")
                 else:  # Within 33% of target (20° to 29°)
-                    # Logarithmic scaling: 0.1 at 33% error, 1.0 at 10% error
+                    # Logarithmic scaling: 0.2 at 33% error, 2.0 at 10% error
                     rotation_progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
-                    rotation_reward = 0.1 + 0.9 * rotation_progress
+                    rotation_reward = 0.2 + 1.8 * rotation_progress
                     print(f"🎯 GOOD ROTATION: +{rotation_reward:.2f} reward - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
             elif rotation_magnitude < 10.0:  # Within 33% of bad rotation (0° to 10°)
                 # Punish being close to no rotation
                 if rotation_magnitude < 1.0:  # Within 10% of bad (0° to 1°)
-                    rotation_reward = -1.0  # Maximum penalty for no rotation
+                    rotation_reward = -2.0  # Maximum penalty for no rotation
                     print(f"❌ NO ROTATION: {rotation_reward:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
                 else:  # Within 33% of bad (1° to 10°)
-                    # Logarithmic scaling: -0.1 at 33% from bad, -1.0 at 10% from bad
+                    # Logarithmic scaling: -0.2 at 33% from bad, -2.0 at 10% from bad
                     rotation_progress = 1.0 - (rotation_magnitude / 10.0) ** 2
-                    rotation_reward = -0.1 - 0.9 * rotation_progress
+                    rotation_reward = -0.2 - 1.8 * rotation_progress
                     print(f"❌ POOR ROTATION: {rotation_reward:.2f} penalty - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
@@ -1343,7 +1343,7 @@ def load_model(filepath):  # TODO find out how this can be used???
     global td3_policy, episode_counter, total_steps, episode_reward
 
     if td3_policy and os.path.exists(filepath):
-        checkpoint = torch.load(filepath)
+        checkpoint = torch.load(filepath, weights_only=False)
         td3_policy.actor.load_state_dict(checkpoint['actor_state_dict'])
         td3_policy.critic_1.load_state_dict(checkpoint['critic_1_state_dict'])
         td3_policy.critic_2.load_state_dict(checkpoint['critic_2_state_dict'])
