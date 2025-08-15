@@ -8,6 +8,9 @@
 ##################################################################################
 
 
+
+
+
 ############################################################
 ############### IMPORT / CREATE DEPENDENCIES ###############
 ############################################################
@@ -77,9 +80,6 @@ TRAINING_CONFIG = {
 ##### models derectory #####
 
 models_dir = "/home/matthewthomasbeck/Projects/Robot_Dog/model"
-
-# COMPLETELY GUTTED - No more desired pitch tracking
-# You now control pitch behavior through your reward function
 
 
 
