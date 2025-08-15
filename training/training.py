@@ -560,7 +560,7 @@ def calculate_step_reward(current_angles, commands, intensity):
 
     # 1. BALANCE REWARD: Reward near 0°, punish near 90°, ignore middle ground
     # Target: 0° (perfect balance), Bad: 90° (tipped over)
-    # 10% tolerance: ±9° from 0° and ±9° from 90°
+    # 33% tolerance: ±30° from 0° and ±30° from 90°
     
     if current_balance < 30.0:  # Within 33% of perfect balance (0° to 30°)
         # Reward being close to perfect balance
@@ -569,8 +569,8 @@ def calculate_step_reward(current_angles, commands, intensity):
             print(f"🎯 PERFECT BALANCE! +1.0 reward - Balance: {current_balance:.1f}°")
         else:  # Within 33% of perfect (3° to 30°)
             # Logarithmic scaling: 0.1 at 33% error, 1.0 at 10% error
-            progress = 1.0 - (current_balance / 30.0) ** 2
-            balance_reward = 0.1 + 0.9 * progress
+            balance_progress = 1.0 - (current_balance / 30.0) ** 2
+            balance_reward = 0.1 + 0.9 * balance_progress
             print(f"🎯 GOOD BALANCE: +{balance_reward:.2f} reward - Balance: {current_balance:.1f}°")
             was_perfect = False
     
@@ -582,8 +582,8 @@ def calculate_step_reward(current_angles, commands, intensity):
             was_perfect = False
         else:  # Within 33% of bad (60° to 87°)
             # Logarithmic scaling: -0.1 at 33% from bad, -1.0 at 10% from bad
-            progress = 1.0 - ((90.0 - current_balance) / 30.0) ** 2
-            balance_reward = -0.1 - 0.9 * progress
+            balance_progress = 1.0 - ((90.0 - current_balance) / 30.0) ** 2
+            balance_reward = -0.1 - 0.9 * balance_progress
             print(f"❌ POOR BALANCE: {balance_reward:.2f} penalty - Balance: {current_balance:.1f}°")
             was_perfect = False
     
@@ -605,8 +605,8 @@ def calculate_step_reward(current_angles, commands, intensity):
             print(f"�� PERFECT HEIGHT! +1.0 reward - Height: {current_height:.3f}m")
         else:  # Within 33% of perfect (0.086m to 0.126m)
             # Logarithmic scaling: 0.1 at 33% error, 1.0 at 10% error
-            progress = 1.0 - ((0.129 - current_height) / 0.043) ** 2
-            height_reward = 0.1 + 0.9 * progress
+            height_progress = 1.0 - ((0.129 - current_height) / 0.043) ** 2
+            height_reward = 0.1 + 0.9 * height_progress
             print(f"🎯 GOOD HEIGHT: +{height_reward:.2f} reward - Height: {current_height:.3f}m")
             was_perfect = False
     
@@ -618,8 +618,8 @@ def calculate_step_reward(current_angles, commands, intensity):
             was_perfect = False
         else:  # Within 33% of bad (0.003m to 0.043m)
             # Logarithmic scaling: -0.1 at 33% from bad, -1.0 at 10% from bad
-            progress = 1.0 - (current_height / 0.043) ** 2
-            height_reward = -0.1 - 0.9 * progress
+            height_progress = 1.0 - (current_height / 0.043) ** 2
+            height_reward = -0.1 - 0.9 * height_progress
             print(f"❌ POOR HEIGHT: {height_reward:.2f} penalty - Height: {current_height:.3f}m")
             was_perfect = False
     
@@ -658,8 +658,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     movement_reward = 1.0
                                     print(f"�� PERFECT FORWARD: +{movement_reward:.1f} reward - Forward: {forward_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
-                                    progress = 1.0 - ((5.0 - forward_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * progress
+                                    movement_progress = 1.0 - ((5.0 - forward_movement) / 1.67) ** 2
+                                    movement_reward = 0.1 + 0.9 * movement_progress
                                     print(f"🎯 GOOD FORWARD: +{movement_reward:.2f} reward - Forward: {forward_movement:.3f}m")
                                     was_perfect = False
                             elif forward_movement < 0.0:  # Moving backward (wrong direction)
@@ -668,8 +668,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     print(f"❌ PERFECT BACKWARD: {movement_reward:.1f} penalty - Forward: {forward_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
-                                    progress = 1.0 - ((forward_movement + 5.0) / 4.5) ** 2
-                                    movement_reward = -0.1 - 0.9 * progress
+                                    movement_progress = max(0.0, min(1.0, 1.0 - ((forward_movement + 5.0) / 4.5) ** 2))
+                                    movement_reward = -0.1 - 0.9 * movement_progress
                                     print(f"❌ POOR FORWARD: {movement_reward:.2f} penalty - Forward: {forward_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -711,8 +711,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     movement_reward = 1.0
                                     print(f"🎯 PERFECT BACKWARD: +{movement_reward:.1f} reward - Backward: {backward_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
-                                    progress = 1.0 - ((5.0 - backward_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * progress
+                                    movement_progress = 1.0 - ((5.0 - backward_movement) / 1.67) ** 2
+                                    movement_reward = 0.1 + 0.9 * movement_progress
                                     print(f"🎯 GOOD BACKWARD: +{movement_reward:.2f} reward - Backward: {backward_movement:.3f}m")
                                     was_perfect = False
                             elif backward_movement < 0.0:  # Moving forward (wrong direction)
@@ -721,8 +721,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     print(f"❌ PERFECT FORWARD: {movement_reward:.1f} penalty - Backward: {backward_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
-                                    progress = 1.0 - ((backward_movement + 5.0) / 4.5) ** 2
-                                    movement_reward = -0.1 - 0.9 * progress
+                                    movement_progress = max(0.0, min(1.0, 1.0 - ((backward_movement + 5.0) / 4.5) ** 2))
+                                    movement_reward = -0.1 - 0.9 * movement_progress
                                     print(f"❌ POOR BACKWARD: {movement_reward:.2f} penalty - Backward: {backward_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -764,8 +764,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     movement_reward = 1.0
                                     print(f"🎯 PERFECT LEFT: +{movement_reward:.1f} reward - Left: {left_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
-                                    progress = 1.0 - ((5.0 - left_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * progress
+                                    movement_progress = 1.0 - ((5.0 - left_movement) / 1.67) ** 2
+                                    movement_reward = 0.1 + 0.9 * movement_progress
                                     print(f"🎯 GOOD LEFT: +{movement_reward:.2f} reward - Left: {left_movement:.3f}m")
                                     was_perfect = False
                             elif left_movement < 0.0:  # Moving right (wrong direction)
@@ -774,8 +774,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     print(f"❌ PERFECT RIGHT: {movement_reward:.1f} penalty - Left: {left_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
-                                    progress = 1.0 - ((left_movement + 5.0) / 4.5) ** 2
-                                    movement_reward = -0.1 - 0.9 * progress
+                                    movement_progress = max(0.0, min(1.0, 1.0 - ((left_movement + 5.0) / 4.5) ** 2))
+                                    movement_reward = -0.1 - 0.9 * movement_progress
                                     print(f"❌ POOR LEFT: {movement_reward:.2f} penalty - Left: {left_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -817,8 +817,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     movement_reward = 1.0
                                     print(f"🎯 PERFECT RIGHT: +{movement_reward:.1f} reward - Right: {right_movement:.3f}m")
                                 else:  # Within 33% of target (3.33cm to 4.5cm)
-                                    progress = 1.0 - ((5.0 - right_movement) / 1.67) ** 2
-                                    movement_reward = 0.1 + 0.9 * progress
+                                    movement_progress = 1.0 - ((5.0 - right_movement) / 1.67) ** 2
+                                    movement_reward = 0.1 + 0.9 * movement_progress
                                     print(f"🎯 GOOD RIGHT: +{movement_reward:.2f} reward - Right: {right_movement:.3f}m")
                                     was_perfect = False
                             elif right_movement < 0.0:  # Moving left (wrong direction)
@@ -827,8 +827,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                                     print(f"❌ PERFECT LEFT: {movement_reward:.1f} penalty - Right: {right_movement:.3f}m")
                                     was_perfect = False
                                 else:  # Within 33% of bad (0cm to -4.5cm)
-                                    progress = 1.0 - ((right_movement + 5.0) / 4.5) ** 2
-                                    movement_reward = -0.1 - 0.9 * progress
+                                    mmovement_progress = max(0.0, min(1.0, 1.0 - ((right_movement + 5.0) / 4.5) ** 2))
+                                    movement_reward = -0.1 - 0.9 * movement_progress
                                     print(f"❌ POOR RIGHT: {movement_reward:.2f} penalty - Right: {right_movement:.3f}m")
                                     was_perfect = False
                             else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
@@ -886,8 +886,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                     print(f"�� PERFECT STABILITY: +1.0 reward - Rotation: {rotation_magnitude:.1f}°")
                 else:  # Within 33% of perfect (1° to 10°)
                     # Logarithmic scaling: 0.1 at 33% error, 1.0 at 10% error
-                    progress = 1.0 - (rotation_magnitude / 10.0) ** 2
-                    rotation_reward = 0.1 + 0.9 * progress
+                    rotation_progress = 1.0 - (rotation_magnitude / 10.0) ** 2
+                    rotation_reward = 0.1 + 0.9 * rotation_progress
                     print(f"�� GOOD STABILITY: +{rotation_reward:.2f} reward - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
@@ -899,8 +899,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                     was_perfect = False
                 else:  # Within 33% of bad (20° to 29°)
                     # Logarithmic scaling: -0.1 at 33% from bad, -1.0 at 10% from bad
-                    progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
-                    rotation_reward = -0.1 - 0.9 * progress
+                    rotation_progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
+                    rotation_reward = -0.1 - 0.9 * rotation_progress
                     print(f"❌ POOR STABILITY: {rotation_reward:.2f} penalty - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
@@ -923,8 +923,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                     print(f"🎯 PERFECT ROTATION: +1.0 reward - Rotation: {rotation_magnitude:.1f}°")
                 else:  # Within 33% of target (20° to 29°)
                     # Logarithmic scaling: 0.1 at 33% error, 1.0 at 10% error
-                    progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
-                    rotation_reward = 0.1 + 0.9 * progress
+                    rotation_progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
+                    rotation_reward = 0.1 + 0.9 * rotation_progress
                     print(f"🎯 GOOD ROTATION: +{rotation_reward:.2f} reward - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
@@ -936,8 +936,8 @@ def calculate_step_reward(current_angles, commands, intensity):
                     was_perfect = False
                 else:  # Within 33% of bad (1° to 10°)
                     # Logarithmic scaling: -0.1 at 33% from bad, -1.0 at 10% from bad
-                    progress = 1.0 - (rotation_magnitude / 10.0) ** 2
-                    rotation_reward = -0.1 - 0.9 * progress
+                    rotation_progress = 1.0 - (rotation_magnitude / 10.0) ** 2
+                    rotation_reward = -0.1 - 0.9 * rotation_progress
                     print(f"❌ POOR ROTATION: {rotation_reward:.2f} penalty - Rotation: {rotation_magnitude:.1f}°")
                     was_perfect = False
             
