@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Cleaned up movement so it's not an 800 line mess">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/mathematics.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -189,6 +187,7 @@
       <workItem from="1755283033694" duration="113000" />
       <workItem from="1755287449301" duration="4535000" />
       <workItem from="1755300180564" duration="30000" />
+      <workItem from="1755303794293" duration="506000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -329,14 +328,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00087" summary="Threading replaced, but now nothing is moving? Saving checkpoint">
-      <option name="closed" value="true" />
-      <created>1754444881474</created>
-      <option name="number" value="00087" />
-      <option name="presentableId" value="LOCAL-00087" />
-      <option name="project" value="LOCAL" />
-      <updated>1754444881474</updated>
     </task>
     <task id="LOCAL-00088" summary="Toning down logging to make debugging easier">
       <option name="closed" value="true" />
@@ -562,7 +553,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755292635427</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though">
+      <option name="closed" value="true" />
+      <created>1755303836609</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1755303836609</updated>
+    </task>
+    <option name="localTasksCounter" value="117" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -580,7 +579,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Calibration completely accurate" />
     <MESSAGE value="Removed useless functions from fundamental_movement.py" />
     <MESSAGE value="Isaac Sim successfully mapped!" />
     <MESSAGE value="Moved to angle-based system, deleted standing.py" />
@@ -605,7 +603,8 @@
     <MESSAGE value="Created accurate orientation tracking" />
     <MESSAGE value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
     <MESSAGE value="Cleaned up movement so it's not an 800 line mess" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up movement so it's not an 800 line mess" />
+    <MESSAGE value="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
