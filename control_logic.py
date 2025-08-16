@@ -46,15 +46,25 @@ JOINT_MAP = {}
 
 ##### prepare real robot #####
 
-def set_real_robot_dependencies():
-    global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP, internet
+def set_real_robot_dependencies():  # function to initialize real robot dependencies
+
+    ##### import necessary functions #####
+
     from utilities.receiver import initialize_receiver  # import receiver initialization functions
     from utilities.camera import initialize_camera  # import to start camera logic
     import utilities.internet as internet  # dynamically import internet utilities to be constantly updated
 
+    ##### initialize global variables #####
+
+    global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP, internet
+
+    ##### initialize camera process #####
+
     CAMERA_PROCESS = initialize_camera()  # create camera process
     if CAMERA_PROCESS is None:
         logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for robot!\n")
+
+    ##### initialize socket and command queue #####
 
     if config.CONTROL_MODE == 'web':  # if web control mode and robot needs a socket connection for controls and video...
         SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
@@ -64,6 +74,8 @@ def set_real_robot_dependencies():
         if COMMAND_QUEUE is None:
             logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
 
+    ##### initialize channel data #####
+
     elif config.CONTROL_MODE == 'radio':  # if radio control mode...
         CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
         if CHANNEL_DATA == None:
@@ -72,7 +84,8 @@ def set_real_robot_dependencies():
 
 ##### prepare isaac sim #####
 
-def set_isaac_dependencies():
+def set_isaac_dependencies():  # function to initialize isaac sim dependencies
+
     global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE
     import sys
     import carb
@@ -84,47 +97,42 @@ def set_isaac_dependencies():
     from isaacsim.core.api import World
     from isaacsim.core.prims import Articulation
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
-    from training.isaac_sim import build_isaac_joint_index_map
+    # from training.isaac_sim import build_isaac_joint_index_map
 
-    config.ISAAC_WORLD = World(stage_units_in_meters=1.0)
+    ##### build simulated world #####
 
-    # Add ground plane
-    config.ISAAC_WORLD.scene.add_default_ground_plane()
+    config.ISAAC_WORLD = World(stage_units_in_meters=1.0)  # create a new world
+    config.ISAAC_WORLD.scene.add_default_ground_plane()  # add a ground plane
+    add_reference_to_stage(config.ISAAC_ROBOT_PATH, "/World/robot_dog")  # add robot to world
 
-    # Add robot
-    usd_path = os.path.expanduser("/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd")
-    add_reference_to_stage(usd_path, "/World/robot_dog")
+    try:  # try to move robot up 14cm to avoid clipping
 
-    # Move robot up 30cm using the EXACT same method as the compass rose
-    try:
+        ##### import necessary libraries #####
+
         import omni.usd
         from pxr import UsdGeom, Gf
 
-        # Get the stage the same way we do in create_coordinate_frames
+        ##### get stage and move robot #####
+
         stage = omni.usd.get_context().get_stage()
         robot_prim = stage.GetPrimAtPath("/World/robot_dog")
 
-        if robot_prim:
-            # Robot already has transforms, so we need to modify the existing translate
+        if robot_prim:  # if robot prim is found...
             xform = UsdGeom.Xformable(robot_prim)
-            if xform:
-                # Get existing transform operations
+            if xform:  # if xform is found...
                 xform_ops = xform.GetOrderedXformOps()
-
-                # Find the translate operation
-                translate_op = None
-                for op in xform_ops:
-                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
-                        translate_op = op
+                translate_op = None  # initialize translate operation
+                for op in xform_ops:  # for each operation...
+                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:  # if operation is a translate operation...
+                        translate_op = op  # set translate operation
                         break
 
-                if translate_op:
-                    # Get current translate value and add 30cm to Z
-                    current_translate = translate_op.Get()
-                    new_translate = Gf.Vec3d(current_translate[0], current_translate[1], current_translate[2] + 0.14)
-                    translate_op.Set(new_translate)
-                    logging.info(
-                        f"(control_logic.py): Robot moved up 30cm. Old pos: {current_translate}, New pos: {new_translate}\n")
+                if translate_op:  # if translate operation is found...
+                    current_translate = translate_op.Get()  # get current translate value
+                    new_translate = Gf.Vec3d(current_translate[0], current_translate[1],
+                                             current_translate[2] + 0.14)  # add 14cm to z
+                    translate_op.Set(new_translate)  # set new translate value
+                    logging.info(f"(control_logic.py): Robot moved up 14cm.\n")
                 else:
                     logging.warning("(control_logic.py): No translate operation found on robot prim.\n")
             else:
@@ -132,61 +140,66 @@ def set_isaac_dependencies():
         else:
             logging.warning("(control_logic.py): Robot prim not found at /World/robot_dog.\n")
 
-    except Exception as e:
+    except Exception as e:  # if robot cant be moved...
         logging.error(f"(control_logic.py): Failed to move robot up: {e}\n")
-        # Continue anyway - robot will spawn at default height
+
+    ##### render isaac sim #####
 
     for _ in range(3):  # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
-    config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")
-    config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)
-
-    # For now, let's just use the default spawn position and see if the robot clipping issue persists
-    # We can revisit the height adjustment once we understand the Isaac Sim 5 API better
-    logging.info("(control_logic.py): Robot added to Isaac Sim scene.\n")
-
+    config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")  # create robot articulation
+    config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)  # add robot to world
     config.ISAAC_WORLD.reset()
-    config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
-    logging.info(
-        f"(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {config.JOINT_INDEX_MAP}\n")
+    logging.info("(control_logic.py): Robot added to Isaac Sim scene.\n")
+    # config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
+    # logging.info(f"(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {config.JOINT_INDEX_MAP}\n")
 
-    # Add coordinate frames for orientation tracking
-    from training.isaac_sim import create_coordinate_frames
-    create_coordinate_frames()
-    logging.info("(control_logic.py) Coordinate frames created for robot orientation tracking.\n")
+    ##### initialize isaac sim camera #####
 
     from utilities.camera import initialize_camera  # import to start camera logic
     CAMERA_PROCESS = initialize_camera()  # create camera process
     if CAMERA_PROCESS is None:
         logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
 
-    # Create RL command queue for Isaac Sim (similar to web command queue)
-    try:
-        COMMAND_QUEUE = queue.Queue()  # Create RL command queue
+    ##### initialize isaac sim command queue #####
+
+    try:  # try to initialize command queue for isaac to get commands from training
+        COMMAND_QUEUE = queue.Queue()
         logging.info("(control_logic.py): RL command queue initialized successfully for Isaac Sim.\n")
     except Exception as e:
         logging.error(f"(control_logic.py): Failed to initialize RL command queue: {e}\n")
         COMMAND_QUEUE = None
 
+    # TODO dont remove the commented out code below, I may need it someday
+    # if config.CONTROL_MODE == 'web': # if web control mode and robot needs a socket connection for controls and video...
+    # SOCK = internet.initialize_backend_socket()  # initialize EC2 socket connection
+    # COMMAND_QUEUE = internet.initialize_command_queue(SOCK)  # initialize command queue for socket communication
+    # if SOCK is None:
+    # logging.error("(control_logic.py): Failed to initialize SOCK for robot!\n")
+    # if COMMAND_QUEUE is None:
+    # logging.error("(control_logic.py): Failed to initialize COMMAND_QUEUE for robot!\n")
+
 
 ########## PREPARE ROBOT ##########
+
+##### prepare robot with correct dependencies #####
 
 if not config.USE_SIMULATION:
     set_real_robot_dependencies()
 elif config.USE_SIMULATION:
-    if config.USE_ISAAC_SIM:
-        set_isaac_dependencies()
-    elif not config.USE_ISAAC_SIM:
-        set_pybullet_dependencies()
+    set_isaac_dependencies()
 
 ##### post-initialization dependencies #####
 
-from movement.fundamental_movement import *
+from movement.movement_coordinator import *
 from utilities.camera import decode_real_frame, decode_isaac_frame
 
-# Import Isaac Sim specific functions
-if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-    from training.isaac_sim import process_isaac_movement_queue
+if config.USE_SIMULATION:  # if using isaac sim...
+    from training.isaac_sim import process_isaac_movement_queue  # import isaac sim specific functions
+
+
+
+
 
 #########################################
 ############### RUN ROBOT ###############
