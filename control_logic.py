@@ -364,6 +364,13 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             config.ISAAC_WORLD.step(render=True)
 
+            if config.USE_SIMULATION:
+                from training.training import integrate_with_main_loop
+                episode_reset_occurred = integrate_with_main_loop()
+                if episode_reset_occurred:
+                    for _ in range(3):
+                        config.ISAAC_WORLD.step(render=True)
+
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
 

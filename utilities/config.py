@@ -176,3 +176,19 @@ ISAAC_ROBOT_ARTICULATION_CONTROLLER = None # isaac sim robot articulation contro
 ##### isaac sim joint config #####
 
 JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac sim
+
+##### training config #####
+
+TRAINING_CONFIG = { # used to track training metrics and save frequencies
+
+    'max_episodes': 1000000,
+    'max_steps_per_episode': 750,  # GPT-5 recommendation: 600-1200 steps (~10-20 seconds)
+    'save_frequency': 20000,  # Save model every 20,000 steps (more frequent saves)
+    'training_frequency': 2,  # Train every 2 steps (GPT-5: more frequent training)
+    'batch_size': 64,  # GPT-5 recommendation: standard batch size
+    'learning_rate': 3e-4,  # Back to standard learning rate
+    'gamma': 0.99,  # Discount factor
+    'tau': 0.005,  # Standard target network update rate
+    'exploration_noise': 0.1,  # Standard exploration noise
+    'max_action': 1.0
+}

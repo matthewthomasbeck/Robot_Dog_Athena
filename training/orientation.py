@@ -25,6 +25,7 @@ import utilities.config as config
 ##### import necessary libraries #####
 
 import numpy as np
+import logging
 
 ##### import necessary functions #####
 
@@ -84,7 +85,7 @@ def track_orientation():
         curr_d = (facing_deg + 270) % 360  # 90° right of forward (D key)
 
         # Print position, facing direction, balance, height, and current WASD directions
-        # print(f"center: x {center_pos[0]:.3f}, y {center_pos[1]:.3f}, z {center_pos[2]:.3f} facing(deg): {facing_deg:.0f} off_balance(deg): {off_balance:.1f} height(m): {height:.3f} curr_w(deg): {curr_w:.0f} curr_s(deg): {curr_s:.0f} curr_a(deg): {curr_a:.0f} curr_d(deg): {curr_d:.0f}")
+        # logging.(f"center: x {center_pos[0]:.3f}, y {center_pos[1]:.3f}, z {center_pos[2]:.3f} facing(deg): {facing_deg:.0f} off_balance(deg): {off_balance:.1f} height(m): {height:.3f} curr_w(deg): {curr_w:.0f} curr_s(deg): {curr_s:.0f} curr_a(deg): {curr_a:.0f} curr_d(deg): {curr_d:.0f}")
 
         # Check if position is changing (robot is actually moving)
         if not hasattr(track_orientation, 'last_position'):
@@ -100,7 +101,7 @@ def track_orientation():
             if horizontal_distance < 0.001:  # Less than 1mm horizontal movement
                 track_orientation.static_count += 1
                 if track_orientation.static_count > 10:
-                    print(f"   ⚠️  Robot hasn't moved horizontally in {track_orientation.static_count} steps!")
+                    logging.warning(f"   ⚠️  Robot hasn't moved horizontally in {track_orientation.static_count} steps!")
 
                 # Store current facing direction even when not moving (for reward function)
                 track_orientation.last_facing_deg = facing_deg
@@ -151,8 +152,8 @@ def track_orientation():
                     rotation_deg = rotation_change
                     track_orientation.last_facing = facing_deg
 
-                # print(f"   moved(m): {horizontal_distance:.3f} ({movement_direction}) w: {w_movement:.3f} s: {s_movement:.3f} a: {a_movement:.3f} d: {d_movement:.3f}")
-                # print(f"   rotated(deg): {rotation_deg:.1f}")
+                # logging.debug(f"   moved(m): {horizontal_distance:.3f} ({movement_direction}) w: {w_movement:.3f} s: {s_movement:.3f} a: {a_movement:.3f} d: {d_movement:.3f}")
+                # logging.debug(f"   rotated(deg): {rotation_deg:.1f}")
 
                 # Store movement data for reward function to access
                 track_orientation.last_movement_data = {
@@ -172,5 +173,5 @@ def track_orientation():
         return center_pos, facing_deg
 
     except Exception as e:
-        print(f"❌ Failed to track orientation: {e}")
+        logging.error(f"❌ Failed to track orientation: {e}")
         return None, None

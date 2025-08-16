@@ -4,17 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got isaac servos working again">
-      <change afterPath="$PROJECT_DIR$/training/orientation.py" afterDir="false" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/isaac_joints.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/agents.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/orientation.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/orientation.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/rewards.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/rewards.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -343,14 +340,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00092" summary="Removed useless functions from fundamental_movement.py">
-      <option name="closed" value="true" />
-      <created>1754671211620</created>
-      <option name="number" value="00092" />
-      <option name="presentableId" value="LOCAL-00092" />
-      <option name="project" value="LOCAL" />
-      <updated>1754671211620</updated>
-    </task>
     <task id="LOCAL-00093" summary="Isaac Sim successfully mapped!">
       <option name="closed" value="true" />
       <created>1754675306264</created>
@@ -575,7 +564,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755364693086</updated>
     </task>
-    <option name="localTasksCounter" value="121" />
+    <task id="LOCAL-00121" summary="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files">
+      <option name="closed" value="true" />
+      <created>1755367148386</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1755367148386</updated>
+    </task>
+    <option name="localTasksCounter" value="122" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -593,7 +590,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="got rid of redundant pybullet tools" />
     <MESSAGE value="Ground plane successfully implemented" />
     <MESSAGE value="Added a bunch of RL functions and toned down the debug noise a bit" />
     <MESSAGE value="Successfully set up random command pipeline for RL agent" />
@@ -618,7 +614,8 @@
     <MESSAGE value="Cleaned up cursor garbage in control_logic.py" />
     <MESSAGE value="Fixed control_logic to stop using the useless coordinate frame" />
     <MESSAGE value="Got isaac servos working again" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got isaac servos working again" />
+    <MESSAGE value="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
