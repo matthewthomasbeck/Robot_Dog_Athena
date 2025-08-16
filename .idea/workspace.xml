@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made it so models can be converted">
+      <change afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.onnx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/pth_to_onnx.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/test_onnx.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,34 +53,36 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
-    &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
-    &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/matthewthomasbeck/Downloads/training_OLD.py&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.control_logic.executor": "Run",
+    "Python.export_model.executor": "Run",
+    "Python.pth_to_xml.executor": "Run",
+    "Python.simulation_test.executor": "Run",
+    "Python.test_xml.executor": "Run",
+    "Python.visualize.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/model",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model" />
       <recent name="$PROJECT_DIR$/training/urdf" />
       <recent name="$PROJECT_DIR$/backend_to_frontend" />
       <recent name="$PROJECT_DIR$/training" />
       <recent name="$PROJECT_DIR$/rl_training/urdf" />
-      <recent name="$PROJECT_DIR$/rl_training" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/utilities" />
@@ -187,7 +195,8 @@
       <workItem from="1755283033694" duration="113000" />
       <workItem from="1755287449301" duration="4535000" />
       <workItem from="1755300180564" duration="30000" />
-      <workItem from="1755303794293" duration="506000" />
+      <workItem from="1755303794293" duration="988000" />
+      <workItem from="1755311539341" duration="1294000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -328,14 +337,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00088" summary="Toning down logging to make debugging easier">
-      <option name="closed" value="true" />
-      <created>1754447386824</created>
-      <option name="number" value="00088" />
-      <option name="presentableId" value="LOCAL-00088" />
-      <option name="project" value="LOCAL" />
-      <updated>1754447386824</updated>
     </task>
     <task id="LOCAL-00089" summary="Changed the urdf to have no joint restriction">
       <option name="closed" value="true" />
@@ -561,7 +562,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755303836609</updated>
     </task>
-    <option name="localTasksCounter" value="117" />
+    <task id="LOCAL-00117" summary="Made it so models can be converted">
+      <option name="closed" value="true" />
+      <created>1755308187167</created>
+      <option name="number" value="00117" />
+      <option name="presentableId" value="LOCAL-00117" />
+      <option name="project" value="LOCAL" />
+      <updated>1755308187167</updated>
+    </task>
+    <option name="localTasksCounter" value="118" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -579,7 +588,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Removed useless functions from fundamental_movement.py" />
     <MESSAGE value="Isaac Sim successfully mapped!" />
     <MESSAGE value="Moved to angle-based system, deleted standing.py" />
     <MESSAGE value="Moved to angle-based system, deleted standing.py and forward.py" />
@@ -604,12 +612,15 @@
     <MESSAGE value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
     <MESSAGE value="Cleaned up movement so it's not an 800 line mess" />
     <MESSAGE value="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though" />
+    <MESSAGE value="Made it so models can be converted" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made it so models can be converted" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1753211859597" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Robot_Dog$visualize.coverage" NAME="visualize Coverage Results" MODIFIED="1752538200252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Robot_Dog$test_xml.coverage" NAME="test_xml Coverage Results" MODIFIED="1755313915983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
+    <SUITE FILE_PATH="coverage/Robot_Dog$pth_to_xml.coverage" NAME="pth_to_xml Coverage Results" MODIFIED="1755314121557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
   </component>
 </project>

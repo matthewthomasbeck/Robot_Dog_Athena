@@ -79,7 +79,7 @@ CAMERA_CONFIG = { # TODO BE VERY CAREFUL WITH OUTPUT WIDTHxHEIGHT! Remember, the
 INFERENCE_CONFIG = {
     'TPU_NAME': "MYRIAD",  # literal device name in code
     'STANDARD_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/standard", # standard all terrain RL model
-    'BLIND_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/blind_rl_model.onnx", # speedy imageless RL model
+    'BLIND_RL_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/blind_rl_model.xml", # speedy imageless RL model
     'CNN_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/model/person-detection-0200.xml",  # person detection
 }
 

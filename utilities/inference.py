@@ -99,7 +99,7 @@ def load_and_compile_model(
         ie = Core() # check for devices
         #model_bin_path = model_path.replace(".xml", ".bin") # get binary path from XML path (incase needed)
         model = ie.read_model(model=model_path) # read model from XML file
-        compiled_model = ie.compile_model(model=model, device_name=device_name) # compile model for specified device
+        compiled_model = ie.compile_model(model, device_name=device_name) # compile model for specified device
         input_layer = compiled_model.input(0) # get input layer of compiled model
         output_layer = compiled_model.output(0) # get output layer of compiled model
         logging.info(f"(opencv.py): Model loaded and compiled on {device_name}.\n")
@@ -116,6 +116,49 @@ def load_and_compile_model(
 
     except Exception as e:
         logging.error(f"(opencv.py): Failed to load/compile model: {e}\n")
+        return None, None, None
+
+
+########## LOAD AND COMPILE ONNX MODEL ##########
+
+# function to load and compile an ONNX model
+def load_and_compile_onnx_model(
+        model_path, # path to the ONNX model file
+        device_name=INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
+):
+    """
+    Load and compile an ONNX model for inference.
+    This function is specifically designed for ONNX files, not OpenVINO .xml/.bin files.
+    """
+    
+    logging.debug(f"(inference.py): Loading and compiling ONNX model: {model_path}\n")
+
+    try:
+        # Load the ONNX model
+        ie = Core()
+        model = ie.read_model(model=model_path)
+        
+        # Compile the model for the specified device
+        compiled_model = ie.compile_model(model, device_name=device_name)
+        
+        # Get input and output layers
+        input_layer = compiled_model.input(0)
+        output_layer = compiled_model.output(0)
+        
+        logging.info(f"(inference.py): ONNX model loaded and compiled on {device_name}.\n")
+        
+        # Test with dummy input
+        try:
+            test_with_dummy_input(compiled_model, input_layer, output_layer)
+            logging.info(f"(inference.py): ONNX model dummy input test passed.\n")
+        except Exception as e:
+            logging.warning(f"(inference.py): ONNX model dummy input test failed: {e}\n")
+            # Don't fail completely - some models work fine without dummy input test
+        
+        return compiled_model, input_layer, output_layer
+
+    except Exception as e:
+        logging.error(f"(inference.py): Failed to load/compile ONNX model: {e}\n")
         return None, None, None
 
 
