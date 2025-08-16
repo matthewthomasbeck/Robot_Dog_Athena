@@ -36,7 +36,8 @@ import torch.nn.functional as F
 
 ##### movement functions #####
 
-from movement.movement_coordinator import neutral_position
+# Import Isaac Sim specific functions to avoid circular imports
+from movement.isaac_joints import neutral_position_isaac
 
 ##### import config #####
 
@@ -1242,7 +1243,7 @@ def reset_episode():
                 config.ISAAC_WORLD.step(render=True)
 
         # CRITICAL: Move robot to neutral position (joint angles)
-        neutral_position(10)  # High intensity for quick reset
+        neutral_position_isaac()  # Move to neutral position in Isaac Sim
 
         # Give Isaac Sim more steps to stabilize after neutral position
         if config.USE_SIMULATION and config.USE_ISAAC_SIM:

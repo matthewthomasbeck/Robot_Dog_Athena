@@ -222,7 +222,8 @@ def process_isaac_movement_queue():
         return
     
     # Import here to avoid circular imports
-    from movement.movement_coordinator import ISAAC_MOVEMENT_QUEUE, ISAAC_CALIBRATION_COMPLETE, _apply_single_joint_position_isaac
+    from movement.isaac_joints import ISAAC_MOVEMENT_QUEUE, ISAAC_CALIBRATION_COMPLETE
+    from movement.isaac_joints import apply_single_joint_position_isaac as _apply_single_joint_position_isaac
     import queue
     
     # Process any new movement data

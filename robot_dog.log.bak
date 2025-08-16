@@ -1,22 +1,84 @@
-2025-08-14 23:04:46 INFO: (log.py): Logging setup complete.
+2025-08-15 22:50:15 INFO: (log.py): Logging setup complete.
 
-2025-08-14 23:04:54 INFO: (control_logic.py): Robot moved up 30cm. Old pos: (0, 0, 0), New pos: (0, 0, 0.14)
+2025-08-15 22:50:23 INFO: (control_logic.py): Robot moved up 14cm.
 
-2025-08-14 23:04:55 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-08-15 22:50:24 INFO: (control_logic.py): Robot added to Isaac Sim scene.
 
-2025-08-14 23:04:55 INFO: (control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+2025-08-15 22:50:24 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-14 23:04:55 INFO: (control_logic.py) Coordinate frames created for robot orientation tracking.
+2025-08-15 22:50:25 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-14 23:04:55 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-15 22:50:25 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-14 23:04:56 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-15 22:50:25 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-14 23:04:56 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-15 22:50:25 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-14 23:04:56 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-15 22:50:25 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-08-14 23:04:56 INFO: (camera.py) Initialized isaac camera.
+2025-08-15 22:50:30 INFO: (training.py): Episode 759 ending - Episode complete, resetting Isaac Sim world.
 
-2025-08-14 23:04:56 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-08-15 22:50:30 INFO: (training.py): Episode 760 reset complete - World and robot state reset.
+
+2025-08-15 22:50:30 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:31 INFO: (training.py): Episode 760 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:32 INFO: (training.py): Episode 761 reset complete - World and robot state reset.
+
+2025-08-15 22:50:32 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:33 INFO: (training.py): Episode 761 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:33 INFO: (training.py): Episode 762 reset complete - World and robot state reset.
+
+2025-08-15 22:50:33 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:34 INFO: (training.py): Episode 762 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:35 INFO: (training.py): Episode 763 reset complete - World and robot state reset.
+
+2025-08-15 22:50:35 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:36 INFO: (training.py): Episode 763 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:36 INFO: (training.py): Episode 764 reset complete - World and robot state reset.
+
+2025-08-15 22:50:36 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:37 INFO: (training.py): Episode 764 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:38 INFO: (training.py): Episode 765 reset complete - World and robot state reset.
+
+2025-08-15 22:50:38 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:39 INFO: (training.py): Episode 765 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:40 INFO: (training.py): Episode 766 reset complete - World and robot state reset.
+
+2025-08-15 22:50:40 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:41 INFO: (training.py): Episode 766 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:41 INFO: (training.py): Episode 767 reset complete - World and robot state reset.
+
+2025-08-15 22:50:41 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:42 INFO: (training.py): Episode 767 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:43 INFO: (training.py): Episode 768 reset complete - World and robot state reset.
+
+2025-08-15 22:50:43 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:44 INFO: (training.py): Episode 768 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:44 INFO: (training.py): Episode 769 reset complete - World and robot state reset.
+
+2025-08-15 22:50:44 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
+
+2025-08-15 22:50:45 INFO: (training.py): Episode 769 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-15 22:50:46 INFO: (training.py): Episode 770 reset complete - World and robot state reset.
+
+2025-08-15 22:50:46 INFO: (control_logic.py): Episode reset occurred, allowing robot to stabilize...
 

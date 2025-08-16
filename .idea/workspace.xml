@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made it so models can be converted">
-      <change afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got to 300k steps and saving model, adjusted movement/rotation rates so the robot starts prioritizing listening to the user as opposed to just staying upright">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.onnx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/pth_to_onnx.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/test_onnx.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +44,7 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2mcFIiLVWB9RbUjveGQlndNtXOm" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+  <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -53,29 +52,29 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.control_logic.executor": "Run",
-    "Python.export_model.executor": "Run",
-    "Python.pth_to_xml.executor": "Run",
-    "Python.simulation_test.executor": "Run",
-    "Python.test_xml.executor": "Run",
-    "Python.visualize.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/model",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
+    &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.pth_to_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog/model&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/model" />
@@ -91,7 +90,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-91d3a02ef49d-43b77aa2d136-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.23654.177" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
+        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
       </set>
     </attachedChunks>
   </component>
@@ -197,6 +197,7 @@
       <workItem from="1755300180564" duration="30000" />
       <workItem from="1755303794293" duration="988000" />
       <workItem from="1755311539341" duration="1294000" />
+      <workItem from="1755356832287" duration="774000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
