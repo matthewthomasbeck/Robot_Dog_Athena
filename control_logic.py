@@ -194,9 +194,6 @@ elif config.USE_SIMULATION:
 from movement.movement_coordinator import *
 from utilities.camera import decode_real_frame, decode_isaac_frame
 
-if config.USE_SIMULATION:  # if using isaac sim...
-    from training.isaac_sim import process_isaac_movement_queue  # import isaac sim specific functions
-
 
 
 
@@ -366,21 +363,6 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             ##### step simulation #####
 
             config.ISAAC_WORLD.step(render=True)
-            process_isaac_movement_queue()
-
-            ##### CRITICAL: Episode Management in Main Thread #####
-            # Check for episode resets in the main thread (NOT in worker threads)
-            if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-                from training.training import integrate_with_main_loop
-                episode_reset_occurred = integrate_with_main_loop()
-
-                if episode_reset_occurred:
-                    # Episode was reset, give robot time to stabilize
-                    logging.info(f"(control_logic.py): Episode reset occurred, allowing robot to stabilize...\n")
-                    # Wait a few simulation steps for stability
-                    for _ in range(3):
-                        config.ISAAC_WORLD.step(render=True)
-                    process_isaac_movement_queue()
 
     except KeyboardInterrupt:  # if user ends program...
         logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")

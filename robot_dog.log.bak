@@ -1,18 +1,18 @@
-2025-08-16 12:05:54 INFO: (log.py): Logging setup complete.
+2025-08-16 12:56:41 INFO: (log.py): Logging setup complete.
 
-2025-08-16 12:06:02 INFO: (control_logic.py): Robot moved up 14cm.
+2025-08-16 12:56:50 INFO: (control_logic.py): Robot moved up 14cm.
 
-2025-08-16 12:06:03 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-08-16 12:56:50 INFO: (control_logic.py): Robot added to Isaac Sim scene.
 
-2025-08-16 12:06:03 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-16 12:56:51 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-16 12:06:04 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-16 12:56:51 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-16 12:06:04 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-16 12:56:51 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-16 12:06:04 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-16 12:56:51 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-16 12:06:04 INFO: (camera.py) Initialized isaac camera.
+2025-08-16 12:56:51 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-16 12:06:04 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-08-16 12:56:52 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
