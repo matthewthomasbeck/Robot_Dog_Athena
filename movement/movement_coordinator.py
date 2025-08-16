@@ -22,15 +22,12 @@
 
 import utilities.config as config # import configuration data for servos and link lengths
 
-##### import necessary functions #####
-
-from utilities.mathematics import * # import all mathematical functions
-
 ##### import necessary libraries #####
 
 import time # import time for proper leg sequencing
 import threading # import threading for thread management
 import random # import random for random angle radians
+import logging # import logging for error handling
 
 ##### import dependencies for physical robot
 
@@ -38,7 +35,18 @@ if not config.USE_SIMULATION:
 
     ##### import necessary functions #####
 
-    from movement.physical_joints import swing_leg, neutral_position_physical, thread_leg_movement_angles
+    from movement.physical_joints import swing_leg, neutral_position_physical
+    from utilities.inference import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
+        run_person_detection # load function/models for gait adjustment and person detection
+
+    if config.RL_NOT_CNN:
+        # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
+        #STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(
+            #config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
+        BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(
+            config.INFERENCE_CONFIG['BLIND_RL_PATH'])
+    elif not config.RL_NOT_CNN:
+        CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
 
 ##### import dependencies for isaac sim #####
 
@@ -53,6 +61,7 @@ elif config.USE_SIMULATION:
     from isaacsim.core.api.controllers.articulation_controller import ArticulationController
     from training.isaac_sim import build_isaac_joint_index_map
     from movement.isaac_joints import neutral_position_isaac, apply_joint_angles_isaac
+    from training.training import get_rl_action_standard, get_rl_action_blind
         
     ##### build dependencies for isaac sim #####
 
@@ -60,27 +69,8 @@ elif config.USE_SIMULATION:
     config.ISAAC_ROBOT_ARTICULATION_CONTROLLER = ArticulationController() # create new articulation controller instance
     config.ISAAC_ROBOT_ARTICULATION_CONTROLLER.initialize(config.ISAAC_ROBOT) # initialize the controller
 
-elif not config.USE_SIMULATION:
-    # load function/models for gait adjustment and person detection
-    from utilities.inference import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
-        run_person_detection
-    from training.training import get_rl_action_standard, get_rl_action_blind
-
-    if config.RL_NOT_CNN:
-        # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
-        #STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(
-            #config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
-        BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(
-            config.INFERENCE_CONFIG['BLIND_RL_PATH'])
-    elif not config.RL_NOT_CNN:
-        CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
-
 
 ########## CREATE DEPENDENCIES ##########
-
-##### initialize variables for kinematics and neural processing #####
-
-k = Kinematics(config.LINK_CONFIG) # use link lengths to initialize kinematic functions
 
 ##### simulation variables (set by control_logic.py) #####
 
@@ -125,7 +115,6 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     ##### preprocess commands and intensity #####
 
     commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
-    speed, acceleration = interpret_intensity(intensity) # get speed and acceleration from intensity score
 
     ##### run inference before moving #####
 
@@ -289,8 +278,6 @@ def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates
         t.start()
     for t in leg_threads:  # wait for all legs to finish
         t.join()
-    for leg_id in ['FL', 'FR', 'BL', 'BR']:  # update current foot positions
-        config.CURRENT_FEET_COORDINATES[leg_id] = target_coordinates[leg_id].copy()
 
 
 ########## RANDOM ACTION FUNCTION ##########

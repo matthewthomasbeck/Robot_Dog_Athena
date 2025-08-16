@@ -484,7 +484,7 @@ def get_rl_action_blind(current_angles, commands, intensity):
 
         target_angles[leg_id] = {}
         mid_angles[leg_id] = {}
-        movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}
+        movement_rates[leg_id] = {'speed': 16383, 'acceleration': 255}
 
         for joint_name in ['hip', 'upper', 'lower']:
 

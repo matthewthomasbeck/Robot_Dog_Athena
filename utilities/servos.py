@@ -70,35 +70,38 @@ def set_target(channel, target, speed, acceleration): # function to set target p
 
 ########## ANGLE TO TARGET ##########
 
-# function to map an angle to a servo pulse width
-def map_angle_to_servo_position(angle, joint_data, angle_neutral, is_inverted=False):
+def map_angle_to_servo_position(angle, joint_data): # map radian to pwm
 
     ##### map angle to servo pulse width #####
 
-    logging.debug(f"(servos.py): Mapping angle {angle} to servo position...\n")
-    full_back = joint_data['FULL_BACK'] # get full back pulse width from joint data
-    full_front = joint_data['FULL_FRONT'] # get full front pulse width from joint data
-    neutral_pulse = joint_data['NEUTRAL'] # get neutral pulse width from joint data
-    pulse_range = full_front - full_back # calculate pulse width range
-    direction = -1 if is_inverted else 1 # determine direction based on inversion flag
-    pulse = neutral_pulse + direction * ((angle - angle_neutral) / 90) * pulse_range # pulse width based on angle
-
-    return int(round(pulse)) # return calculated pulse width
-
-
-def pwm_to_angle(pwm, joint_data):
-    """
-    Map a PWM value to a servo angle in radians using the joint's config.
-    Args:
-        pwm (float): The PWM value (microseconds)
-        joint_data (dict): The joint's config dict, must include FULL_FRONT, FULL_BACK, FULL_FRONT_ANGLE, FULL_BACK_ANGLE
-    Returns:
-        float: The angle in radians corresponding to the PWM value
-    """
-    full_front_pwm = joint_data['FULL_FRONT']
-    full_back_pwm = joint_data['FULL_BACK']
-    full_front_angle = joint_data.get('FULL_FRONT_ANGLE', 0)
-    full_back_angle = joint_data.get('FULL_BACK_ANGLE', 0)
-    # Linear interpolation
-    angle = full_front_angle + (full_back_angle - full_front_angle) * ((pwm - full_front_pwm) / (full_back_pwm - full_front_pwm))
-    return angle
+    logging.debug(f"(servos.py): Mapping radian {angle} to servo position...\n")
+    
+    # Get angle limits and PWM limits from joint data
+    full_back_angle = joint_data['FULL_BACK_ANGLE']  # radian position for FULL_BACK PWM
+    full_front_angle = joint_data['FULL_FRONT_ANGLE']  # radian position for FULL_FRONT PWM
+    full_back_pwm = joint_data['FULL_BACK']  # PWM value for full back position
+    full_front_pwm = joint_data['FULL_FRONT']  # PWM value for full front position
+    
+    # Calculate the angle range and PWM range (handle any order)
+    angle_range = full_front_angle - full_back_angle
+    pwm_range = full_front_pwm - full_back_pwm
+    
+    # Ensure we don't divide by zero
+    if abs(angle_range) < 1e-6:
+        logging.error(f"(servos.py): Invalid angle range: {angle_range}")
+        return full_back_pwm
+    
+    # Map the target angle to PWM using linear interpolation
+    # Formula: pwm = full_back_pwm + (angle - full_back_angle) * (pwm_range / angle_range)
+    pwm = full_back_pwm + (angle - full_back_angle) * (pwm_range / angle_range)
+    
+    # Clamp PWM to valid range (handle any order of PWM values)
+    if full_back_pwm < full_front_pwm:
+        pwm = max(full_back_pwm, min(full_front_pwm, pwm))
+    else:
+        pwm = max(full_front_pwm, min(full_back_pwm, pwm))
+    
+    logging.debug(f"(servos.py): Angle {angle:.3f} rad -> PWM {pwm:.1f} (range: {full_back_pwm} to {full_front_pwm})\n")
+    logging.debug(f"(servos.py): Angle range: {full_back_angle:.3f} to {full_front_angle:.3f} rad\n")
+    
+    return int(round(pwm)) # return calculated pulse width

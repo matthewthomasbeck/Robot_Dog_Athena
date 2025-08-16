@@ -100,9 +100,9 @@ def move_joint(leg_id, joint_name, target_angle, speed, acceleration):
         acceleration: Movement acceleration
     """
     servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-    is_inverted = servo_data['FULL_BACK'] > servo_data['FULL_FRONT']
-    pwm = map_angle_to_servo_position(target_angle, servo_data, 0, is_inverted)
+    pwm = map_angle_to_servo_position(target_angle, servo_data)
     set_target(servo_data['servo'], pwm, speed, acceleration)
+    config.SERVO_CONFIG[leg_id][joint_name]['CURRENT'] = pwm
     config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = target_angle
 
 
@@ -121,6 +121,10 @@ def neutral_position_physical(intensity): # used to move all joints to neutral p
     ]
     
     logging.info("(physical_joints.py): Moving all legs to neutral position on physical robot...\n")
+    
+    # Set default speed and acceleration for neutral positioning
+    speed = 16383  # default to max speed
+    acceleration = 255  # default to max acceleration
     
     # Move each joint to its neutral position
     for leg_id, joint_name in joint_order:

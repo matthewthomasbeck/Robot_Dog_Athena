@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to remove the backend files as the context is no longer needed, added model testing and exporting">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Cleaned up movement so it's not an 800 line mess">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/td3_steps_300000_episode_464_reward_376.97.onnx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/opencv.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/mathematics.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -192,7 +187,8 @@
       <workItem from="1755280742743" duration="77000" />
       <workItem from="1755281425870" duration="224000" />
       <workItem from="1755283033694" duration="113000" />
-      <workItem from="1755287449301" duration="3964000" />
+      <workItem from="1755287449301" duration="4535000" />
+      <workItem from="1755300180564" duration="30000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -333,14 +329,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00086" summary="Going to sack the thread based movement because isaac sim is doesnt like it, saving before cursor">
-      <option name="closed" value="true" />
-      <created>1754435235642</created>
-      <option name="number" value="00086" />
-      <option name="presentableId" value="LOCAL-00086" />
-      <option name="project" value="LOCAL" />
-      <updated>1754435235643</updated>
     </task>
     <task id="LOCAL-00087" summary="Threading replaced, but now nothing is moving? Saving checkpoint">
       <option name="closed" value="true" />
@@ -566,7 +554,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755281565696</updated>
     </task>
-    <option name="localTasksCounter" value="115" />
+    <task id="LOCAL-00115" summary="Cleaned up movement so it's not an 800 line mess">
+      <option name="closed" value="true" />
+      <created>1755292635427</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1755292635427</updated>
+    </task>
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -584,7 +580,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Finally have a reliable way to move all joints in isaac sim" />
     <MESSAGE value="Calibration completely accurate" />
     <MESSAGE value="Removed useless functions from fundamental_movement.py" />
     <MESSAGE value="Isaac Sim successfully mapped!" />
@@ -609,7 +604,8 @@
     <MESSAGE value="Cleaned up control_logic" />
     <MESSAGE value="Created accurate orientation tracking" />
     <MESSAGE value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
-    <option name="LAST_COMMIT_MESSAGE" value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
+    <MESSAGE value="Cleaned up movement so it's not an 800 line mess" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up movement so it's not an 800 line mess" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />

@@ -224,41 +224,98 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
 ):
     """
     Run RL model without vision.
+    EXACTLY matches data treatment from get_rl_action_blind in training.py
     """
-    cmd_vec = encode_commands(commands)
-    intensity_norm = normalize_scalar(intensity, 1, 10)  # adjust min/max as needed
-    
-    # Flatten current joint angles and normalize
-    current_angles_vec = []
-    for leg in ['FL', 'FR', 'BL', 'BR']:
-        for joint in ['hip', 'upper', 'lower']:
-            current_angle = current_servo_config[leg][joint]['CURRENT_ANGLE']
-            # Normalize angle to [0, 1] assuming range [-pi, pi]
-            angle_norm = (current_angle + np.pi) / (2 * np.pi)
-            current_angles_vec.append(angle_norm)
-    current_angles_vec = np.array(current_angles_vec, dtype=np.float32)
+    try:
+        logging.debug(f"(inference.py): Starting gait adjustment inference for commands: {commands}, intensity: {intensity}...\n")
+        
+        # 1. Extract joint angles (12D) - EXACTLY like training (NO NORMALIZATION)
+        current_angles_vec = []
+        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+            for joint_name in ['hip', 'upper', 'lower']:
+                angle = current_servo_config[leg_id][joint_name]['CURRENT_ANGLE']
+                current_angles_vec.append(float(angle))  # Raw angle, no normalization
+        
+        current_angles_vec = np.array(current_angles_vec, dtype=np.float32)
+        logging.info(f"(inference.py): Extracted {len(current_angles_vec)} joint angles, range: [{min(current_angles_vec):.3f}, {max(current_angles_vec):.3f}] rad\n")
 
-    input_vec = np.concatenate([cmd_vec, intensity_norm, current_angles_vec])
-    input_vec = input_vec.reshape(1, -1)
+        # 2. Encode commands (8D one-hot) - EXACTLY like training
+        if isinstance(commands, list):
+            command_list = commands
+        elif isinstance(commands, str):
+            command_list = commands.split('+') if commands else []
+        else:
+            command_list = []
+        
+        logging.debug(f"(inference.py): Processing commands: {commands} -> command_list: {command_list}...\n")
 
-    result = model([input_vec])[output_layer]
-    result = result.reshape(4, 2, 3)
-    legs = ['FL', 'FR', 'BL', 'BR']
-    joints = ['hip', 'upper', 'lower']
-    
-    target_angles = {}
-    mid_angles = {}
-    for i, leg in enumerate(legs):
-        target_angles[leg] = {}
-        mid_angles[leg] = {}
-        for j, joint in enumerate(joints):
-            # Denormalize angles from [0, 1] back to [-pi, pi]
-            mid_angle_norm = result[i, 0, j]
-            target_angle_norm = result[i, 1, j]
-            mid_angles[leg][joint] = (mid_angle_norm * 2 * np.pi) - np.pi
-            target_angles[leg][joint] = (target_angle_norm * 2 * np.pi) - np.pi
-    
-    return target_angles, mid_angles
+        command_encoding = [
+            1.0 if 'w' in command_list else 0.0,
+            1.0 if 's' in command_list else 0.0,
+            1.0 if 'a' in command_list else 0.0,
+            1.0 if 'd' in command_list else 0.0,
+            1.0 if 'arrowleft' in command_list else 0.0,
+            1.0 if 'arrowright' in command_list else 0.0,
+            1.0 if 'arrowup' in command_list else 0.0,
+            1.0 if 'arrowdown' in command_list else 0.0
+        ]
+        command_encoding = np.array(command_encoding, dtype=np.float32)
+        logging.info(f"(inference.py): Command encoding: {command_encoding}\n")
+
+        # 3. Normalize intensity (1D) - EXACTLY like training
+        intensity_normalized = float(intensity) / 10.0
+        intensity_normalized = np.array([intensity_normalized], dtype=np.float32)
+        logging.info(f"(inference.py): Intensity {intensity} -> normalized: {intensity_normalized[0]:.3f}\n")
+
+        # Build input vector in EXACT same order as training: [joint_angles, commands, intensity]
+        input_vec = np.concatenate([current_angles_vec, command_encoding, intensity_normalized])
+        input_vec = input_vec.reshape(1, -1)
+        logging.info(f"(inference.py): Built input vector: {input_vec.shape}, total elements: {len(input_vec[0])}\n")
+
+        # Run inference
+        logging.info(f"(inference.py): Running model inference...\n")
+        result = model([input_vec])[output_layer]
+        logging.info(f"(inference.py): Model output shape: {result.shape}\n")
+        
+        result = result.reshape(4, 2, 3)
+        logging.info(f"(inference.py): Reshaped output: {result.shape} (4 legs, 2 angles per leg, 3 joints per leg)\n")
+        
+        legs = ['FL', 'FR', 'BL', 'BR']
+        joints = ['hip', 'upper', 'lower']
+        
+        target_angles = {}
+        mid_angles = {}
+        for i, leg in enumerate(legs):
+            target_angles[leg] = {}
+            mid_angles[leg] = {}
+            for j, joint in enumerate(joints):
+                # Denormalize angles from [0, 1] back to [-pi, pi]
+                mid_angle_norm = result[i, 0, j]
+                target_angle_norm = result[i, 1, j]
+                mid_angles[leg][joint] = (mid_angle_norm * 2 * np.pi) - np.pi
+                target_angles[leg][joint] = (target_angle_norm * 2 * np.pi) - np.pi
+                
+                logging.debug(f"(inference.py): {leg}_{joint}: mid={mid_angles[leg][joint]:.3f} rad, target={target_angles[leg][joint]:.3f} rad\n")
+        
+        logging.info(f"(inference.py): Generated angles - Mid range: [{min([min(angles.values()) for angles in mid_angles.values()]):.3f}, {max([max(angles.values()) for angles in mid_angles.values()]):.3f}] rad\n")
+        logging.info(f"(inference.py): Generated angles - Target range: [{min([min(angles.values()) for angles in target_angles.values()]):.3f}, {max([max(angles.values()) for angles in target_angles.values()]):.3f}] rad\n")
+        
+        # Add movement_rates to match expected return format
+        movement_rates = {
+            'FL': {'speed': 16383, 'acceleration': 255},
+            'FR': {'speed': 16383, 'acceleration': 255},
+            'BL': {'speed': 16383, 'acceleration': 255},
+            'BR': {'speed': 16383, 'acceleration': 255}
+        }
+        
+        logging.info(f"(inference.py): Gait adjustment inference completed successfully.\n")
+        return target_angles, mid_angles, movement_rates
+        
+    except Exception as e:
+        logging.error(f"(inference.py): Error during gait adjustment inference: {e}\n")
+        logging.error(f"(inference.py): Commands: {commands}, Intensity: {intensity}\n")
+        logging.error(f"(inference.py): Current servo config keys: {list(current_servo_config.keys()) if current_servo_config else 'None'}\n")
+        raise
 
 
 ########## RUN PERSON DETECTION CNN MODEL AND SHOW FRAME ##########
