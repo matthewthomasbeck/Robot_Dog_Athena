@@ -4,13 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got to 300k steps and saving model, adjusted movement/rotation rates so the robot starts prioritizing listening to the user as opposed to just staying upright">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed control_logic to stop using the useless coordinate frame">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/fundamental_movement.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/isaac_joints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/isaac_sim.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -339,22 +340,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00089" summary="Changed the urdf to have no joint restriction">
-      <option name="closed" value="true" />
-      <created>1754603861883</created>
-      <option name="number" value="00089" />
-      <option name="presentableId" value="LOCAL-00089" />
-      <option name="project" value="LOCAL" />
-      <updated>1754603861883</updated>
-    </task>
-    <task id="LOCAL-00090" summary="Finally have a reliable way to move all joints in isaac sim">
-      <option name="closed" value="true" />
-      <created>1754620160894</created>
-      <option name="number" value="00090" />
-      <option name="presentableId" value="LOCAL-00090" />
-      <option name="project" value="LOCAL" />
-      <updated>1754620160894</updated>
-    </task>
     <task id="LOCAL-00091" summary="Calibration completely accurate">
       <option name="closed" value="true" />
       <created>1754623655808</created>
@@ -571,7 +556,23 @@
       <option name="project" value="LOCAL" />
       <updated>1755308187167</updated>
     </task>
-    <option name="localTasksCounter" value="118" />
+    <task id="LOCAL-00118" summary="Cleaned up cursor garbage in control_logic.py">
+      <option name="closed" value="true" />
+      <created>1755361470852</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1755361470852</updated>
+    </task>
+    <task id="LOCAL-00119" summary="Fixed control_logic to stop using the useless coordinate frame">
+      <option name="closed" value="true" />
+      <created>1755362434548</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1755362434548</updated>
+    </task>
+    <option name="localTasksCounter" value="120" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -589,8 +590,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Isaac Sim successfully mapped!" />
-    <MESSAGE value="Moved to angle-based system, deleted standing.py" />
     <MESSAGE value="Moved to angle-based system, deleted standing.py and forward.py" />
     <MESSAGE value="got rid of redundant pybullet tools" />
     <MESSAGE value="Ground plane successfully implemented" />
@@ -614,7 +613,9 @@
     <MESSAGE value="Cleaned up movement so it's not an 800 line mess" />
     <MESSAGE value="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though" />
     <MESSAGE value="Made it so models can be converted" />
-    <option name="LAST_COMMIT_MESSAGE" value="Made it so models can be converted" />
+    <MESSAGE value="Cleaned up cursor garbage in control_logic.py" />
+    <MESSAGE value="Fixed control_logic to stop using the useless coordinate frame" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed control_logic to stop using the useless coordinate frame" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />

@@ -61,7 +61,7 @@ def calibrate_joints_isaac():
     Only for Isaac Sim - uses queue system to avoid PhysX threading violations.
     """
     if not config.USE_SIMULATION or not config.USE_ISAAC_SIM:
-        logging.error("(fundamental_movement.py): calibrate_joints_isaac() only works with Isaac Sim\n")
+        logging.error("(isaac_joints.py): calibrate_joints_isaac() only works with Isaac Sim\n")
         return
     
     # Define joint order for calibration
@@ -84,7 +84,7 @@ def calibrate_joints_isaac():
     step_time = 0.1  # seconds between position updates
     steps_per_movement = 10  # number of steps to complete one movement
     
-    logging.info("(fundamental_movement.py): Starting joint calibration for Isaac Sim...\n")
+    logging.info("(isaac_joints.py): Starting joint calibration for Isaac Sim...\n")
     
     joint_index = 0
     while True:
@@ -201,7 +201,7 @@ def apply_single_joint_position_isaac(joint_name, angle_rad, velocity=0.5):
 
 ########## ISAAC SIM AI AGENT JOINT CONTROL ##########
 
-def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, movement_rates):
+def apply_joint_angles_isaac(target_angles, mid_angles, movement_rates):
     """
     Apply joint angles directly for Isaac Sim AI agent training.
     This function moves all joints to their target angles in a single ArticulationAction.
@@ -235,8 +235,7 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
                 mid_angle = mid_angles[leg_id][joint_name]
                 
                 # Get velocity from movement_rates (already in rad/s, no scaling needed)
-                # Default to 1.0 if not specified, similar to working functions
-                velocity = movement_rates[leg_id].get('speed', 1.0)  # Already in rad/s
+                velocity = movement_rates[leg_id].get('speed')  # Already in rad/s
                 
                 joint_positions[joint_index] = mid_angle
                 joint_velocities[joint_index] = velocity
@@ -266,8 +265,7 @@ def apply_joint_angles_isaac(current_servo_config, target_angles, mid_angles, mo
                 target_angle = target_angles[leg_id][joint_name]
                 
                 # Get velocity from movement_rates (already in rad/s, no scaling needed)
-                # Default to 1.0 if not specified, similar to working functions
-                velocity = movement_rates[leg_id].get('speed', 1.0)  # Already in rad/s
+                velocity = movement_rates[leg_id].get('speed')  # Already in rad/s
                 
                 joint_positions[joint_index] = target_angle
                 joint_velocities[joint_index] = velocity
@@ -312,7 +310,7 @@ def neutral_position_isaac(): # used to move all joints to neutral position in i
             ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
         ]
         
-        # logging.info("(fundamental_movement.py): Moving all joints to neutral position in Isaac Sim...\n")
+        # logging.info("(isaac_joints.py): Moving all joints to neutral position in Isaac Sim...\n")
         
         # Set all joint positions at once
         for leg_id, joint_name in joint_order:
@@ -341,7 +339,7 @@ def neutral_position_isaac(): # used to move all joints to neutral position in i
         # logging.info("(isaac_joints.py): Applied all joints to neutral positions\n")
         
     except Exception as e:
-        logging.error(f"(fundamental_movement.py): Failed to move all joints to neutral: {e}\n")
+        logging.error(f"(isaac_joints.py): Failed to move all joints to neutral: {e}\n")
 
 
 ########## BASIC TESTING FUNCTIONS ##########

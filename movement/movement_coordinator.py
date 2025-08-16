@@ -237,7 +237,6 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
             # Apply the joint angles directly
             apply_joint_angles_isaac(
-                config.SERVO_CONFIG,
                 mid_angles,
                 target_angles,
                 movement_rates
