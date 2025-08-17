@@ -37,7 +37,7 @@ def convert_pth_to_openvino():
     print("=" * 50)
     
     # Model configuration
-    STATE_DIM = 21  # 12 joints + 8 commands + 1 intensity
+    STATE_DIM = 19  # 12 joints + 6 commands + 1 intensity
     ACTION_DIM = 24  # 12 mid + 12 target angles
     MAX_ACTION = 1.0
     

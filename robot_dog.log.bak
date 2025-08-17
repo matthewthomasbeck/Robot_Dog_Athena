@@ -1,29 +1,57 @@
-2025-08-17 14:29:39 INFO: (log.py): Logging setup complete.
+2025-08-17 15:43:02 INFO: (log.py): Logging setup complete.
 
-2025-08-17 14:29:46 INFO: (control_logic.py): Robot moved up 14cm.
+2025-08-17 15:43:13 INFO: (control_logic.py): Robot moved up 14cm.
 
-2025-08-17 14:29:47 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-08-17 15:43:14 INFO: (control_logic.py): Robot added to Isaac Sim scene.
 
-2025-08-17 14:29:47 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-17 15:43:14 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-17 14:29:48 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-17 15:43:15 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-17 14:29:48 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-17 15:43:15 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-17 14:29:48 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-17 15:43:15 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-17 14:29:48 INFO: (camera.py) Initialized isaac camera.
+2025-08-17 15:43:15 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-17 14:29:48 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-08-17 15:43:15 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-08-17 14:29:52 WARNING: 🆕 No saved models found, starting fresh training.
+2025-08-17 15:43:19 WARNING: 🆕 No saved models found, starting fresh training.
 
-2025-08-17 14:29:52 INFO: Training system initialized:
-2025-08-17 14:29:52 INFO:   - State dimension: 21
-2025-08-17 14:29:52 INFO:   - Action dimension: 24
-2025-08-17 14:29:52 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-08-17 14:29:52 INFO:   - TD3 policy created: True
-2025-08-17 14:29:52 INFO:   - Replay buffer created: True
-2025-08-17 14:29:52 INFO:   - Starting from episode: 0
-2025-08-17 14:29:52 INFO:   - Starting from step: 0
+2025-08-17 15:43:19 INFO: Training system initialized:
+2025-08-17 15:43:19 INFO:   - State dimension: 19
+2025-08-17 15:43:19 INFO:   - Action dimension: 24
+2025-08-17 15:43:19 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-08-17 15:43:19 INFO:   - TD3 policy created: True
+2025-08-17 15:43:19 INFO:   - Replay buffer created: True
+2025-08-17 15:43:19 INFO:   - Starting from episode: 0
+2025-08-17 15:43:19 INFO:   - Starting from step: 0
+
+2025-08-17 15:45:06 INFO:    📊 Average Score (last 1 episodes): -202.788
+
+2025-08-17 15:45:06 WARNING: 📝 Episode 1 completed but not at save frequency (1000 steps)
+
+2025-08-17 15:45:06 INFO: (training.py): Episode 1 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:45:06 INFO:    📊 Average Score (last 2 episodes): -202.788
+
+2025-08-17 15:45:06 WARNING: 📝 Episode 1 completed but not at save frequency (1000 steps)
+
+2025-08-17 15:45:07 INFO: (training.py): Episode 2 reset complete - World and robot state reset.
+
+2025-08-17 15:45:07 INFO: (training.py): Episode 2 reset in main loop integration
+
+2025-08-17 15:45:13 INFO:    📊 Average Score (last 3 episodes): -174.996
+
+2025-08-17 15:45:13 WARNING: 📝 Episode 2 completed but not at save frequency (1000 steps)
+
+2025-08-17 15:45:13 INFO: (training.py): Episode 2 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:45:13 INFO:    📊 Average Score (last 4 episodes): -161.100
+
+2025-08-17 15:45:13 WARNING: 📝 Episode 2 completed but not at save frequency (1000 steps)
+
+2025-08-17 15:45:13 INFO: (training.py): Episode 3 reset complete - World and robot state reset.
+
+2025-08-17 15:45:13 INFO: (training.py): Episode 3 reset in main loop integration
 

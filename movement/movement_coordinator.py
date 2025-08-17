@@ -134,9 +134,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
         commands = rl_commands
         
         # Log the command processing
-        logging.debug(f"(movement_coordinator.py): Processed fixed-length list: {rl_commands}")
-        if tilt_command:
-            logging.debug(f"(movement_coordinator.py): Tilt command detected: {tilt_command} (not passed to RL model)")
+        #logging.debug(f"(movement_coordinator.py): Processed fixed-length list: {rl_commands}")
+        #if tilt_command:
+            #logging.debug(f"(movement_coordinator.py): Tilt command detected: {tilt_command} (not passed to RL model)")
     else:
         # Fallback for old string format
         commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
@@ -239,14 +239,17 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
             }
             
             if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
-                target_angles, mid_angles, movement_rates = get_rl_action_standard(
+                # TODO using the blind agent for now until I get image support going
+                #target_angles, mid_angles, movement_rates = get_rl_action_standard(
+                    #current_angles,
+                    #commands,
+                    #intensity,
+                    #frame
+                #)
+                target_angles, mid_angles, movement_rates = get_rl_action_blind(
                     current_angles,
                     commands,
-                    intensity,
-                    frame
-                )
-                logging.warning(
-                    "(movement_coordinator.py): Using get_rl_action_standard placeholder. Replace with RL agent output when available."
+                    intensity
                 )
             elif imageless_gait:  # if using imageless gait adjustment (no image)...
                 target_angles, mid_angles, movement_rates = get_rl_action_blind(

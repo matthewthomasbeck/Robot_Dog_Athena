@@ -1,29 +1,111 @@
-2025-08-17 14:30:25 INFO: (log.py): Logging setup complete.
+2025-08-17 15:46:14 INFO: (log.py): Logging setup complete.
 
-2025-08-17 14:30:42 INFO: (control_logic.py): Robot moved up 14cm.
+2025-08-17 15:46:22 INFO: (control_logic.py): Robot moved up 14cm.
 
-2025-08-17 14:30:43 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-08-17 15:46:23 INFO: (control_logic.py): Robot added to Isaac Sim scene.
 
-2025-08-17 14:30:43 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-17 15:46:23 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-17 14:30:44 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-17 15:46:23 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-17 14:30:44 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-17 15:46:23 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-17 14:30:44 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-17 15:46:23 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-17 14:30:44 INFO: (camera.py) Initialized isaac camera.
+2025-08-17 15:46:24 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-17 14:30:44 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-08-17 15:46:24 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-08-17 14:30:48 WARNING: 🆕 No saved models found, starting fresh training.
+2025-08-17 15:46:28 WARNING: 🆕 No saved models found, starting fresh training.
 
-2025-08-17 14:30:48 INFO: Training system initialized:
-2025-08-17 14:30:48 INFO:   - State dimension: 21
-2025-08-17 14:30:48 INFO:   - Action dimension: 24
-2025-08-17 14:30:48 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-08-17 14:30:48 INFO:   - TD3 policy created: True
-2025-08-17 14:30:48 INFO:   - Replay buffer created: True
-2025-08-17 14:30:48 INFO:   - Starting from episode: 0
-2025-08-17 14:30:48 INFO:   - Starting from step: 0
+2025-08-17 15:46:28 INFO: Training system initialized:
+2025-08-17 15:46:28 INFO:   - State dimension: 19
+2025-08-17 15:46:28 INFO:   - Action dimension: 24
+2025-08-17 15:46:28 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-08-17 15:46:28 INFO:   - TD3 policy created: True
+2025-08-17 15:46:28 INFO:   - Replay buffer created: True
+2025-08-17 15:46:28 INFO:   - Starting from episode: 0
+2025-08-17 15:46:28 INFO:   - Starting from step: 0
+
+2025-08-17 15:47:18 INFO:    📊 Average Score (last 1 episodes): -199.269
+
+2025-08-17 15:47:18 WARNING: 📝 Episode 1 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:18 INFO: (training.py): Episode 1 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:47:18 INFO:    📊 Average Score (last 2 episodes): -199.269
+
+2025-08-17 15:47:18 WARNING: 📝 Episode 1 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:19 INFO: (training.py): Episode 2 reset complete - World and robot state reset.
+
+2025-08-17 15:47:19 INFO: (training.py): Episode 2 reset in main loop integration
+
+2025-08-17 15:47:21 INFO:    📊 Average Score (last 3 episodes): -168.068
+
+2025-08-17 15:47:21 WARNING: 📝 Episode 2 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:21 INFO: (training.py): Episode 2 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:47:21 INFO:    📊 Average Score (last 4 episodes): -152.467
+
+2025-08-17 15:47:21 WARNING: 📝 Episode 2 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:22 INFO: (training.py): Episode 3 reset complete - World and robot state reset.
+
+2025-08-17 15:47:22 INFO: (training.py): Episode 3 reset in main loop integration
+
+2025-08-17 15:47:25 INFO:    📊 Average Score (last 5 episodes): -143.019
+
+2025-08-17 15:47:25 WARNING: 📝 Episode 3 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:25 INFO: (training.py): Episode 3 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:47:25 INFO:    📊 Average Score (last 6 episodes): -136.720
+
+2025-08-17 15:47:25 WARNING: 📝 Episode 3 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:25 INFO: (training.py): Episode 4 reset complete - World and robot state reset.
+
+2025-08-17 15:47:25 INFO: (training.py): Episode 4 reset in main loop integration
+
+2025-08-17 15:47:30 INFO:    📊 Average Score (last 7 episodes): -133.460
+
+2025-08-17 15:47:30 WARNING: 📝 Episode 4 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:30 INFO: 📊 Learning Progress Analysis:
+2025-08-17 15:47:30 INFO:    🎯 Recent episodes: 3
+2025-08-17 15:47:30 INFO:    📈 Average reward: -136.720
+2025-08-17 15:47:30 INFO:    📉 Worst reward: -199.269
+2025-08-17 15:47:30 INFO:    🧠 Replay buffer: 283 experiences
+
+2025-08-17 15:47:30 INFO: (training.py): Episode 4 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:47:30 INFO:    📊 Average Score (last 8 episodes): -131.016
+
+2025-08-17 15:47:30 WARNING: 📝 Episode 4 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:31 INFO: (training.py): Episode 5 reset complete - World and robot state reset.
+
+2025-08-17 15:47:31 INFO: (training.py): Episode 5 reset in main loop integration
+
+2025-08-17 15:47:35 INFO:    📊 Average Score (last 9 episodes): -128.469
+
+2025-08-17 15:47:35 WARNING: 📝 Episode 5 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:35 INFO: 📊 Learning Progress Analysis:
+2025-08-17 15:47:35 INFO:    🎯 Recent episodes: 4
+2025-08-17 15:47:35 INFO:    📈 Average reward: -131.016
+2025-08-17 15:47:35 INFO:    📉 Worst reward: -199.269
+2025-08-17 15:47:35 INFO:    🧠 Replay buffer: 299 experiences
+
+2025-08-17 15:47:35 INFO: (training.py): Episode 5 ending - Episode complete, resetting Isaac Sim world.
+
+2025-08-17 15:47:35 INFO:    📊 Average Score (last 10 episodes): -126.431
+
+2025-08-17 15:47:35 WARNING: 📝 Episode 5 completed but not at save frequency (20000 steps)
+
+2025-08-17 15:47:35 INFO: (training.py): Episode 6 reset complete - World and robot state reset.
+
+2025-08-17 15:47:35 INFO: (training.py): Episode 6 reset in main loop integration
 

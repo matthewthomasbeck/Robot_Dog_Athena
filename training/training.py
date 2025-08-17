@@ -78,7 +78,7 @@ def initialize_training():
     os.makedirs(models_dir, exist_ok=True)
 
     # Initialize TD3
-    state_dim = 21  # 12 joints + 8 commands + 1 intensity
+    state_dim = 19  # 12 joints + 6 commands + 1 intensity
     action_dim = 24  # 12 mid + 12 target angles
     max_action = config.TRAINING_CONFIG['max_action']
 
@@ -226,13 +226,33 @@ def get_rl_action_blind(current_angles, commands, intensity):
     # Build state vector
     state = []
 
-    # 1. Extract joint angles (12D)
+    # 1. Extract and normalize joint angles (12D)
+    # Normalize angles to [-1, 1] range for better training stability with Adam optimizer
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
         for joint_name in ['hip', 'upper', 'lower']:
             angle = current_angles[leg_id][joint_name]
-            state.append(float(angle))
+            
+            # Get joint limits for normalization
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            min_angle = servo_data['FULL_BACK_ANGLE']
+            max_angle = servo_data['FULL_FRONT_ANGLE']
+            
+            # Ensure correct order
+            if min_angle > max_angle:
+                min_angle, max_angle = max_angle, min_angle
+            
+            # Normalize to [-1, 1] range
+            angle_range = max_angle - min_angle
+            if angle_range > 0:
+                normalized_angle = 2.0 * (float(angle) - min_angle) / angle_range - 1.0
+                normalized_angle = np.clip(normalized_angle, -1.0, 1.0)
+            else:
+                normalized_angle = 0.0  # Fallback if range is zero
+                
+            state.append(normalized_angle)
 
-    # 2. Encode commands (8D one-hot)
+    # 2. Encode commands (6D one-hot for movement commands only)
+    # Note: arrowup/arrowdown are filtered out by move_direction, so we only need 6 dimensions
     if isinstance(commands, list):
         command_list = commands
     elif isinstance(commands, str):
@@ -240,22 +260,43 @@ def get_rl_action_blind(current_angles, commands, intensity):
     else:
         command_list = []
 
+    # CRITICAL: Always create exactly 6D command encoding regardless of input list length
+    # This ensures consistent state size and prevents dynamic shapes
     command_encoding = [
         1.0 if 'w' in command_list else 0.0,
         1.0 if 's' in command_list else 0.0,
         1.0 if 'a' in command_list else 0.0,
         1.0 if 'd' in command_list else 0.0,
         1.0 if 'arrowleft' in command_list else 0.0,
-        1.0 if 'arrowright' in command_list else 0.0,
-        1.0 if 'arrowup' in command_list else 0.0,
-        1.0 if 'arrowdown' in command_list else 0.0
+        1.0 if 'arrowright' in command_list else 0.0
     ]
+    
+    # Validate command encoding size
+    if len(command_encoding) != 6:
+        raise ValueError(f"Command encoding must be exactly 6D, got {len(command_encoding)}D")
+    
     state.extend(command_encoding)
 
-    # 3. Normalize intensity (1D)
-    intensity_normalized = float(intensity) / 10.0
+    # 3. Normalize intensity (1D) - Adam optimizer prefers values roughly in [-1, 1] range
+    # Map intensity 1-10 to range [-1.0, 1.0] preserving all 10 distinct levels
+    intensity_normalized = (float(intensity) - 5.5) / 4.5  # Maps 1->-1.0, 10->1.0
+    # No clipping needed - this preserves all 10 distinct intensity levels
     state.append(intensity_normalized)
+    
+    # Convert to numpy array and validate state size
     state = np.array(state, dtype=np.float32)
+    
+    # Validate state size: 12 (joints) + 6 (commands) + 1 (intensity) = 19
+    expected_state_size = 19
+    if len(state) != expected_state_size:
+        raise ValueError(f"State size mismatch: expected {expected_state_size}, got {len(state)}")
+    
+    # Log state composition for debugging
+    if rewards.EPISODE_STEP % 100 == 0:  # Log every 100 steps to avoid spam
+        print(f"State composition: {len(state)}D total")
+        print(f"  - Joint angles: 12D (normalized to [-1, 1])")
+        print(f"  - Commands: 6D (one-hot for w,s,a,d,arrowleft,arrowright)")
+        print(f"  - Intensity: 1D (normalized to [-1.0, 1.0])")
 
     # Get action from TD3 (add exploration noise in early episodes)
     add_noise = episode_counter < 100  # Add noise for first 100 episodes

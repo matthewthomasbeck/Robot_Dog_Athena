@@ -183,7 +183,7 @@ TRAINING_CONFIG = { # used to track training metrics and save frequencies
 
     'max_episodes': 1000000,
     'max_steps_per_episode': 750,  # GPT-5 recommendation: 600-1200 steps (~10-20 seconds)
-    'save_frequency': 20000,  # Save model every 20,000 steps (more frequent saves)
+    'save_frequency': 20000,  # Save model every 20000 steps (quick testing)
     'training_frequency': 2,  # Train every 2 steps (GPT-5: more frequent training)
     'batch_size': 64,  # GPT-5 recommendation: standard batch size
     'learning_rate': 3e-4,  # Back to standard learning rate
