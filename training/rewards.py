@@ -440,25 +440,23 @@ def _reward_movement_direction(command, total_displacement, intensity, multidire
     ##### set variables #####
 
     movement_direction_reward = 0.0 # initialize direction reward
+    commanded_displacement = total_displacement.get(command, 0) # displacement in commanded direction
     
-    # Get the displacement for the commanded direction
-    commanded_displacement = total_displacement.get(command, 0)
-    
-    # Get perpendicular displacements for drift calculation
-    if command == 'w' or command == 's':
-        # Forward/backward movement - check for left/right drift
+    ##### get perpendicular displacements for drift calculation #####
+
+    if command == 'w' or command == 's': # if forward or backward movement...
         perpendicular_displacement = abs(total_displacement.get('a', 0)) + abs(total_displacement.get('d', 0))
-    else:  # command == 'a' or 'd'
-        # Left/right movement - check for forward/backward drift
+    else: # if left or right movement...
         perpendicular_displacement = abs(total_displacement.get('w', 0)) + abs(total_displacement.get('s', 0))
 
     ##### reward and range weights #####
 
-    perfect_movement = 0.05  # 5cm of movement
+    perfect_movement = 0.1 # 10cm of movement
     terrible_movement = 0.0
+    acceptable_drift = 0.05 # 5cm of drift allowed
     total_range = perfect_movement - terrible_movement
     movement_reward_magnitude = 2.0
-    movement_penalty_magnitude = 1.0
+    movement_penalty_magnitude = 2.0
     perfect_percentile = 25
     good_percentile = 50
     acceptable_percentile = 75
@@ -471,33 +469,34 @@ def _reward_movement_direction(command, total_displacement, intensity, multidire
     acceptable_range = calculate_desired_value('rotation', total_range, acceptable_percentile, perfect_movement)
     slow_range = calculate_desired_value('rotation', total_range, slow_percentile, perfect_movement)
 
+    #logging.warning(f"SUPPPOSED TO BE MOVING IN {command.upper()} DIRECTION!!!")
+    #logging.debug(f"Perfect range: {perfect_range:.3f}, Good range: {good_range:.3f}, Acceptable range: {acceptable_range:.3f}, Slow range: {slow_range:.3f}")
+
     ##### calculate movement reward #####
 
-    if commanded_displacement > 0:  # If moving in the right direction
-        
-        # Calculate reward based on movement magnitude
-        if commanded_displacement > perfect_range:
+    if commanded_displacement > 0: # if moving in correct direction...
+        if commanded_displacement > perfect_range: # if perfect...
             movement_direction_reward = movement_reward_magnitude
-            logging.debug(f"🔴 PERFECT {command.upper()} MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
-        elif commanded_displacement > good_range:
+            logging.debug(f"🔴 PERFECT '{command.upper()}' MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        elif commanded_displacement > good_range: # if good...
             movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
-            logging.debug(f"🟠 GOOD {command.upper()} MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
-        elif commanded_displacement > acceptable_range:
+            logging.debug(f"🟠 QUICK '{command.upper()}' MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        elif commanded_displacement > acceptable_range: # if acceptable...
             movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
-            logging.debug(f"🟡 ACCEPTABLE {command.upper()} MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
-        else:
+            logging.debug(f"🟡 ACCEPTABLE '{command.upper()}' MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        else: # if slow...
             movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
-            logging.debug(f"🟢 SLOW {command.upper()} MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+            logging.debug(f"🟢 SLOW '{command.upper()}' MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
         
-        # Apply drift penalty if multidirectional and there's significant perpendicular movement
-        if multidirectional and perpendicular_displacement > 0.02:  # 2cm threshold
-            drift_penalty = min(perpendicular_displacement * 10, movement_penalty_magnitude)  # Scale penalty with drift
+        # if unidirectional and significant perpendicular movement...
+        if not multidirectional and perpendicular_displacement > acceptable_drift:
+            drift_penalty = min(perpendicular_displacement * 10, movement_penalty_magnitude)
             movement_direction_reward -= drift_penalty
             logging.debug(f"⚠️ DRIFT PENALTY: -{drift_penalty:.2f} for {perpendicular_displacement:.3f}m perpendicular movement")
             
-    else:  # If not moving in the right direction
+    else: # if not moving in correct direction...
         movement_direction_reward = -movement_penalty_magnitude
-        logging.debug(f"🔵 NO {command.upper()} MOVEMENT: {movement_direction_reward:.1f}/{movement_penalty_magnitude:.1f} penalty - Displacement: {commanded_displacement:.3f}m")
+        logging.debug(f"🔵 NO '{command.upper()}' MOVEMENT: {movement_direction_reward:.1f}/{movement_penalty_magnitude:.1f} penalty - Displacement: {commanded_displacement:.3f}m")
 
     return movement_direction_reward
 
@@ -508,9 +507,9 @@ def _reward_movement_stillness(total_displacement): # function to reward stillne
     ##### reward and range weights #####
 
     perfect_movement = 0.0
-    terrible_movement = 0.1  # 10cm of movement
+    terrible_movement = 0.1 # 10cm of movement
     total_range = terrible_movement - perfect_movement
-    movement_stillness_reward_magnitude = 4.0
+    movement_stillness_reward_magnitude = 2.0
     movement_stillness_penalty_magnitude = 2.0
     perfect_percentile = 10
     good_percentile = 20
@@ -519,16 +518,15 @@ def _reward_movement_stillness(total_displacement): # function to reward stillne
     
     ##### calculate total movement magnitude #####
     
-    # Calculate total movement magnitude from all directions
     total_movement = abs(total_displacement.get('w', 0)) + abs(total_displacement.get('s', 0)) + \
                      abs(total_displacement.get('a', 0)) + abs(total_displacement.get('d', 0))
     
     ##### calculate ranges #####
 
-    perfect_range = calculate_desired_value('no_rotation', total_range, perfect_percentile, perfect_movement)
-    good_range = calculate_desired_value('no_rotation', total_range, good_percentile, perfect_movement)
-    bad_range = calculate_desired_value('no_rotation', total_range, bad_percentile, perfect_movement)
-    terrible_range = calculate_desired_value('no_rotation', total_range, terrible_percentile, perfect_movement)
+    perfect_range = calculate_desired_value('no_movement', total_range, perfect_percentile, perfect_movement)
+    good_range = calculate_desired_value('no_movement', total_range, good_percentile, perfect_movement)
+    bad_range = calculate_desired_value('no_movement', total_range, bad_percentile, perfect_movement)
+    terrible_range = calculate_desired_value('no_movement', total_range, terrible_percentile, perfect_movement)
 
     #logging.warning("SUPPPOSED TO BE STILL!!!")
     #logging.debug(f"Perfect range: {perfect_range:.3f}, Good range: {good_range:.3f}, Bad range: {bad_range:.3f}, Terrible range: {terrible_range:.3f}")
@@ -563,7 +561,8 @@ def _reward_movement_stillness(total_displacement): # function to reward stillne
 
 def calculate_desired_value(reward_type, total_range, selected_range, special_value): # function to calculate desired figure for reward calculation
 
-    if reward_type == 'balance' or reward_type == 'no_rotation': # degrees from 0 to any value greater than 0
+    if reward_type == 'balance' or reward_type == 'no_rotation': # perfect value is 0, terrible value greater than 0
+
         desired_value = (((-1 * total_range) / 100) * selected_range)
 
     elif reward_type == 'height': # the numbers are small so floating points are being an issue
@@ -576,5 +575,8 @@ def calculate_desired_value(reward_type, total_range, selected_range, special_va
 
     elif reward_type == 'rotation': # degrees from any value greater than 0 to 0
         desired_value = special_value - (((total_range) / 100) * selected_range)
+
+    elif reward_type == 'no_movement':
+        desired_value = ((total_range / 100) * selected_range)
 
     return desired_value
