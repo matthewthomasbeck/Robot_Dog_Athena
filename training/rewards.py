@@ -71,7 +71,7 @@ def calculate_step_reward(current_angles, commands, intensity): # function to ca
 
     ##### reward balance #####
     
-    balance_reward = reward_balance(current_balance)
+    balance_reward = _reward_balance(current_balance)
     if balance_reward < 1.0:
         was_perfect = False
 
@@ -79,27 +79,27 @@ def calculate_step_reward(current_angles, commands, intensity): # function to ca
 
     ##### reward height #####
 
-    height_reward = reward_height(current_height)
+    height_reward = _reward_height(current_height)
     if height_reward < 1.0:
         was_perfect = False
 
     reward += height_reward
 
-    ##### reward movement #####
-
-    movement_reward = reward_movement(track_orientation, commands)
-    if movement_reward < 1.0:
-        was_perfect = False
-    
-    reward += movement_reward
-
     ##### reward rotation #####
     
-    rotation_reward = reward_rotation(track_orientation, commands)
+    rotation_reward = _reward_rotation(track_orientation, commands, intensity)
     if rotation_reward < 2.0:
         was_perfect = False
     
     reward += rotation_reward
+
+    ##### reward movement #####
+
+    movement_reward = _reward_movement(track_orientation, commands, intensity)
+    if movement_reward < 1.0:
+        was_perfect = False
+    
+    reward += movement_reward
 
     ##### reward perfect execution #####
 
@@ -129,7 +129,7 @@ def calculate_step_reward(current_angles, commands, intensity): # function to ca
 
 ########## BALANCE REWARD FUNCTION ##########
 
-def reward_balance(current_balance): # function to reward balance
+def _reward_balance(current_balance): # function to reward balance
 
     ##### reward and range weights #####
 
@@ -167,8 +167,8 @@ def reward_balance(current_balance): # function to reward balance
             balance_reward = -balance_penalty_magnitude
             logging.debug(f"🔵 TERRIBLE BALANCE: {balance_reward:.1f}/{balance_penalty_magnitude:.1f} penalty - Balance: {current_balance:.1f}°")
         else: # if bad but not terrible...
-            balance_progress = (((100 / (bad_range - terrible_range)) * (current_balance - terrible_range)) / 100) * balance_penalty_magnitude
-            balance_reward = -balance_penalty_magnitude + balance_progress
+            balance_reward_progress = (((100 / (bad_range - terrible_range)) * (current_balance - terrible_range)) / 100) * balance_penalty_magnitude
+            balance_reward = -balance_penalty_magnitude + balance_reward_progress
             logging.debug(f"🟢 POOR BALANCE: {balance_reward:.2f}/{balance_penalty_magnitude:.1f} penalty - Balance: {current_balance:.1f}°")
 
     else: # if in middle ground...
@@ -180,7 +180,7 @@ def reward_balance(current_balance): # function to reward balance
 
 ########## HEIGHT REWARD FUNCTION ##########
 
-def reward_height(current_height): # function to reward height
+def _reward_height(current_height): # function to reward height
 
     ##### reward and range weights #####
 
@@ -218,8 +218,8 @@ def reward_height(current_height): # function to reward height
             height_reward = -height_penalty_magnitude
             logging.debug(f"🔵 TERRIBLE HEIGHT: {height_reward:.1f}/{height_penalty_magnitude:.1f} penalty - Height: {current_height:.3f}m")
         else: # if bad but not terrible...
-            height_progress = (((100 / (bad_range - terrible_range)) * (current_height - terrible_range)) / 100) * height_penalty_magnitude
-            height_reward = -height_penalty_magnitude + height_progress
+            height_reward_progress = (((100 / (bad_range - terrible_range)) * (current_height - terrible_range)) / 100) * height_penalty_magnitude
+            height_reward = -height_penalty_magnitude + height_reward_progress
             logging.debug(f"🟢 POOR HEIGHT: {height_reward:.2f}/{height_penalty_magnitude:.1f} penalty - Height: {current_height:.3f}m")
 
     else: # if in middle ground...
@@ -229,145 +229,337 @@ def reward_height(current_height): # function to reward height
     return height_reward
 
 
-########## ROTATION REWARD FUNCTION ##########
+########## ROTATION REWARD FUNCTIONS ##########
 
-def reward_rotation(track_orientation, commands): # function to reward rotation
+##### master reward function for rotation #####
+
+def _reward_rotation(track_orientation, commands, intensity): # function to reward rotation
     
-    if hasattr(track_orientation, 'last_rotation'):
+    if hasattr(track_orientation, 'last_rotation'): # if rotation data available...
         
         ##### check if rotation is commanded #####
 
         actual_rotation = track_orientation.last_rotation
         rotation_magnitude = abs(actual_rotation)
         command_list = commands.split('+') if isinstance(commands, str) else commands
-        rotation_commanded = any(cmd in ['arrowleft', 'arrowright'] for cmd in command_list)
+        rotation_commanded = any(command in ['arrowleft', 'arrowright'] for command in command_list)
         specific_rotation_command = None
         if rotation_commanded:
-            for cmd in command_list:
-                if cmd in ['arrowleft', 'arrowright']:
-                    specific_rotation_command = cmd
+            for command in command_list:
+                if command in ['arrowleft', 'arrowright']:
+                    specific_rotation_command = command
                     break
 
-        ##### reward no rotation #####
+        ##### reward rotation or stability #####
 
-        if not rotation_commanded: # if robot supposed to be standing still...
-
-            ##### reward and range weights #####
-
-            perfect_rotation = 0.0
-            terrible_rotation = 30.0
-            total_range = perfect_rotation - terrible_rotation
-            rotation_reward_magnitude = 4.0
-            rotation_penalty_magnitude = 2.0
-            perfect_percentile = 10
-            good_percentile = 20
-            bad_percentile = 50
-            terrible_percentile = 90
-            
-            ##### calculate ranges #####
-
-            perfect_range = calculate_desired_value('no_rotation', total_range, perfect_percentile, terrible_rotation)
-            good_range = calculate_desired_value('no_rotation', total_range, good_percentile, terrible_rotation)
-            bad_range = calculate_desired_value('no_rotation', total_range, bad_percentile, terrible_rotation)
-            terrible_range = calculate_desired_value('no_rotation', total_range, terrible_percentile, terrible_rotation)
-
-            #logging.warning("SUPPPOSED TO BE STILL!!!")
-            #logging.debug(f"Perfect range: {perfect_range:.1f}, Good range: {good_range:.1f}, Bad range: {bad_range:.1f}, Terrible range: {terrible_range:.1f}")
-
-            ##### calculate no rotation reward #####
-
-            if rotation_magnitude < good_range:
-                if rotation_magnitude < perfect_range:
-                    rotation_reward = rotation_reward_magnitude
-                    logging.debug(f"🔴 PERFECT STABILITY: +{rotation_reward:.1f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-                else:
-                    rotation_reward = (((100 / (good_range - perfect_range)) * (rotation_magnitude - perfect_range)) / 100) * rotation_reward_magnitude
-                    logging.debug(f"🟠 GOOD STABILITY: +{rotation_reward:.2f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-
-            elif rotation_magnitude > bad_range:
-                if rotation_magnitude > terrible_range:
-                    rotation_reward = -rotation_penalty_magnitude
-                    logging.debug(f"🔵 TERRIBLE STABILITY: {rotation_reward:.1f}/{rotation_penalty_magnitude:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
-                else:
-                    rotation_progress = (((100 / (bad_range - terrible_range)) * (rotation_magnitude - terrible_range)) / 100) * rotation_penalty_magnitude
-                    rotation_reward = -rotation_penalty_magnitude + rotation_progress
-                    logging.debug(f"🟢 POOR STABILITY: {rotation_reward:.2f}/{rotation_penalty_magnitude:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
-
-            else: # if in middle ground...
-                rotation_reward = 0.0
-                logging.debug(f"🟡 MIDDLE STABILITY: No reward/penalty - Rotation: {rotation_magnitude:.1f}°")
-
-        ##### reward rotation #####
-
-        else: # if robot supposed to be rotating...
-
-            ##### determine rotation direction #####
-
-            if specific_rotation_command == 'arrowleft': # if left rotation...
-                direction = "LEFT"
-                if actual_rotation > 0:
-                    correct_rotation_direction = True
-                else:
-                    correct_rotation_direction = False
-            elif specific_rotation_command == 'arrowright': # if right rotation...
-                direction = "RIGHT"
-                if actual_rotation < 0:
-                    correct_rotation_direction = True
-                else:
-                    correct_rotation_direction = False
-            else: # if rotation is not commanded or in the wrong direction...
-                direction = "N/A"
-                correct_rotation_direction = False
-
-            ##### reward and range weights #####
-
-            perfect_rotation = 30.0
-            terrible_rotation = 0.0
-            total_range = perfect_rotation - terrible_rotation
-            rotation_reward_magnitude = 2.0
-            rotation_penalty_magnitude = 2.0
-            perfect_percentile = 25
-            quick_percentile = 50
-            acceptable_percentile = 75
-            slow_percentile = 100
-
-            ##### calculate ranges #####
-
-            perfect_range = calculate_desired_value('rotation', total_range, perfect_percentile, perfect_rotation)
-            quick_range = calculate_desired_value('rotation', total_range, quick_percentile, perfect_rotation)
-            acceptable_range = calculate_desired_value('rotation', total_range, acceptable_percentile, perfect_rotation)
-            slow_range = calculate_desired_value('rotation', total_range, slow_percentile, perfect_rotation)
-
-            #logging.warning(f"SUPPPOSED TO BE ROTATING {direction}!!!")
-            #logging.debug(f"Perfect range: {perfect_range:.1f}, Quick range: {quick_range:.1f}, Acceptable range: {acceptable_range:.1f}, Slow range: {slow_range:.1f}")
-
-            ##### calculate rotation reward #####
-
-            if correct_rotation_direction: # if rotation in correct direction...
-
-                if rotation_magnitude > perfect_range:
-                    rotation_reward = rotation_reward_magnitude
-                    logging.debug(f"🔴 PERFECT ROTATION: +{rotation_reward:.1f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-                elif rotation_magnitude > quick_range:
-                    rotation_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_reward_magnitude
-                    logging.debug(f"🟠 QUICK ROTATION: +{rotation_reward:.2f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-                elif rotation_magnitude > acceptable_range:
-                    rotation_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_reward_magnitude
-                    logging.debug(f"🟡 ACCEPTABLE ROTATION: +{rotation_reward:.2f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-                else:
-                    rotation_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_reward_magnitude
-                    logging.debug(f"🟢 SLOW ROTATION: +{rotation_reward:.1f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-
-            else: # if rotation in wrong direction...
-                rotation_reward = -rotation_penalty_magnitude
-                logging.debug(f"🔵 WRONG ROTATION: {rotation_reward:.1f}/{rotation_penalty_magnitude:.1f} penalty - Expected: {actual_rotation}, Got: {actual_rotation:.1f}°, Rotation: {rotation_magnitude:.1f}°")
+        if rotation_commanded: # if robot supposed to be rotating...
+            rotation_reward = _reward_rotation_direction(specific_rotation_command, actual_rotation, rotation_magnitude)
+        
+        else: # if robot supposed to be standing still...
+            rotation_reward = _reward_rotation_stability(rotation_magnitude)
 
         return rotation_reward
-    else:
+
+    else: # if no rotation data available...
         return 0.0
 
+##### child reward function for valid rotation #####
 
-########## CALCULATE COMPARISON VALUE ##########
+def _reward_rotation_direction(specific_rotation_command, actual_rotation, rotation_magnitude): # function to reward valid rotation
+
+    ##### reward and range weights #####
+
+    perfect_rotation = 30.0
+    terrible_rotation = 0.0
+    total_range = perfect_rotation - terrible_rotation
+    rotation_direction_reward_magnitude = 2.0
+    rotation_direction_penalty_magnitude = 2.0
+    perfect_percentile = 25
+    quick_percentile = 50
+    acceptable_percentile = 75
+    slow_percentile = 100
+
+    ##### calculate ranges #####
+
+    perfect_range = calculate_desired_value('rotation', total_range, perfect_percentile, perfect_rotation)
+    quick_range = calculate_desired_value('rotation', total_range, quick_percentile, perfect_rotation)
+    acceptable_range = calculate_desired_value('rotation', total_range, acceptable_percentile, perfect_rotation)
+    slow_range = calculate_desired_value('rotation', total_range, slow_percentile, perfect_rotation)
+
+    #logging.warning(f"SUPPPOSED TO BE ROTATING {direction}!!!")
+    #logging.debug(f"Perfect range: {perfect_range:.1f}, Quick range: {quick_range:.1f}, Acceptable range: {acceptable_range:.1f}, Slow range: {slow_range:.1f}")
+    
+    ##### determine rotation direction #####
+
+    if specific_rotation_command == 'arrowleft': # if left rotation...
+        direction = "LEFT"
+        if actual_rotation > 0:
+            correct_rotation_direction = True
+        else:
+            correct_rotation_direction = False
+    elif specific_rotation_command == 'arrowright': # if right rotation...
+        direction = "RIGHT"
+        if actual_rotation < 0:
+            correct_rotation_direction = True
+        else:
+            correct_rotation_direction = False
+    else: # if rotation is not commanded or in the wrong direction...
+        direction = "N/A"
+        correct_rotation_direction = False
+
+    ##### calculate rotation reward #####
+
+    if correct_rotation_direction: # if rotation in correct direction...
+
+        if rotation_magnitude > perfect_range:
+            rotation_direction_reward = rotation_direction_reward_magnitude
+            logging.debug(f"🔴 PERFECT ROTATION MOVEMENT: +{rotation_direction_reward:.1f}/{rotation_direction_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+        elif rotation_magnitude > quick_range:
+            rotation_direction_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_direction_reward_magnitude
+            logging.debug(f"🟠 QUICK ROTATION MOVEMENT: +{rotation_direction_reward:.2f}/{rotation_direction_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+        elif rotation_magnitude > acceptable_range:
+            rotation_direction_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_direction_reward_magnitude
+            logging.debug(f"🟡 ACCEPTABLE ROTATION MOVEMENT: +{rotation_direction_reward:.2f}/{rotation_direction_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+        else:
+            rotation_direction_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_direction_reward_magnitude
+            logging.debug(f"🟢 SLOW ROTATION MOVEMENT: +{rotation_direction_reward:.1f}/{rotation_direction_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+
+    else: # if rotation in wrong direction...
+        rotation_direction_reward = -rotation_direction_penalty_magnitude
+        logging.debug(f"🔵 WRONG ROTATION DIRECTION: {rotation_direction_reward:.1f}/{rotation_direction_penalty_magnitude:.1f} penalty - Expected: {actual_rotation}, Got: {actual_rotation:.1f}°, Rotation: {rotation_magnitude:.1f}°")
+
+    return rotation_direction_reward
+
+##### child reward function for no rotation #####
+
+def _reward_rotation_stability(rotation_magnitude): # function to reward no rotation
+
+    ##### reward and range weights #####
+
+    perfect_rotation = 0.0
+    terrible_rotation = 30.0
+    total_range = perfect_rotation - terrible_rotation
+    rotation_stability_reward_magnitude = 4.0
+    rotation_stability_penalty_magnitude = 2.0
+    perfect_percentile = 10
+    good_percentile = 20
+    bad_percentile = 50
+    terrible_percentile = 90
+    
+    ##### calculate ranges #####
+
+    perfect_range = calculate_desired_value('no_rotation', total_range, perfect_percentile, terrible_rotation)
+    good_range = calculate_desired_value('no_rotation', total_range, good_percentile, terrible_rotation)
+    bad_range = calculate_desired_value('no_rotation', total_range, bad_percentile, terrible_rotation)
+    terrible_range = calculate_desired_value('no_rotation', total_range, terrible_percentile, terrible_rotation)
+
+    #logging.warning("SUPPPOSED TO BE STILL!!!")
+    #logging.debug(f"Perfect range: {perfect_range:.1f}, Good range: {good_range:.1f}, Bad range: {bad_range:.1f}, Terrible range: {terrible_range:.1f}")
+
+    ##### calculate no rotation reward #####
+
+    if rotation_magnitude < good_range:
+        if rotation_magnitude < perfect_range:
+            rotation_stability_reward = rotation_stability_reward_magnitude
+            logging.debug(f"🔴 PERFECT ROTATION STABILITY: +{rotation_stability_reward:.1f}/{rotation_stability_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+        else:
+            rotation_stability_reward = (((100 / (good_range - perfect_range)) * (rotation_magnitude - perfect_range)) / 100) * rotation_stability_reward_magnitude
+            logging.debug(f"🟠 GOOD ROTATION STABILITY: +{rotation_stability_reward:.2f}/{rotation_stability_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+
+    elif rotation_magnitude > bad_range:
+        if rotation_magnitude > terrible_range:
+            rotation_stability_reward = -rotation_stability_penalty_magnitude
+            logging.debug(f"🔵 TERRIBLE ROTATION STABILITY: {rotation_stability_reward:.1f}/{rotation_stability_penalty_magnitude:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
+        else:
+            rotation_stability_reward_progress = (((100 / (bad_range - terrible_range)) * (rotation_magnitude - terrible_range)) / 100) * rotation_stability_penalty_magnitude
+            rotation_stability_reward = -rotation_stability_penalty_magnitude + rotation_stability_reward_progress
+            logging.debug(f"🟢 POOR ROTATION STABILITY: {rotation_stability_reward:.2f}/{rotation_stability_penalty_magnitude:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
+
+    else: # if in middle ground...
+        rotation_stability_reward = 0.0
+        logging.debug(f"🟡 NEUTRAL ROTATION STABILITY: No reward/penalty - Rotation: {rotation_magnitude:.1f}°")
+
+    return rotation_stability_reward
+
+
+########## MOVEMENT REWARD FUNCTIONS ##########
+
+##### master reward fucntion for movement #####
+
+def _reward_movement(track_orientation, commands, intensity): # function to reward movement
+
+    movement_reward = 0.0 # initialize movement reward
+
+    if hasattr(track_orientation, 'last_movement_data'): # if movement data available...
+        
+        try: # attempt to get movement data...
+
+            ##### set orientation and movement variables #####
+
+            movement_data = track_orientation.last_movement_data
+            total_displacement = {
+                'w': movement_data.get('w'),
+                's': movement_data.get('s'),
+                'a': movement_data.get('a'),
+                'd': movement_data.get('d')
+            }
+            command_list = commands.split('+') if isinstance(commands, str) else commands
+
+            # if there are commands and any valid 'wasd' in command list...
+            if commands and any(command in ['w', 'a', 's', 'd'] for command in command_list):
+                
+                # remove 'arrowleft' and 'arrowright' from command list
+                filtered_commands = [command for command in command_list if command not in ['arrowleft', 'arrowright']]
+
+                if len(filtered_commands) > 1: # if multidirectional command (i.e. 'w+a')...
+
+                    for command in filtered_commands: # loop through each command
+                        movement_reward += _reward_movement_direction(command, total_displacement, intensity, True)
+
+                    return movement_reward
+
+                else: # if unidirectional command (i.e. 'w')...
+                    command = filtered_commands[0]  # Get the single command
+                    movement_reward += _reward_movement_direction(command, total_displacement, intensity, False)
+                    return movement_reward
+
+            else: # if robot is supposed to be still...
+                movement_reward += _reward_movement_stillness(total_displacement)
+                return movement_reward
+
+        except Exception as e: # if movement analysis failed...
+            return movement_reward
+
+    else: # if no movement data available...
+        return movement_reward
+
+##### child reward function for valid movement #####
+
+def _reward_movement_direction(command, total_displacement, intensity, multidirectional): # function to reward valid movement
+
+    ##### set variables #####
+
+    movement_direction_reward = 0.0 # initialize direction reward
+    
+    # Get the displacement for the commanded direction
+    commanded_displacement = total_displacement.get(command, 0)
+    
+    # Get perpendicular displacements for drift calculation
+    if command == 'w' or command == 's':
+        # Forward/backward movement - check for left/right drift
+        perpendicular_displacement = abs(total_displacement.get('a', 0)) + abs(total_displacement.get('d', 0))
+    else:  # command == 'a' or 'd'
+        # Left/right movement - check for forward/backward drift
+        perpendicular_displacement = abs(total_displacement.get('w', 0)) + abs(total_displacement.get('s', 0))
+
+    ##### reward and range weights #####
+
+    perfect_movement = 0.05  # 5cm of movement
+    terrible_movement = 0.0
+    total_range = perfect_movement - terrible_movement
+    movement_reward_magnitude = 2.0
+    movement_penalty_magnitude = 1.0
+    perfect_percentile = 25
+    good_percentile = 50
+    acceptable_percentile = 75
+    slow_percentile = 100
+    
+    ##### calculate ranges #####
+
+    perfect_range = calculate_desired_value('rotation', total_range, perfect_percentile, perfect_movement)
+    good_range = calculate_desired_value('rotation', total_range, good_percentile, perfect_movement)
+    acceptable_range = calculate_desired_value('rotation', total_range, acceptable_percentile, perfect_movement)
+    slow_range = calculate_desired_value('rotation', total_range, slow_percentile, perfect_movement)
+
+    ##### calculate movement reward #####
+
+    if commanded_displacement > 0:  # If moving in the right direction
+        
+        # Calculate reward based on movement magnitude
+        if commanded_displacement > perfect_range:
+            movement_direction_reward = movement_reward_magnitude
+            logging.debug(f"🔴 PERFECT {command.upper()} MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        elif commanded_displacement > good_range:
+            movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
+            logging.debug(f"🟠 GOOD {command.upper()} MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        elif commanded_displacement > acceptable_range:
+            movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
+            logging.debug(f"🟡 ACCEPTABLE {command.upper()} MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        else:
+            movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
+            logging.debug(f"🟢 SLOW {command.upper()} MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+        
+        # Apply drift penalty if multidirectional and there's significant perpendicular movement
+        if multidirectional and perpendicular_displacement > 0.02:  # 2cm threshold
+            drift_penalty = min(perpendicular_displacement * 10, movement_penalty_magnitude)  # Scale penalty with drift
+            movement_direction_reward -= drift_penalty
+            logging.debug(f"⚠️ DRIFT PENALTY: -{drift_penalty:.2f} for {perpendicular_displacement:.3f}m perpendicular movement")
+            
+    else:  # If not moving in the right direction
+        movement_direction_reward = -movement_penalty_magnitude
+        logging.debug(f"🔵 NO {command.upper()} MOVEMENT: {movement_direction_reward:.1f}/{movement_penalty_magnitude:.1f} penalty - Displacement: {commanded_displacement:.3f}m")
+
+    return movement_direction_reward
+
+##### child reward function for no movement #####
+
+def _reward_movement_stillness(total_displacement): # function to reward stillness
+
+    ##### reward and range weights #####
+
+    perfect_movement = 0.0
+    terrible_movement = 0.1  # 10cm of movement
+    total_range = terrible_movement - perfect_movement
+    movement_stillness_reward_magnitude = 4.0
+    movement_stillness_penalty_magnitude = 2.0
+    perfect_percentile = 10
+    good_percentile = 20
+    bad_percentile = 50
+    terrible_percentile = 90
+    
+    ##### calculate total movement magnitude #####
+    
+    # Calculate total movement magnitude from all directions
+    total_movement = abs(total_displacement.get('w', 0)) + abs(total_displacement.get('s', 0)) + \
+                     abs(total_displacement.get('a', 0)) + abs(total_displacement.get('d', 0))
+    
+    ##### calculate ranges #####
+
+    perfect_range = calculate_desired_value('no_rotation', total_range, perfect_percentile, perfect_movement)
+    good_range = calculate_desired_value('no_rotation', total_range, good_percentile, perfect_movement)
+    bad_range = calculate_desired_value('no_rotation', total_range, bad_percentile, perfect_movement)
+    terrible_range = calculate_desired_value('no_rotation', total_range, terrible_percentile, perfect_movement)
+
+    #logging.warning("SUPPPOSED TO BE STILL!!!")
+    #logging.debug(f"Perfect range: {perfect_range:.3f}, Good range: {good_range:.3f}, Bad range: {bad_range:.3f}, Terrible range: {terrible_range:.3f}")
+
+    ##### calculate no movement reward #####
+
+    if total_movement < good_range:
+        if total_movement < perfect_range:
+            movement_stillness_reward = movement_stillness_reward_magnitude
+            logging.debug(f"🔴 PERFECT MOVEMENT STILLNESS: +{movement_stillness_reward:.1f}/{movement_stillness_reward_magnitude:.1f} reward - Movement: {total_movement:.3f}m")
+        else:
+            movement_stillness_reward = (((100 / (good_range - perfect_range)) * (total_movement - perfect_range)) / 100) * movement_stillness_reward_magnitude
+            logging.debug(f"🟠 GOOD MOVEMENT STILLNESS: +{movement_stillness_reward:.2f}/{movement_stillness_reward_magnitude:.1f} reward - Movement: {total_movement:.3f}m")
+
+    elif total_movement > bad_range:
+        if total_movement > terrible_range:
+            movement_stillness_reward = -movement_stillness_penalty_magnitude
+            logging.debug(f"🔵 TERRIBLE MOVEMENT STILLNESS: {movement_stillness_reward:.1f}/{movement_stillness_penalty_magnitude:.1f} penalty - Movement: {total_movement:.3f}m")
+        else:
+            movement_progress = (((100 / (bad_range - terrible_range)) * (total_movement - terrible_range)) / 100) * movement_stillness_penalty_magnitude
+            movement_stillness_reward = -movement_stillness_penalty_magnitude + movement_progress
+            logging.debug(f"🟢 POOR MOVEMENT STILLNESS: {movement_stillness_reward:.2f}/{movement_stillness_penalty_magnitude:.1f} penalty - Movement: {total_movement:.3f}m")
+
+    else: # if in middle ground...
+        movement_stillness_reward = 0.0
+        logging.debug(f"🟡 NEUTRAL MOVEMENT STILLNESS: No reward/penalty - Movement: {total_movement:.3f}m")
+
+    return movement_stillness_reward
+
+
+########## REWARD RANGE CALCULATION FUNCTION ##########
 
 def calculate_desired_value(reward_type, total_range, selected_range, special_value): # function to calculate desired figure for reward calculation
 
@@ -386,221 +578,3 @@ def calculate_desired_value(reward_type, total_range, selected_range, special_va
         desired_value = special_value - (((total_range) / 100) * selected_range)
 
     return desired_value
-
-
-########## MOVEMENT REWARD FUNCTION ##########
-
-def reward_movement(track_orientation, commands): # function to reward movement
-    
-    if not commands:
-        return 0.0
-    
-    # Parse complex commands like 'w+a+arrowleft'
-    command_list = commands.split('+') if isinstance(commands, str) else commands
-    
-    # Get movement data from the last call to track_orientation
-    try:
-        if hasattr(track_orientation, 'last_movement_data'):
-            movement_data = track_orientation.last_movement_data
-            
-            # Check rotation first - must be minimal to get any movement reward
-            rotation_during_movement = abs(track_orientation.last_rotation) if hasattr(track_orientation, 'last_rotation') else 0
-            
-            if rotation_during_movement < 2.0:  # Acceptable rotation for all directions
-                total_movement_reward = 0.0
-                
-                # Check each movement command and reward correct execution, punish wrong directions
-                for cmd in command_list:
-                    if cmd == 'w':  # Forward movement commanded
-                        forward_movement = movement_data.get('w', 0)
-                        left_movement = movement_data.get('a', 0)
-                        right_movement = movement_data.get('d', 0)
-                        backward_movement = movement_data.get('s', 0)
-
-                        # Reward forward movement (commanded direction)
-                        if forward_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
-                            if forward_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                movement_reward = 3.0
-                                logging.debug(f"🔴 PERFECT FORWARD: +{movement_reward:.1f} reward - Forward: {forward_movement:.3f}m")
-                            else:  # Within 33% of target (3.33cm to 4.5cm)
-                                movement_progress = 1.0 - ((5.0 - forward_movement) / 1.67) ** 2
-                                movement_reward = 0.3 + 2.7 * movement_progress
-                                logging.debug(f"🟠 GOOD FORWARD: +{movement_reward:.2f} reward - Forward: {forward_movement:.3f}m")
-                        elif forward_movement < 0.0:  # Moving backward (wrong direction)
-                            if forward_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                movement_reward = -3.0
-                                logging.debug(f"🔵 TERRIBLE FORWARD: {movement_reward:.1f} penalty - Forward: {forward_movement:.3f}m")
-                            else:  # Within 33% of bad (0cm to -4.5cm)
-                                movement_progress = max(0.0, min(1.0, 1.0 - ((forward_movement + 5.0) / 4.5) ** 2))
-                                movement_reward = -0.3 - 2.7 * movement_progress
-                                logging.debug(f"🟢 POOR FORWARD: {movement_reward:.2f} penalty - Forward: {forward_movement:.3f}m")
-                        else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
-                            movement_reward = 0.0
-                            logging.debug(f"🟡 MIDDLE FORWARD: No reward/penalty - Forward: {forward_movement:.3f}m")
-
-                        total_movement_reward += movement_reward
-
-                        # PUNISH movement in wrong directions (even if not commanded)
-                        if abs(left_movement) > 0.5:  # Moving left when should go forward
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving LEFT: {left_movement:.3f}m when FORWARD commanded")
-
-                        if abs(right_movement) > 0.5:  # Moving right when should go forward
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving RIGHT: {right_movement:.3f}m when FORWARD commanded")
-
-                        if abs(backward_movement) > 0.5:  # Moving backward when should go forward
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving BACKWARD: {backward_movement:.3f}m when FORWARD commanded")
-
-                    elif cmd == 's':  # Backward movement commanded
-                        # Similar logic for backward - reward backward, punish forward/left/right
-                        backward_movement = movement_data.get('s', 0)
-                        forward_movement = movement_data.get('w', 0)
-                        left_movement = movement_data.get('a', 0)
-                        right_movement = movement_data.get('d', 0)
-
-                        # Reward backward movement (commanded direction)
-                        if backward_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
-                            if backward_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                movement_reward = 3.0
-                                logging.debug(f"🔴 PERFECT BACKWARD: +{movement_reward:.1f} reward - Backward: {backward_movement:.3f}m")
-                            else:  # Within 33% of target (3.33cm to 4.5cm)
-                                movement_progress = 1.0 - ((5.0 - backward_movement) / 1.67) ** 2
-                                movement_reward = 0.3 + 2.7 * movement_progress
-                                logging.debug(f"🟠 GOOD BACKWARD: +{movement_reward:.2f} reward - Backward: {backward_movement:.3f}m")
-                        elif backward_movement < 0.0:  # Moving forward (wrong direction)
-                            if backward_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                movement_reward = -3.0
-                                logging.debug(f"🔵 TERRIBLE BACKWARD: {movement_reward:.1f} penalty - Backward: {backward_movement:.3f}m")
-                            else:  # Within 33% of bad (0cm to -4.5cm)
-                                movement_progress = max(0.0, min(1.0, 1.0 - ((backward_movement + 5.0) / 4.5) ** 2))
-                                movement_reward = -0.3 - 2.7 * movement_progress
-                                logging.debug(f"🟢 POOR BACKWARD: {movement_reward:.2f} penalty - Backward: {backward_movement:.3f}m")
-                        else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
-                            movement_reward = 0.0
-                            logging.debug(f"🟡 MIDDLE BACKWARD: No reward/penalty - Backward: {backward_movement:.3f}m")
-
-                        total_movement_reward += movement_reward
-
-                        # PUNISH movement in wrong directions
-                        if abs(forward_movement) > 0.5:  # Moving forward when should go backward
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving FORWARD: {forward_movement:.3f}m when BACKWARD commanded")
-
-                        if abs(left_movement) > 0.5:  # Moving left when should go backward
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving LEFT: {left_movement:.3f}m when BACKWARD commanded")
-
-                        if abs(right_movement) > 0.5:  # Moving right when should go backward
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving RIGHT: {right_movement:.3f}m when BACKWARD commanded")
-
-                    elif cmd == 'a':  # Left movement commanded
-                        # Similar logic for left - reward left, punish forward/backward/right
-                        left_movement = movement_data.get('a', 0)
-                        forward_movement = movement_data.get('w', 0)
-                        backward_movement = movement_data.get('s', 0)
-                        right_movement = movement_data.get('d', 0)
-
-                        # Reward left movement (commanded direction)
-                        if left_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
-                            if left_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                movement_reward = 3.0
-                                logging.debug(f"🔴 PERFECT LEFT: +{movement_reward:.1f} reward - Left: {left_movement:.3f}m")
-                            else:  # Within 33% of target (3.33cm to 4.5cm)
-                                movement_progress = 1.0 - ((5.0 - left_movement) / 1.67) ** 2
-                                movement_reward = 0.3 + 2.7 * movement_progress
-                                logging.debug(f"🟠 GOOD LEFT: +{movement_reward:.2f} reward - Left: {left_movement:.3f}m")
-                        elif left_movement < 0.0:  # Moving right (wrong direction)
-                            if left_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                movement_reward = -3.0
-                                logging.debug(f"🔵 TERRIBLE LEFT: {movement_reward:.1f} penalty - Left: {left_movement:.3f}m")
-                            else:  # Within 33% of bad (0cm to -4.5cm)
-                                movement_progress = max(0.0, min(1.0, 1.0 - ((left_movement + 5.0) / 4.5) ** 2))
-                                movement_reward = -0.3 - 2.7 * movement_progress
-                                logging.debug(f"🟢 POOR LEFT: {movement_reward:.2f} penalty - Left: {left_movement:.3f}m")
-                        else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
-                            movement_reward = 0.0
-                            logging.debug(f"🟡 MIDDLE LEFT: No reward/penalty - Left: {left_movement:.3f}m")
-
-                        total_movement_reward += movement_reward
-
-                        # PUNISH movement in wrong directions
-                        if abs(forward_movement) > 0.5:  # Moving forward when should go left
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving FORWARD: {forward_movement:.3f}m when LEFT commanded")
-
-                        if abs(backward_movement) > 0.5:  # Moving backward when should go left
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving BACKWARD: {backward_movement:.3f}m when LEFT commanded")
-
-                        if abs(right_movement) > 0.5:  # Moving right when should go left
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving RIGHT: {right_movement:.3f}m when LEFT commanded")
-
-                    elif cmd == 'd':  # Right movement commanded
-                        # Similar logic for right - reward right, punish forward/backward/left
-                        right_movement = movement_data.get('d', 0)
-                        forward_movement = movement_data.get('w', 0)
-                        backward_movement = movement_data.get('s', 0)
-                        left_movement = movement_data.get('a', 0)
-
-                        # Reward right movement (commanded direction)
-                        if right_movement > 3.33:  # Within 33% of target (3.33cm to 5cm)
-                            if right_movement > 4.5:  # Within 10% of target (4.5cm to 5cm)
-                                movement_reward = 3.0
-                                logging.debug(f"🔴 PERFECT RIGHT: +{movement_reward:.1f} reward - Right: {right_movement:.3f}m")
-                            else:  # Within 33% of target (3.33cm to 4.5cm)
-                                movement_progress = 1.0 - ((5.0 - right_movement) / 1.67) ** 2
-                                movement_reward = 0.3 + 2.7 * movement_progress
-                                logging.debug(f"🟠 GOOD RIGHT: +{movement_reward:.2f} reward - Right: {right_movement:.3f}m")
-                        elif right_movement < 0.0:  # Moving left (wrong direction)
-                            if right_movement < -4.5:  # Within 10% of bad (-4.5cm to -5cm)
-                                movement_reward = -3.0
-                                logging.debug(f"🔵 TERRIBLE RIGHT: {movement_reward:.1f} penalty - Right: {right_movement:.3f}m")
-                            else:  # Within 33% of bad (0cm to -4.5cm)
-                                movement_progress = max(0.0, min(1.0, 1.0 - ((right_movement + 5.0) / 4.5) ** 2))
-                                movement_reward = -0.3 - 2.7 * movement_progress
-                                logging.debug(f"🟢 BAD RIGHT: {movement_reward:.2f} penalty - Right: {right_movement:.3f}m")
-                        else:  # Middle ground (0cm to 3.33cm) - no reward, no penalty
-                            movement_reward = 0.0
-                            logging.debug(f"🟡 MIDDLE RIGHT: No reward/penalty - Right: {right_movement:.3f}m")
-
-                        total_movement_reward += movement_reward
-
-                        # PUNISH movement in wrong directions
-                        if abs(forward_movement) > 0.5:  # Moving forward when should go right
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving FORWARD: {forward_movement:.3f}m when RIGHT commanded")
-
-                        if abs(backward_movement) > 0.5:  # Moving backward when should go right
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving BACKWARD: {backward_movement:.3f}m when RIGHT commanded")
-
-                        if abs(left_movement) > 0.5:  # Moving left when should go right
-                            wrong_direction_penalty = -1.5
-                            total_movement_reward += wrong_direction_penalty
-                            logging.debug(f"❌ WRONG DIRECTION: {wrong_direction_penalty:.1f} penalty - Moving LEFT: {left_movement:.3f}m when RIGHT commanded")
-
-                return total_movement_reward
-            else:
-                # Too much rotation during movement - no movement reward
-                return 0.0
-        else:
-            # No movement data available
-            return 0.0
-    except Exception as e:
-        # If movement analysis fails, give neutral reward
-        return 0.0

@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made balance and height rewards far more configurable" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Made rotation reward function far more configurable">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/rewards.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/rewards.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -193,6 +199,8 @@
       <workItem from="1755356832287" duration="774000" />
       <workItem from="1755381202254" duration="94000" />
       <workItem from="1755405109848" duration="45000" />
+      <workItem from="1755413184492" duration="34000" />
+      <workItem from="1755450239801" duration="1759000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -333,14 +341,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00095" summary="got rid of redundant pybullet tools">
-      <option name="closed" value="true" />
-      <created>1754686292058</created>
-      <option name="number" value="00095" />
-      <option name="presentableId" value="LOCAL-00095" />
-      <option name="project" value="LOCAL" />
-      <updated>1754686292058</updated>
     </task>
     <task id="LOCAL-00096" summary="Ground plane successfully implemented">
       <option name="closed" value="true" />
@@ -566,7 +566,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755405137151</updated>
     </task>
-    <option name="localTasksCounter" value="124" />
+    <task id="LOCAL-00124" summary="Made rotation reward function far more configurable">
+      <option name="closed" value="true" />
+      <created>1755413209665</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1755413209665</updated>
+    </task>
+    <option name="localTasksCounter" value="125" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -584,7 +592,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Successfully set up random command pipeline for RL agent" />
     <MESSAGE value="Saving progress for today" />
     <MESSAGE value="Added world rose" />
     <MESSAGE value="Finally got a training loop going, added masses to urdf" />
@@ -609,7 +616,8 @@
     <MESSAGE value="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files" />
     <MESSAGE value="Divided up training.py successfully" />
     <MESSAGE value="Made balance and height rewards far more configurable" />
-    <option name="LAST_COMMIT_MESSAGE" value="Made balance and height rewards far more configurable" />
+    <MESSAGE value="Made rotation reward function far more configurable" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made rotation reward function far more configurable" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />

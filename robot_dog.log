@@ -1,29 +1,29 @@
-2025-08-17 01:43:12 INFO: (log.py): Logging setup complete.
+2025-08-17 12:32:07 INFO: (log.py): Logging setup complete.
 
-2025-08-17 01:43:20 INFO: (control_logic.py): Robot moved up 14cm.
+2025-08-17 12:32:22 INFO: (control_logic.py): Robot moved up 14cm.
 
-2025-08-17 01:43:20 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-08-17 12:32:23 INFO: (control_logic.py): Robot added to Isaac Sim scene.
 
-2025-08-17 01:43:20 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-17 12:32:23 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-17 01:43:21 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-17 12:32:23 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-17 01:43:21 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-17 12:32:23 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-17 01:43:21 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-17 12:32:23 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-17 01:43:21 INFO: (camera.py) Initialized isaac camera.
+2025-08-17 12:32:23 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-17 01:43:21 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-08-17 12:32:24 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-08-17 01:43:25 WARNING: 🆕 No saved models found, starting fresh training.
+2025-08-17 12:32:28 WARNING: 🆕 No saved models found, starting fresh training.
 
-2025-08-17 01:43:25 INFO: Training system initialized:
-2025-08-17 01:43:25 INFO:   - State dimension: 21
-2025-08-17 01:43:25 INFO:   - Action dimension: 24
-2025-08-17 01:43:25 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-08-17 01:43:25 INFO:   - TD3 policy created: True
-2025-08-17 01:43:25 INFO:   - Replay buffer created: True
-2025-08-17 01:43:25 INFO:   - Starting from episode: 0
-2025-08-17 01:43:25 INFO:   - Starting from step: 0
+2025-08-17 12:32:28 INFO: Training system initialized:
+2025-08-17 12:32:28 INFO:   - State dimension: 21
+2025-08-17 12:32:28 INFO:   - Action dimension: 24
+2025-08-17 12:32:28 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-08-17 12:32:28 INFO:   - TD3 policy created: True
+2025-08-17 12:32:28 INFO:   - Replay buffer created: True
+2025-08-17 12:32:28 INFO:   - Starting from episode: 0
+2025-08-17 12:32:28 INFO:   - Starting from step: 0
 

@@ -326,7 +326,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             # Generate RL commands if queue is empty and robot is ready for new commands
             if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
-                command = 'arrowleft'  # TODO forward 'w' is being hard-set for now, but have random commands in future
+                command = 'arrowright'  # TODO forward 'w' is being hard-set for now, but have random commands in future
 
             # Check RL command queue for Isaac Sim
             if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
