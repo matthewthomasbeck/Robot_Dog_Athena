@@ -326,7 +326,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             # Generate RL commands if queue is empty and robot is ready for new commands
             if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
-                command = 'w'  # TODO forward 'w' is being hard-set for now, but have random commands in future
+                command = 's+arrowdown+arrowright+a'  # TODO forward 'w' is being hard-set for now, but have random commands in future
 
             # Check RL command queue for Isaac Sim
             if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
@@ -439,6 +439,43 @@ def _handle_command(command, frame):
 
 ########## EXECUTE COMMANDS ##########
 
+def _convert_direction_parts_to_fixed_list(direction_parts):
+    """
+    Convert direction parts into a fixed-length list of 4 elements:
+    [forward/backward, left/right, rotate_left/right, tilt_up/down]
+    
+    This ensures consistent input size for the model regardless of command complexity.
+    """
+    # Initialize fixed-length list with None values
+    fixed_direction = [None, None, None, None]
+    
+    for part in direction_parts:
+        if part in ['w', 's']:
+            # Forward/backward movement (index 0)
+            fixed_direction[0] = part
+        elif part in ['a', 'd']:
+            # Left/right movement (index 1)
+            fixed_direction[1] = part
+        elif part in ['arrowleft', 'arrowright']:
+            # Rotation (index 2)
+            fixed_direction[2] = part
+        elif part in ['arrowup', 'arrowdown']:
+            # Tilt (index 3)
+            fixed_direction[3] = part
+        elif part in ['w+a', 'w+d', 's+a', 's+d']:
+            # Diagonal movements - split into individual components
+            if 'w' in part:
+                fixed_direction[0] = 'w'
+            elif 's' in part:
+                fixed_direction[0] = 's'
+            if 'a' in part:
+                fixed_direction[1] = 'a'
+            elif 'd' in part:
+                fixed_direction[1] = 'd'
+    
+    return fixed_direction
+
+
 ##### keyboard commands #####
 
 def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
@@ -507,10 +544,10 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
     elif tilt_down:
         direction_parts.append('arrowdown')
 
-    # combine all direction parts
+    # combine all direction parts into fixed-length list
     direction = None
     if direction_parts:
-        direction = '+'.join(direction_parts)
+        direction = _convert_direction_parts_to_fixed_list(direction_parts)
 
     # neutral and special actions
     if 'n' in keys or not keys:
@@ -658,14 +695,14 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
     elif minus_action:
         special_actions.append('MINUS')
 
-    # combine all direction parts
+    # combine all direction parts into fixed-length list
     if direction_parts:
-        direction = '+'.join(direction_parts)
+        direction = _convert_direction_parts_to_fixed_list(direction_parts)
         logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
         if special_actions:
             logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
         # move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
-        move_direction(max_intensity)
+        move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
         is_neutral = False
     elif special_actions:
         # only special actions, no movement

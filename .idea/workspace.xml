@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/rewards.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/rewards.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Reward functions finished" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -202,6 +196,7 @@
       <workItem from="1755413184492" duration="34000" />
       <workItem from="1755450239801" duration="1909000" />
       <workItem from="1755454898147" duration="3000" />
+      <workItem from="1755455261076" duration="103000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -342,14 +337,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00097" summary="Added a bunch of RL functions and toned down the debug noise a bit">
-      <option name="closed" value="true" />
-      <created>1754702529369</created>
-      <option name="number" value="00097" />
-      <option name="presentableId" value="LOCAL-00097" />
-      <option name="project" value="LOCAL" />
-      <updated>1754702529369</updated>
     </task>
     <task id="LOCAL-00098" summary="Successfully set up random command pipeline for RL agent">
       <option name="closed" value="true" />
@@ -575,7 +562,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755452141973</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <task id="LOCAL-00126" summary="Reward functions finished">
+      <option name="closed" value="true" />
+      <created>1755455355286</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1755455355287</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -593,7 +588,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added world rose" />
     <MESSAGE value="Finally got a training loop going, added masses to urdf" />
     <MESSAGE value="Saving checkpoint, going to see why velocity is giving me such massive problems in issac" />
     <MESSAGE value="Cleaned up isaac_sim and made training.py for fresh slate" />
@@ -618,7 +612,8 @@
     <MESSAGE value="Made balance and height rewards far more configurable" />
     <MESSAGE value="Made rotation reward function far more configurable" />
     <MESSAGE value="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic" />
+    <MESSAGE value="Reward functions finished" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reward functions finished" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />

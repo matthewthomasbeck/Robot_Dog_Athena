@@ -113,8 +113,33 @@ else:
 def move_direction(commands, frame, intensity, imageless_gait): # function to trot forward
 
     ##### preprocess commands and intensity #####
-
-    commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
+    
+    # Handle new fixed-length list format from control_logic.py
+    if isinstance(commands, list):
+        # Filter out tilt commands (arrowup/arrowdown) and create RL model input
+        rl_commands = []
+        tilt_command = None
+        
+        # Extract movement commands for RL model (indices 0, 1, 2)
+        if commands[0] is not None:  # forward/backward
+            rl_commands.append(commands[0])
+        if commands[1] is not None:  # left/right
+            rl_commands.append(commands[1])
+        if commands[2] is not None:  # rotation
+            rl_commands.append(commands[2])
+        if commands[3] is not None:  # tilt (store for later use if needed)
+            tilt_command = commands[3]
+            
+        # Convert to string format expected by existing code
+        commands = rl_commands
+        
+        # Log the command processing
+        logging.debug(f"(movement_coordinator.py): Processed fixed-length list: {rl_commands}")
+        if tilt_command:
+            logging.debug(f"(movement_coordinator.py): Tilt command detected: {tilt_command} (not passed to RL model)")
+    else:
+        # Fallback for old string format
+        commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
 
     ##### run inference before moving #####
 
