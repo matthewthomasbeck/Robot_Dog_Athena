@@ -127,24 +127,6 @@ def calculate_step_reward(current_angles, commands, intensity): # function to ca
     return reward
 
 
-########## CALCULATE COMPARISON VALUE ##########
-
-def calculate_desired_value(reward_type, total_range, selected_range, terrible_value): # function to calculate desired figure for reward calculation
-
-    if reward_type == 'balance':
-        desired_value = (((-1 * total_range) / 100) * selected_range)
-
-    elif reward_type == 'height': # the numbers are small so floating points are being an issue
-
-        scale_factor = 1000000
-        total_range = total_range * scale_factor
-        terrible_value = terrible_value * scale_factor
-
-        desired_value = ((total_range / 100) * (100 - selected_range) + terrible_value) / scale_factor
-
-    return desired_value
-
-
 ########## BALANCE REWARD FUNCTION ##########
 
 def reward_balance(current_balance): # function to reward balance
@@ -155,6 +137,7 @@ def reward_balance(current_balance): # function to reward balance
     terrible_balance = 90.0
     total_range = perfect_balance - terrible_balance
     balance_reward_magnitude = 0.5
+    balance_penalty_magnitude = 2.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
@@ -167,28 +150,28 @@ def reward_balance(current_balance): # function to reward balance
     bad_range = calculate_desired_value('balance', total_range, bad_percentile, terrible_balance)
     terrible_range = calculate_desired_value('balance', total_range, terrible_percentile, terrible_balance)
 
-    logging.debug(f"Perfect range: {perfect_range:.1f}, Good range: {good_range:.1f}, Bad range: {bad_range:.1f}, Terrible range: {terrible_range:.1f}")
+    #logging.debug(f"Perfect range: {perfect_range:.1f}, Good range: {good_range:.1f}, Bad range: {bad_range:.1f}, Terrible range: {terrible_range:.1f}")
 
     ##### calculate balance reward #####
 
-    if current_balance < good_range: # if in good range
-        if current_balance < perfect_range: # if perfect
+    if current_balance < good_range: # if in good range...
+        if current_balance < perfect_range: # if perfect...
             balance_reward = balance_reward_magnitude
             logging.debug(f"🔴 PERFECT BALANCE: +{balance_reward:.1f}/{balance_reward_magnitude:.1f} reward - Balance: {current_balance:.1f}°")
-        else: # if good
+        else: # if good...
             balance_reward = (((100 / (perfect_range - good_range)) * (current_balance - good_range)) / 100) * balance_reward_magnitude
             logging.debug(f"🟠 GOOD BALANCE: +{balance_reward:.2f}/{balance_reward_magnitude:.1f} reward - Balance: {current_balance:.1f}°")
 
-    elif current_balance > bad_range: # if in bad range
-        if current_balance > terrible_range: # if terrible
-            balance_reward = -balance_reward_magnitude
-            logging.debug(f"🔵 TERRIBLE BALANCE: {balance_reward:.1f}/{balance_reward_magnitude:.1f} penalty - Balance: {current_balance:.1f}°")
-        else: # if bad but not terrible
-            balance_progress = (((100 / (bad_range - terrible_range)) * (current_balance - terrible_range)) / 100) * balance_reward_magnitude
-            balance_reward = -balance_reward_magnitude + balance_progress
-            logging.debug(f"🟢 POOR BALANCE: {balance_reward:.2f}/{balance_reward_magnitude:.1f} penalty - Balance: {current_balance:.1f}°")
+    elif current_balance > bad_range: # if in bad range...
+        if current_balance > terrible_range: # if terrible...
+            balance_reward = -balance_penalty_magnitude
+            logging.debug(f"🔵 TERRIBLE BALANCE: {balance_reward:.1f}/{balance_penalty_magnitude:.1f} penalty - Balance: {current_balance:.1f}°")
+        else: # if bad but not terrible...
+            balance_progress = (((100 / (bad_range - terrible_range)) * (current_balance - terrible_range)) / 100) * balance_penalty_magnitude
+            balance_reward = -balance_penalty_magnitude + balance_progress
+            logging.debug(f"🟢 POOR BALANCE: {balance_reward:.2f}/{balance_penalty_magnitude:.1f} penalty - Balance: {current_balance:.1f}°")
 
-    else: # if in middle ground
+    else: # if in middle ground...
         balance_reward = 0.0
         logging.debug(f"🟡 NEUTRAL BALANCE: No reward/penalty - Balance: {current_balance:.1f}°")
     
@@ -205,8 +188,9 @@ def reward_height(current_height): # function to reward height
     terrible_height = 0.043
     total_range = perfect_height - terrible_height
     height_reward_magnitude = 0.5
-    perfect_percentile = 5
-    good_percentile = 10
+    height_penalty_magnitude = 2.0
+    perfect_percentile = 10
+    good_percentile = 20
     bad_percentile = 50
     terrible_percentile = 90
 
@@ -217,26 +201,28 @@ def reward_height(current_height): # function to reward height
     bad_range = calculate_desired_value('height', total_range, bad_percentile, terrible_height)
     terrible_range = calculate_desired_value('height', total_range, terrible_percentile, terrible_height)
 
+    #logging.debug(f"Perfect range: {perfect_range:.3f}, Good range: {good_range:.3f}, Bad range: {bad_range:.3f}, Terrible range: {terrible_range:.3f}")
+
     ##### calculate height reward #####
 
-    if current_height > good_range: # if in good range
-        if current_height > perfect_range: # if perfect
+    if current_height > good_range: # if in good range...
+        if current_height > perfect_range: # if perfect...
             height_reward = height_reward_magnitude
             logging.debug(f"🔴 PERFECT HEIGHT: +{height_reward:.1f}/{height_reward_magnitude:.1f} reward - Height: {current_height:.3f}m")
-        else: # if good
+        else: # if good...
             height_reward = (((100 / (perfect_range - good_range)) * (current_height - good_range)) / 100) * height_reward_magnitude
             logging.debug(f"🟠 GOOD HEIGHT: +{height_reward:.2f}/{height_reward_magnitude:.1f} reward - Height: {current_height:.3f}m")
 
-    elif current_height < bad_range: # if in bad range
-        if current_height < terrible_range: # if terrible
-            height_reward = -height_reward_magnitude
-            logging.debug(f"🔵 TERRIBLE HEIGHT: {height_reward:.1f}/{height_reward_magnitude:.1f} penalty - Height: {current_height:.3f}m")
-        else: # if bad but not terrible
-            height_progress = (((100 / (bad_range - terrible_range)) * (current_height - terrible_range)) / 100) * height_reward_magnitude
-            height_reward = -height_reward_magnitude + height_progress
-            logging.debug(f"🟢 POOR HEIGHT: {height_reward:.2f}/{height_reward_magnitude:.1f} penalty - Height: {current_height:.3f}m")
+    elif current_height < bad_range: # if in bad range...
+        if current_height < terrible_range: # if terrible...
+            height_reward = -height_penalty_magnitude
+            logging.debug(f"🔵 TERRIBLE HEIGHT: {height_reward:.1f}/{height_penalty_magnitude:.1f} penalty - Height: {current_height:.3f}m")
+        else: # if bad but not terrible...
+            height_progress = (((100 / (bad_range - terrible_range)) * (current_height - terrible_range)) / 100) * height_penalty_magnitude
+            height_reward = -height_penalty_magnitude + height_progress
+            logging.debug(f"🟢 POOR HEIGHT: {height_reward:.2f}/{height_penalty_magnitude:.1f} penalty - Height: {current_height:.3f}m")
 
-    else: # if in middle ground
+    else: # if in middle ground...
         height_reward = 0.0
         logging.debug(f"🟡 NEUTRAL HEIGHT: No reward/penalty - Height: {current_height:.3f}m")
     
@@ -248,75 +234,158 @@ def reward_height(current_height): # function to reward height
 def reward_rotation(track_orientation, commands): # function to reward rotation
     
     if hasattr(track_orientation, 'last_rotation'):
-        rotation_magnitude = abs(track_orientation.last_rotation)
+        
+        ##### check if rotation is commanded #####
+
+        actual_rotation = track_orientation.last_rotation
+        rotation_magnitude = abs(actual_rotation)
         command_list = commands.split('+') if isinstance(commands, str) else commands
         rotation_commanded = any(cmd in ['arrowleft', 'arrowright'] for cmd in command_list)
+        specific_rotation_command = None
+        if rotation_commanded:
+            for cmd in command_list:
+                if cmd in ['arrowleft', 'arrowright']:
+                    specific_rotation_command = cmd
+                    break
 
-        if not rotation_commanded:
-            # NO ROTATION COMMANDED: Reward staying stable (minimal rotation)
-            # Target: 0° rotation (perfect stability), Bad: 30° rotation (excessive rotation)
-            # 33% zones: Good (0° to 10°), Neutral (10° to 20°), Bad (20° to 30°)
+        ##### reward no rotation #####
 
-            if rotation_magnitude < 10.0:  # Within 33% of perfect stability (0° to 10°)
-                # Reward being close to perfect stability
-                if rotation_magnitude < 1.0:  # Within 10% of perfect (0° to 1°)
-                    rotation_reward = 2.0  # Perfect stability
-                    logging.debug(f"🔴 PERFECT STABILITY: +{rotation_reward:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-                else:  # Within 33% of perfect (1° to 10°)
-                    # Logarithmic scaling: 0.2 at 33% error, 2.0 at 10% error
-                    rotation_progress = 1.0 - (rotation_magnitude / 10.0) ** 2
-                    rotation_reward = 0.2 + 1.8 * rotation_progress
-                    logging.debug(f"🟠 GOOD STABILITY: +{rotation_reward:.2f} reward - Rotation: {rotation_magnitude:.1f}°")
+        if not rotation_commanded: # if robot supposed to be standing still...
 
-            elif rotation_magnitude > 20.0:  # Within 33% of bad rotation (20° to 30°)
-                # Punish being close to excessive rotation
-                if rotation_magnitude > 29.0:  # Within 10% of bad (29° to 30°)
-                    rotation_reward = -2.0  # Maximum penalty for excessive rotation
-                    logging.debug(f"🔵 EXCESSIVE ROTATION: {rotation_reward:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
-                else:  # Within 33% of bad (20° to 29°)
-                    # Logarithmic scaling: -0.2 at 33% from bad, -2.0 at 10% from bad
-                    rotation_progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
-                    rotation_reward = -0.2 - 1.8 * rotation_progress
-                    logging.debug(f"🟢 POOR STABILITY: {rotation_reward:.2f} penalty - Rotation: {rotation_magnitude:.1f}°")
+            ##### reward and range weights #####
 
-            else:  # Middle ground (10° to 20°) - no reward, no penalty
+            perfect_rotation = 0.0
+            terrible_rotation = 30.0
+            total_range = perfect_rotation - terrible_rotation
+            rotation_reward_magnitude = 4.0
+            rotation_penalty_magnitude = 2.0
+            perfect_percentile = 10
+            good_percentile = 20
+            bad_percentile = 50
+            terrible_percentile = 90
+            
+            ##### calculate ranges #####
+
+            perfect_range = calculate_desired_value('no_rotation', total_range, perfect_percentile, terrible_rotation)
+            good_range = calculate_desired_value('no_rotation', total_range, good_percentile, terrible_rotation)
+            bad_range = calculate_desired_value('no_rotation', total_range, bad_percentile, terrible_rotation)
+            terrible_range = calculate_desired_value('no_rotation', total_range, terrible_percentile, terrible_rotation)
+
+            #logging.warning("SUPPPOSED TO BE STILL!!!")
+            #logging.debug(f"Perfect range: {perfect_range:.1f}, Good range: {good_range:.1f}, Bad range: {bad_range:.1f}, Terrible range: {terrible_range:.1f}")
+
+            ##### calculate no rotation reward #####
+
+            if rotation_magnitude < good_range:
+                if rotation_magnitude < perfect_range:
+                    rotation_reward = rotation_reward_magnitude
+                    logging.debug(f"🔴 PERFECT STABILITY: +{rotation_reward:.1f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+                else:
+                    rotation_reward = (((100 / (good_range - perfect_range)) * (rotation_magnitude - perfect_range)) / 100) * rotation_reward_magnitude
+                    logging.debug(f"🟠 GOOD STABILITY: +{rotation_reward:.2f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+
+            elif rotation_magnitude > bad_range:
+                if rotation_magnitude > terrible_range:
+                    rotation_reward = -rotation_penalty_magnitude
+                    logging.debug(f"🔵 TERRIBLE STABILITY: {rotation_reward:.1f}/{rotation_penalty_magnitude:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
+                else:
+                    rotation_progress = (((100 / (bad_range - terrible_range)) * (rotation_magnitude - terrible_range)) / 100) * rotation_penalty_magnitude
+                    rotation_reward = -rotation_penalty_magnitude + rotation_progress
+                    logging.debug(f"🟢 POOR STABILITY: {rotation_reward:.2f}/{rotation_penalty_magnitude:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
+
+            else: # if in middle ground...
                 rotation_reward = 0.0
                 logging.debug(f"🟡 MIDDLE STABILITY: No reward/penalty - Rotation: {rotation_magnitude:.1f}°")
 
-        else:
-            # ROTATION COMMANDED: Reward executing rotation commands properly
-            # Target: 30° rotation (rapid rotation), Bad: 0° rotation (no rotation)
-            # 33% zones: Good (20° to 30°), Neutral (10° to 20°), Bad (0° to 10°)
+        ##### reward rotation #####
 
-            if rotation_magnitude > 20.0:  # Within 33% of target rotation (20° to 30°)
-                # Reward being close to target rotation
-                if rotation_magnitude > 29.0:  # Within 10% of target (29° to 30°)
-                    rotation_reward = 2.0  # Perfect rotation execution
-                    logging.debug(f"🔴 PERFECT ROTATION: +{rotation_reward:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
-                else:  # Within 33% of target (20° to 29°)
-                    # Logarithmic scaling: 0.2 at 33% error, 2.0 at 10% error
-                    rotation_progress = 1.0 - ((30.0 - rotation_magnitude) / 10.0) ** 2
-                    rotation_reward = 0.2 + 1.8 * rotation_progress
-                    logging.debug(f"🟠 GOOD ROTATION: +{rotation_reward:.2f} reward - Rotation: {rotation_magnitude:.1f}°")
+        else: # if robot supposed to be rotating...
 
-            elif rotation_magnitude < 10.0:  # Within 33% of bad rotation (0° to 10°)
-                # Punish being close to no rotation
-                if rotation_magnitude < 1.0:  # Within 10% of bad (0° to 1°)
-                    rotation_reward = -2.0  # Maximum penalty for no rotation
-                    logging.debug(f"🔵 NO ROTATION: {rotation_reward:.1f} penalty - Rotation: {rotation_magnitude:.1f}°")
-                else:  # Within 33% of bad (1° to 10°)
-                    # Logarithmic scaling: -0.2 at 33% from bad, -2.0 at 10% from bad
-                    rotation_progress = 1.0 - (rotation_magnitude / 10.0) ** 2
-                    rotation_reward = -0.2 - 1.8 * rotation_progress
-                    logging.debug(f"🟢 POOR ROTATION: {rotation_reward:.2f} penalty - Rotation: {rotation_magnitude:.1f}°")
+            ##### determine rotation direction #####
 
-            else:  # Middle ground (10° to 20°) - no reward, no penalty
-                rotation_reward = 0.0
-                logging.debug(f"🟡 MIDDLE ROTATION: No reward/penalty - Rotation: {rotation_magnitude:.1f}°")
-        
+            if specific_rotation_command == 'arrowleft': # if left rotation...
+                direction = "LEFT"
+                if actual_rotation > 0:
+                    correct_rotation_direction = True
+                else:
+                    correct_rotation_direction = False
+            elif specific_rotation_command == 'arrowright': # if right rotation...
+                direction = "RIGHT"
+                if actual_rotation < 0:
+                    correct_rotation_direction = True
+                else:
+                    correct_rotation_direction = False
+            else: # if rotation is not commanded or in the wrong direction...
+                direction = "N/A"
+                correct_rotation_direction = False
+
+            ##### reward and range weights #####
+
+            perfect_rotation = 30.0
+            terrible_rotation = 0.0
+            total_range = perfect_rotation - terrible_rotation
+            rotation_reward_magnitude = 2.0
+            rotation_penalty_magnitude = 2.0
+            perfect_percentile = 25
+            quick_percentile = 50
+            acceptable_percentile = 75
+            slow_percentile = 100
+
+            ##### calculate ranges #####
+
+            perfect_range = calculate_desired_value('rotation', total_range, perfect_percentile, perfect_rotation)
+            quick_range = calculate_desired_value('rotation', total_range, quick_percentile, perfect_rotation)
+            acceptable_range = calculate_desired_value('rotation', total_range, acceptable_percentile, perfect_rotation)
+            slow_range = calculate_desired_value('rotation', total_range, slow_percentile, perfect_rotation)
+
+            #logging.warning(f"SUPPPOSED TO BE ROTATING {direction}!!!")
+            #logging.debug(f"Perfect range: {perfect_range:.1f}, Quick range: {quick_range:.1f}, Acceptable range: {acceptable_range:.1f}, Slow range: {slow_range:.1f}")
+
+            ##### calculate rotation reward #####
+
+            if correct_rotation_direction: # if rotation in correct direction...
+
+                if rotation_magnitude > perfect_range:
+                    rotation_reward = rotation_reward_magnitude
+                    logging.debug(f"🔴 PERFECT ROTATION: +{rotation_reward:.1f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+                elif rotation_magnitude > quick_range:
+                    rotation_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_reward_magnitude
+                    logging.debug(f"🟠 QUICK ROTATION: +{rotation_reward:.2f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+                elif rotation_magnitude > acceptable_range:
+                    rotation_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_reward_magnitude
+                    logging.debug(f"🟡 ACCEPTABLE ROTATION: +{rotation_reward:.2f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+                else:
+                    rotation_reward = (((100 / perfect_range) * rotation_magnitude) / 100) * rotation_reward_magnitude
+                    logging.debug(f"🟢 SLOW ROTATION: +{rotation_reward:.1f}/{rotation_reward_magnitude:.1f} reward - Rotation: {rotation_magnitude:.1f}°")
+
+            else: # if rotation in wrong direction...
+                rotation_reward = -rotation_penalty_magnitude
+                logging.debug(f"🔵 WRONG ROTATION: {rotation_reward:.1f}/{rotation_penalty_magnitude:.1f} penalty - Expected: {actual_rotation}, Got: {actual_rotation:.1f}°, Rotation: {rotation_magnitude:.1f}°")
+
         return rotation_reward
     else:
         return 0.0
+
+
+########## CALCULATE COMPARISON VALUE ##########
+
+def calculate_desired_value(reward_type, total_range, selected_range, special_value): # function to calculate desired figure for reward calculation
+
+    if reward_type == 'balance' or reward_type == 'no_rotation': # degrees from 0 to any value greater than 0
+        desired_value = (((-1 * total_range) / 100) * selected_range)
+
+    elif reward_type == 'height': # the numbers are small so floating points are being an issue
+
+        scale_factor = 1000000
+        total_range = total_range * scale_factor
+        special_value = special_value * scale_factor
+
+        desired_value = ((total_range / 100) * (100 - selected_range) + special_value) / scale_factor
+
+    elif reward_type == 'rotation': # degrees from any value greater than 0 to 0
+        desired_value = special_value - (((total_range) / 100) * selected_range)
+
+    return desired_value
 
 
 ########## MOVEMENT REWARD FUNCTION ##########
