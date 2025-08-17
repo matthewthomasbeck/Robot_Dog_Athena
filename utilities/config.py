@@ -181,7 +181,7 @@ JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac
 
 TRAINING_CONFIG = { # used to track training metrics and save frequencies
 
-    'max_episodes': 1000000,
+    'max_episodes': 10000000,
     'max_steps_per_episode': 750,  # GPT-5 recommendation: 600-1200 steps (~10-20 seconds)
     'save_frequency': 20000,  # Save model every 20000 steps (quick testing)
     'training_frequency': 2,  # Train every 2 steps (GPT-5: more frequent training)

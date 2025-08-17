@@ -136,8 +136,8 @@ def _reward_balance(current_balance): # function to reward balance
     perfect_balance = 0.0
     terrible_balance = 90.0
     total_range = perfect_balance - terrible_balance
-    balance_reward_magnitude = 0.5
-    balance_penalty_magnitude = 2.0
+    balance_reward_magnitude = 0.25
+    balance_penalty_magnitude = 4.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
@@ -187,8 +187,8 @@ def _reward_height(current_height): # function to reward height
     perfect_height = 0.129
     terrible_height = 0.043
     total_range = perfect_height - terrible_height
-    height_reward_magnitude = 0.5
-    height_penalty_magnitude = 2.0
+    height_reward_magnitude = 0.25
+    height_penalty_magnitude = 4.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
@@ -339,7 +339,7 @@ def _reward_rotation_stability(rotation_magnitude): # function to reward no rota
     perfect_rotation = 0.0
     terrible_rotation = 30.0
     total_range = perfect_rotation - terrible_rotation
-    rotation_stability_reward_magnitude = 4.0
+    rotation_stability_reward_magnitude = 2.0
     rotation_stability_penalty_magnitude = 2.0
     perfect_percentile = 10
     good_percentile = 20
