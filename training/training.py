@@ -74,7 +74,7 @@ def initialize_training():
     """Initialize the complete training system"""
     global td3_policy, replay_buffer, episode_counter, total_steps
 
-    logging.debug("Initializing training system...\n")
+    logging.debug("(training.py): Initializing training system...\n")
     os.makedirs(models_dir, exist_ok=True)
 
     # Initialize TD3
