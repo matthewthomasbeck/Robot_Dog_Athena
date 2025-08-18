@@ -118,7 +118,7 @@ def find_latest_model():
     import re
     
     # Look for model files in the models directory
-    model_pattern = os.path.join(models_dir, "td3_steps_*_episode_*_reward_*.pth")
+    model_pattern = os.path.join(models_dir, "rl_blind_model-*.pth")
     model_files = glob.glob(model_pattern)
     
     if not model_files:
@@ -129,8 +129,8 @@ def find_latest_model():
     latest_steps = 0
     
     for model_file in model_files:
-        # Extract step number from filename like "td3_steps_40000_episode_103_reward_74.27.pth"
-        match = re.search(r'td3_steps_(\d+)_episode_', os.path.basename(model_file))
+        # Extract step number from filename like "rl_blind_model-40000.pth"
+        match = re.search(r'rl_blind_model-(\d+)\.pth', os.path.basename(model_file))
         if match:
             steps = int(match.group(1))
             if steps > latest_steps:
@@ -349,8 +349,8 @@ def get_rl_action_blind(current_angles, commands, intensity):
         # Save model periodically based on total steps
         if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
             save_model(
-                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_steps_{total_steps}_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
-            print(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}")
+                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/rl_blind_model-{total_steps}.pth")
+            print(f"💾 Model saved: rl_blind_model-{total_steps}")
 
     # Update tracking variables
     last_state = state.copy()
@@ -443,8 +443,8 @@ def end_episode():
     # Save model periodically based on total steps (only if TD3 policy is initialized)
     if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and td3_policy is not None:
         save_model(
-            f"/home/matthewthomasbeck/Projects/Robot_Dog/model/td3_steps_{total_steps}_episode_{episode_counter}_avg_{average_score:.2f}.pth")
-        logging.info(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}, avg_score_{average_score:.2f}\n")
+            f"/home/matthewthomasbeck/Projects/Robot_Dog/model/rl_blind_model-{total_steps}.pth")
+        logging.info(f"💾 Model saved: rl_blind_model-{total_steps}\n")
     elif td3_policy is None:
         logging.warning(f"⚠️  Warning: TD3 policy not initialized yet, skipping model save for episode {episode_counter}\n")
     else:
