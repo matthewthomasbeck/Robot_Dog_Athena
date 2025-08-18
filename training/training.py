@@ -487,7 +487,7 @@ def check_and_reset_episode_if_needed():  # TODO compare with reset_episode()
     return False
 
 
-##### reset episode ##### TODO compare with check_and_reset_episode_if_needed()
+##### reset episode #####
 
 def reset_episode():
     """
@@ -615,7 +615,7 @@ def save_model(filepath):
 
 ##### load the model #####
 
-def load_model(filepath):  # TODO find out how this can be used???
+def load_model(filepath):
     """Load a TD3 model from file"""
     global td3_policy, episode_counter, total_steps, episode_reward
 
@@ -643,6 +643,7 @@ def load_model(filepath):  # TODO find out how this can be used???
         return True
     return False
 
+##### monitor learning progress #####
 
 def monitor_learning_progress():
     """

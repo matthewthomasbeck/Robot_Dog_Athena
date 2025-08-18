@@ -81,24 +81,6 @@ else:
     ROBOT_ID = None
     JOINT_MAP = {}
 
-##### define servos #####
-
-#upper_leg_servos = { # define upper leg servos
-
-    #"FL": config.SERVO_CONFIG['FL']['upper'],  # front left
-    #"FR": config.SERVO_CONFIG['FR']['upper'],  # front right
-    #"BL": config.SERVO_CONFIG['BL']['upper'],  # back left
-    #"BR": config.SERVO_CONFIG['BR']['upper'],  # back right
-#}
-
-#lower_leg_servos = { # define lower leg servos
-
-    #"FL": config.SERVO_CONFIG['FL']['lower'],  # front left
-    #"FR": config.SERVO_CONFIG['FR']['lower'],  # front right
-    #"BL": config.SERVO_CONFIG['BL']['lower'],  # back left
-    #"BR": config.SERVO_CONFIG['BR']['lower'],  # back right
-#}
-
 
 
 
@@ -143,9 +125,6 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
 
     ##### run inference before moving #####
 
-    # logging.debug(
-    #     f"(movement_coordinator.py): Running inference for command(s) {commands} with intensity {intensity}...\n"
-    # )
     try: # try to run a model
         if not config.USE_SIMULATION: # if user wants to use real servos...
             if config.RL_NOT_CNN: # if running gait adjustment (production)...
@@ -274,15 +253,9 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     except Exception as e: # if either model fails...
         logging.error(f"(movement_coordinator.py): Failed to run AI for command: {e}\n")
 
-    ##### move legs #####
+    ##### foce robot to slow down so the raspberry doesnt crash #####
 
-    try: # try to update leg gait
-        # TODO somehow move legs after model has been activated
-        # logging.info(f"(movement_coordinator.py): Executed move_direction() with intensity: {intensity}\n")
-        time.sleep(0.1) # wait for legs to reach positions
-
-    except Exception as e: # if gait update fails...
-        logging.error(f"(movement_coordinator.py): Failed to gait-cycle legs in move_direction(): {e}\n")
+    time.sleep(0.275) # only allow inference to run at rate
 
 
 ########## THREAD LEG MOVEMENT ##########

@@ -394,38 +394,28 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
                 min_angle = servo_data['FULL_BACK_ANGLE']
                 max_angle = servo_data['FULL_FRONT_ANGLE']
                 
-                # CRITICAL: Handle servo inversion properly
-                # The model outputs [-1, 1] where -1 should map to FULL_BACK_ANGLE and +1 to FULL_FRONT_ANGLE
-                # But some servos have inverted ranges, so we need to check the order
+                # CRITICAL: Handle servo inversion EXACTLY like training
+                # The training code ensures correct order by swapping if needed
                 if min_angle > max_angle:
-                    # This servo has inverted range (e.g., FR hip: 0.349 to -0.959)
-                    # So -1 from model should map to the larger angle (FULL_BACK_ANGLE)
-                    # And +1 from model should map to the smaller angle (FULL_FRONT_ANGLE)
-                    actual_min = max_angle  # The smaller angle value
-                    actual_max = min_angle  # The larger angle value
-                else:
-                    # This servo has normal range (e.g., FL hip: -0.349 to 0.959)
-                    actual_min = min_angle  # The smaller angle value
-                    actual_max = max_angle  # The larger angle value
+                    min_angle, max_angle = max_angle, min_angle
                 
                 # Convert mid action (-1 to 1) to joint angle - EXACTLY like training
                 mid_action = result_reshaped[i, 0, j]  # First angle is mid angle
-                # Map -1 to actual_min, +1 to actual_max
-                mid_angle = actual_min + (mid_action + 1.0) * 0.5 * (actual_max - actual_min)
-                mid_angle = np.clip(mid_angle, min(actual_min, actual_max), max(actual_min, actual_max))
+                # Use EXACTLY the same formula as training
+                mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
+                mid_angle = np.clip(mid_angle, min_angle, max_angle)
                 mid_angles[leg][joint] = float(mid_angle)
                 
                 # Convert target action (-1 to 1) to joint angle - EXACTLY like training
                 target_action = result_reshaped[i, 1, j]  # Second angle is target angle
-                # Map -1 to actual_min, +1 to actual_max
-                target_angle = actual_min + (target_action + 1.0) * 0.5 * (actual_max - actual_min)
-                target_angle = np.clip(target_angle, min(actual_min, actual_max), max(actual_min, actual_max))
+                # Use EXACTLY the same formula as training
+                target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
+                target_angle = np.clip(target_angle, min_angle, max_angle)
                 target_angles[leg][joint] = float(target_angle)
                 
                 action_idx += 1
                 
                 logging.debug(f"(inference.py): {leg}_{joint}: mid={mid_angles[leg][joint]:.3f} rad, target={target_angles[leg][joint]:.3f} rad\n")
-                logging.debug(f"(inference.py): {leg}_{joint}: servo range [{min_angle:.3f}, {max_angle:.3f}], actual range [{actual_min:.3f}, {actual_max:.3f}]\n")
         
         logging.info(f"(inference.py): Generated angles - Mid range: [{min([min(angles.values()) for angles in mid_angles.values()]):.3f}, {max([max(angles.values()) for angles in mid_angles.values()]):.3f}] rad\n")
         logging.info(f"(inference.py): Generated angles - Target range: [{min([min(angles.values()) for angles in target_angles.values()]):.3f}, {max([max(angles.values()) for angles in target_angles.values()]):.3f}] rad\n")
