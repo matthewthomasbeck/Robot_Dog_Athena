@@ -194,7 +194,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                 ##### move legs and update current position #####
 
                 # move legs and update current angles
-                thread_leg_movement_angles(
+                thread_leg_movement(
                     config.SERVO_CONFIG,
                     mid_angles,
                     target_angles,

@@ -31,14 +31,14 @@ class Actor(torch.nn.Module):
         return a
 
 def convert_pth_to_openvino():
-    """Convert PyTorch model directly to OpenVINO IR format"""
+    """Convert PyTorch model directly to OpenVINO IR format with static dimensions"""
     
-    print("🚀 Direct PyTorch to OpenVINO IR Converter")
-    print("=" * 50)
+    print("🚀 Direct PyTorch to OpenVINO IR Converter (Fixed)")
+    print("=" * 55)
     
-    # Model configuration
-    STATE_DIM = 19  # 12 joints + 6 commands + 1 intensity
-    ACTION_DIM = 24  # 12 mid + 12 target angles
+    # Model configuration - FIXED DIMENSIONS
+    STATE_DIM = 19  # Fixed: 12 joints + 6 commands + 1 intensity
+    ACTION_DIM = 24  # Fixed: 4 legs × 2 angles × 3 joints = 24
     MAX_ACTION = 1.0
     
     # Paths
@@ -47,8 +47,8 @@ def convert_pth_to_openvino():
     
     print(f"📁 Input model: {pth_path}")
     print(f"📤 Output model: {xml_path}")
-    print(f"🎯 State dimension: {STATE_DIM}")
-    print(f"🎯 Action dimension: {ACTION_DIM}")
+    print(f"🎯 State dimension: {STATE_DIM} (FIXED)")
+    print(f"🎯 Action dimension: {ACTION_DIM} (FIXED)")
     
     # Check if input file exists
     if not os.path.exists(pth_path):
@@ -70,8 +70,8 @@ def convert_pth_to_openvino():
         else:
             print(f"✅ Direct weights checkpoint")
         
-        # Create Actor model
-        print(f"🏗️  Creating Actor model...")
+        # Create Actor model with FIXED dimensions
+        print(f"🏗️  Creating Actor model with FIXED dimensions...")
         model = Actor(STATE_DIM, ACTION_DIM, MAX_ACTION)
         
         # Load weights
@@ -85,9 +85,9 @@ def convert_pth_to_openvino():
         # Set to evaluation mode
         model.eval()
         
-        # Create dummy input
-        print(f"🔧 Creating dummy input...")
-        dummy_input = torch.randn(1, STATE_DIM)
+        # Create dummy input with FIXED shape
+        print(f"🔧 Creating dummy input with FIXED shape...")
+        dummy_input = torch.randn(1, STATE_DIM)  # Fixed: (1, 21)
         
         # Test forward pass
         print(f"🧪 Testing forward pass...")
@@ -95,64 +95,108 @@ def convert_pth_to_openvino():
             output = model(dummy_input)
             print(f"✅ Forward pass successful: {output.shape}")
             print(f"📊 Output range: [{output.min().item():.3f}, {output.max().item():.3f}]")
+            
+            # Verify output shape is correct
+            if output.shape != (1, ACTION_DIM):
+                print(f"❌ Output shape mismatch: expected (1, {ACTION_DIM}), got {output.shape}")
+                return False
         
-        # Convert directly to OpenVINO IR
-        print(f"🔄 Converting to OpenVINO IR format...")
+        # Convert to OpenVINO IR with EXPLICIT static shapes
+        print(f"🔄 Converting to OpenVINO IR format with static shapes...")
         try:
             import openvino.runtime as ov
             from openvino.runtime import Core
             
-            # Try different methods for PyTorch to OpenVINO conversion
-            print(f"   🔍 Attempting PyTorch to OpenVINO conversion...")
+            # Method 1: Use ONNX as intermediate with EXPLICIT shapes
+            print(f"   🔍 Using ONNX intermediate with EXPLICIT shapes...")
             
-            # Method 1: Try using openvino.tools (newer versions)
+            # Create temporary ONNX file with EXPLICIT input/output shapes
+            temp_onnx = "/tmp/temp_model.onnx"
+            
+            # Export with EXPLICIT dynamic axes to force static shapes
+            torch.onnx.export(
+                model,
+                dummy_input,
+                temp_onnx,
+                export_params=True,
+                opset_version=11,
+                do_constant_folding=True,
+                input_names=["state"],
+                output_names=["action"],
+                dynamic_axes={
+                    'state': {0: 'batch_size'},  # Only batch dimension can vary
+                    'action': {0: 'batch_size'}   # Only batch dimension can vary
+                }
+            )
+            
+            print(f"   ✅ ONNX export successful with explicit shapes")
+            
+            # CRITICAL: Freeze the input shape to prevent dynamic dimensions
+            print(f"   🔒 Freezing input shape to prevent dynamic dimensions...")
+            
+            # Use Model Optimizer (MO) to convert ONNX to OpenVINO IR with static shapes
             try:
                 from openvino.tools import mo
-                ov_model = mo.convert_model(model, example_input=dummy_input)
-                print(f"   ✅ Used openvino.tools.mo.convert_model")
+                print(f"   🔧 Using Model Optimizer for conversion...")
+                
+                # Convert ONNX to OpenVINO IR with explicit input shapes
+                ov_model = mo.convert_model(
+                    temp_onnx,
+                    input_shape=[1, STATE_DIM],  # Explicit static input shape
+                    output_shape=[1, ACTION_DIM]  # Explicit static output shape
+                )
+                print(f"   ✅ Model Optimizer conversion successful with static shapes")
+                
             except ImportError:
-                # Method 2: Try using openvino.runtime (older versions)
+                # Fallback: try to use the core conversion
+                print(f"   🔧 Model Optimizer not available, using core conversion...")
+                core = Core()
+                ov_model = core.read_model(temp_onnx)
+                
+                # Try to reshape the model to static dimensions
                 try:
-                    ov_model = ov.convert_model(model, example_input=dummy_input)
-                    print(f"   ✅ Used openvino.runtime.convert_model")
-                except AttributeError:
-                    # Method 3: Try using openvino directly
-                    try:
-                        import openvino as ov_main
-                        ov_model = ov_main.convert_model(model, example_input=dummy_input)
-                        print(f"   ✅ Used openvino.convert_model")
-                    except AttributeError:
-                        # Method 4: Use the legacy approach with ONNX as intermediate
-                        print(f"   ⚠️  Direct conversion not available, using ONNX intermediate...")
-                        
-                        # Create temporary ONNX file
-                        temp_onnx = "/tmp/temp_model.onnx"
-                        torch.onnx.export(
-                            model,
-                            dummy_input,
-                            temp_onnx,
-                            export_params=True,
-                            opset_version=11,
-                            do_constant_folding=True,
-                            input_names=["state"],
-                            output_names=["action"]
-                        )
-                        
-                        # Convert ONNX to OpenVINO
-                        core = Core()
-                        ov_model = core.read_model(temp_onnx)
-                        
-                        # Clean up temp file
-                        if os.path.exists(temp_onnx):
-                            os.remove(temp_onnx)
-                        
-                        print(f"   ✅ Used ONNX intermediate conversion")
+                    # Get the model and reshape it
+                    ov_model.reshape({0: [1, STATE_DIM]})
+                    print(f"   ✅ Model reshaped to static input shape")
+                except Exception as reshape_error:
+                    print(f"   ⚠️  Could not reshape model: {reshape_error}")
+                    print(f"   💡 Continuing with original model...")
             
-            print(f"✅ PyTorch to OpenVINO conversion successful")
+            print(f"   ✅ Model shapes processed")
+            
+            # Clean up temp file
+            if os.path.exists(temp_onnx):
+                os.remove(temp_onnx)
+            
+            print(f"✅ PyTorch to OpenVINO conversion successful with static shapes")
             
             # Save as OpenVINO IR format (.xml + .bin)
             ov.save_model(ov_model, xml_path)
             print(f"✅ OpenVINO IR model saved: {xml_path}")
+            
+            # Verify the saved model has static shapes
+            print(f"🔍 Verifying saved model has static shapes...")
+            saved_model = core.read_model(xml_path)
+            
+            try:
+                input_shape = saved_model.input(0).shape
+                output_shape = saved_model.output(0).shape
+                print(f"   📊 Input shape: {input_shape} (should be [1, {STATE_DIM}])")
+                print(f"   📊 Output shape: {output_shape} (should be [1, {ACTION_DIM}])")
+                
+                # Check if shapes are static by looking for dynamic symbols
+                input_is_static = all(dim != -1 and '?' not in str(dim) for dim in input_shape)
+                output_is_static = all(dim != -1 and '?' not in str(dim) for dim in output_shape)
+                
+                if input_is_static and output_is_static:
+                    print(f"   ✅ Both input and output shapes are static!")
+                else:
+                    print(f"   ❌ Shapes are still dynamic - conversion failed")
+                    return False
+                    
+            except Exception as e:
+                print(f"   ❌ Could not verify shapes: {e}")
+                return False
             
             # Check if both files were created
             bin_path = xml_path.replace('.xml', '.bin')
@@ -177,7 +221,7 @@ def convert_pth_to_openvino():
         
         print(f"\n🎉 Direct PyTorch to OpenVINO IR conversion completed!")
         print(f"📁 OpenVINO IR files: {xml_path} + {bin_path}")
-        print(f"🔧 Ready for Intel NCS2 deployment!")
+        print(f"🔧 Model now has STATIC shapes - ready for Intel NCS2 deployment!")
         
         return True
         

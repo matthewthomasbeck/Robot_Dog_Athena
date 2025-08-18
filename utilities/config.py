@@ -39,8 +39,8 @@ import logging # import logging library for debugging
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
 CONTROL_MODE = 'web' # current control mode of the robot (web or radio)
 RL_NOT_CNN = True  # boolean to switch between testing and RL models (true is RL, false is testing)
-USE_SIMULATION = True  # boolean to switch between using simulator or not
-USE_ISAAC_SIM = True # boolean to switch between using pybullet and isaac sim
+USE_SIMULATION = False  # boolean to switch between using simulator or not
+USE_ISAAC_SIM = False # boolean to switch between using pybullet and isaac sim
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
 ##### set logging configuration #####

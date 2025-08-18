@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Set up model testing playground, models dont work when called but the infrastructure is in place for when they do">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.bin" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/pth_to_xml.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/pth_to_xml.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/test_pth.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/test_xml.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/test_xml_intel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +48,7 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2mcFIiLVWB9RbUjveGQlndNtXOm" />
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -56,7 +62,9 @@
     &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
     &quot;Python.pth_to_xml.executor&quot;: &quot;Run&quot;,
     &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_complete_pipeline.executor&quot;: &quot;Run&quot;,
     &quot;Python.test_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_xml_intel.executor&quot;: &quot;Run&quot;,
     &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
@@ -88,8 +96,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
-        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
+        <option value="bundled-python-sdk-91d3a02ef49d-43b77aa2d136-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.23654.177" />
       </set>
     </attachedChunks>
   </component>
@@ -204,6 +211,7 @@
       <workItem from="1755455261076" duration="103000" />
       <workItem from="1755459303361" duration="664000" />
       <workItem from="1755463699218" duration="74000" />
+      <workItem from="1755481988744" duration="417000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -623,11 +631,13 @@
     <option name="LAST_COMMIT_MESSAGE" value="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
     <SUITE FILE_PATH="coverage/Robot_Dog$export_model.coverage" NAME="export_model Coverage Results" MODIFIED="1755279912229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
     <SUITE FILE_PATH="coverage/Robot_Dog$control_logic.coverage" NAME="control_logic Coverage Results" MODIFIED="1753211859597" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Robot_Dog$visualize.coverage" NAME="visualize Coverage Results" MODIFIED="1752538200252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training" />
+    <SUITE FILE_PATH="coverage/Robot_Dog$test_xml_intel.coverage" NAME="test_xml_intel Coverage Results" MODIFIED="1755469133215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
     <SUITE FILE_PATH="coverage/Robot_Dog$simulation_test.coverage" NAME="simulation_test Coverage Results" MODIFIED="1752539324486" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Robot_Dog$test_xml.coverage" NAME="test_xml Coverage Results" MODIFIED="1755313915983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
-    <SUITE FILE_PATH="coverage/Robot_Dog$pth_to_xml.coverage" NAME="pth_to_xml Coverage Results" MODIFIED="1755314121557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
+    <SUITE FILE_PATH="coverage/Robot_Dog$pth_to_xml.coverage" NAME="pth_to_xml Coverage Results" MODIFIED="1755478117002" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
   </component>
 </project>

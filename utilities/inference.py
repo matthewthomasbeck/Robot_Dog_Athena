@@ -272,17 +272,36 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
     try:
         logging.debug(f"(inference.py): Starting gait adjustment inference for commands: {commands}, intensity: {intensity}...\n")
         
-        # 1. Extract joint angles (12D) - EXACTLY like training (NO NORMALIZATION)
+        # 1. Extract and normalize joint angles (12D) - EXACTLY like training
+        # Normalize angles to [-1, 1] range for better training stability with Adam optimizer
         current_angles_vec = []
         for leg_id in ['FL', 'FR', 'BL', 'BR']:
             for joint_name in ['hip', 'upper', 'lower']:
                 angle = current_servo_config[leg_id][joint_name]['CURRENT_ANGLE']
-                current_angles_vec.append(float(angle))  # Raw angle, no normalization
+                
+                # Get joint limits for normalization - EXACTLY like training
+                servo_data = current_servo_config[leg_id][joint_name]
+                min_angle = servo_data['FULL_BACK_ANGLE']
+                max_angle = servo_data['FULL_FRONT_ANGLE']
+                
+                # Ensure correct order - EXACTLY like training
+                if min_angle > max_angle:
+                    min_angle, max_angle = max_angle, min_angle
+                
+                # Normalize to [-1, 1] range - EXACTLY like training
+                angle_range = max_angle - min_angle
+                if angle_range > 0:
+                    normalized_angle = 2.0 * (float(angle) - min_angle) / angle_range - 1.0
+                    normalized_angle = np.clip(normalized_angle, -1.0, 1.0)
+                else:
+                    normalized_angle = 0.0  # Fallback if range is zero
+                    
+                current_angles_vec.append(normalized_angle)
         
         current_angles_vec = np.array(current_angles_vec, dtype=np.float32)
-        logging.info(f"(inference.py): Extracted {len(current_angles_vec)} joint angles, range: [{min(current_angles_vec):.3f}, {max(current_angles_vec):.3f}] rad\n")
+        logging.info(f"(inference.py): Extracted {len(current_angles_vec)} joint angles, normalized to [-1, 1] range: [{min(current_angles_vec):.3f}, {max(current_angles_vec):.3f}]\n")
 
-        # 2. Encode commands (8D one-hot) - EXACTLY like training
+        # 2. Encode commands (6D one-hot) - EXACTLY like training
         if isinstance(commands, list):
             command_list = commands
         elif isinstance(commands, str):
@@ -292,53 +311,121 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         
         logging.debug(f"(inference.py): Processing commands: {commands} -> command_list: {command_list}...\n")
 
+        # CRITICAL: Match training.py exactly - 6D command encoding, not 8D
         command_encoding = [
             1.0 if 'w' in command_list else 0.0,
             1.0 if 's' in command_list else 0.0,
             1.0 if 'a' in command_list else 0.0,
             1.0 if 'd' in command_list else 0.0,
             1.0 if 'arrowleft' in command_list else 0.0,
-            1.0 if 'arrowright' in command_list else 0.0,
-            1.0 if 'arrowup' in command_list else 0.0,
-            1.0 if 'arrowdown' in command_list else 0.0
+            1.0 if 'arrowright' in command_list else 0.0
         ]
         command_encoding = np.array(command_encoding, dtype=np.float32)
         logging.info(f"(inference.py): Command encoding: {command_encoding}\n")
 
         # 3. Normalize intensity (1D) - EXACTLY like training
-        intensity_normalized = float(intensity) / 10.0
+        # Map intensity 1-10 to range [-1.0, 1.0] preserving all 10 distinct levels
+        intensity_normalized = (float(intensity) - 5.5) / 4.5  # Maps 1->-1.0, 10->1.0
         intensity_normalized = np.array([intensity_normalized], dtype=np.float32)
         logging.info(f"(inference.py): Intensity {intensity} -> normalized: {intensity_normalized[0]:.3f}\n")
 
         # Build input vector in EXACT same order as training: [joint_angles, commands, intensity]
+        # State size: 12 (joints) + 6 (commands) + 1 (intensity) = 19
         input_vec = np.concatenate([current_angles_vec, command_encoding, intensity_normalized])
         input_vec = input_vec.reshape(1, -1)
         logging.info(f"(inference.py): Built input vector: {input_vec.shape}, total elements: {len(input_vec[0])}\n")
 
         # Run inference
         logging.info(f"(inference.py): Running model inference...\n")
-        result = model([input_vec])[output_layer]
-        logging.info(f"(inference.py): Model output shape: {result.shape}\n")
+        result = model([input_vec])
         
-        result = result.reshape(4, 2, 3)
-        logging.info(f"(inference.py): Reshaped output: {result.shape} (4 legs, 2 angles per leg, 3 joints per leg)\n")
+        # Extract the actual numpy array from OpenVINO result
+        # OpenVINO returns an OVDict with complex keys, but the value is a numpy array
+        logging.info(f"(inference.py): Raw result type: {type(result)}\n")
+        
+        if hasattr(result, 'values'):
+            # If result is a dict-like object, get the first value
+            logging.info(f"(inference.py): Result has .values() method, extracting first value\n")
+            result_array = list(result.values())[0]
+            logging.info(f"(inference.py): First value type: {type(result_array)}\n")
+        elif isinstance(result, dict):
+            # If result is a regular dict, get the first value
+            logging.info(f"(inference.py): Result is dict, extracting first value\n")
+            result_array = list(result.values())[0]
+            logging.info(f"(inference.py): First value type: {type(result_array)}\n")
+        elif isinstance(result, list):
+            # If result is a list, get the first element
+            logging.info(f"(inference.py): Result is list, extracting first element\n")
+            result_array = result[0]
+            logging.info(f"(inference.py): First element type: {type(result_array)}\n")
+        else:
+            # If result is already the array
+            logging.info(f"(inference.py): Result is direct type: {type(result)}\n")
+            result_array = result
+        
+        # Ensure we have a numpy array
+        if hasattr(result_array, 'numpy'):
+            logging.info(f"(inference.py): Converting to numpy array\n")
+            result_array = result_array.numpy()
+        else:
+            logging.info(f"(inference.py): Result array already numpy compatible\n")
+        
+        logging.info(f"(inference.py): Final result array type: {type(result_array)}\n")
+        logging.info(f"(inference.py): Extracted result array shape: {result_array.shape}\n")
+        logging.info(f"(inference.py): Result array range: [{result_array.min():.3f}, {result_array.max():.3f}]\n")
+        
+        # Convert action output from [-1, 1] range to actual joint angles - EXACTLY like training
+        result_reshaped = result_array.reshape(4, 2, 3)  # 4 legs, 2 angles per leg, 3 joints per leg
+        logging.info(f"(inference.py): Reshaped output: {result_reshaped.shape} (4 legs, 2 angles per leg, 3 joints per leg)\n")
         
         legs = ['FL', 'FR', 'BL', 'BR']
         joints = ['hip', 'upper', 'lower']
         
         target_angles = {}
         mid_angles = {}
+        action_idx = 0
+        
         for i, leg in enumerate(legs):
             target_angles[leg] = {}
             mid_angles[leg] = {}
             for j, joint in enumerate(joints):
-                # Denormalize angles from [0, 1] back to [-pi, pi]
-                mid_angle_norm = result[i, 0, j]
-                target_angle_norm = result[i, 1, j]
-                mid_angles[leg][joint] = (mid_angle_norm * 2 * np.pi) - np.pi
-                target_angles[leg][joint] = (target_angle_norm * 2 * np.pi) - np.pi
+                # Get joint limits for denormalization - EXACTLY like training
+                servo_data = current_servo_config[leg][joint]
+                min_angle = servo_data['FULL_BACK_ANGLE']
+                max_angle = servo_data['FULL_FRONT_ANGLE']
+                
+                # CRITICAL: Handle servo inversion properly
+                # The model outputs [-1, 1] where -1 should map to FULL_BACK_ANGLE and +1 to FULL_FRONT_ANGLE
+                # But some servos have inverted ranges, so we need to check the order
+                if min_angle > max_angle:
+                    # This servo has inverted range (e.g., FR hip: 0.349 to -0.959)
+                    # So -1 from model should map to the larger angle (FULL_BACK_ANGLE)
+                    # And +1 from model should map to the smaller angle (FULL_FRONT_ANGLE)
+                    actual_min = max_angle  # The smaller angle value
+                    actual_max = min_angle  # The larger angle value
+                else:
+                    # This servo has normal range (e.g., FL hip: -0.349 to 0.959)
+                    actual_min = min_angle  # The smaller angle value
+                    actual_max = max_angle  # The larger angle value
+                
+                # Convert mid action (-1 to 1) to joint angle - EXACTLY like training
+                mid_action = result_reshaped[i, 0, j]  # First angle is mid angle
+                # Map -1 to actual_min, +1 to actual_max
+                mid_angle = actual_min + (mid_action + 1.0) * 0.5 * (actual_max - actual_min)
+                mid_angle = np.clip(mid_angle, min(actual_min, actual_max), max(actual_min, actual_max))
+                mid_angles[leg][joint] = float(mid_angle)
+                
+                # Convert target action (-1 to 1) to joint angle - EXACTLY like training
+                target_action = result_reshaped[i, 1, j]  # Second angle is target angle
+                # Map -1 to actual_min, +1 to actual_max
+                target_angle = actual_min + (target_action + 1.0) * 0.5 * (actual_max - actual_min)
+                target_angle = np.clip(target_angle, min(actual_min, actual_max), max(actual_min, actual_max))
+                target_angles[leg][joint] = float(target_angle)
+                
+                action_idx += 1
                 
                 logging.debug(f"(inference.py): {leg}_{joint}: mid={mid_angles[leg][joint]:.3f} rad, target={target_angles[leg][joint]:.3f} rad\n")
+                logging.debug(f"(inference.py): {leg}_{joint}: servo range [{min_angle:.3f}, {max_angle:.3f}], actual range [{actual_min:.3f}, {actual_max:.3f}]\n")
         
         logging.info(f"(inference.py): Generated angles - Mid range: [{min([min(angles.values()) for angles in mid_angles.values()]):.3f}, {max([max(angles.values()) for angles in mid_angles.values()]):.3f}] rad\n")
         logging.info(f"(inference.py): Generated angles - Target range: [{min([min(angles.values()) for angles in target_angles.values()]):.3f}, {max([max(angles.values()) for angles in target_angles.values()]):.3f}] rad\n")
