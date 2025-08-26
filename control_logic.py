@@ -326,7 +326,12 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             # Generate RL commands if queue is empty and robot is ready for new commands
             if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
-                command = 'w'  # TODO forward 'w' is being hard-set for now, but have random commands in future
+                
+                # Import and use random command generation
+                from training.training import get_random_command
+                # Set training phase here (1, 2, or 3)
+                training_phase = 1  # Start with phase 1 for basic movement
+                command = get_random_command(phase=training_phase)
 
             # Check RL command queue for Isaac Sim
             if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
@@ -419,7 +424,15 @@ def _handle_command(command, frame):
 
     elif config.CONTROL_MODE == 'web':
 
-        intensity = 10  # TODO start out with max intensity, eventually autogenerate from 1-10
+        if config.USE_SIMULATION:
+            # Import and use random intensity generation
+            from training.training import get_random_intensity
+            # Set training phase here (1, 2, or 3) - same as command phase
+            training_phase = 1  # Start with phase 1 for basic movement
+            intensity = get_random_intensity(phase=training_phase)
+
+        else:
+            intensity = 10
 
         try:
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
@@ -702,7 +715,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
         if special_actions:
             logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
         # move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
-        move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
+        move_direction(direction, frame, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
         is_neutral = False
     elif special_actions:
         # only special actions, no movement

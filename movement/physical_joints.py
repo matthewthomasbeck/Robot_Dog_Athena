@@ -26,10 +26,11 @@ import utilities.config as config
 
 import logging
 import math
+import time
 
 ##### import necessary functions #####
 
-from utilities.servos import map_angle_to_servo_position, set_target  # import servo mapping functions
+from utilities.servos import map_angle_to_servo_position, set_target, map_radian_to_servo_speed
 
 
 
@@ -44,7 +45,7 @@ from utilities.servos import map_angle_to_servo_position, set_target  # import s
 
 ##### swing selected leg #####
 
-def swing_leg(leg_id, current_angles, mid_angles, target_angles, movement_rate):
+def swing_leg(leg_id, current_angles, mid_angles, target_angles, movement_rates):
     """
     Swing leg using direct joint angles instead of coordinates.
     Args:
@@ -55,19 +56,18 @@ def swing_leg(leg_id, current_angles, mid_angles, target_angles, movement_rate):
         movement_rate: Movement rate parameters
     """
     try:
-        speed = movement_rate.get('speed', 16383)  # default to 16383 (max) if not provided
-        acceleration = movement_rate.get('acceleration', 255)  # default to 255 (max) if not provided
-        
         # Move to mid angles first, then to target angles
-        move_joints_to_angles(leg_id, current_angles, mid_angles, speed, acceleration)
-        move_joints_to_angles(leg_id, mid_angles, target_angles, speed, acceleration)
+        move_joints_to_angles(leg_id, current_angles, mid_angles, movement_rates)
+        time.sleep(0.05)
+        move_joints_to_angles(leg_id, mid_angles, target_angles, movement_rates)
+        time.sleep(0.05)
 
     except Exception as e:
         logging.error(f"(physical_joints.py): Failed to swing leg {leg_id} with angles: {e}\n")
 
 ##### move joint from mid to target angles #####
 
-def move_joints_to_angles(leg_id, start_angles, end_angles, speed, acceleration):
+def move_joints_to_angles(leg_id, start_angles, end_angles, movement_rates):
     """
     Move leg joints to target angles.
     Args:
@@ -75,21 +75,21 @@ def move_joints_to_angles(leg_id, start_angles, end_angles, speed, acceleration)
         start_angles: Starting joint angles for the leg
         end_angles: Ending joint angles for the leg
         speed: Movement speed
-        acceleration: Movement acceleration
     """
     for joint_name in ['hip', 'upper', 'lower']:
         try:
             start_angle = start_angles[joint_name]['CURRENT_ANGLE'] if isinstance(start_angles, dict) else start_angles[joint_name]
             end_angle = end_angles[joint_name]
+            speed = movement_rates[joint_name]
             
-            move_joint(leg_id, joint_name, end_angle, speed, acceleration)
+            move_joint(leg_id, joint_name, end_angle, speed)
             
         except Exception as e:
             logging.error(f"(physical_joints.py): Failed to move {leg_id}_{joint_name} to angle: {e}\n")
 
 ##### move single joint to target angle #####
 
-def move_joint(leg_id, joint_name, target_angle, speed, acceleration):
+def move_joint(leg_id, joint_name, target_angle, speed):
     """
     Move a single joint to target angle.
     Args:
@@ -101,7 +101,8 @@ def move_joint(leg_id, joint_name, target_angle, speed, acceleration):
     """
     servo_data = config.SERVO_CONFIG[leg_id][joint_name]
     pwm = map_angle_to_servo_position(target_angle, servo_data)
-    set_target(servo_data['servo'], pwm, speed, acceleration)
+    speed = map_radian_to_servo_speed(speed)
+    set_target(servo_data['servo'], pwm, speed, 255) # use 255 max acceleration
     config.SERVO_CONFIG[leg_id][joint_name]['CURRENT'] = pwm
     config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = target_angle
 
@@ -122,9 +123,8 @@ def neutral_position_physical(intensity): # used to move all joints to neutral p
     
     logging.info("(physical_joints.py): Moving all legs to neutral position on physical robot...\n")
     
-    # Set default speed and acceleration for neutral positioning
-    speed = 16383  # default to max speed
-    acceleration = 255  # default to max acceleration
+    # Set default speed for neutral positioning
+    speed = 9.5  # default to max speed
     
     # Move each joint to its neutral position
     for leg_id, joint_name in joint_order:
@@ -133,7 +133,7 @@ def neutral_position_physical(intensity): # used to move all joints to neutral p
             neutral_angle = servo_data['NEUTRAL_ANGLE']  # Always 0.0 radians
             
             # Use the angle-based movement system
-            move_joint(leg_id, joint_name, neutral_angle, speed, acceleration)
+            move_joint(leg_id, joint_name, neutral_angle, speed)
             
         except Exception as e:
             logging.error(f"(physical_joints.py): Failed to move {leg_id}_{joint_name} to neutral: {e}\n")

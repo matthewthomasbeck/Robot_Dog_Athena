@@ -19,16 +19,26 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 class Actor(torch.nn.Module):
     def __init__(self, state_dim, action_dim, max_action):
         super(Actor, self).__init__()
-        self.layer_1 = torch.nn.Linear(state_dim, 400)
-        self.layer_2 = torch.nn.Linear(400, 300)
-        self.layer_3 = torch.nn.Linear(300, action_dim)
+        # Shared layers
+        self.shared_layer_1 = torch.nn.Linear(state_dim, 400)
+        self.shared_layer_2 = torch.nn.Linear(400, 300)
+        
+        # Actor head (policy) - outputs action means
+        self.actor_mean = torch.nn.Linear(300, action_dim)
+        
         self.max_action = max_action
+        self.state_dim = state_dim
+        self.action_dim = action_dim
 
     def forward(self, state):
-        a = torch.nn.functional.relu(self.layer_1(state))
-        a = torch.nn.functional.relu(self.layer_2(a))
-        a = torch.tanh(self.layer_3(a)) * self.max_action
-        return a
+        # Shared layers
+        shared = torch.nn.functional.relu(self.shared_layer_1(state))
+        shared = torch.nn.functional.relu(self.shared_layer_2(shared))
+        
+        # Actor output
+        action_mean = torch.tanh(self.actor_mean(shared)) * self.max_action
+        
+        return action_mean
 
 def test_complete_pipeline():
     """Test the complete pipeline from PyTorch to inference"""
@@ -38,7 +48,7 @@ def test_complete_pipeline():
     
     # Model configuration - MUST MATCH TRAINING EXACTLY
     STATE_DIM = 19  # 12 joints + 6 commands + 1 intensity
-    ACTION_DIM = 24  # 4 legs × 2 angles × 3 joints = 24
+    ACTION_DIM = 36  # 12 mid angles + 12 target angles + 12 velocity values
     MAX_ACTION = 1.0
     
     # Paths
@@ -49,6 +59,9 @@ def test_complete_pipeline():
     print(f"📁 OpenVINO IR model: {xml_path}")
     print(f"🎯 State dimension: {STATE_DIM}")
     print(f"🎯 Action dimension: {ACTION_DIM}")
+    print(f"   - 12 mid angles")
+    print(f"   - 12 target angles")
+    print(f"   - 12 velocity values")
     
     # Step 1: Test PyTorch model
     print(f"\n🔍 Step 1: Testing PyTorch model...")
@@ -91,10 +104,37 @@ def test_pytorch_model(pth_path, state_dim, action_dim):
         MAX_ACTION = 1.0  # Add the missing constant
         model = Actor(state_dim, action_dim, MAX_ACTION)
         
-        # Load weights
-        if isinstance(checkpoint, dict) and 'actor_state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['actor_state_dict'])
+        # Load weights - handle different checkpoint structures
+        if isinstance(checkpoint, dict):
+            if 'actor_critic_state_dict' in checkpoint:
+                # This is a PPO checkpoint with actor-critic
+                print(f"   ✅ Found PPO actor-critic checkpoint")
+                actor_critic_state = checkpoint['actor_critic_state_dict']
+                
+                # Extract just the actor weights from the actor-critic
+                actor_weights = {}
+                for key, value in actor_critic_state.items():
+                    if key.startswith('actor_mean.'):
+                        # Map actor_mean.weight -> actor_mean.weight
+                        actor_weights[key] = value
+                    elif key.startswith('shared_layer_1.'):
+                        # Map shared_layer_1.weight -> shared_layer_1.weight
+                        actor_weights[key] = value
+                    elif key.startswith('shared_layer_2.'):
+                        # Map shared_layer_2.weight -> shared_layer_2.weight
+                        actor_weights[key] = value
+                
+                print(f"   ✅ Extracted {len(actor_weights)} actor layers from actor-critic")
+                model.load_state_dict(actor_weights)
+                
+            elif 'actor_state_dict' in checkpoint:
+                # Direct actor checkpoint
+                model.load_state_dict(checkpoint['actor_state_dict'])
+            else:
+                # Assume direct weights
+                model.load_state_dict(checkpoint)
         else:
+            # Direct weights
             model.load_state_dict(checkpoint)
         
         # Set to evaluation mode
@@ -130,6 +170,18 @@ def test_pytorch_model(pth_path, state_dim, action_dim):
             if output.shape != (1, action_dim):
                 print(f"   ❌ Output shape mismatch: expected (1, {action_dim}), got {output.shape}")
                 return False
+            
+            # Analyze the 36D output structure
+            output_np = output.cpu().numpy()
+            print(f"   📊 36D Output breakdown:")
+            print(f"      - Mid angles (0-11): {output_np[0, 0:12]}")
+            print(f"      - Target angles (12-23): {output_np[0, 12:24]}")
+            print(f"      - Velocities (24-35): {output_np[0, 24:36]}")
+            
+            print(f"   📊 Output breakdown:")
+            print(f"      - Mid angles: indices 0-11 (12 values)")
+            print(f"      - Target angles: indices 12-23 (12 values)")
+            print(f"      - Velocities: indices 24-35 (12 values)")
         
         print(f"   ✅ PyTorch model test passed")
         return True
@@ -187,8 +239,8 @@ def test_openvino_model(xml_path):
                 print(f"   ❌ Input shape mismatch: expected (1, 19), got {input_shape}")
                 return False
                 
-            if output_shape != (1, 24):
-                print(f"   ❌ Output shape mismatch: expected (1, 24), got {output_shape}")
+            if output_shape != (1, 36):
+                print(f"   ❌ Output shape mismatch: expected (1, 36), got {output_shape}")
                 return False
                 
         except Exception as e:
@@ -245,6 +297,28 @@ def test_inference_pipeline(xml_path):
         # Run inference
         result = compiled_model([input_vec])
         print(f"   ✅ Inference successful!")
+        
+        # Extract the action output
+        if isinstance(result, dict):
+            action_output = list(result.values())[0]
+        elif isinstance(result, list):
+            action_output = result[0]
+        else:
+            action_output = result
+        
+        print(f"   📊 Action output shape: {action_output.shape}")
+        print(f"   📊 Action output range: [{action_output.min():.3f}, {action_output.max():.3f}]")
+        
+        # Analyze the 36D output structure
+        if hasattr(action_output, 'numpy'):
+            action_np = action_output.numpy()
+        else:
+            action_np = np.array(action_output)
+        
+        print(f"   📊 36D Output breakdown:")
+        print(f"      - Mid angles (0-11): {action_np[0, 0:12]}")
+        print(f"      - Target angles (12-23): {action_np[0, 12:24]}")
+        print(f"      - Velocities (24-35): {action_np[0, 24:36]}")
         
         # Just print the raw result to see what we're getting
         print(f"   📊 Raw result type: {type(result)}")

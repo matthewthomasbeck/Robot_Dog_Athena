@@ -27,6 +27,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from collections import deque
 import random
+import math
 
 
 
@@ -37,61 +38,98 @@ import random
 #############################################
 
 
-########## BLIND AGENT ##########
+########## PPO AGENT ##########
 
-##### actor class #####
+##### actor-critic network class #####
 
-class Actor(nn.Module):
+class ActorCritic(nn.Module):
     def __init__(self, state_dim, action_dim, max_action):
-        super(Actor, self).__init__()
-        self.layer_1 = nn.Linear(state_dim, 400)
-        self.layer_2 = nn.Linear(400, 300)
-        self.layer_3 = nn.Linear(300, action_dim)
+        super(ActorCritic, self).__init__()
+        
+        # Shared layers
+        self.shared_layer_1 = nn.Linear(state_dim, 400)
+        self.shared_layer_2 = nn.Linear(400, 300)
+        
+        # Actor head (policy) - outputs action means and log standard deviations
+        # For 36D actions: [mid_angles(12) + target_angles(12) + velocities(12) in rad/s]
+        self.actor_mean = nn.Linear(300, action_dim)
+        self.actor_logstd = nn.Parameter(torch.zeros(action_dim))  # Fixed log std for stability
+        
+        # Critic head (value function)
+        self.critic = nn.Linear(300, 1)
+        
         self.max_action = max_action
-
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        
+        # Initialize weights for better training stability
+        self._init_weights()
+    
+    def _init_weights(self):
+        """Initialize weights for better training stability"""
+        for module in self.modules():
+            if isinstance(module, nn.Linear):
+                nn.init.orthogonal_(module.weight, gain=math.sqrt(2))
+                nn.init.constant_(module.bias, 0)
+    
     def forward(self, state):
-        a = F.relu(self.layer_1(state))
-        a = F.relu(self.layer_2(a))
-        a = torch.tanh(self.layer_3(a)) * self.max_action
-        return a
+        # Shared layers
+        shared = F.relu(self.shared_layer_1(state))
+        shared = F.relu(self.shared_layer_2(shared))
+        
+        # Actor outputs
+        action_mean = torch.tanh(self.actor_mean(shared)) * self.max_action
+        action_logstd = self.actor_logstd.expand_as(action_mean)
+        
+        # Critic output
+        value = self.critic(shared)
+        
+        return action_mean, action_logstd, value
+    
+    def get_action_and_value(self, state, action=None):
+        """Get action distribution and optionally sample an action"""
+        action_mean, action_logstd, value = self.forward(state)
+        
+        # Create action distribution
+        action_std = torch.exp(action_logstd)
+        action_dist = torch.distributions.Normal(action_mean, action_std)
+        
+        if action is None:
+            # Sample action during training
+            action = action_dist.sample()
+        
+        # Calculate log probability
+        log_prob = action_dist.log_prob(action).sum(dim=-1, keepdim=True)
+        
+        # Calculate entropy for exploration
+        entropy = action_dist.entropy().sum(dim=-1, keepdim=True)
+        
+        return action, log_prob, entropy, value
+    
+    def get_value(self, state):
+        """Get value function estimate"""
+        _, _, value = self.forward(state)
+        return value
 
 
-##### critic class #####
+##### PPO algorithm class #####
 
-class Critic(nn.Module):
-    def __init__(self, state_dim, action_dim):
-        super(Critic, self).__init__()
-        self.layer_1 = nn.Linear(state_dim + action_dim, 400)
-        self.layer_2 = nn.Linear(400, 300)
-        self.layer_3 = nn.Linear(300, 1)
-
-    def forward(self, state, action):
-        state_action = torch.cat([state, action], 1)
-        q = F.relu(self.layer_1(state_action))
-        q = F.relu(self.layer_2(q))
-        q = self.layer_3(q)
-        return q
-
-
-##### TD3 algorithm class #####
-
-class TD3:
-    def __init__(self, state_dim, action_dim, max_action):
-        self.actor = Actor(state_dim, action_dim, max_action)
-        self.actor_target = Actor(state_dim, action_dim, max_action)
-        self.actor_target.load_state_dict(self.actor.state_dict())
-        self.actor_optimizer = optim.Adam(self.actor.parameters(), lr=3e-4)
-
-        self.critic_1 = Critic(state_dim, action_dim)
-        self.critic_1_target = Critic(state_dim, action_dim)
-        self.critic_1_target.load_state_dict(self.critic_1.state_dict())
-        self.critic_1_optimizer = optim.Adam(self.critic_1.parameters(), lr=3e-4)
-
-        self.critic_2 = Critic(state_dim, action_dim)
-        self.critic_2_target = Critic(state_dim, action_dim)
-        self.critic_2_target.load_state_dict(self.critic_2.state_dict())
-        self.critic_2_optimizer = optim.Adam(self.critic_2.parameters(), lr=3e-4)
-
+class PPO:
+    def __init__(self, state_dim, action_dim, max_action, lr=3e-4, gamma=0.99, gae_lambda=0.95, 
+                 clip_ratio=0.2, target_kl=0.01, train_pi_iters=80, train_v_iters=80, 
+                 target_entropy=0.01):
+        self.actor_critic = ActorCritic(state_dim, action_dim, max_action)
+        self.optimizer = optim.Adam(self.actor_critic.parameters(), lr=lr)
+        
+        # PPO hyperparameters
+        self.gamma = gamma
+        self.gae_lambda = gae_lambda
+        self.clip_ratio = clip_ratio
+        self.target_kl = target_kl
+        self.train_pi_iters = train_pi_iters
+        self.train_v_iters = train_v_iters
+        self.target_entropy = target_entropy
+        
         self.max_action = max_action
         self.state_dim = state_dim
         self.action_dim = action_dim
@@ -103,21 +141,20 @@ class TD3:
         """Validate that all model components have consistent dimensions."""
         # Test with dummy data to ensure shapes are correct
         dummy_state = torch.randn(1, self.state_dim)
-        dummy_action = torch.randn(1, self.action_dim)
         
-        # Test actor
-        actor_output = self.actor(dummy_state)
-        if actor_output.shape[1] != self.action_dim:
-            raise ValueError(f"Actor output dimension mismatch: expected {self.action_dim}, got {actor_output.shape[1]}")
+        # Test actor-critic
+        action_mean, action_logstd, value = self.actor_critic(dummy_state)
+        if action_mean.shape[1] != self.action_dim:
+            raise ValueError(f"Actor output dimension mismatch: expected {self.action_dim}, got {action_mean.shape[1]}")
+        if action_logstd.shape[1] != self.action_dim:
+            raise ValueError(f"Actor logstd dimension mismatch: expected {self.action_dim}, got {action_logstd.shape[1]}")
+        if value.shape[1] != 1:
+            raise ValueError(f"Critic output dimension mismatch: expected 1, got {value.shape[1]}")
         
-        # Test critic
-        critic_output = self.critic_1(dummy_state, dummy_action)
-        if critic_output.shape[1] != 1:
-            raise ValueError(f"Critic output dimension mismatch: expected 1, got {critic_output.shape[1]}")
-        
-        print(f"✅ TD3 Agent validated: State={self.state_dim}D, Action={self.action_dim}D")
+        print(f"✅ PPO Agent validated: State={self.state_dim}D, Action={self.action_dim}D")
 
-    def select_action(self, state):
+    def select_action(self, state, deterministic=False):
+        """Select action from policy - deterministic for deployment, stochastic for training"""
         # Ensure state is exactly the expected dimension
         if len(state) != self.state_dim:
             raise ValueError(f"State dimension mismatch: expected {self.state_dim}, got {len(state)}")
@@ -125,8 +162,14 @@ class TD3:
         # Convert to tensor with explicit shape to prevent dynamic shapes
         state = torch.FloatTensor(state).unsqueeze(0)  # Add batch dimension: (state_dim,) -> (1, state_dim)
         
-        # Get action from actor
-        action = self.actor(state)
+        with torch.no_grad():
+            if deterministic:
+                # For deployment: use mean action (no sampling)
+                action_mean, _, _ = self.actor_critic(state)
+                action = action_mean
+            else:
+                # For training: sample from distribution
+                action, _, _, _ = self.actor_critic.get_action_and_value(state)
         
         # Ensure action has exactly the expected shape
         if action.shape[1] != self.action_dim:
@@ -138,138 +181,86 @@ class TD3:
         # Return action with guaranteed shape: (action_dim,)
         return action_np[0, :]  # Remove batch dimension, keep action dimension
 
-    def train(self, replay_buffer, batch_size=100):
-        if len(replay_buffer) < batch_size:
-            return
+    def compute_gae(self, rewards, values, dones, next_value):
+        """Compute Generalized Advantage Estimation (GAE)"""
+        advantages = torch.zeros_like(rewards)
+        last_advantage = 0
+        last_value = next_value
+        
+        for t in reversed(range(len(rewards))):
+            if dones[t]:
+                delta = rewards[t] - values[t]
+                last_advantage = delta
+            else:
+                delta = rewards[t] + self.gamma * last_value - values[t]
+                last_advantage = delta + self.gamma * self.gae_lambda * last_advantage
+            
+            advantages[t] = last_advantage
+            last_value = values[t]
+        
+        returns = advantages + values
+        return advantages, returns
 
-        state, action, reward, next_state, done = replay_buffer.sample(batch_size)
-
-        # Validate tensor shapes to prevent dynamic shapes
-        if state.shape[1] != self.state_dim:
-            raise ValueError(f"Training state dimension mismatch: expected {self.state_dim}, got {state.shape[1]}")
-        if action.shape[1] != self.action_dim:
-            raise ValueError(f"Training action dimension mismatch: expected {self.action_dim}, got {action.shape[1]}")
+    def train(self, states, actions, old_log_probs, rewards, dones, next_value):
+        """Train PPO agent on collected episode data"""
+        # Convert to tensors with explicit shapes to prevent dynamic shapes
+        states = torch.FloatTensor(states)
+        actions = torch.FloatTensor(actions)
+        old_log_probs = torch.FloatTensor(old_log_probs)
+        rewards = torch.FloatTensor(rewards)
+        dones = torch.FloatTensor(dones)
         
-        # Convert to tensors with explicit shapes
-        state = torch.FloatTensor(state)
-        action = torch.FloatTensor(action)
+        # Validate tensor shapes
+        if states.shape[1] != self.state_dim:
+            raise ValueError(f"Training state dimension mismatch: expected {self.state_dim}, got {states.shape[1]}")
+        if actions.shape[1] != self.action_dim:
+            raise ValueError(f"Training action dimension mismatch: expected {self.action_dim}, got {actions.shape[1]}")
         
-        # Ensure reward has correct shape (batch_size, 1) without dynamic reshape
-        reward_tensor = torch.FloatTensor(reward)
-        if reward_tensor.ndim == 1:
-            reward_tensor = reward_tensor.unsqueeze(1)  # (batch_size,) -> (batch_size, 1)
-        reward = reward_tensor
-        
-        next_state = torch.FloatTensor(next_state)
-        
-        # Ensure done has correct shape (batch_size, 1) without dynamic reshape
-        done_tensor = torch.FloatTensor(done)
-        if done_tensor.ndim == 1:
-            done_tensor = done_tensor.unsqueeze(1)  # (batch_size,) -> (batch_size, 1)
-        done = done_tensor
-
-        # Critic update
+        # Compute advantages and returns
         with torch.no_grad():
-            noise = (torch.randn_like(action) * 0.2).clamp(-0.5, 0.5)
-            next_action = (self.actor_target(next_state) + noise).clamp(-self.max_action, self.max_action)
-            target_Q1 = self.critic_1_target(next_state, next_action)
-            target_Q2 = self.critic_2_target(next_state, next_action)
-            target_Q = torch.min(target_Q1, target_Q2)
-            target_Q = reward + (1 - done) * 0.99 * target_Q
-
-        current_Q1 = self.critic_1(state, action)
-        current_Q2 = self.critic_2(state, action)
-
-        critic_1_loss = F.mse_loss(current_Q1, target_Q)
-        critic_2_loss = F.mse_loss(current_Q2, target_Q)
-
-        self.critic_1_optimizer.zero_grad()
-        critic_1_loss.backward()
-        self.critic_1_optimizer.step()
-
-        self.critic_2_optimizer.zero_grad()
-        critic_2_loss.backward()
-        self.critic_2_optimizer.step()
-
-        # Actor update
-        actor_loss = -self.critic_1(state, self.actor(state)).mean()
-        self.actor_optimizer.zero_grad()
-        actor_loss.backward()
-        self.actor_optimizer.step()
-
-        # Target update
-        for param, target_param in zip(self.critic_1.parameters(), self.critic_1_target.parameters()):
-            target_param.data.copy_(0.005 * param.data + (1 - 0.005) * target_param.data)
-        for param, target_param in zip(self.critic_2.parameters(), self.critic_2_target.parameters()):
-            target_param.data.copy_(0.005 * param.data + (1 - 0.005) * target_param.data)
-        for param, target_param in zip(self.actor.parameters(), self.actor_target.parameters()):
-            target_param.data.copy_(0.005 * param.data + (1 - 0.005) * target_param.data)
-
-
-##### replay buffer class #####
-
-class ReplayBuffer:
-    def __init__(self, max_size=100000):
-        self.buffer = deque(maxlen=max_size)
-
-    def add(self, state, action, reward, next_state, done):
-        # Validate data shapes before adding to buffer to prevent dynamic shapes
-        if not isinstance(state, (list, np.ndarray)) or len(state) == 0:
-            raise ValueError(f"Invalid state: must be non-empty list/array, got {type(state)} with length {len(state) if hasattr(state, '__len__') else 'unknown'}")
+            values = self.actor_critic.get_value(states).squeeze(-1)
+            advantages, returns = self.compute_gae(rewards, values, dones, next_value)
+            advantages = (advantages - advantages.mean()) / (advantages.std() + 1e-8)
         
-        if not isinstance(action, (list, np.ndarray)) or len(action) == 0:
-            raise ValueError(f"Invalid action: must be non-empty list/array, got {type(action)} with length {len(action) if hasattr(action, '__len__') else 'unknown'}")
+        # Policy optimization
+        for _ in range(self.train_pi_iters):
+            _, log_probs, entropy, _ = self.actor_critic.get_action_and_value(states, actions)
+            
+            # PPO ratio
+            ratio = torch.exp(log_probs - old_log_probs)
+            clip_adv = torch.clamp(ratio, 1 - self.clip_ratio, 1 + self.clip_ratio) * advantages
+            
+            # Policy loss
+            policy_loss = -torch.min(ratio * advantages, clip_adv).mean()
+            
+            # Entropy bonus for exploration
+            entropy_loss = -entropy.mean()
+            
+            # Total loss
+            loss = policy_loss + 0.01 * entropy_loss
+            
+            self.optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.actor_critic.parameters(), 0.5)
+            self.optimizer.step()
+            
+            # Early stopping if KL divergence is too high
+            with torch.no_grad():
+                kl_div = (old_log_probs - log_probs).mean()
+                if kl_div > self.target_kl:
+                    break
         
-        if not isinstance(reward, (int, float, np.number)):
-            raise ValueError(f"Invalid reward: must be numeric, got {type(reward)}")
-        
-        if not isinstance(next_state, (list, np.ndarray)) or len(next_state) == 0:
-            raise ValueError(f"Invalid next_state: must be non-empty list/array, got {type(next_state)} with length {len(next_state) if hasattr(next_state, '__len__') else 'unknown'}")
-        
-        if not isinstance(done, (bool, int, np.bool_, np.integer)):
-            raise ValueError(f"Invalid done: must be boolean/integer, got {type(done)}")
-        
-        # Ensure consistent data types
-        state = np.array(state, dtype=np.float32)
-        action = np.array(action, dtype=np.float32)
-        reward = np.array([float(reward)], dtype=np.float32)  # Store as 1D array to prevent shape issues
-        next_state = np.array(next_state, dtype=np.float32)
-        done = np.array([bool(done)], dtype=np.float32)  # Store as 1D array to prevent shape issues
-        
-        self.buffer.append((state, action, reward, next_state, done))
-
-    def sample(self, batch_size):
-        batch = random.sample(self.buffer, batch_size)
-        state, action, reward, next_state, done = zip(*batch)
-        
-        # Convert to numpy arrays with explicit dtype and shape validation
-        # This prevents dynamic shapes and ragged arrays
-        state_array = np.array(state, dtype=np.float32)
-        action_array = np.array(action, dtype=np.float32)
-        reward_array = np.array(reward, dtype=np.float32)
-        next_state_array = np.array(next_state, dtype=np.float32)
-        done_array = np.array(done, dtype=np.float32)
-        
-        # Validate array shapes to prevent dynamic shapes
-        if state_array.ndim != 2 or state_array.shape[1] == 0:
-            raise ValueError(f"Invalid state array shape: {state_array.shape}")
-        if action_array.ndim != 2 or action_array.shape[1] == 0:
-            raise ValueError(f"Invalid action array shape: {action_array.shape}")
-        # Reward can be (batch_size,) or (batch_size, 1) - both are valid
-        if reward_array.ndim not in [1, 2] or reward_array.shape[0] == 0:
-            raise ValueError(f"Invalid reward array shape: {reward_array.shape}")
-        if next_state_array.ndim != 2 or next_state_array.shape[1] == 0:
-            raise ValueError(f"Invalid next_state array shape: {next_state_array.shape}")
-        # Done can be (batch_size,) or (batch_size, 1) - both are valid
-        if done_array.ndim not in [1, 2] or done_array.shape[0] == 0:
-            raise ValueError(f"Invalid done array shape: {done_array.shape}")
-        
-        return state_array, action_array, reward_array, next_state_array, done_array
-
-    def __len__(self):
-        return len(self.buffer)
+        # Value function optimization
+        for _ in range(self.train_v_iters):
+            value = self.actor_critic.get_value(states).squeeze(-1)
+            value_loss = F.mse_loss(value, returns)
+            
+            self.optimizer.zero_grad()
+            value_loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.actor_critic.parameters(), 0.5)
+            self.optimizer.step()
 
 
 ########## STANDARD AGENT ##########
 
-#TODO create a standard agent when the blind agent is complete
+#TODO create a standard agent when the PPO agent is complete

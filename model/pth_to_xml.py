@@ -19,16 +19,26 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 class Actor(torch.nn.Module):
     def __init__(self, state_dim, action_dim, max_action):
         super(Actor, self).__init__()
-        self.layer_1 = torch.nn.Linear(state_dim, 400)
-        self.layer_2 = torch.nn.Linear(400, 300)
-        self.layer_3 = torch.nn.Linear(300, action_dim)
+        # Shared layers
+        self.shared_layer_1 = torch.nn.Linear(state_dim, 400)
+        self.shared_layer_2 = torch.nn.Linear(400, 300)
+        
+        # Actor head (policy) - outputs action means
+        self.actor_mean = torch.nn.Linear(300, action_dim)
+        
         self.max_action = max_action
+        self.state_dim = state_dim
+        self.action_dim = action_dim
 
     def forward(self, state):
-        a = torch.nn.functional.relu(self.layer_1(state))
-        a = torch.nn.functional.relu(self.layer_2(a))
-        a = torch.tanh(self.layer_3(a)) * self.max_action
-        return a
+        # Shared layers
+        shared = torch.nn.functional.relu(self.shared_layer_1(state))
+        shared = torch.nn.functional.relu(self.shared_layer_2(shared))
+        
+        # Actor output
+        action_mean = torch.tanh(self.actor_mean(shared)) * self.max_action
+        
+        return action_mean
 
 def convert_pth_to_openvino():
     """Convert PyTorch model directly to OpenVINO IR format with static dimensions"""
@@ -38,7 +48,7 @@ def convert_pth_to_openvino():
     
     # Model configuration - FIXED DIMENSIONS
     STATE_DIM = 19  # Fixed: 12 joints + 6 commands + 1 intensity
-    ACTION_DIM = 24  # Fixed: 4 legs × 2 angles × 3 joints = 24
+    ACTION_DIM = 36  # Fixed: 12 mid angles + 12 target angles + 12 velocity values
     MAX_ACTION = 1.0
     
     # Paths
@@ -49,6 +59,9 @@ def convert_pth_to_openvino():
     print(f"📤 Output model: {xml_path}")
     print(f"🎯 State dimension: {STATE_DIM} (FIXED)")
     print(f"🎯 Action dimension: {ACTION_DIM} (FIXED)")
+    print(f"   - 12 mid angles")
+    print(f"   - 12 target angles") 
+    print(f"   - 12 velocity values")
     
     # Check if input file exists
     if not os.path.exists(pth_path):
@@ -74,11 +87,39 @@ def convert_pth_to_openvino():
         print(f"🏗️  Creating Actor model with FIXED dimensions...")
         model = Actor(STATE_DIM, ACTION_DIM, MAX_ACTION)
         
-        # Load weights
-        if isinstance(checkpoint, dict) and 'actor_state_dict' in checkpoint:
-            model.load_state_dict(checkpoint['actor_state_dict'])
-            print(f"✅ Loaded actor weights from checkpoint")
+        # Load weights - handle different checkpoint structures
+        if isinstance(checkpoint, dict):
+            if 'actor_critic_state_dict' in checkpoint:
+                # This is a PPO checkpoint with actor-critic
+                print(f"✅ Found PPO actor-critic checkpoint")
+                actor_critic_state = checkpoint['actor_critic_state_dict']
+                
+                # Extract just the actor weights from the actor-critic
+                actor_weights = {}
+                for key, value in actor_critic_state.items():
+                    if key.startswith('actor_mean.'):
+                        # Map actor_mean.weight -> actor_mean.weight
+                        actor_weights[key] = value
+                    elif key.startswith('shared_layer_1.'):
+                        # Map shared_layer_1.weight -> shared_layer_1.weight
+                        actor_weights[key] = value
+                    elif key.startswith('shared_layer_2.'):
+                        # Map shared_layer_2.weight -> shared_layer_2.weight
+                        actor_weights[key] = value
+                
+                print(f"✅ Extracted {len(actor_weights)} actor layers from actor-critic")
+                model.load_state_dict(actor_weights)
+                
+            elif 'actor_state_dict' in checkpoint:
+                # Direct actor checkpoint
+                model.load_state_dict(checkpoint['actor_state_dict'])
+                print(f"✅ Loaded actor weights from checkpoint")
+            else:
+                # Assume direct weights
+                model.load_state_dict(checkpoint)
+                print(f"✅ Loaded weights directly")
         else:
+            # Direct weights
             model.load_state_dict(checkpoint)
             print(f"✅ Loaded weights directly")
         
@@ -87,7 +128,7 @@ def convert_pth_to_openvino():
         
         # Create dummy input with FIXED shape
         print(f"🔧 Creating dummy input with FIXED shape...")
-        dummy_input = torch.randn(1, STATE_DIM)  # Fixed: (1, 21)
+        dummy_input = torch.randn(1, STATE_DIM)  # Fixed: (1, 19)
         
         # Test forward pass
         print(f"🧪 Testing forward pass...")
@@ -100,6 +141,11 @@ def convert_pth_to_openvino():
             if output.shape != (1, ACTION_DIM):
                 print(f"❌ Output shape mismatch: expected (1, {ACTION_DIM}), got {output.shape}")
                 return False
+            
+            print(f"   📊 Output breakdown:")
+            print(f"      - Mid angles: indices 0-11 (12 values)")
+            print(f"      - Target angles: indices 12-23 (12 values)")
+            print(f"      - Velocities: indices 24-35 (12 values)")
         
         # Convert to OpenVINO IR with EXPLICIT static shapes
         print(f"🔄 Converting to OpenVINO IR format with static shapes...")
@@ -183,6 +229,7 @@ def convert_pth_to_openvino():
                 output_shape = saved_model.output(0).shape
                 print(f"   📊 Input shape: {input_shape} (should be [1, {STATE_DIM}])")
                 print(f"   📊 Output shape: {output_shape} (should be [1, {ACTION_DIM}])")
+                print(f"      - Expected: 12 mid + 12 target + 12 velocity = 36 total")
                 
                 # Check if shapes are static by looking for dynamic symbols
                 input_is_static = all(dim != -1 and '?' not in str(dim) for dim in input_shape)

@@ -374,20 +374,23 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         logging.info(f"(inference.py): Extracted result array shape: {result_array.shape}\n")
         logging.info(f"(inference.py): Result array range: [{result_array.min():.3f}, {result_array.max():.3f}]\n")
         
-        # Convert action output from [-1, 1] range to actual joint angles - EXACTLY like training
-        result_reshaped = result_array.reshape(4, 2, 3)  # 4 legs, 2 angles per leg, 3 joints per leg
-        logging.info(f"(inference.py): Reshaped output: {result_reshaped.shape} (4 legs, 2 angles per leg, 3 joints per leg)\n")
+        # Process the flat 36D action vector - EXACTLY like training.py
+        # action[0:11] = mid angles (12 joints), action[12:23] = target angles (12 joints), action[24:35] = velocities (12 joints)
+        logging.info(f"(inference.py): Processing flat 36D action vector: {result_array.shape}\n")
         
         legs = ['FL', 'FR', 'BL', 'BR']
         joints = ['hip', 'upper', 'lower']
         
         target_angles = {}
         mid_angles = {}
+        movement_rates = {}  # Initialize movement_rates BEFORE the loop
         action_idx = 0
         
         for i, leg in enumerate(legs):
             target_angles[leg] = {}
             mid_angles[leg] = {}
+            movement_rates[leg] = {}
+            
             for j, joint in enumerate(joints):
                 # Get joint limits for denormalization - EXACTLY like training
                 servo_data = current_servo_config[leg][joint]
@@ -400,33 +403,38 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
                     min_angle, max_angle = max_angle, min_angle
                 
                 # Convert mid action (-1 to 1) to joint angle - EXACTLY like training
-                mid_action = result_reshaped[i, 0, j]  # First angle is mid angle
+                # action[0:11] = mid angles
+                mid_action = result_array[0, action_idx]  # Flat indexing like training.py
                 # Use EXACTLY the same formula as training
                 mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
                 mid_angle = np.clip(mid_angle, min_angle, max_angle)
                 mid_angles[leg][joint] = float(mid_angle)
                 
                 # Convert target action (-1 to 1) to joint angle - EXACTLY like training
-                target_action = result_reshaped[i, 1, j]  # Second angle is target angle
+                # action[12:23] = target angles
+                target_action = result_array[0, action_idx + 12]  # Flat indexing like training.py
                 # Use EXACTLY the same formula as training
                 target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
                 target_angle = np.clip(target_angle, min_angle, max_angle)
                 target_angles[leg][joint] = float(target_angle)
                 
-                action_idx += 1
+                # Convert velocity action (-1 to 1) to movement rate - EXACTLY like training
+                # action[24:35] = velocities
+                velocity_action = result_array[0, action_idx + 24]  # Flat indexing like training.py
                 
-                logging.debug(f"(inference.py): {leg}_{joint}: mid={mid_angles[leg][joint]:.3f} rad, target={target_angles[leg][joint]:.3f} rad\n")
+                # Convert from [-1, 1] to [0, 9.52] radians/second (same as training)
+                joint_speed = (velocity_action + 1.0) * 4.76  # Maps [-1,1] to [0,9.52]
+                joint_speed = np.clip(joint_speed, 0.0, 9.52)  # Ensure within valid range
+                
+                movement_rates[leg][joint] = float(joint_speed)
+                
+                logging.debug(f"(inference.py): {leg}_{joint}: mid={mid_angles[leg][joint]:.3f} rad, target={target_angles[leg][joint]:.3f} rad, velocity={movement_rates[leg][joint]:.3f} rad/s\n")
+                
+                action_idx += 1
         
         logging.info(f"(inference.py): Generated angles - Mid range: [{min([min(angles.values()) for angles in mid_angles.values()]):.3f}, {max([max(angles.values()) for angles in mid_angles.values()]):.3f}] rad\n")
         logging.info(f"(inference.py): Generated angles - Target range: [{min([min(angles.values()) for angles in target_angles.values()]):.3f}, {max([max(angles.values()) for angles in target_angles.values()]):.3f}] rad\n")
-        
-        # Add movement_rates to match expected return format
-        movement_rates = {
-            'FL': {'speed': 16383, 'acceleration': 255},
-            'FR': {'speed': 16383, 'acceleration': 255},
-            'BL': {'speed': 16383, 'acceleration': 255},
-            'BR': {'speed': 16383, 'acceleration': 255}
-        }
+        logging.info(f"(inference.py): Generated velocities - Range: [{min([min(vels.values()) for vels in movement_rates.values()]):.3f}, {max([max(vels.values()) for vels in movement_rates.values()]):.3f}] rad/s\n")
         
         logging.info(f"(inference.py): Gait adjustment inference completed successfully.\n")
         return target_angles, mid_angles, movement_rates

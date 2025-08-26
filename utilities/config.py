@@ -165,6 +165,7 @@ SERVO_CONFIG = { # dictionary of leg configurations
 ##### isaac sim paths #####
 
 ISAAC_ROBOT_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd"
+MODELS_DIRECTORY = "/home/matthewthomasbeck/Projects/Robot_Dog/model"
 
 ##### isaac sim objects #####
 

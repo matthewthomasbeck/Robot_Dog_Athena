@@ -105,3 +105,33 @@ def map_angle_to_servo_position(angle, joint_data): # map radian to pwm
     logging.debug(f"(servos.py): Angle range: {full_back_angle:.3f} to {full_front_angle:.3f} rad\n")
     
     return int(round(pwm)) # return calculated pulse width
+
+
+########## RADIAN TO SERVO SPEED ##########
+
+def map_radian_to_servo_speed(radian_speed):
+    """
+    Map radian velocity (0-9.52 rad/s) to servo speed (0-16383).
+    
+    Args:
+        radian_speed: Velocity in radians per second (0.0 to 9.52)
+    
+    Returns:
+        int: Servo speed value from 0 to 16383
+    """
+    logging.debug(f"(servos.py): Mapping radian speed {radian_speed} to servo speed...\n")
+    
+    # Clamp input to valid range
+    radian_speed = max(0.0, min(9.52, radian_speed))
+    
+    # Map 0-9.52 rad/s to 0-16383 servo speed
+    # Linear mapping: servo_speed = (radian_speed / 9.52) * 16383
+    servo_speed = (radian_speed / 9.52) * 16383
+    
+    # Convert to integer and clamp to valid range
+    servo_speed = int(round(servo_speed))
+    servo_speed = max(0, min(16383, servo_speed))
+    
+    logging.debug(f"(servos.py): Radian speed {radian_speed:.3f} rad/s -> Servo speed {servo_speed}\n")
+    
+    return servo_speed

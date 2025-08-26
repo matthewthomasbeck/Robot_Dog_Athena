@@ -60,10 +60,9 @@ def apply_joint_angles_isaac(target_angles, mid_angles, movement_rates):
     This function moves all joints to their target angles in a single ArticulationAction.
     
     Args:
-        current_servo_config: Current servo configuration with CURRENT_ANGLE values
         target_angles: Target joint angles for each leg (similar to SERVO_CONFIG structure)
         mid_angles: Mid joint angles for each leg (similar to SERVO_CONFIG structure)
-        movement_rates: Movement rate parameters for each leg
+        movement_rates: Individual joint velocities in rad/s for each joint (similar to SERVO_CONFIG structure)
     """
     try:
         joint_count = len(config.ISAAC_ROBOT.dof_names)
@@ -87,8 +86,8 @@ def apply_joint_angles_isaac(target_angles, mid_angles, movement_rates):
                 # Get mid angle from the AI agent's output
                 mid_angle = mid_angles[leg_id][joint_name]
                 
-                # Get velocity from movement_rates (already in rad/s, no scaling needed)
-                velocity = movement_rates[leg_id].get('speed')  # Already in rad/s
+                # Get individual joint velocity from movement_rates (now per-joint)
+                velocity = movement_rates[leg_id][joint_name]  # Individual joint velocity in rad/s
                 
                 joint_positions[joint_index] = mid_angle
                 joint_velocities[joint_index] = velocity
@@ -117,8 +116,8 @@ def apply_joint_angles_isaac(target_angles, mid_angles, movement_rates):
                 # Get target angle from the AI agent's output
                 target_angle = target_angles[leg_id][joint_name]
                 
-                # Get velocity from movement_rates (already in rad/s, no scaling needed)
-                velocity = movement_rates[leg_id].get('speed')  # Already in rad/s
+                # Get individual joint velocity from movement_rates (now per-joint)
+                velocity = movement_rates[leg_id][joint_name]  # Individual joint velocity in rad/s
                 
                 joint_positions[joint_index] = target_angle
                 joint_velocities[joint_index] = velocity

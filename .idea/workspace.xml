@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Got rid of stupid .pth file naming convention">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/td3_steps_100000_episode_1188_reward_-662.90.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,7 +42,7 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2mcFIiLVWB9RbUjveGQlndNtXOm" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+  <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -90,7 +90,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-91d3a02ef49d-43b77aa2d136-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.23654.177" />
+        <option value="bundled-js-predefined-d6986cc7102b-e03c56caf84a-JavaScript-PY-252.23892.515" />
+        <option value="bundled-python-sdk-7e47963ff851-f0eec537fc84-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.23892.515" />
       </set>
     </attachedChunks>
   </component>
@@ -206,6 +207,7 @@
       <workItem from="1755459303361" duration="664000" />
       <workItem from="1755463699218" duration="74000" />
       <workItem from="1755481988744" duration="664000" />
+      <workItem from="1755488510179" duration="243000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -346,30 +348,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00101" summary="Finally got a training loop going, added masses to urdf">
-      <option name="closed" value="true" />
-      <created>1754774521550</created>
-      <option name="number" value="00101" />
-      <option name="presentableId" value="LOCAL-00101" />
-      <option name="project" value="LOCAL" />
-      <updated>1754774521550</updated>
-    </task>
-    <task id="LOCAL-00102" summary="Saving checkpoint, going to see why velocity is giving me such massive problems in issac">
-      <option name="closed" value="true" />
-      <created>1754791823012</created>
-      <option name="number" value="00102" />
-      <option name="presentableId" value="LOCAL-00102" />
-      <option name="project" value="LOCAL" />
-      <updated>1754791823012</updated>
-    </task>
-    <task id="LOCAL-00103" summary="Cleaned up isaac_sim and made training.py for fresh slate">
-      <option name="closed" value="true" />
-      <created>1754876902038</created>
-      <option name="number" value="00103" />
-      <option name="presentableId" value="LOCAL-00103" />
-      <option name="project" value="LOCAL" />
-      <updated>1754876902038</updated>
     </task>
     <task id="LOCAL-00104" summary="Fixed broken indent">
       <option name="closed" value="true" />
@@ -579,7 +557,31 @@
       <option name="project" value="LOCAL" />
       <updated>1755484449828</updated>
     </task>
-    <option name="localTasksCounter" value="130" />
+    <task id="LOCAL-00130" summary="100k steps model">
+      <option name="closed" value="true" />
+      <created>1755488242935</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1755488242935</updated>
+    </task>
+    <task id="LOCAL-00131" summary="Adjusted config for isaac use">
+      <option name="closed" value="true" />
+      <created>1755488287160</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
+      <option name="project" value="LOCAL" />
+      <updated>1755488287160</updated>
+    </task>
+    <task id="LOCAL-00132" summary="Got rid of stupid .pth file naming convention">
+      <option name="closed" value="true" />
+      <created>1755488748305</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
+      <option name="project" value="LOCAL" />
+      <updated>1755488748305</updated>
+    </task>
+    <option name="localTasksCounter" value="133" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -597,9 +599,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed broken indent" />
-    <MESSAGE value="Fixed broken indent x2" />
-    <MESSAGE value="Fixed broken indent x3 THIS ONE WORKED" />
     <MESSAGE value="MODELS SAVED, EPISODE RESETS" />
     <MESSAGE value="Model validity created" />
     <MESSAGE value="Restructured training.py" />
@@ -622,7 +621,10 @@
     <MESSAGE value="Made commands structure human readable but also computer-consistent to avoid dynamic shapes" />
     <MESSAGE value="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me" />
     <MESSAGE value="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!" />
+    <MESSAGE value="100k steps model" />
+    <MESSAGE value="Adjusted config for isaac use" />
+    <MESSAGE value="Got rid of stupid .pth file naming convention" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got rid of stupid .pth file naming convention" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
