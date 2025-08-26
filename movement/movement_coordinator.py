@@ -253,24 +253,39 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     except Exception as e: # if either model fails...
         logging.error(f"(movement_coordinator.py): Failed to run AI for command: {e}\n")
 
-    ##### foce robot to slow down so the raspberry doesnt crash #####
+    ##### force robot to slow down so the raspberry doesnt crash #####
 
-    time.sleep(0.2625) # only allow inference to run at rate # was 0.175
+    time.sleep(0.175) # only allow inference to run at rate # was 0.175
 
 
 ########## THREAD LEG MOVEMENT ##########
 
-def thread_leg_movement(current_coordinates, target_coordinates, mid_coordinates, movement_rates):
-
+def thread_leg_movement(current_servo_config, mid_angles, target_angles, movement_rates):
+    """
+    Move all legs using threading to avoid blocking.
+    
+    Args:
+        current_servo_config: Current servo configuration with CURRENT_ANGLE values
+        mid_angles: Mid joint angles for each leg (dict with 'FL', 'FR', 'BL', 'BR' keys)
+        target_angles: Target joint angles for each leg (dict with 'FL', 'FR', 'BL', 'BR' keys)
+        movement_rates: Movement rates for each joint (dict with 'FL', 'FR', 'BL', 'BR' keys)
+    """
+    # Extract current angles from servo config
+    current_angles = {}
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        current_angles[leg_id] = {}
+        for joint_name in ['hip', 'upper', 'lower']:
+            current_angles[leg_id][joint_name] = current_servo_config[leg_id][joint_name]['CURRENT_ANGLE']
+    
     leg_threads = []  # create a list to hold threads for each leg
     for leg_id in ['FL', 'FR', 'BL', 'BR']:  # loop through each leg and create a thread to move
         t = threading.Thread(
             target=swing_leg,
             args=(
                 leg_id,
-                current_coordinates[leg_id],
-                mid_coordinates[leg_id],
-                target_coordinates[leg_id],
+                current_angles[leg_id],
+                mid_angles[leg_id],
+                target_angles[leg_id],
                 movement_rates[leg_id]
             )
         )

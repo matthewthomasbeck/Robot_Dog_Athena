@@ -770,10 +770,11 @@ def voltage_monitor():
 
 ########## RUN ROBOTIC PROCESS ##########
 
-# restart_thread = threading.Thread(target=restart_process, daemon=True)
-# restart_thread.start()
-# voltage_thread = threading.Thread(target=voltage_monitor, daemon=True)
-# voltage_thread.start()
+if not config.USE_SIMULATION:
+    restart_thread = threading.Thread(target=restart_process, daemon=True)
+    restart_thread.start()
+    # voltage_thread = threading.Thread(target=voltage_monitor, daemon=True)
+    # voltage_thread.start()
 
 if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:
     _physical_loop(CHANNEL_DATA)  # run robot process
