@@ -616,6 +616,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
+
+    <contact>
+      <lateral_friction value="0.7"/>
+      <rolling_friction value="0.01"/>
+      <spinning_friction value="0.01"/>
+    </contact>
   </link>
 
   <!--##### front-left-femur-servo #####-->
@@ -722,6 +728,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### front-left-pelvis-disc/pelvis joint #####-->
@@ -757,6 +769,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### front-left-femur-disc/femur joint #####-->
@@ -776,6 +794,12 @@
     <axis xyz="1 0 0"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="4.76"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### front-left-shin-shin/front-left-foot joint #####-->
@@ -955,6 +979,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
+
+    <contact>
+      <lateral_friction value="0.7"/>
+      <rolling_friction value="0.01"/>
+      <spinning_friction value="0.01"/>
+    </contact>
   </link>
 
   <!--##### front-right-femur-servo ######-->
@@ -1061,6 +1091,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### front-right-pelvis-disc/pelvis joint #####-->
@@ -1096,6 +1132,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### front-right-femur-disc/femur joint #####-->
@@ -1115,6 +1157,12 @@
     <axis xyz="-1 0 0"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="4.76"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### front-right-shin-shin/front-right-foot joint #####-->
@@ -1294,6 +1342,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
+
+    <contact>
+      <lateral_friction value="0.7"/>
+      <rolling_friction value="0.01"/>
+      <spinning_friction value="0.01"/>
+    </contact>
   </link>
 
   <!--##### back-left-femur-servo #####-->
@@ -1400,6 +1454,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### back-left-pelvis-disc/pelvis joint #####-->
@@ -1435,6 +1495,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### back-left-femur-disc/femur joint #####-->
@@ -1454,6 +1520,12 @@
     <axis xyz="1 0 0"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="4.76"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### back-left-shin-shin/back-left-foot joint #####-->
@@ -1633,6 +1705,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
     </inertial>
+
+    <contact>
+      <lateral_friction value="0.7"/>
+      <rolling_friction value="0.01"/>
+      <spinning_friction value="0.01"/>
+    </contact>
   </link>
 
   <!--##### back-right-femur-servo ######-->
@@ -1739,6 +1817,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### back-right-pelvis-disc/pelvis joint #####-->
@@ -1774,6 +1858,12 @@
     <axis xyz="0 0 1"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="9.52"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### back-right-femur-disc/femur joint #####-->
@@ -1793,6 +1883,12 @@
     <axis xyz="-1 0 0"/>
     <limit lower="-3.14159" upper="3.14159" effort="4.4" velocity="4.76"/>
     <dynamics friction="0.1" damping="0.005"/>
+    <drive>
+      <stiffness value="50.0"/>         <!-- Make it responsive to commands -->
+      <damping value="5.0"/>            <!-- Make it stable when moving -->
+      <max_force value="4.4"/>          <!-- Use your full torque -->
+      <max_velocity value="9.52"/>      <!-- Use your full speed -->
+    </drive>
   </joint>
 
   <!--##### back-right-shin-shin/back-right-foot joint #####-->

@@ -136,8 +136,8 @@ def _reward_balance(current_balance): # function to reward balance
     perfect_balance = 0.0
     terrible_balance = 90.0
     total_range = perfect_balance - terrible_balance
-    balance_reward_magnitude = 0.25
-    balance_penalty_magnitude = 4.0
+    balance_reward_magnitude = 1.0
+    balance_penalty_magnitude = 1.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
@@ -187,8 +187,8 @@ def _reward_height(current_height): # function to reward height
     perfect_height = 0.129
     terrible_height = 0.043
     total_range = perfect_height - terrible_height
-    height_reward_magnitude = 0.25
-    height_penalty_magnitude = 4.0
+    height_reward_magnitude = 1.0
+    height_penalty_magnitude = 1.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
@@ -272,8 +272,8 @@ def _reward_rotation_direction(specific_rotation_command, actual_rotation, rotat
     perfect_rotation = 30.0
     terrible_rotation = 0.0
     total_range = perfect_rotation - terrible_rotation
-    rotation_direction_reward_magnitude = 2.0
-    rotation_direction_penalty_magnitude = 2.0
+    rotation_direction_reward_magnitude = 1.0
+    rotation_direction_penalty_magnitude = 1.0
     perfect_percentile = 25
     quick_percentile = 50
     acceptable_percentile = 75
@@ -339,8 +339,8 @@ def _reward_rotation_stability(rotation_magnitude): # function to reward no rota
     perfect_rotation = 0.0
     terrible_rotation = 30.0
     total_range = perfect_rotation - terrible_rotation
-    rotation_stability_reward_magnitude = 2.0
-    rotation_stability_penalty_magnitude = 2.0
+    rotation_stability_reward_magnitude = 1.0
+    rotation_stability_penalty_magnitude = 1.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
@@ -455,8 +455,8 @@ def _reward_movement_direction(command, total_displacement, intensity, multidire
     terrible_movement = 0.0
     acceptable_drift = 0.05 # 5cm of drift allowed
     total_range = perfect_movement - terrible_movement
-    movement_reward_magnitude = 2.0
-    movement_penalty_magnitude = 2.0
+    movement_reward_magnitude = 1.0
+    movement_penalty_magnitude = 1.0
     perfect_percentile = 25
     good_percentile = 50
     acceptable_percentile = 75
@@ -509,8 +509,8 @@ def _reward_movement_stillness(total_displacement): # function to reward stillne
     perfect_movement = 0.0
     terrible_movement = 0.1 # 10cm of movement
     total_range = terrible_movement - perfect_movement
-    movement_stillness_reward_magnitude = 2.0
-    movement_stillness_penalty_magnitude = 2.0
+    movement_stillness_reward_magnitude = 1.0
+    movement_stillness_penalty_magnitude = 1.0
     perfect_percentile = 10
     good_percentile = 20
     bad_percentile = 50
