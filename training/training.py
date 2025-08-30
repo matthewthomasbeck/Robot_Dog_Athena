@@ -149,7 +149,7 @@ def integrate_with_main_loop():
         from training.training import integrate_with_main_loop
         integrate_with_main_loop()
     """
-    global episode_counter, total_steps
+    global total_steps
 
     import utilities.config as config
 
@@ -167,7 +167,7 @@ def integrate_with_main_loop():
     if check_and_reset_episode_if_needed():
         # Episode was reset, log the event
         import logging
-        logging.info(f"(training.py): Episode {episode_counter} reset in main loop integration\n")
+        logging.info(f"(training.py): Episode reset in main loop integration\n")
         return True
 
     return False
@@ -191,7 +191,7 @@ def get_rl_action_blind(current_angles, commands, intensity):
     NOTE: This function runs in worker threads, so it CANNOT call Isaac Sim reset functions.
     It only signals that a reset is needed - the main thread handles actual resets.
     """
-    global ppo_policy, episode_reward, episode_counter
+    global ppo_policy, episode_reward
     global episode_states, episode_actions, episode_rewards, episode_values, episode_log_probs, episode_dones
     global total_steps
 
@@ -209,14 +209,14 @@ def get_rl_action_blind(current_angles, commands, intensity):
 
     if rewards.EPISODE_STEP >= config.TRAINING_CONFIG['max_steps_per_episode']:
         episode_needs_reset = True
-        print(f"Episode {episode_counter} completed after {rewards.EPISODE_STEP} steps! (signaling main thread)")
+        print(f"Episode completed after {rewards.EPISODE_STEP} steps! (signaling main thread)")
 
     # Store reset signal for main thread to check
     config.EPISODE_NEEDS_RESET = episode_needs_reset
 
     # Log episode progress every 100 steps
     if rewards.EPISODE_STEP % 100 == 0:
-        print(f"Episode {episode_counter}, Step {rewards.EPISODE_STEP}, Total Steps: {total_steps}")
+        print(f"Step {rewards.EPISODE_STEP}, Total Steps: {total_steps}")
     
     # Track orientation every 50 steps to understand robot facing direction
     if rewards.EPISODE_STEP % 50 == 0:
@@ -365,8 +365,8 @@ def get_rl_action_blind(current_angles, commands, intensity):
         # Save model periodically based on total steps
         if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None:
             save_model(
-                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
-            print(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}")
+                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_reward_{episode_reward:.2f}.pth")
+            print(f"💾 Model saved: steps_{total_steps}")
 
     # Update tracking variables
     episode_states.append(state) # Append current state for the next step
@@ -466,31 +466,19 @@ def start_episode():
 ##### end episode #####
 
 def end_episode():
-    """End current episode and save progress"""
-    global episode_counter, episode_reward, episode_scores, average_score
-
-    logging.debug(f"🎯 Episode {episode_counter} ended:")
-    logging.debug(f"   📊 Steps: {rewards.EPISODE_STEP}")
-    logging.debug(f"   📊 Final Reward: {episode_reward:.3f}\n")
-
+    """End current episode - just track progress, don't save models"""
+    global episode_reward, episode_scores, average_score
+    
     # Track episode scores for average calculation
     episode_scores.append(episode_reward)
-    if len(episode_scores) > 100:  # Keep only last 100 episodes for recent average
+    if len(episode_scores) > 100:
         episode_scores.pop(0)
     
     # Calculate running average
     average_score = sum(episode_scores) / len(episode_scores)
     logging.info(f"   📊 Average Score (last {len(episode_scores)} episodes): {average_score:.3f}\n")
 
-    # Save model periodically based on total steps (only if PPO policy is initialized)
-    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None:
-        save_model(
-            f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_episode_{episode_counter}_avg_{average_score:.2f}.pth")
-        logging.info(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}, avg_score_{average_score:.2f}\n")
-    elif ppo_policy is None:
-        logging.warning(f"⚠️  Warning: PPO policy not initialized yet, skipping model save for episode {episode_counter}\n")
-    else:
-        logging.warning(f"📝 Episode {episode_counter} completed but not at save frequency ({config.TRAINING_CONFIG['save_frequency']} steps)\n")
+    # TODO difference here- no longer save model at end of episode
 
 
 ##### check/reset episode #####
@@ -503,7 +491,7 @@ def check_and_reset_episode_if_needed():  # TODO compare with reset_episode()
     Returns:
         bool: True if episode was reset, False otherwise
     """
-    global episode_counter, episode_reward
+    global episode_reward
 
     import utilities.config as config
 
@@ -516,13 +504,12 @@ def check_and_reset_episode_if_needed():  # TODO compare with reset_episode()
 
     # Check if episode has reached max steps
     if rewards.EPISODE_STEP >= config.TRAINING_CONFIG['max_steps_per_episode']:
-        logging.debug(f"🎯 Episode {episode_counter} completed after {rewards.EPISODE_STEP} steps.\n")
+        logging.debug(f"🎯 Episode completed after {rewards.EPISODE_STEP} steps.\n")
         # Save model before resetting
         end_episode()
-        
-        # Monitor learning progress before resetting
-        monitor_learning_progress()
-        
+
+        # TODO difference here- no longer monitor learning progress
+
         reset_episode()
         return True
 
@@ -536,11 +523,11 @@ def reset_episode():
     Reset the current episode by resetting Isaac Sim world and moving robot to neutral position.
     This is the critical function that was working in working_robot_reset.py
     """
-    global episode_reward, episode_states, episode_actions, episode_counter, total_steps
+    global episode_reward, episode_states, episode_actions, total_steps, episode_counter
 
     try:
         logging.info(
-            f"(training.py): Episode {episode_counter} ending - Episode complete, resetting Isaac Sim world.\n")
+            f"(training.py): Episode ending - Episode complete, resetting Isaac Sim world.\n")
 
         # CRITICAL: Save the model before resetting (if episode had any progress)
         if rewards.EPISODE_STEP > 0:
@@ -577,18 +564,9 @@ def reset_episode():
         # COMPLETELY GUTTED - No more movement tracking reset
         # You now control movement tracking through your reward function
 
-        # Increment episode counter
         episode_counter += 1
 
-        logging.info(f"(training.py): Episode {episode_counter} reset complete - World and robot state reset.\n")
-
-        # Log learning progress every 10 episodes
-        if episode_counter % 10 == 0:
-            logging.debug(f"🎯 Training Progress: {episode_counter} episodes completed.\n")
-            if episode_states: # Check if episode_states is not empty
-                logging.debug(f"   📊 Episode data size: {len(episode_states)}\n")
-            if ppo_policy is not None:
-                logging.debug(f"   🧠 PPO policy ready for training.\n")
+        logging.info(f"(training.py): Episode reset complete - World and robot state reset.\n")
 
     except Exception as e:
         logging.error(f"(training.py): Failed to reset episode: {e}\n")
@@ -607,18 +585,16 @@ def save_model(filepath):
     if ppo_policy:
 
         logging.info(f"💾 Saving PPO model to: {filepath}")
-        logging.info(f"   📊 Current episode: {episode_counter}")
         logging.info(f"   📊 Current step: {rewards.EPISODE_STEP}")
         logging.info(f"   📊 Total steps: {total_steps}")
         logging.info(f"   📊 Episode reward: {episode_reward:.4f}\n")
 
-        # Create the checkpoint data
+        # TODO difference here- no longer save episode counter in the checkpoint
         checkpoint = {
             'actor_critic_state_dict': ppo_policy.actor_critic.state_dict(),
             'optimizer_state_dict': ppo_policy.optimizer.state_dict(),
-            'episode_counter': episode_counter,
             'total_steps': total_steps,
-            'episode_reward': episode_reward,
+            'episode_reward': episode_reward
         }
 
         # Verify checkpoint data before saving
@@ -660,69 +636,18 @@ def load_model(filepath):
         ppo_policy.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
         # Restore training state
-        episode_counter = checkpoint.get('episode_counter', 0)
+        episode_counter = 0
         total_steps = checkpoint.get('total_steps', 0)
         episode_reward = checkpoint.get('episode_reward', 0.0)
 
         logging.info(f"Model loaded from: {filepath}")
-        logging.info(f"  - Episode: {episode_counter}")
         logging.info(f"  - Total steps: {total_steps}")
         logging.info(f"  - Episode reward: {episode_reward:.4f}\n")
         return True
     return False
 
-##### monitor learning progress #####
 
-def monitor_learning_progress():
-    """
-    Monitor the agent's learning progress and detect potential issues.
-    This helps identify if the agent is stuck in a loop of falling behaviors.
-    """
-    global episode_counter, episode_reward, episode_states
-    
-    if not episode_states:
-        return
-    
-    # Calculate average reward over last few episodes
-    recent_rewards = []
-    if hasattr(monitor_learning_progress, 'episode_rewards'):
-        recent_rewards = monitor_learning_progress.episode_rewards[-5:]  # Last 5 episodes
-    
-    # Store current episode reward
-    if not hasattr(monitor_learning_progress, 'episode_rewards'):
-        monitor_learning_progress.episode_rewards = []
-    
-    monitor_learning_progress.episode_rewards.append(episode_reward)
-    
-    # Keep only last 20 episodes
-    if len(monitor_learning_progress.episode_rewards) > 20:
-        monitor_learning_progress.episode_rewards.pop(0)
-    
-    # Analyze learning progress
-    if len(recent_rewards) >= 3:
-        avg_reward = sum(recent_rewards) / len(recent_rewards)
-        min_reward = min(recent_rewards)
-        
-        logging.info(f"📊 Learning Progress Analysis:")
-        logging.info(f"   🎯 Recent episodes: {len(recent_rewards)}")
-        logging.info(f"   📈 Average reward: {avg_reward:.3f}")
-        logging.info(f"   📉 Worst reward: {min_reward:.3f}")
-        logging.info(f"   🧠 PPO policy: Ready for training.\n")
-        
-        # COMPLETELY GUTTED - No more automatic fall loop detection
-        # You now control what constitutes problematic behavior through your reward system
-        
-        # Detect if agent is improving
-        if len(monitor_learning_progress.episode_rewards) >= 10:
-            first_half = monitor_learning_progress.episode_rewards[:10]
-            second_half = monitor_learning_progress.episode_rewards[-10:]
-            first_avg = sum(first_half) / len(first_half)
-            second_avg = sum(second_half) / len(second_half)
-            
-            if second_avg > first_avg:
-                logging.info(f"✅ Agent is improving! First 10: {first_avg:.3f}, Last 10: {second_avg:.3f}\n")
-            else:
-                logging.info(f"❌ Agent not improving. First 10: {first_avg:.3f}, Last 10: {second_avg:.3f}\n")
+# TODO difference here- monitor learning progress function deleted
 
 
 ########## RANDOM COMMANDS AND INTENSITIES ##########
@@ -742,13 +667,13 @@ def get_random_command(phase=1): # returns semirandom, realistic command combina
         # Simple transition weights for phase 1
         command_weights = {
             'w': {
-                'w': 0.6, 'arrowleft': 0.2, 'arrowright': 0.2
+                'w': 0.9, 'arrowleft': 0.05, 'arrowright': 0.05
             },
             'arrowleft': {
-                'w': 0.4, 'arrowleft': 0.4, 'arrowright': 0.2
+                'w': 0.05, 'arrowleft': 0.9, 'arrowright': 0.05
             },
             'arrowright': {
-                'w': 0.4, 'arrowleft': 0.2, 'arrowright': 0.4
+                'w': 0.05, 'arrowleft': 0.05, 'arrowright': 0.9
             }
         }
     

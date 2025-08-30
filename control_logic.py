@@ -143,7 +143,7 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
     except Exception as e:  # if robot cant be moved...
         logging.error(f"(control_logic.py): Failed to move robot up: {e}\n")
 
-    ##### render isaac sim #####
+    ##### make isaac robots #####
 
     for _ in range(3):  # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
@@ -319,6 +319,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
                 CAMERA_PROCESS
             )
+            #inference_frame = None # not going to worry about making cameras for
 
             ##### get command #####
 
@@ -332,6 +333,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 # Set training phase here (1, 2, or 3)
                 training_phase = 1  # Start with phase 1 for basic movement
                 command = get_random_command(phase=training_phase)
+                print(f"🎮 COMMAND: {command}")
 
             # Check RL command queue for Isaac Sim
             if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
