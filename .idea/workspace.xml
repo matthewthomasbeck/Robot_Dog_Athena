@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Been a while, really hope this doesnt break anything on physical bot">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Going to resume training, hopefully things go better but I doubt they will :l" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -210,6 +205,7 @@
       <workItem from="1755481988744" duration="664000" />
       <workItem from="1755488510179" duration="243000" />
       <workItem from="1756266694009" duration="1000" />
+      <workItem from="1756266699504" duration="51000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -350,14 +346,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00104" summary="Fixed broken indent">
-      <option name="closed" value="true" />
-      <created>1754968485572</created>
-      <option name="number" value="00104" />
-      <option name="presentableId" value="LOCAL-00104" />
-      <option name="project" value="LOCAL" />
-      <updated>1754968485572</updated>
     </task>
     <task id="LOCAL-00105" summary="Fixed broken indent x2">
       <option name="closed" value="true" />
@@ -583,7 +571,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755488748305</updated>
     </task>
-    <option name="localTasksCounter" value="133" />
+    <task id="LOCAL-00133" summary="Going to resume training, hopefully things go better but I doubt they will :l">
+      <option name="closed" value="true" />
+      <created>1756266730353</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
+      <option name="project" value="LOCAL" />
+      <updated>1756266730353</updated>
+    </task>
+    <option name="localTasksCounter" value="134" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -601,7 +597,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="MODELS SAVED, EPISODE RESETS" />
     <MESSAGE value="Model validity created" />
     <MESSAGE value="Restructured training.py" />
     <MESSAGE value="Cleaned up control_logic and training" />
@@ -626,7 +621,8 @@
     <MESSAGE value="100k steps model" />
     <MESSAGE value="Adjusted config for isaac use" />
     <MESSAGE value="Got rid of stupid .pth file naming convention" />
-    <option name="LAST_COMMIT_MESSAGE" value="Got rid of stupid .pth file naming convention" />
+    <MESSAGE value="Going to resume training, hopefully things go better but I doubt they will :l" />
+    <option name="LAST_COMMIT_MESSAGE" value="Going to resume training, hopefully things go better but I doubt they will :l" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
