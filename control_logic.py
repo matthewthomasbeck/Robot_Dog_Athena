@@ -90,6 +90,7 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
     import sys
     import carb
     import numpy
+    import copy
 
     # IMPORTANT 'SimulationApp' MUST be imported and made before any other isaac utilization of any kind!!!
     from isaacsim.simulation_app import SimulationApp
@@ -97,69 +98,98 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
     from isaacsim.core.api import World
     from isaacsim.core.prims import Articulation
     from isaacsim.core.utils.stage import add_reference_to_stage, get_stage_units
-    # from training.isaac_sim import build_isaac_joint_index_map
+    from isaacsim.core.api.controllers.articulation_controller import ArticulationController
+    from training.isaac_sim import build_isaac_joint_index_map
+    from utilities.camera import initialize_camera
 
     ##### build simulated world #####
 
     config.ISAAC_WORLD = World(stage_units_in_meters=1.0)  # create a new world
     config.ISAAC_WORLD.scene.add_default_ground_plane()  # add a ground plane
-    add_reference_to_stage(config.ISAAC_ROBOT_PATH, "/World/robot_dog")  # add robot to world
 
-    try:  # try to move robot up 14cm to avoid clipping
+    ##### spawn multiple robots for parallel training #####
 
-        ##### import necessary libraries #####
+    logging.info(f"(control_logic.py): Spawning {config.MULTI_ROBOT_CONFIG['num_robots']} robots for parallel training...\n")
 
-        import omni.usd
-        from pxr import UsdGeom, Gf
-
-        ##### get stage and move robot #####
-
-        stage = omni.usd.get_context().get_stage()
-        robot_prim = stage.GetPrimAtPath("/World/robot_dog")
-
-        if robot_prim:  # if robot prim is found...
-            xform = UsdGeom.Xformable(robot_prim)
-            if xform:  # if xform is found...
-                xform_ops = xform.GetOrderedXformOps()
-                translate_op = None  # initialize translate operation
-                for op in xform_ops:  # for each operation...
-                    if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:  # if operation is a translate operation...
-                        translate_op = op  # set translate operation
-                        break
-
-                if translate_op:  # if translate operation is found...
-                    current_translate = translate_op.Get()  # get current translate value
-                    new_translate = Gf.Vec3d(current_translate[0], current_translate[1],
-                                             current_translate[2] + 0.14)  # add 14cm to z
-                    translate_op.Set(new_translate)  # set new translate value
-                    logging.info(f"(control_logic.py): Robot moved up 14cm.\n")
+    for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
+        try:
+            # Create unique path for each robot
+            robot_path = f"/World/robot_dog_{robot_id}"
+            
+            # Add robot to world at specified position
+            add_reference_to_stage(config.ISAAC_ROBOT_PATH, robot_path)
+            
+            # Move robot to its designated position
+            import omni.usd
+            from pxr import UsdGeom, Gf
+            
+            stage = omni.usd.get_context().get_stage()
+            robot_prim = stage.GetPrimAtPath(robot_path)
+            
+            if robot_prim:
+                xform = UsdGeom.Xformable(robot_prim)
+                if xform:
+                    xform_ops = xform.GetOrderedXformOps()
+                    translate_op = None
+                    for op in xform_ops:
+                        if op.GetOpType() == UsdGeom.XformOp.TypeTranslate:
+                            translate_op = op
+                            break
+                    
+                    if translate_op:
+                        # Get position from config
+                        pos = config.MULTI_ROBOT_CONFIG['robot_positions'][robot_id]
+                        translate_op.Set(Gf.Vec3d(pos[0], pos[1], pos[2]))
+                        logging.info(f"(control_logic.py): Robot {robot_id} positioned at {pos}\n")
+                    else:
+                        logging.warning(f"(control_logic.py): No translate operation found on robot {robot_id} prim.\n")
                 else:
-                    logging.warning("(control_logic.py): No translate operation found on robot prim.\n")
+                    logging.warning(f"(control_logic.py): Robot {robot_id} prim found but not Xformable.\n")
             else:
-                logging.warning("(control_logic.py): Robot prim found but not Xformable.\n")
-        else:
-            logging.warning("(control_logic.py): Robot prim not found at /World/robot_dog.\n")
+                logging.warning(f"(control_logic.py): Robot {robot_id} prim not found at {robot_path}.\n")
+                
+        except Exception as e:
+            logging.error(f"(control_logic.py): Failed to spawn robot {robot_id}: {e}\n")
 
-    except Exception as e:  # if robot cant be moved...
-        logging.error(f"(control_logic.py): Failed to move robot up: {e}\n")
-
-    ##### make isaac robots #####
+    ##### let isaac sim load and create robot objects #####
 
     for _ in range(3):  # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
-    config.ISAAC_ROBOT = Articulation(prim_paths_expr="/World/robot_dog", name="robot_dog")  # create robot articulation
-    config.ISAAC_WORLD.scene.add(config.ISAAC_ROBOT)  # add robot to world
+
+    ##### create robot articulations and controllers #####
+
+    for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
+        try:
+            robot_path = f"/World/robot_dog_{robot_id}"
+            robot_name = f"robot_dog_{robot_id}"
+            
+            # Create robot articulation
+            robot = Articulation(prim_paths_expr=robot_path, name=robot_name)
+            config.ISAAC_WORLD.scene.add(robot)
+            config.ISAAC_ROBOTS.append(robot)
+            
+            # Create deep copy of SERVO_CONFIG for this robot
+            robot_servo_config = copy.deepcopy(config.SERVO_CONFIG)
+            config.SERVO_CONFIGS.append(robot_servo_config)
+            
+            # Initialize camera process for this robot
+            camera_process = initialize_camera()
+            config.CAMERA_PROCESSES.append(camera_process)
+            
+            logging.info(f"(control_logic.py): Robot {robot_id} initialized successfully.\n")
+            
+        except Exception as e:
+            logging.error(f"(control_logic.py): Failed to initialize robot {robot_id}: {e}\n")
+
+    ##### reset world and log success #####
+
     config.ISAAC_WORLD.reset()
-    logging.info("(control_logic.py): Robot added to Isaac Sim scene.\n")
-    # config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
-    # logging.info(f"(control_logic.py) Isaac Sim initialized using SERVO_CONFIG for joint mapping. Joint map: {config.JOINT_INDEX_MAP}\n")
-
-    ##### initialize isaac sim camera #####
-
-    from utilities.camera import initialize_camera  # import to start camera logic
-    CAMERA_PROCESS = initialize_camera()  # create camera process
-    if CAMERA_PROCESS is None:
-        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for isaac sim!\n")
+    
+    # Give Isaac Sim a few more steps to ensure robots are fully initialized
+    for _ in range(5):
+        config.ISAAC_WORLD.step(render=True)
+    
+    logging.info(f"(control_logic.py): Successfully spawned {len(config.ISAAC_ROBOTS)} robots for parallel training.\n")
 
     ##### initialize isaac sim command queue #####
 
@@ -300,8 +330,17 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
     for _ in range(3):  # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
 
-    try:  # try to run robot startup sequence
-        neutral_position(1)
+    try:  # try to run robot startup sequence for all robots
+        # Move all robots to neutral position
+        for robot_id in range(len(config.ISAAC_ROBOTS)):
+            try:
+                # Import neutral position function for Isaac Sim
+                from movement.isaac_joints import neutral_position_isaac_multi
+                neutral_position_isaac_multi(robot_id)
+                logging.info(f"(control_logic.py): Robot {robot_id} moved to neutral position.\n")
+            except Exception as e:
+                logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral position: {e}\n")
+        
         time.sleep(3)
         IS_NEUTRAL = True  # set is_neutral to True
 
@@ -316,10 +355,16 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             ##### decode frame #####
 
-            mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
-                CAMERA_PROCESS
-            )
+            # Skip camera frame decoding for now since cameras aren't working properly
+            # but keep camera objects for orientation tracking
+            # mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
+            #     CAMERA_PROCESS
+            # )
             #inference_frame = None # not going to worry about making cameras for
+            
+            # Set inference_frame to None for now to avoid camera errors
+            # TODO: Fix camera frame collection when orientation tracking is needed
+            inference_frame = None
 
             ##### get command #####
 
@@ -566,12 +611,30 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
 
     # neutral and special actions
     if 'n' in keys or not keys:
-        neutral_position(10)
+        if config.USE_SIMULATION:
+            # For Isaac Sim, move all robots to neutral position
+            from movement.movement_coordinator import neutral_position_multi
+            for robot_id in range(len(config.ISAAC_ROBOTS)):
+                try:
+                    neutral_position_multi(10, robot_id)
+                except Exception as e:
+                    logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral: {e}\n")
+        else:
+            neutral_position(10)
         is_neutral = True
     elif direction:
         # logging.debug(f"(control_logic.py): {keys}: {direction}\n")
         # Use trot_forward for all modes (now supports Isaac Sim queue system)
-        move_direction(direction, frame, intensity, IMAGELESS_GAIT)
+        if config.USE_SIMULATION:
+            # For Isaac Sim, execute the same command on all robots
+            from movement.movement_coordinator import move_direction_multi
+            for robot_id in range(len(config.ISAAC_ROBOTS)):
+                try:
+                    move_direction_multi(direction, frame, intensity, IMAGELESS_GAIT, robot_id)
+                except Exception as e:
+                    logging.error(f"(control_logic.py): Failed to execute command on robot {robot_id}: {e}\n")
+        else:
+            move_direction(direction, frame, intensity, IMAGELESS_GAIT)
         # calibrate_joints_isaac()
         is_neutral = False
     else:
@@ -595,7 +658,16 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
 
     if not active_commands:
         logging.info(f"(control_logic.py): All channels neutral, returning to neutral position.\n")
-        neutral_position(10)
+        if config.USE_SIMULATION:
+            # For Isaac Sim, move all robots to neutral position
+            from movement.movement_coordinator import neutral_position_multi
+            for robot_id in range(len(config.ISAAC_ROBOTS)):
+                try:
+                    neutral_position_multi(10, robot_id)
+                except Exception as e:
+                    logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral: {e}\n")
+        else:
+            neutral_position(10)
         is_neutral = True
         return is_neutral, current_leg
 
@@ -717,17 +789,35 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
         if special_actions:
             logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
         # move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
-        move_direction(direction, frame, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
+        if config.USE_SIMULATION:
+            # For Isaac Sim, execute the same command on all robots
+            from movement.movement_coordinator import move_direction_multi
+            for robot_id in range(len(config.ISAAC_ROBOTS)):
+                try:
+                    move_direction_multi(direction, frame, 10, IMAGELESS_GAIT, robot_id)
+                except Exception as e:
+                    logging.error(f"(control_logic.py): Failed to execute radio command on robot {robot_id}: {e}\n")
+        else:
+            move_direction(direction, frame, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
         is_neutral = False
     elif special_actions:
         # only special actions, no movement
         logging.debug(f"(control_logic.py): Special actions only: ({special_actions})\n")
         # handle special actions here
         if 'SQUAT_DOWN' in special_actions:
-            squatting_position(1)
+            pass
             is_neutral = False
         elif 'SQUAT_UP' in special_actions:
-            neutral_position(10)
+            if config.USE_SIMULATION:
+                # For Isaac Sim, move all robots to neutral position
+                from movement.movement_coordinator import neutral_position_multi
+                for robot_id in range(len(config.ISAAC_ROBOTS)):
+                    try:
+                        neutral_position_multi(10, robot_id)
+                    except Exception as e:
+                        logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral: {e}\n")
+            else:
+                neutral_position(10)
             is_neutral = True
 
     return is_neutral, current_leg

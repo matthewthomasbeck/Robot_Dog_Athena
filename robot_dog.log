@@ -1,42 +1,114 @@
-2025-08-30 18:10:11 INFO: (log.py): Logging setup complete.
+2025-08-31 12:14:50 INFO: (log.py): Logging setup complete.
 
-2025-08-30 18:10:19 INFO: (control_logic.py): Robot moved up 14cm.
+2025-08-31 12:14:59 INFO: (control_logic.py): Spawning 4 robots for parallel training...
 
-2025-08-30 18:10:20 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-08-31 12:14:59 INFO: (control_logic.py): Robot 0 positioned at (-3.0, -3.0, 0.14)
 
-2025-08-30 18:10:20 INFO: (camera.py): Successfully killed existing camera processes.
+2025-08-31 12:14:59 INFO: (control_logic.py): Robot 1 positioned at (3.0, -3.0, 0.14)
 
-2025-08-30 18:10:20 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-08-31 12:14:59 INFO: (control_logic.py): Robot 2 positioned at (-3.0, 3.0, 0.14)
 
-2025-08-30 18:10:20 INFO: (camera.py) Computed focal length for isaac camera.
+2025-08-31 12:14:59 INFO: (control_logic.py): Robot 3 positioned at (3.0, 3.0, 0.14)
 
-2025-08-30 18:10:20 INFO: (camera.py) Applied optics to isaac camera.
+2025-08-31 12:14:59 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-30 18:10:20 INFO: (camera.py) Initialized isaac camera.
+2025-08-31 12:15:00 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-30 18:10:21 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-08-31 12:15:00 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-30 18:10:25 INFO: Model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_1300000_episode_85419_reward_-5.22.pth
-2025-08-30 18:10:25 INFO:   - Total steps: 1300000
-2025-08-30 18:10:25 INFO:   - Episode reward: -5.2159
+2025-08-31 12:15:00 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-30 18:10:25 INFO: ✅ Successfully loaded model from step 1300000, episode 0
+2025-08-31 12:15:00 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-30 18:10:25 INFO: Training system initialized:
-2025-08-30 18:10:25 INFO:   - State dimension: 19
-2025-08-30 18:10:25 INFO:   - Action dimension: 36
-2025-08-30 18:10:25 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-08-30 18:10:25 INFO:   - PPO policy created: True
-2025-08-30 18:10:25 INFO:   - Starting from episode: 0
-2025-08-30 18:10:25 INFO:   - Starting from step: 1300000
+2025-08-31 12:15:01 WARNING: (camera.py): Isaac camera failed to warm up with a valid frame.
 
-2025-08-30 18:10:28 INFO:    📊 Average Score (last 1 episodes): -108.552
+2025-08-31 12:15:01 INFO: (control_logic.py): Robot 0 initialized successfully.
 
-2025-08-30 18:10:28 INFO: (training.py): Episode ending - Episode complete, resetting Isaac Sim world.
+2025-08-31 12:15:01 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-30 18:10:28 INFO:    📊 Average Score (last 2 episodes): -108.552
+2025-08-31 12:15:02 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-30 18:10:28 INFO: (training.py): Episode reset complete - World and robot state reset.
+2025-08-31 12:15:02 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-30 18:10:28 INFO: (training.py): Episode reset in main loop integration
+2025-08-31 12:15:02 INFO: (camera.py) Applied optics to isaac camera.
 
+2025-08-31 12:15:02 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-31 12:15:03 WARNING: (camera.py): Isaac camera failed to warm up with a valid frame.
+
+2025-08-31 12:15:03 INFO: (control_logic.py): Robot 1 initialized successfully.
+
+2025-08-31 12:15:03 INFO: (camera.py): Successfully killed existing camera processes.
+
+2025-08-31 12:15:03 INFO: (camera.py) Computed aperture size for isaac camera.
+
+2025-08-31 12:15:03 INFO: (camera.py) Computed focal length for isaac camera.
+
+2025-08-31 12:15:03 INFO: (camera.py) Applied optics to isaac camera.
+
+2025-08-31 12:15:03 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-31 12:15:04 WARNING: (camera.py): Isaac camera failed to warm up with a valid frame.
+
+2025-08-31 12:15:04 INFO: (control_logic.py): Robot 2 initialized successfully.
+
+2025-08-31 12:15:05 INFO: (camera.py): Successfully killed existing camera processes.
+
+2025-08-31 12:15:05 INFO: (camera.py) Computed aperture size for isaac camera.
+
+2025-08-31 12:15:05 INFO: (camera.py) Computed focal length for isaac camera.
+
+2025-08-31 12:15:05 INFO: (camera.py) Applied optics to isaac camera.
+
+2025-08-31 12:15:05 INFO: (camera.py) Initialized isaac camera.
+
+2025-08-31 12:15:06 WARNING: (camera.py): Isaac camera failed to warm up with a valid frame.
+
+2025-08-31 12:15:06 INFO: (control_logic.py): Robot 3 initialized successfully.
+
+2025-08-31 12:15:07 INFO: (control_logic.py): Successfully spawned 4 robots for parallel training.
+
+2025-08-31 12:15:07 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+
+2025-08-31 12:15:07 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
+
+2025-08-31 12:15:07 INFO: (movement_coordinator.py): Controller initialized for robot 0
+
+2025-08-31 12:15:07 INFO: (movement_coordinator.py): Controller initialized for robot 1
+
+2025-08-31 12:15:07 INFO: (movement_coordinator.py): Controller initialized for robot 2
+
+2025-08-31 12:15:07 INFO: (movement_coordinator.py): Controller initialized for robot 3
+
+2025-08-31 12:15:07 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+
+2025-08-31 12:15:07 INFO: (control_logic.py): Robot 0 moved to neutral position.
+
+2025-08-31 12:15:07 INFO: (control_logic.py): Robot 1 moved to neutral position.
+
+2025-08-31 12:15:07 INFO: (control_logic.py): Robot 2 moved to neutral position.
+
+2025-08-31 12:15:07 INFO: (control_logic.py): Robot 3 moved to neutral position.
+
+2025-08-31 12:15:10 INFO: Model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_1300000_episode_85419_reward_-5.22.pth
+2025-08-31 12:15:10 INFO:   - Total steps: 1300000
+2025-08-31 12:15:10 INFO:   - Episode reward: -5.2159
+
+2025-08-31 12:15:10 INFO: ✅ Successfully loaded model from step 1300000, episode 0
+
+2025-08-31 12:15:10 INFO: Training system initialized:
+2025-08-31 12:15:10 INFO:   - State dimension: 19
+2025-08-31 12:15:10 INFO:   - Action dimension: 36
+2025-08-31 12:15:10 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-08-31 12:15:10 INFO:   - PPO policy created: True
+2025-08-31 12:15:10 INFO:   - Starting from episode: 0
+2025-08-31 12:15:10 INFO:   - Starting from step: 1300000
+
+2025-08-31 12:15:10 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:10 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:11 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:11 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:11 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:11 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:12 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'
+2025-08-31 12:15:12 ERROR: ❌ Failed to track orientation: 'NoneType' object has no attribute 'get_world_poses'

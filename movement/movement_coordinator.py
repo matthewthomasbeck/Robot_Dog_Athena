@@ -60,14 +60,39 @@ elif config.USE_SIMULATION:
 
     from isaacsim.core.api.controllers.articulation_controller import ArticulationController
     from training.isaac_sim import build_isaac_joint_index_map
-    from movement.isaac_joints import neutral_position_isaac, apply_joint_angles_isaac
+    from movement.isaac_joints import neutral_position_isaac, apply_joint_angles_isaac, neutral_position_isaac_multi, apply_joint_angles_isaac_multi
     from training.training import get_rl_action_standard, get_rl_action_blind
         
     ##### build dependencies for isaac sim #####
 
-    config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOT.dof_names)
-    config.ISAAC_ROBOT_ARTICULATION_CONTROLLER = ArticulationController() # create new articulation controller instance
-    config.ISAAC_ROBOT_ARTICULATION_CONTROLLER.initialize(config.ISAAC_ROBOT) # initialize the controller
+    # Note: JOINT_INDEX_MAP and articulation controllers are now built here
+    # for multiple robots after the articulations are properly initialized
+    
+    # Initialize articulation controllers for all robots
+    if hasattr(config, 'ISAAC_ROBOTS') and config.ISAAC_ROBOTS:
+        logging.info("(movement_coordinator.py): Initializing articulation controllers for all robots...\n")
+        
+        for robot_id, robot in enumerate(config.ISAAC_ROBOTS):
+            try:
+                # Create articulation controller
+                controller = ArticulationController()
+                controller.initialize(robot)
+                config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS.append(controller)
+                logging.info(f"(movement_coordinator.py): Controller initialized for robot {robot_id}\n")
+            except Exception as e:
+                logging.error(f"(movement_coordinator.py): Failed to initialize controller for robot {robot_id}: {e}\n")
+        
+        # Build joint index map using first robot (all robots have same joint structure)
+        if config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS:
+            try:
+                config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOTS[0].dof_names)
+                logging.info(f"(movement_coordinator.py): Joint index map built using robot 0: {config.JOINT_INDEX_MAP}\n")
+            except Exception as e:
+                logging.error(f"(movement_coordinator.py): Failed to build joint index map: {e}\n")
+        else:
+            logging.error("(movement_coordinator.py): No articulation controllers were successfully initialized!\n")
+    else:
+        logging.warning("(movement_coordinator.py): No robots available for controller initialization.\n")
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -258,6 +283,99 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
     time.sleep(0.175) # only allow inference to run at rate # was 0.175
 
 
+def move_direction_multi(commands, frame, intensity, imageless_gait, robot_id):
+    """
+    Multi-robot version of move_direction that handles commands for a specific robot.
+    
+    Args:
+        commands: Movement commands
+        frame: Camera frame (if applicable) - can be None if cameras aren't working
+        intensity: Movement intensity
+        imageless_gait: Whether to use imageless gait
+        robot_id: ID of the robot to control
+    """
+    ##### preprocess commands and intensity #####
+    
+    # Handle new fixed-length list format from control_logic.py
+    if isinstance(commands, list):
+        # Filter out tilt commands (arrowup/arrowdown) and create RL model input
+        rl_commands = []
+        tilt_command = None
+        
+        # Extract movement commands for RL model (indices 0, 1, 2)
+        if commands[0] is not None:  # forward/backward
+            rl_commands.append(commands[0])
+        if commands[1] is not None:  # left/right
+            rl_commands.append(commands[1])
+        if commands[2] is not None:  # rotation
+            rl_commands.append(commands[2])
+        if commands[3] is not None:  # tilt (store for later use if needed)
+            tilt_command = commands[3]
+            
+        # Convert to string format expected by existing code
+        commands = rl_commands
+    else:
+        # Fallback for old string format
+        commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
+
+    ##### run inference before moving #####
+
+    try: # try to run a model
+        if config.USE_SIMULATION: # if running code in simulator...
+
+            ##### rl agent integration point #####
+            # Use robot-specific SERVO_CONFIG
+            robot_servo_config = config.SERVO_CONFIGS[robot_id]
+            
+            current_angles = {
+                'FL': {
+                    'hip': robot_servo_config['FL']['hip']['CURRENT_ANGLE'],
+                    'upper': robot_servo_config['FL']['upper']['CURRENT_ANGLE'],
+                    'lower': robot_servo_config['FL']['lower']['CURRENT_ANGLE']
+                },
+                'FR': {
+                    'hip': robot_servo_config['FR']['hip']['CURRENT_ANGLE'],
+                    'upper': robot_servo_config['FR']['upper']['CURRENT_ANGLE'],
+                    'lower': robot_servo_config['FR']['lower']['CURRENT_ANGLE']
+                },
+                'BL': {
+                    'hip': robot_servo_config['BL']['hip']['CURRENT_ANGLE'],
+                    'upper': robot_servo_config['BL']['upper']['CURRENT_ANGLE'],
+                    'lower': robot_servo_config['BL']['lower']['CURRENT_ANGLE']
+                },
+                'BR': {
+                    'hip': robot_servo_config['BR']['hip']['CURRENT_ANGLE'],
+                    'upper': robot_servo_config['BR']['upper']['CURRENT_ANGLE'],
+                    'lower': robot_servo_config['BR']['lower']['CURRENT_ANGLE']
+                }
+            }
+            
+            # Always use imageless gait for now since cameras aren't working
+            target_angles, mid_angles, movement_rates = get_rl_action_blind(
+                current_angles,
+                commands,
+                intensity
+            )
+
+            ##### apply direct joint control for Isaac Sim using robot-specific controller #####
+
+            # Apply the joint angles directly using robot-specific function
+            apply_joint_angles_isaac_multi(
+                mid_angles,
+                target_angles,
+                movement_rates,
+                robot_id
+            )
+            # logging.debug(f"(movement_coordinator.py): Applied joint angles for robot {robot_id}: {commands}\n")
+
+    except Exception as e: # if either model fails...
+        logging.error(f"(movement_coordinator.py): Failed to run AI for robot {robot_id}: {e}\n")
+
+    ##### force robot to slow down so the raspberry doesnt crash #####
+
+    time.sleep(0.175) # only allow inference to run at rate # was 0.175
+
+
 ########## THREAD LEG MOVEMENT ##########
 
 def thread_leg_movement(current_servo_config, mid_angles, target_angles, movement_rates):
@@ -356,4 +474,24 @@ def neutral_position(intensity):
             
     except Exception as e: # if failed to move legs to neutral position...
         logging.error(f"(movement_coordinator.py): Failed to move legs to neutral position: {e}\n")
+
+
+def neutral_position_multi(intensity, robot_id):
+    """
+    Multi-robot version of neutral_position that handles neutral positioning for a specific robot.
+    
+    Args:
+        intensity: Movement intensity (not used in Isaac Sim)
+        robot_id: ID of the robot to control
+    """
+    ##### move legs to neutral based on simulation mode #####
+
+    try: # try to move legs to neutral position
+        if config.USE_SIMULATION: # if using isaac sim...
+            neutral_position_isaac_multi(robot_id) # dont use intensity, velocity is not controllable so there is no point
+        else: # if using physical robot...
+            logging.error("(movement_coordinator.py): neutral_position_multi called in non-simulation mode\n")
+            
+    except Exception as e: # if failed to move legs to neutral position...
+        logging.error(f"(movement_coordinator.py): Failed to move robot {robot_id} to neutral position: {e}\n")
         

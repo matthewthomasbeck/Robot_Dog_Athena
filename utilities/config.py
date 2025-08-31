@@ -171,12 +171,34 @@ MODELS_DIRECTORY = "/home/matthewthomasbeck/Projects/Robot_Dog/model"
 
 ISAAC_SIM_APP = None # isaac sim application instance
 ISAAC_WORLD = None # isaac sim world
-ISAAC_ROBOT = None # isaac sim robot articulation
-ISAAC_ROBOT_ARTICULATION_CONTROLLER = None # isaac sim robot articulation controller
+
+# Multi-robot arrays for parallel training
+ISAAC_ROBOTS = [] # array of isaac sim robot articulations
+ISAAC_ROBOT_ARTICULATION_CONTROLLERS = [] # array of isaac sim robot articulation controllers
+CAMERA_PROCESSES = [] # array of camera processes for each robot
+SERVO_CONFIGS = [] # array of servo configurations for each robot
+
+# Legacy single robot (deprecated - will be removed)
+ISAAC_ROBOT = None # isaac sim robot articulation (DEPRECATED)
+ISAAC_ROBOT_ARTICULATION_CONTROLLER = None # isaac sim robot articulation controller (DEPRECATED)
 
 ##### isaac sim joint config #####
 
 JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac sim
+
+##### multi-robot configuration #####
+
+MULTI_ROBOT_CONFIG = {
+    'num_robots': 4,  # number of robots to spawn for parallel training
+    'robot_spacing': 2.0,  # spacing between robots in meters
+    'robot_start_z': 0.14,  # starting height for robots to avoid clipping
+    'robot_positions': [  # predefined positions for robots (x, y, z)
+        (-3.0, -3.0, 0.14),  # robot 0: front-left
+        (3.0, -3.0, 0.14),   # robot 1: front-right  
+        (-3.0, 3.0, 0.14),   # robot 2: back-left
+        (3.0, 3.0, 0.14),    # robot 3: back-right
+    ]
+}
 
 ##### training config #####
 
