@@ -117,7 +117,7 @@ else:
 
 ########## CENTRAL GAIT FUNCTION ##########
 
-def move_direction(commands, frame, intensity, imageless_gait): # function to trot forward
+def move_direction(commands, camera_frames, intensity, imageless_gait): # function to trot forward
 
     ##### preprocess commands and intensity #####
     
@@ -175,7 +175,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                         #STANDARD_INPUT_LAYER,
                         #STANDARD_OUTPUT_LAYER,
                         #commands,
-                        #frame,
+                        #camera_frames[0]['inference_frame'],
                         #intensity,
                         #config.SERVO_CONFIG
                     #)
@@ -248,7 +248,7 @@ def move_direction(commands, frame, intensity, imageless_gait): # function to tr
                     #current_angles,
                     #commands,
                     #intensity,
-                    #frame
+                    #camera_frames[0]['inference_frame'],
                 #)
                 target_angles, mid_angles, movement_rates = get_rl_action_blind(
                     current_angles,

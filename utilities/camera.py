@@ -50,6 +50,7 @@ if config.USE_SIMULATION and config.USE_ISAAC_SIM:
 ########## INITIALIZE CAMERA ##########
 
 def initialize_camera( # function to initialize camera
+        robot_id=0,  # Add robot_id parameter for multi-robot support
         width=config.CAMERA_CONFIG['WIDTH'],
         height=config.CAMERA_CONFIG['HEIGHT'],
         frame_rate=config.CAMERA_CONFIG['FRAME_RATE']
@@ -59,7 +60,7 @@ def initialize_camera( # function to initialize camera
 
     logging.debug("(camera.py): Initializing camera...\n")
     _kill_existing_camera_processes() # kill existing camera processes
-    camera_process = _start_camera_process(width, height, frame_rate) # start new camera process
+    camera_process = _start_camera_process(robot_id, width, height, frame_rate) # start new camera process
 
     if camera_process is None: # if camera process failed to start...
         logging.error("(camera.py): Camera initialization failed, no camera process started.\n")
@@ -87,7 +88,7 @@ def _kill_existing_camera_processes(): # function to kill existing camera proces
 
 ########## CREATE CAMERA PIPELINE ##########
 
-def _start_camera_process(width, height, frame_rate): # function to start camera process for opencv
+def _start_camera_process(robot_id, width, height, frame_rate): # function to start camera process for opencv
 
     if not config.USE_SIMULATION and not config.USE_ISAAC_SIM:  # if physical robot...
         try:
@@ -132,9 +133,15 @@ def _start_camera_process(width, height, frame_rate): # function to start camera
             focal_length = (focal_length_x + focal_length_y) / 2
             logging.info("(camera.py) Computed focal length for isaac camera.\n")
 
-            logging.debug("(camera.py) Creating isaac camera object...\n")
+            logging.debug(f"(camera.py) Creating isaac camera object for robot {robot_id}...\n")
+            # Create robot-specific camera path for multi-robot support
+            # All robots now use numbered paths to match the spawn locations
+            camera_path = f"/World/robot_dog_{robot_id}/athena_front_face/camera_sensor"
+            
+            logging.info(f"(camera.py) Robot {robot_id} camera path: {camera_path}")
+            
             isaac_camera = Camera(
-                prim_path="/World/robot_dog/athena_front_face/camera_sensor",
+                prim_path=camera_path,
                 resolution=(config.CAMERA_CONFIG['WIDTH'], config.CAMERA_CONFIG['HEIGHT']),
                 frequency=config.CAMERA_CONFIG['FRAME_RATE'],
                 orientation=rot_utils.euler_angles_to_quats(numpy.array([0, 0, 0]), degrees=True),  # change if needed
@@ -169,8 +176,6 @@ def _start_camera_process(width, height, frame_rate): # function to start camera
                 time.sleep(0.1)
                 if config.USE_SIMULATION and config.USE_ISAAC_SIM:
                     config.ISAAC_WORLD.step(render=True)
-            else:
-                logging.warning("(camera.py): Isaac camera failed to warm up with a valid frame.\n")
 
             return isaac_camera
 

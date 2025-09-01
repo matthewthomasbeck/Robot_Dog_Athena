@@ -1,32 +1,417 @@
-2025-08-31 23:45:28 INFO: (log.py): Logging setup complete.
+2025-09-01 11:57:14 INFO: (log.py): Logging setup complete.
 
-2025-08-31 23:45:36 INFO: (control_logic.py): Spawning 1 robots for parallel training...
+2025-09-01 11:57:22 INFO: (control_logic.py): Robot moved up 14cm.
 
-2025-08-31 23:45:36 INFO: (control_logic.py): Robot 0 positioned at (0.0, 0.0, 0.14)
+2025-09-01 11:57:23 INFO: (control_logic.py): Robot added to Isaac Sim scene.
 
-2025-08-31 23:45:37 INFO: (camera.py): Successfully killed existing camera processes.
+2025-09-01 11:57:23 INFO: (camera.py): Successfully killed existing camera processes.
 
-2025-08-31 23:45:38 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-09-01 11:57:24 INFO: (camera.py) Computed aperture size for isaac camera.
 
-2025-08-31 23:45:38 INFO: (camera.py) Computed focal length for isaac camera.
+2025-09-01 11:57:24 INFO: (camera.py) Computed focal length for isaac camera.
 
-2025-08-31 23:45:38 INFO: (camera.py) Applied optics to isaac camera.
+2025-09-01 11:57:24 INFO: (camera.py) Applied optics to isaac camera.
 
-2025-08-31 23:45:38 INFO: (camera.py) Initialized isaac camera.
+2025-09-01 11:57:24 INFO: (camera.py) Initialized isaac camera.
 
-2025-08-31 23:45:39 WARNING: (camera.py): Isaac camera failed to warm up with a valid frame.
+2025-09-01 11:57:24 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-08-31 23:45:39 INFO: (control_logic.py): Robot 0 initialized successfully.
+2025-09-01 11:57:28 INFO: Model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_1300000_episode_85419_reward_-5.22.pth
+2025-09-01 11:57:28 INFO:   - Episode: 85419
+2025-09-01 11:57:28 INFO:   - Total steps: 1300000
+2025-09-01 11:57:28 INFO:   - Episode reward: -5.2159
 
-2025-08-31 23:45:39 INFO: (control_logic.py): Successfully spawned 1 robots for parallel training.
+2025-09-01 11:57:28 INFO: ✅ Successfully loaded model from step 1300000, episode 85419
 
-2025-08-31 23:45:39 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-09-01 11:57:28 INFO: Training system initialized:
+2025-09-01 11:57:28 INFO:   - State dimension: 19
+2025-09-01 11:57:28 INFO:   - Action dimension: 36
+2025-09-01 11:57:28 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-09-01 11:57:28 INFO:   - PPO policy created: True
+2025-09-01 11:57:28 INFO:   - Starting from episode: 85419
+2025-09-01 11:57:28 INFO:   - Starting from step: 1300000
 
-2025-08-31 23:45:39 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
+2025-09-01 11:57:34 INFO:    📊 Average Score (last 1 episodes): -115.632
 
-2025-08-31 23:45:39 INFO: (movement_coordinator.py): Controller initialized for robot 0
+2025-09-01 11:57:34 WARNING: 📝 Episode 85420 completed but not at save frequency (20000 steps)
 
-2025-08-31 23:45:39 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+2025-09-01 11:57:34 INFO: (training.py): Episode 85420 ending - Episode complete, resetting Isaac Sim world.
 
-2025-08-31 23:45:43 ERROR: (movement_coordinator.py): Failed to run AI for command: name 'ppo_policy' is not defined
+2025-09-01 11:57:34 INFO:    📊 Average Score (last 2 episodes): -115.632
+
+2025-09-01 11:57:34 WARNING: 📝 Episode 85420 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:35 INFO: (training.py): Episode 85421 reset complete - World and robot state reset.
+
+2025-09-01 11:57:35 INFO: (training.py): Episode 85421 reset in main loop integration
+
+2025-09-01 11:57:36 INFO:    📊 Average Score (last 3 episodes): -110.754
+
+2025-09-01 11:57:36 WARNING: 📝 Episode 85421 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:36 INFO: (training.py): Episode 85421 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:57:36 INFO:    📊 Average Score (last 4 episodes): -108.316
+
+2025-09-01 11:57:36 WARNING: 📝 Episode 85421 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:37 INFO: (training.py): Episode 85422 reset complete - World and robot state reset.
+
+2025-09-01 11:57:37 INFO: (training.py): Episode 85422 reset in main loop integration
+
+2025-09-01 11:57:38 INFO:    📊 Average Score (last 5 episodes): -107.052
+
+2025-09-01 11:57:38 WARNING: 📝 Episode 85422 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:38 INFO: (training.py): Episode 85422 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:57:38 INFO:    📊 Average Score (last 6 episodes): -106.209
+
+2025-09-01 11:57:38 WARNING: 📝 Episode 85422 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:39 INFO: (training.py): Episode 85423 reset complete - World and robot state reset.
+
+2025-09-01 11:57:39 INFO: (training.py): Episode 85423 reset in main loop integration
+
+2025-09-01 11:57:40 INFO:    📊 Average Score (last 7 episodes): -105.645
+
+2025-09-01 11:57:40 WARNING: 📝 Episode 85423 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:40 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:57:40 INFO:    🎯 Recent episodes: 3
+2025-09-01 11:57:40 INFO:    📈 Average reward: -106.209
+2025-09-01 11:57:40 INFO:    📉 Worst reward: -115.632
+2025-09-01 11:57:40 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:57:40 INFO: (training.py): Episode 85423 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:57:40 INFO:    📊 Average Score (last 8 episodes): -105.221
+
+2025-09-01 11:57:40 WARNING: 📝 Episode 85423 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:40 INFO: (training.py): Episode 85424 reset complete - World and robot state reset.
+
+2025-09-01 11:57:40 INFO: (training.py): Episode 85424 reset in main loop integration
+
+2025-09-01 11:57:45 INFO:    📊 Average Score (last 9 episodes): -105.437
+
+2025-09-01 11:57:45 WARNING: 📝 Episode 85424 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:45 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:57:45 INFO:    🎯 Recent episodes: 4
+2025-09-01 11:57:45 INFO:    📈 Average reward: -105.221
+2025-09-01 11:57:45 INFO:    📉 Worst reward: -115.632
+2025-09-01 11:57:45 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:57:45 INFO: (training.py): Episode 85424 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:57:45 INFO:    📊 Average Score (last 10 episodes): -105.609
+
+2025-09-01 11:57:45 WARNING: 📝 Episode 85424 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:45 INFO: (training.py): Episode 85425 reset complete - World and robot state reset.
+
+2025-09-01 11:57:45 INFO: (training.py): Episode 85425 reset in main loop integration
+
+2025-09-01 11:57:47 INFO:    📊 Average Score (last 11 episodes): -105.329
+
+2025-09-01 11:57:47 WARNING: 📝 Episode 85425 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:47 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:57:47 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:57:47 INFO:    📈 Average reward: -105.609
+2025-09-01 11:57:47 INFO:    📉 Worst reward: -115.632
+2025-09-01 11:57:47 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:57:47 INFO: (training.py): Episode 85425 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:57:47 INFO:    📊 Average Score (last 12 episodes): -105.095
+
+2025-09-01 11:57:47 WARNING: 📝 Episode 85425 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:57:48 INFO: (training.py): Episode 85426 reset complete - World and robot state reset.
+
+2025-09-01 11:57:48 INFO: (training.py): Episode 85426 reset in main loop integration
+
+2025-09-01 11:58:00 ERROR: (movement_coordinator.py): Failed to run AI for command: index 94 is out of bounds for dimension 0 with size 80
+
+2025-09-01 11:58:00 INFO:    📊 Average Score (last 13 episodes): -106.479
+
+2025-09-01 11:58:00 WARNING: 📝 Episode 85426 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:00 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:00 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:00 INFO:    📈 Average reward: -102.988
+2025-09-01 11:58:00 INFO:    📉 Worst reward: -107.163
+2025-09-01 11:58:00 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:00 INFO: (training.py): Episode 85426 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:00 INFO:    📊 Average Score (last 14 episodes): -107.666
+
+2025-09-01 11:58:00 WARNING: 📝 Episode 85426 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:00 INFO: (training.py): Episode 85427 reset complete - World and robot state reset.
+
+2025-09-01 11:58:00 INFO: (training.py): Episode 85427 reset in main loop integration
+
+2025-09-01 11:58:03 INFO:    📊 Average Score (last 15 episodes): -107.481
+
+2025-09-01 11:58:03 WARNING: 📝 Episode 85427 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:03 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:03 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:03 INFO:    📈 Average reward: -107.406
+2025-09-01 11:58:03 INFO:    📉 Worst reward: -123.093
+2025-09-01 11:58:03 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:03 INFO: (training.py): Episode 85427 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:03 INFO:    📊 Average Score (last 16 episodes): -107.319
+
+2025-09-01 11:58:03 WARNING: 📝 Episode 85427 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:03 INFO: (training.py): Episode 85428 reset complete - World and robot state reset.
+
+2025-09-01 11:58:03 INFO: (training.py): Episode 85428 reset in main loop integration
+
+2025-09-01 11:58:05 INFO:    📊 Average Score (last 17 episodes): -107.015
+
+2025-09-01 11:58:05 WARNING: 📝 Episode 85428 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:05 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:05 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:05 INFO:    📈 Average reward: -107.985
+2025-09-01 11:58:05 INFO:    📉 Worst reward: -123.093
+2025-09-01 11:58:05 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:05 INFO: (training.py): Episode 85428 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:05 INFO:    📊 Average Score (last 18 episodes): -106.745
+
+2025-09-01 11:58:05 WARNING: 📝 Episode 85428 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:05 INFO: (training.py): Episode 85429 reset complete - World and robot state reset.
+
+2025-09-01 11:58:05 INFO: (training.py): Episode 85429 reset in main loop integration
+
+2025-09-01 11:58:10 INFO:    📊 Average Score (last 19 episodes): -106.994
+
+2025-09-01 11:58:10 WARNING: 📝 Episode 85429 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:10 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:10 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:10 INFO:    📈 Average reward: -107.964
+2025-09-01 11:58:10 INFO:    📉 Worst reward: -123.093
+2025-09-01 11:58:10 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:10 INFO: ❌ Agent not improving. First 10: -107.218, Last 10: -107.218
+
+2025-09-01 11:58:10 INFO: (training.py): Episode 85429 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:10 INFO:    📊 Average Score (last 20 episodes): -107.218
+
+2025-09-01 11:58:10 WARNING: 📝 Episode 85429 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:10 INFO: (training.py): Episode 85430 reset complete - World and robot state reset.
+
+2025-09-01 11:58:10 INFO: (training.py): Episode 85430 reset in main loop integration
+
+2025-09-01 11:58:11 INFO:    📊 Average Score (last 21 episodes): -106.962
+
+2025-09-01 11:58:11 WARNING: 📝 Episode 85430 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:11 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:11 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:11 INFO:    📈 Average reward: -108.828
+2025-09-01 11:58:11 INFO:    📉 Worst reward: -123.093
+2025-09-01 11:58:11 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:11 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -105.838
+
+2025-09-01 11:58:11 INFO: (training.py): Episode 85430 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:11 INFO:    📊 Average Score (last 22 episodes): -106.729
+
+2025-09-01 11:58:11 WARNING: 📝 Episode 85430 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:12 INFO: (training.py): Episode 85431 reset complete - World and robot state reset.
+
+2025-09-01 11:58:12 INFO: (training.py): Episode 85431 reset in main loop integration
+
+2025-09-01 11:58:19 INFO:    📊 Average Score (last 23 episodes): -106.972
+
+2025-09-01 11:58:19 WARNING: 📝 Episode 85431 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:19 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:19 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:19 INFO:    📈 Average reward: -108.689
+2025-09-01 11:58:19 INFO:    📉 Worst reward: -123.093
+2025-09-01 11:58:19 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:19 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -106.970
+
+2025-09-01 11:58:19 INFO: (training.py): Episode 85431 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:19 INFO:    📊 Average Score (last 24 episodes): -107.194
+
+2025-09-01 11:58:19 WARNING: 📝 Episode 85431 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:20 INFO: (training.py): Episode 85432 reset complete - World and robot state reset.
+
+2025-09-01 11:58:20 INFO: (training.py): Episode 85432 reset in main loop integration
+
+2025-09-01 11:58:21 INFO:    📊 Average Score (last 25 episodes): -106.992
+
+2025-09-01 11:58:21 WARNING: 📝 Episode 85432 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:21 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:21 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:21 INFO:    📈 Average reward: -106.534
+2025-09-01 11:58:21 INFO:    📉 Worst reward: -112.317
+2025-09-01 11:58:21 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:21 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -106.985
+
+2025-09-01 11:58:21 INFO: (training.py): Episode 85432 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:21 INFO:    📊 Average Score (last 26 episodes): -106.806
+
+2025-09-01 11:58:21 WARNING: 📝 Episode 85432 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:22 INFO: (training.py): Episode 85433 reset complete - World and robot state reset.
+
+2025-09-01 11:58:22 INFO: (training.py): Episode 85433 reset in main loop integration
+
+2025-09-01 11:58:27 INFO:    📊 Average Score (last 27 episodes): -106.820
+
+2025-09-01 11:58:27 WARNING: 📝 Episode 85433 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:27 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:27 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:27 INFO:    📈 Average reward: -105.985
+2025-09-01 11:58:27 INFO:    📉 Worst reward: -112.317
+2025-09-01 11:58:27 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:27 INFO: ❌ Agent not improving. First 10: -107.218, Last 10: -107.477
+
+2025-09-01 11:58:27 INFO: (training.py): Episode 85433 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:27 INFO:    📊 Average Score (last 28 episodes): -106.832
+
+2025-09-01 11:58:27 WARNING: 📝 Episode 85433 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:28 INFO: (training.py): Episode 85434 reset complete - World and robot state reset.
+
+2025-09-01 11:58:28 INFO: (training.py): Episode 85434 reset in main loop integration
+
+2025-09-01 11:58:30 INFO:    📊 Average Score (last 29 episodes): -106.659
+
+2025-09-01 11:58:30 WARNING: 📝 Episode 85434 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:30 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:30 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:30 INFO:    📈 Average reward: -106.989
+2025-09-01 11:58:30 INFO:    📉 Worst reward: -112.317
+2025-09-01 11:58:30 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:30 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -106.941
+
+2025-09-01 11:58:30 INFO: (training.py): Episode 85434 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:30 INFO:    📊 Average Score (last 30 episodes): -106.497
+
+2025-09-01 11:58:30 WARNING: 📝 Episode 85434 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:31 INFO: (training.py): Episode 85435 reset complete - World and robot state reset.
+
+2025-09-01 11:58:31 INFO: (training.py): Episode 85435 reset in main loop integration
+
+2025-09-01 11:58:36 INFO:    📊 Average Score (last 31 episodes): -106.611
+
+2025-09-01 11:58:36 WARNING: 📝 Episode 85435 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:36 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:36 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:36 INFO:    📈 Average reward: -105.054
+2025-09-01 11:58:36 INFO:    📉 Worst reward: -112.317
+2025-09-01 11:58:36 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:36 INFO: ❌ Agent not improving. First 10: -107.218, Last 10: -107.692
+
+2025-09-01 11:58:36 INFO: (training.py): Episode 85435 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:36 INFO:    📊 Average Score (last 32 episodes): -106.718
+
+2025-09-01 11:58:36 WARNING: 📝 Episode 85435 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:36 INFO: (training.py): Episode 85436 reset complete - World and robot state reset.
+
+2025-09-01 11:58:36 INFO: (training.py): Episode 85436 reset in main loop integration
+
+2025-09-01 11:58:39 INFO:    📊 Average Score (last 33 episodes): -106.668
+
+2025-09-01 11:58:39 WARNING: 📝 Episode 85436 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:39 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:39 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:39 INFO:    📈 Average reward: -106.694
+2025-09-01 11:58:39 INFO:    📉 Worst reward: -112.317
+2025-09-01 11:58:39 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:39 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -105.889
+
+2025-09-01 11:58:39 INFO: (training.py): Episode 85436 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:39 INFO:    📊 Average Score (last 34 episodes): -106.621
+
+2025-09-01 11:58:39 WARNING: 📝 Episode 85436 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:39 INFO: (training.py): Episode 85437 reset complete - World and robot state reset.
+
+2025-09-01 11:58:39 INFO: (training.py): Episode 85437 reset in main loop integration
+
+2025-09-01 11:58:41 INFO:    📊 Average Score (last 35 episodes): -106.503
+
+2025-09-01 11:58:41 WARNING: 📝 Episode 85437 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:41 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:41 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:41 INFO:    📈 Average reward: -105.245
+2025-09-01 11:58:41 INFO:    📉 Worst reward: -110.033
+2025-09-01 11:58:41 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:41 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -105.648
+
+2025-09-01 11:58:41 INFO: (training.py): Episode 85437 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:41 INFO:    📊 Average Score (last 36 episodes): -106.391
+
+2025-09-01 11:58:41 WARNING: 📝 Episode 85437 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:42 INFO: (training.py): Episode 85438 reset complete - World and robot state reset.
+
+2025-09-01 11:58:42 INFO: (training.py): Episode 85438 reset in main loop integration
+
+2025-09-01 11:58:44 INFO:    📊 Average Score (last 37 episodes): -106.229
+
+2025-09-01 11:58:44 WARNING: 📝 Episode 85438 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:44 INFO: 📊 Learning Progress Analysis:
+2025-09-01 11:58:44 INFO:    🎯 Recent episodes: 5
+2025-09-01 11:58:44 INFO:    📈 Average reward: -105.312
+2025-09-01 11:58:44 INFO:    📉 Worst reward: -110.033
+2025-09-01 11:58:44 INFO:    🧠 PPO policy: Ready for training.
+
+2025-09-01 11:58:44 INFO: ✅ Agent is improving! First 10: -107.218, Last 10: -105.471
+
+2025-09-01 11:58:44 INFO: (training.py): Episode 85438 ending - Episode complete, resetting Isaac Sim world.
+
+2025-09-01 11:58:44 INFO:    📊 Average Score (last 38 episodes): -106.075
+
+2025-09-01 11:58:44 WARNING: 📝 Episode 85438 completed but not at save frequency (20000 steps)
+
+2025-09-01 11:58:45 INFO: (training.py): Episode 85439 reset complete - World and robot state reset.
+
+2025-09-01 11:58:45 INFO: (training.py): Episode 85439 reset in main loop integration
 

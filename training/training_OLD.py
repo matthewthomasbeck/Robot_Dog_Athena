@@ -28,13 +28,6 @@ import numpy as np
 import os
 import logging
 import random
-import torch
-import concurrent.futures
-import time
-
-# Optimize PyTorch for performance
-torch.set_num_threads(24)  # Use all 24 CPU cores
-torch.backends.cudnn.benchmark = True  # Optimize for consistent input sizes
 
 ##### import necessary functions #####
 
@@ -48,17 +41,18 @@ from training.orientation import track_orientation
 
 ##### global PPO instance and episode data #####
 
-ppo_policies = []  # Array of PPO policies for each robot
-episode_rewards = []  # Array of episode rewards for each robot
-episode_states = []  # Array of episode states for each robot
-episode_actions = []  # Array of episode actions for each robot
-episode_rewards_list = []  # Array of episode rewards lists for each robot
-episode_values = []  # Array of episode values for each robot
-episode_log_probs = []  # Array of episode log probs for each robot
-episode_dones = []  # Array of episode dones for each robot
-total_steps_list = []  # Array of total steps for each robot
-episode_scores = []  # Array of episode scores for each robot
-average_scores = []  # Array of average scores for each robot
+ppo_policy = None
+episode_reward = 0.0
+episode_counter = 0
+episode_states = []
+episode_actions = []
+episode_rewards = []
+episode_values = []
+episode_log_probs = []
+episode_dones = []
+total_steps = 0
+episode_scores = []
+average_score = 0.0
 
 ##### random command and intensity #####
 
@@ -79,72 +73,41 @@ previous_intensity = None
 ##### initialize training #####
 
 def initialize_training():
-    """Initialize the complete training system for multiple robots"""
-    global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list, episode_scores, average_scores
+    """Initialize the complete training system"""
+    global ppo_policy, episode_counter, total_steps
 
-    logging.debug("(training.py): Initializing multi-robot training system...\n")
+    logging.debug("(training.py): Initializing training system...\n")
     os.makedirs(config.MODELS_DIRECTORY, exist_ok=True)
 
-    # Initialize PPO for each robot
+    # Initialize PPO
     state_dim = 19  # 12 joints + 6 commands + 1 intensity
     action_dim = 36  # 12 mid + 12 target angles + 12 velocity values
     max_action = config.TRAINING_CONFIG['max_action']
-    
-    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
-    
-    # Clear and reinitialize arrays for each robot
-    ppo_policies = []
-    episode_rewards = []
-    episode_states = []
-    episode_actions = []
-    episode_rewards_list = []
-    episode_values = []
-    episode_log_probs = []
-    episode_dones = []
-    total_steps_list = []
-    episode_scores = []
-    average_scores = []
-    
-    for robot_idx in range(num_robots):
-        # Create PPO policy for this robot
-        ppo_policy = PPO(state_dim, action_dim, max_action)
-        ppo_policies.append(ppo_policy)
-        
-        # Initialize tracking variables for this robot
-        episode_rewards.append(0.0)
-        episode_states.append([])
-        episode_actions.append([])
-        episode_rewards_list.append([])
-        episode_values.append([])
-        episode_log_probs.append([])
-        episode_dones.append([])
-        total_steps_list.append(0)
-        episode_scores.append([])
-        average_scores.append(0.0)
+
+    ppo_policy = PPO(state_dim, action_dim, max_action)
 
     # Try to load the latest saved model to continue training
     latest_model = find_latest_model()
     if latest_model:
         logging.debug(f"🔄 Loading latest model: {latest_model}...\n")
         if load_model(latest_model):
-            logging.info(f"✅ Successfully loaded model from step {sum(total_steps_list)}, episode {episode_counter}\n")
+            logging.info(f"✅ Successfully loaded model from step {total_steps}, episode {episode_counter}\n")
         else:
             logging.warning(f"❌ Failed to load model, starting fresh.\n")
             episode_counter = 0
-            total_steps_list = [0] * num_robots
+            total_steps = 0
     else:
         logging.warning(f"🆕 No saved models found, starting fresh training.\n")
         episode_counter = 0
-        total_steps_list = [0] * num_robots
+        total_steps = 0
 
-    logging.info(f"Multi-robot training system initialized:")
-    logging.info(f"  - Number of robots: {num_robots}")
+    logging.info(f"Training system initialized:")
     logging.info(f"  - State dimension: {state_dim}")
     logging.info(f"  - Action dimension: {action_dim}")
     logging.info(f"  - Models directory: {config.MODELS_DIRECTORY}")
-    logging.info(f"  - PPO policies created: {len(ppo_policies)}")
+    logging.info(f"  - PPO policy created: {ppo_policy is not None}")
     logging.info(f"  - Starting from episode: {episode_counter}")
-    logging.info(f"  - Starting from step: {sum(total_steps_list)}\n")
+    logging.info(f"  - Starting from step: {total_steps}\n")
 
 
 def find_latest_model():
@@ -186,7 +149,7 @@ def integrate_with_main_loop():
         from training.training import integrate_with_main_loop
         integrate_with_main_loop()
     """
-    global total_steps
+    global episode_counter, total_steps
 
     import utilities.config as config
 
@@ -204,7 +167,7 @@ def integrate_with_main_loop():
     if check_and_reset_episode_if_needed():
         # Episode was reset, log the event
         import logging
-        logging.info(f"(training.py): Episode reset in main loop integration\n")
+        logging.info(f"(training.py): Episode {episode_counter} reset in main loop integration\n")
         return True
 
     return False
@@ -220,41 +183,56 @@ def get_rl_action_standard(state, commands, intensity, frame):  # will eventuall
 
 ##### summon blind agent #####
 
-def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_multi_robot_config):
+def get_rl_action_blind(current_angles, commands, intensity):
     """
-    Get action for a single robot - used for parallel processing
-    """
-    global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list
+    PPO RL agent that takes current joint angles, commands, and intensity as state
+    and outputs 24 values (12 mid angles + 12 target angles)
 
-    # STEP 1 COMPLETE: Safety checks already done in main function
-    # Get the PPO policy for this specific robot
-    ppo_policy = ppo_policies[robot_idx]
+    NOTE: This function runs in worker threads, so it CANNOT call Isaac Sim reset functions.
+    It only signals that a reset is needed - the main thread handles actual resets.
+    """
+    global ppo_policy, episode_reward, episode_counter
+    global episode_states, episode_actions, episode_rewards, episode_values, episode_log_probs, episode_dones
+    global total_steps
+
+    # Initialize training system if not done yet
+    if ppo_policy is None:
+        initialize_training()
+        start_episode()
+
+    # CRITICAL: Check episode completion but DON'T reset from worker thread
+    # Just signal that a reset is needed - main thread will handle it
+    episode_needs_reset = False
+
+    # COMPLETELY GUTTED - No more automatic episode termination due to falling
+    # You now control when episodes end through your reward system
+
+    if rewards.EPISODE_STEP >= config.TRAINING_CONFIG['max_steps_per_episode']:
+        episode_needs_reset = True
+        print(f"Episode {episode_counter} completed after {rewards.EPISODE_STEP} steps! (signaling main thread)")
+
+    # Store reset signal for main thread to check
+    config.EPISODE_NEEDS_RESET = episode_needs_reset
+
+    # Log episode progress every 100 steps
+    if rewards.EPISODE_STEP % 100 == 0:
+        print(f"Episode {episode_counter}, Step {rewards.EPISODE_STEP}, Total Steps: {total_steps}")
     
-    # Get robot-specific tracking variables
-    episode_reward = episode_rewards[robot_idx]
-    episode_states_robot = episode_states[robot_idx]
-    episode_actions_robot = episode_actions[robot_idx]
-    episode_rewards_robot = episode_rewards_list[robot_idx]
-    episode_values_robot = episode_values[robot_idx]
-    episode_log_probs_robot = episode_log_probs[robot_idx]
-    episode_dones_robot = episode_dones[robot_idx]
-    total_steps = total_steps_list[robot_idx]
+    # Track orientation every 50 steps to understand robot facing direction
+    if rewards.EPISODE_STEP % 50 == 0:
+        track_orientation()
 
-    # Build state vector for this robot
+    # Build state vector
     state = []
 
-    # 1. Extract and normalize joint angles (12D) for this robot
+    # 1. Extract and normalize joint angles (12D)
+    # Normalize angles to [-1, 1] range for better training stability with Adam optimizer
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
         for joint_name in ['hip', 'upper', 'lower']:
             angle = current_angles[leg_id][joint_name]
             
-            # Get joint limits for normalization from this robot's config
-            # STEP 1 COMPLETE: Config validation already done in main function
-            if use_multi_robot_config:
-                servo_data = config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]
-            else:
-                servo_data = config.SERVO_CONFIG[leg_id][joint_name]  # Fallback to single robot config
-            
+            # Get joint limits for normalization
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
             min_angle = servo_data['FULL_BACK_ANGLE']
             max_angle = servo_data['FULL_FRONT_ANGLE']
             
@@ -268,13 +246,21 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
                 normalized_angle = 2.0 * (float(angle) - min_angle) / angle_range - 1.0
                 normalized_angle = np.clip(normalized_angle, -1.0, 1.0)
             else:
-                normalized_angle = 0.0
+                normalized_angle = 0.0  # Fallback if range is zero
                 
             state.append(normalized_angle)
 
-    # 2. Encode commands (6D one-hot for movement commands only) - SAME FOR ALL ROBOTS
-    command_list = commands
+    # 2. Encode commands (6D one-hot for movement commands only)
+    # Note: arrowup/arrowdown are filtered out by move_direction, so we only need 6 dimensions
+    if isinstance(commands, list):
+        command_list = commands
+    elif isinstance(commands, str):
+        command_list = commands.split('+') if commands else []
+    else:
+        command_list = []
 
+    # CRITICAL: Always create exactly 6D command encoding regardless of input list length
+    # This ensures consistent state size and prevents dynamic shapes
     command_encoding = [
         1.0 if 'w' in command_list else 0.0,
         1.0 if 's' in command_list else 0.0,
@@ -284,10 +270,16 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
         1.0 if 'arrowright' in command_list else 0.0
     ]
     
+    # Validate command encoding size
+    if len(command_encoding) != 6:
+        raise ValueError(f"Command encoding must be exactly 6D, got {len(command_encoding)}D")
+    
     state.extend(command_encoding)
 
-    # 3. Normalize intensity (1D) - SAME FOR ALL ROBOTS
-    intensity_normalized = (float(intensity) - 5.5) / 4.5
+    # 3. Normalize intensity (1D) - Adam optimizer prefers values roughly in [-1, 1] range
+    # Map intensity 1-10 to range [-1.0, 1.0] preserving all 10 distinct levels
+    intensity_normalized = (float(intensity) - 5.5) / 4.5  # Maps 1->-1.0, 10->1.0
+    # No clipping needed - this preserves all 10 distinct intensity levels
     state.append(intensity_normalized)
     
     # Convert to numpy array and validate state size
@@ -297,42 +289,60 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
     expected_state_size = 19
     if len(state) != expected_state_size:
         raise ValueError(f"State size mismatch: expected {expected_state_size}, got {len(state)}")
+    
+    # Log state composition for debugging
+    if rewards.EPISODE_STEP % 100 == 0:  # Log every 100 steps to avoid spam
+        print(f"State composition: {len(state)}D total")
+        print(f"  - Joint angles: 12D (normalized to [-1, 1])")
+        print(f"  - Commands: 6D (one-hot for w,s,a,d,arrowleft,arrowright)")
+        print(f"  - Intensity: 1D (normalized to [-1.0, 1.0])")
 
-    # Get action from PPO for this robot (stochastic during training, deterministic for deployment)
-    action = ppo_policy.select_action(state, deterministic=False)
+    # Get action from PPO (stochastic during training, deterministic for deployment)
+    # PPO handles exploration through action distributions, no manual noise needed
+    action = ppo_policy.select_action(state, deterministic=False)  # Stochastic for training
+    
+    # COMPLETELY GUTTED - No more automatic fall tracking
+    # You now control fall recovery through your reward system
 
     # Store experience for training
-    if episode_states_robot and episode_actions_robot:
-        # Calculate reward using the dedicated reward function for this robot
-        reward = rewards.calculate_step_reward(robot_idx, current_angles, commands, intensity)
+    if episode_states and episode_actions: # Only add if previous step had data
+        # Calculate reward using the dedicated reward function
+        reward = rewards.calculate_step_reward(current_angles, commands, intensity)
 
         # Update episode reward for tracking
         episode_reward += reward
 
+        # COMPLETELY GUTTED - No more automatic episode termination due to falling
+        # You now control when episodes end through your reward system
         done = rewards.EPISODE_STEP >= config.TRAINING_CONFIG['max_steps_per_episode']
 
         # Add to episode data lists
-        episode_states_robot.append(state)
-        episode_actions_robot.append(action)
-        episode_rewards_robot.append(reward)
-        episode_values_robot.append(None)
-        episode_log_probs_robot.append(None)
-        episode_dones_robot.append(done)
+        episode_states.append(state)
+        episode_actions.append(action)
+        episode_rewards.append(reward)
+        episode_values.append(None) # Value is not available here, will be calculated later
+        episode_log_probs.append(None) # Log prob is not available here, will be calculated later
+        episode_dones.append(done)
         
-        # Train PPO at episode end
-        if done and len(episode_states_robot) >= config.TRAINING_CONFIG['batch_size']:
-            print(f"Robot {robot_idx}: Training PPO at episode end, episode data size: {len(episode_states_robot)}")
+        # Log experience collection for debugging
+        if done:
+            print(f"💾 Experience collected: State={len(state)}D, Action={len(action)}D, Reward={reward:.3f}, Done={done}")
+            print(f"   📊 Episode data size: {len(episode_states)}")
+
+        # Train PPO at episode end (PPO processes full episodes)
+        if done and len(episode_states) >= config.TRAINING_CONFIG['batch_size']:
+            print(f"🧠 Training PPO at episode end, episode data size: {len(episode_states)}")
             
             # Convert to tensors
-            states = torch.FloatTensor(episode_states_robot)
-            actions = torch.FloatTensor(episode_actions_robot)
-            rewards_tensor = torch.FloatTensor(episode_rewards_robot)
-            dones = torch.FloatTensor(episode_dones_robot)
+            states = torch.FloatTensor(episode_states)
+            actions = torch.FloatTensor(episode_actions)
+            rewards_tensor = torch.FloatTensor(episode_rewards)
+            dones = torch.FloatTensor(episode_dones)
             
             # Calculate log probabilities for all actions in the episode
             with torch.no_grad():
                 _, log_probs, _, _ = ppo_policy.actor_critic.get_action_and_value(states, actions)
-                log_probs = log_probs.squeeze(-1)
+                log_probs = log_probs.squeeze(-1)  # Remove extra dimension
             
             # Get final value estimate for GAE calculation
             with torch.no_grad():
@@ -341,34 +351,41 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
             # Train PPO on episode data
             ppo_policy.train(states, actions, log_probs, rewards_tensor, dones, final_value)
             
-            # Reset episode data lists for this robot
-            episode_states[robot_idx] = []
-            episode_actions[robot_idx] = []
-            episode_rewards_list[robot_idx] = []
-            episode_values[robot_idx] = []
-            episode_log_probs[robot_idx] = []
-            episode_dones[robot_idx] = []
+            # Reset episode data lists
+            episode_states = []
+            episode_actions = []
+            episode_rewards = []
+            episode_values = []
+            episode_log_probs = []
+            episode_dones = []
+            
+            # COMPLETELY GUTTED - No more automatic fall-related logging
+            # You now control what gets logged through your reward system
 
         # Save model periodically based on total steps
         if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None:
             save_model(
-                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_robot_{robot_idx}_steps_{total_steps}_reward_{episode_reward:.2f}.pth")
-            print(f"Robot {robot_idx}: Model saved: steps_{total_steps}")
+                f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_episode_{episode_counter}_reward_{episode_reward:.2f}.pth")
+            print(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}")
 
-    # Update tracking variables for this robot
-    episode_states[robot_idx].append(state)
-    episode_actions[robot_idx].append(action)
+    # Update tracking variables
+    episode_states.append(state) # Append current state for the next step
+    episode_actions.append(action) # Append current action for the next step
     
-    # Get value and log_prob for PPO training
+    # Get value and log_prob for PPO training (needed for next step)
     with torch.no_grad():
         state_tensor = torch.FloatTensor(state).unsqueeze(0)
         _, log_prob, _, value = ppo_policy.actor_critic.get_action_and_value(state_tensor, torch.FloatTensor(action).unsqueeze(0))
-        episode_values[robot_idx].append(value.item())
-        episode_log_probs[robot_idx].append(log_prob.item())
+        episode_values.append(value.item())
+        episode_log_probs.append(log_prob.item())
     
-    total_steps_list[robot_idx] += 1
+    rewards.EPISODE_STEP += 1
+    total_steps += 1
 
-    # Convert 36D action vector to joint angles and velocities for this robot
+    # Convert 36D action vector to joint angles and velocities:
+    # action[0:11] = mid angles (12 joints)
+    # action[12:23] = target angles (12 joints) 
+    # action[24:35] = velocity values in radians/second (12 joints)
     target_angles = {}
     mid_angles = {}
     movement_rates = {}
@@ -376,18 +393,15 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
     action_idx = 0
 
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
+
         target_angles[leg_id] = {}
         mid_angles[leg_id] = {}
         movement_rates[leg_id] = {}
 
         for joint_name in ['hip', 'upper', 'lower']:
-            # Get joint limits from config for this specific robot
-            # Safety check for SERVO_CONFIGS array
-            if robot_idx >= len(config.SERVO_CONFIGS):
-                servo_data = config.SERVO_CONFIG[leg_id][joint_name]  # Fallback to single robot config
-            else:
-                servo_data = config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]
-            
+
+            # Get joint limits from config
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
             min_angle = servo_data['FULL_BACK_ANGLE']
             max_angle = servo_data['FULL_FRONT_ANGLE']
 
@@ -402,93 +416,25 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
             mid_angles[leg_id][joint_name] = float(mid_angle)
 
             # Convert target action (-1 to 1) to joint angle
-            target_action = action[action_idx + 12]
+            target_action = action[action_idx + 12]  # Target angles are second half
             target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
             target_angle = np.clip(target_angle, min_angle, max_angle)
             target_angles[leg_id][joint_name] = float(target_angle)
 
             # Convert velocity action (-1 to 1) to movement rate in radians/second
+            # Velocity actions are the last 12 dimensions (indices 24-35)
             velocity_action = action[action_idx + 24]
-            joint_speed = (velocity_action + 1.0) * 4.75
-            joint_speed = np.clip(joint_speed, 0.0, 9.5)
+            
+            # Convert from [-1, 1] to [0, 9.5] radians/second for Isaac Sim
+            # This maps the neural network output to Isaac Sim's expected velocity range
+            joint_speed = (velocity_action + 1.0) * 4.75  # Maps [-1,1] to [0,9.5]
+            joint_speed = np.clip(joint_speed, 0.0, 9.5)  # Ensure within Isaac Sim limits
             
             movement_rates[leg_id][joint_name] = float(joint_speed)
 
             action_idx += 1
 
     return target_angles, mid_angles, movement_rates
-
-def get_rl_action_blind(current_angles, commands, intensity):
-    """
-    PPO RL agent that takes current joint angles, commands, and intensity as state
-    and outputs predictions for ALL robots using parallel processing.
-    
-    Returns:
-        all_target_angles: List of target joint angles for each robot
-        all_mid_angles: List of mid joint angles for each robot  
-        all_movement_rates: List of movement rates for each robot
-    """
-    global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list
-
-    # Initialize training system if not done yet
-    if not ppo_policies or len(ppo_policies) == 0:
-        initialize_training()
-        start_episode()
-
-    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
-    
-    # STEP 1: STREAMLINED SAFETY CHECKS - Do all validation upfront, cache results
-    if num_robots > len(ppo_policies):
-        logging.error(f"(training.py): Not enough PPO policies ({len(ppo_policies)}) for {num_robots} robots")
-        num_robots = len(ppo_policies)  # Limit to available policies
-        
-    if num_robots > len(episode_rewards):
-        logging.error(f"(training.py): Not enough tracking arrays ({len(episode_rewards)}) for {num_robots} robots")
-        num_robots = len(episode_rewards)  # Limit to available tracking arrays
-        
-    # Cache config validation - check if we need to fall back to single robot config
-    use_multi_robot_config = (len(config.SERVO_CONFIGS) > 0 and num_robots <= len(config.SERVO_CONFIGS))
-    if not use_multi_robot_config:
-        logging.warning(f"(training.py): Using single robot config fallback for {num_robots} robots")
-    
-    # CRITICAL: Check episode completion but DON'T reset from worker thread
-    episode_needs_reset = False
-    if rewards.EPISODE_STEP >= config.TRAINING_CONFIG['max_steps_per_episode']:
-        episode_needs_reset = True
-        print(f"Episode completed after {rewards.EPISODE_STEP} steps! (signaling main thread)")
-
-    # Store reset signal for main thread to check
-    config.EPISODE_NEEDS_RESET = episode_needs_reset
-
-    # Log episode progress every 100 steps
-    if rewards.EPISODE_STEP % 100 == 0:
-        print(f"Step {rewards.EPISODE_STEP}, Total Steps: {sum(total_steps_list)}")
-    
-    if rewards.EPISODE_STEP % 50 == 0:
-        # Track orientation for all robots
-        for robot_idx in range(num_robots):
-            track_orientation(robot_idx)
-    
-    # Direct processing - collect results immediately like the OLD function
-    all_target_angles = []
-    all_mid_angles = []
-    all_movement_rates = []
-    
-    for robot_idx in range(num_robots):
-        # Process each robot directly - no thread pool overhead
-        target_angles, mid_angles, movement_rates = get_single_robot_action(robot_idx, current_angles, commands, intensity, use_multi_robot_config)
-        
-        # Add results directly to arrays (no future.result() calls)
-        if target_angles is not None:
-            all_target_angles.append(target_angles)
-            all_mid_angles.append(mid_angles)
-            all_movement_rates.append(movement_rates)
-    
-    # CRITICAL: Only increment episode step ONCE per call, not per robot
-    rewards.EPISODE_STEP += 1
-
-    # Return predictions for ALL robots
-    return all_target_angles, all_mid_angles, all_movement_rates
 
 
 ########## EPISODE MANAGEMENT ##########
@@ -513,25 +459,38 @@ def start_episode():
     # You now control movement rewards through your reward function
 
     logging.debug(f"🚀 Starting episode {episode_counter}\n")
-    track_orientation(robot_idx)
+    # Show initial orientation at episode start
+    track_orientation()
 
 
 ##### end episode #####
 
 def end_episode():
-    """End current episode - just track progress, don't save models"""
-    global episode_reward, episode_scores, average_score
-    
+    """End current episode and save progress"""
+    global episode_counter, episode_reward, episode_scores, average_score
+
+    logging.debug(f"🎯 Episode {episode_counter} ended:")
+    logging.debug(f"   📊 Steps: {rewards.EPISODE_STEP}")
+    logging.debug(f"   📊 Final Reward: {episode_reward:.3f}\n")
+
     # Track episode scores for average calculation
     episode_scores.append(episode_reward)
-    if len(episode_scores) > 100:
+    if len(episode_scores) > 100:  # Keep only last 100 episodes for recent average
         episode_scores.pop(0)
     
     # Calculate running average
     average_score = sum(episode_scores) / len(episode_scores)
     logging.info(f"   📊 Average Score (last {len(episode_scores)} episodes): {average_score:.3f}\n")
 
-    # TODO difference here- no longer save model at end of episode
+    # Save model periodically based on total steps (only if PPO policy is initialized)
+    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None:
+        save_model(
+            f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_episode_{episode_counter}_avg_{average_score:.2f}.pth")
+        logging.info(f"💾 Model saved: steps_{total_steps}, episode_{episode_counter}, avg_score_{average_score:.2f}\n")
+    elif ppo_policy is None:
+        logging.warning(f"⚠️  Warning: PPO policy not initialized yet, skipping model save for episode {episode_counter}\n")
+    else:
+        logging.warning(f"📝 Episode {episode_counter} completed but not at save frequency ({config.TRAINING_CONFIG['save_frequency']} steps)\n")
 
 
 ##### check/reset episode #####
@@ -544,7 +503,7 @@ def check_and_reset_episode_if_needed():  # TODO compare with reset_episode()
     Returns:
         bool: True if episode was reset, False otherwise
     """
-    global episode_reward
+    global episode_counter, episode_reward
 
     import utilities.config as config
 
@@ -557,12 +516,13 @@ def check_and_reset_episode_if_needed():  # TODO compare with reset_episode()
 
     # Check if episode has reached max steps
     if rewards.EPISODE_STEP >= config.TRAINING_CONFIG['max_steps_per_episode']:
-        logging.debug(f"🎯 Episode completed after {rewards.EPISODE_STEP} steps.\n")
+        logging.debug(f"🎯 Episode {episode_counter} completed after {rewards.EPISODE_STEP} steps.\n")
         # Save model before resetting
         end_episode()
-
-        # TODO difference here- no longer monitor learning progress
-
+        
+        # Monitor learning progress before resetting
+        monitor_learning_progress()
+        
         reset_episode()
         return True
 
@@ -576,11 +536,11 @@ def reset_episode():
     Reset the current episode by resetting Isaac Sim world and moving robot to neutral position.
     This is the critical function that was working in working_robot_reset.py
     """
-    global episode_reward, episode_states, episode_actions, total_steps, episode_counter
+    global episode_reward, episode_states, episode_actions, episode_counter, total_steps
 
     try:
         logging.info(
-            f"(training.py): Episode ending - Episode complete, resetting Isaac Sim world.\n")
+            f"(training.py): Episode {episode_counter} ending - Episode complete, resetting Isaac Sim world.\n")
 
         # CRITICAL: Save the model before resetting (if episode had any progress)
         if rewards.EPISODE_STEP > 0:
@@ -617,9 +577,18 @@ def reset_episode():
         # COMPLETELY GUTTED - No more movement tracking reset
         # You now control movement tracking through your reward function
 
+        # Increment episode counter
         episode_counter += 1
 
-        logging.info(f"(training.py): Episode reset complete - World and robot state reset.\n")
+        logging.info(f"(training.py): Episode {episode_counter} reset complete - World and robot state reset.\n")
+
+        # Log learning progress every 10 episodes
+        if episode_counter % 10 == 0:
+            logging.debug(f"🎯 Training Progress: {episode_counter} episodes completed.\n")
+            if episode_states: # Check if episode_states is not empty
+                logging.debug(f"   📊 Episode data size: {len(episode_states)}\n")
+            if ppo_policy is not None:
+                logging.debug(f"   🧠 PPO policy ready for training.\n")
 
     except Exception as e:
         logging.error(f"(training.py): Failed to reset episode: {e}\n")
@@ -638,16 +607,18 @@ def save_model(filepath):
     if ppo_policy:
 
         logging.info(f"💾 Saving PPO model to: {filepath}")
+        logging.info(f"   📊 Current episode: {episode_counter}")
         logging.info(f"   📊 Current step: {rewards.EPISODE_STEP}")
         logging.info(f"   📊 Total steps: {total_steps}")
         logging.info(f"   📊 Episode reward: {episode_reward:.4f}\n")
 
-        # TODO difference here- no longer save episode counter in the checkpoint
+        # Create the checkpoint data
         checkpoint = {
             'actor_critic_state_dict': ppo_policy.actor_critic.state_dict(),
             'optimizer_state_dict': ppo_policy.optimizer.state_dict(),
+            'episode_counter': episode_counter,
             'total_steps': total_steps,
-            'episode_reward': episode_reward
+            'episode_reward': episode_reward,
         }
 
         # Verify checkpoint data before saving
@@ -689,18 +660,69 @@ def load_model(filepath):
         ppo_policy.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
         # Restore training state
-        episode_counter = 0
+        episode_counter = checkpoint.get('episode_counter', 0)
         total_steps = checkpoint.get('total_steps', 0)
         episode_reward = checkpoint.get('episode_reward', 0.0)
 
         logging.info(f"Model loaded from: {filepath}")
+        logging.info(f"  - Episode: {episode_counter}")
         logging.info(f"  - Total steps: {total_steps}")
         logging.info(f"  - Episode reward: {episode_reward:.4f}\n")
         return True
     return False
 
+##### monitor learning progress #####
 
-# TODO difference here- monitor learning progress function deleted
+def monitor_learning_progress():
+    """
+    Monitor the agent's learning progress and detect potential issues.
+    This helps identify if the agent is stuck in a loop of falling behaviors.
+    """
+    global episode_counter, episode_reward, episode_states
+    
+    if not episode_states:
+        return
+    
+    # Calculate average reward over last few episodes
+    recent_rewards = []
+    if hasattr(monitor_learning_progress, 'episode_rewards'):
+        recent_rewards = monitor_learning_progress.episode_rewards[-5:]  # Last 5 episodes
+    
+    # Store current episode reward
+    if not hasattr(monitor_learning_progress, 'episode_rewards'):
+        monitor_learning_progress.episode_rewards = []
+    
+    monitor_learning_progress.episode_rewards.append(episode_reward)
+    
+    # Keep only last 20 episodes
+    if len(monitor_learning_progress.episode_rewards) > 20:
+        monitor_learning_progress.episode_rewards.pop(0)
+    
+    # Analyze learning progress
+    if len(recent_rewards) >= 3:
+        avg_reward = sum(recent_rewards) / len(recent_rewards)
+        min_reward = min(recent_rewards)
+        
+        logging.info(f"📊 Learning Progress Analysis:")
+        logging.info(f"   🎯 Recent episodes: {len(recent_rewards)}")
+        logging.info(f"   📈 Average reward: {avg_reward:.3f}")
+        logging.info(f"   📉 Worst reward: {min_reward:.3f}")
+        logging.info(f"   🧠 PPO policy: Ready for training.\n")
+        
+        # COMPLETELY GUTTED - No more automatic fall loop detection
+        # You now control what constitutes problematic behavior through your reward system
+        
+        # Detect if agent is improving
+        if len(monitor_learning_progress.episode_rewards) >= 10:
+            first_half = monitor_learning_progress.episode_rewards[:10]
+            second_half = monitor_learning_progress.episode_rewards[-10:]
+            first_avg = sum(first_half) / len(first_half)
+            second_avg = sum(second_half) / len(second_half)
+            
+            if second_avg > first_avg:
+                logging.info(f"✅ Agent is improving! First 10: {first_avg:.3f}, Last 10: {second_avg:.3f}\n")
+            else:
+                logging.info(f"❌ Agent not improving. First 10: {first_avg:.3f}, Last 10: {second_avg:.3f}\n")
 
 
 ########## RANDOM COMMANDS AND INTENSITIES ##########
@@ -720,13 +742,13 @@ def get_random_command(phase=1): # returns semirandom, realistic command combina
         # Simple transition weights for phase 1
         command_weights = {
             'w': {
-                'w': 0.9, 'arrowleft': 0.05, 'arrowright': 0.05
+                'w': 0.6, 'arrowleft': 0.2, 'arrowright': 0.2
             },
             'arrowleft': {
-                'w': 0.05, 'arrowleft': 0.9, 'arrowright': 0.05
+                'w': 0.4, 'arrowleft': 0.4, 'arrowright': 0.2
             },
             'arrowright': {
-                'w': 0.05, 'arrowleft': 0.05, 'arrowright': 0.9
+                'w': 0.4, 'arrowleft': 0.2, 'arrowright': 0.4
             }
         }
     

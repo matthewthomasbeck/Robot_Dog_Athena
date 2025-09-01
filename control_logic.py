@@ -109,6 +109,9 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
 
     ##### spawn multiple robots for parallel training #####
 
+    # Initialize camera processes list for multi-robot setup
+    config.CAMERA_PROCESSES = []
+    
     logging.info(f"(control_logic.py): Spawning {config.MULTI_ROBOT_CONFIG['num_robots']} robots for parallel training...\n")
 
     for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
@@ -173,7 +176,7 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
             config.SERVO_CONFIGS.append(robot_servo_config)
             
             # Initialize camera process for this robot
-            camera_process = initialize_camera()
+            camera_process = initialize_camera(robot_id=robot_id)
             config.CAMERA_PROCESSES.append(camera_process)
             
             logging.info(f"(control_logic.py): Robot {robot_id} initialized successfully.\n")
@@ -346,67 +349,23 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             ##### decode frame #####
 
-            # Process all camera processes for multi-robot setup
-            # Each robot gets its own camera frame for proper orientation tracking
-            #camera_frames = []
-            #if config.CAMERA_PROCESSES:
-                #for robot_id, camera_process in enumerate(config.CAMERA_PROCESSES):
-                    #try:
-                        #if camera_process is not None:
-                            #mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(camera_process)
-                            #camera_frames.append({
-                                #'robot_id': robot_id,
-                                #'mjpeg_buffer': mjpeg_buffer,
-                                #'streamed_frame': streamed_frame,
-                                #'inference_frame': inference_frame
-                            #})
-
-                        #else:
-                            # Create empty frame data for robots without working cameras
-                            #camera_frames.append({
-                                #'robot_id': robot_id,
-                                #'mjpeg_buffer': b'',
-                                #'streamed_frame': None,
-                                #'inference_frame': None
-                                #'inference_frame': None
-                            #})
-                            #logging.debug(f"(control_logic.py): Camera frame {robot_id}: No camera process")
-                    #except Exception as e:
-                        #logging.warning(f"(control_logic.py): Failed to decode frame for robot {robot_id}: {e}\n")
-                        # Create empty frame data for failed cameras
-                        #camera_frames.append({
-                            #'robot_id': robot_id,
-                            #'mjpeg_buffer': b'',
-                            #'streamed_frame': None,
-                            #'inference_frame': None
-                        #})
-                        #logging.debug(f"(control_logic.py): Camera frame {robot_id}: Failed - {e}")
-                
-                # Use first robot's frame for main inference (fallback)
-                #if camera_frames:
-                    #main_frame = camera_frames[0]['inference_frame']
-                #else:
-                    #main_frame = None
-                    #logging.warning("(control_logic.py): No camera frames processed")
-            #else:
-                # Fallback to single camera if no multi-robot setup
-                #try:
-                    #mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(CAMERA_PROCESS)
-                    #main_frame = inference_frame
-                    #camera_frames = [{
-                        #'robot_id': 0,
-                        ##'mjpeg_buffer': mjpeg_buffer,
-                        #'streamed_frame': streamed_frame,
-                        #'inference_frame': inference_frame
-                    #}]
-                    #logging.debug("(control_logic.py): Single camera fallback processed")
-                #except Exception as e:
-                    #logging.warning(f"(control_logic.py): Failed to decode single camera frame: {e}\n")
-                    #main_frame = None
-                    #camera_frames = []
-
-            main_frame = None
+            # Multi-robot camera processing
             camera_frames = []
+            if config.CAMERA_PROCESSES:
+                for robot_id, camera_process in enumerate(config.CAMERA_PROCESSES):
+                    try:
+                        mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(camera_process)
+                        camera_frames.append({
+                            'robot_id': robot_id,
+                            'mjpeg_buffer': mjpeg_buffer,
+                            'streamed_frame': streamed_frame,
+                            'inference_frame': inference_frame
+                        })
+                    except Exception as e:
+                        logging.error(f"(control_logic.py): Failed to decode frame for robot {robot_id}: {e}\n")
+                
+                if not camera_frames:
+                    logging.warning("(control_logic.py): No camera frames processed")
 
             ##### get command #####
 
@@ -446,12 +405,12 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             ##### command handling #####
 
             if command and IS_COMPLETE:  # if command present and movement complete...
-                _handle_command(command, main_frame, camera_frames)
+                _handle_command(command, camera_frames)
 
             # NEUTRAL POSITION HANDLING (for both modes)
             elif not command and IS_COMPLETE and not IS_NEUTRAL:  # if no command and movement complete and not neutral...
                 logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
-                _handle_command('n', main_frame, camera_frames)
+                _handle_command('n', camera_frames)
 
             ##### step simulation #####
 
@@ -462,10 +421,8 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 episode_reset_occurred = integrate_with_main_loop()
                 if episode_reset_occurred:
                     for _ in range(3):
-                        config.ISAAC_WORLD.step(render=True)
-
-    except KeyboardInterrupt:  # if user ends program...
-        logging.info("(control_logic.py): KeyboardInterrupt received, exiting.\n")
+                        config.ISAAC_WORLD.step(render)
+                camera_frames # Pass camera_frames to _execute_keyboard_commandsnly God knows what it is...
 
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
@@ -474,7 +431,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
 ########## HANDLE COMMANDS ##########
 
-def _handle_command(command, frame, camera_frames=None):
+def _handle_command(command, camera_frames=None):
     # logging.debug(f"(control_logic.py): Threading command: {command}...\n")
 
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
@@ -499,7 +456,7 @@ def _handle_command(command, frame, camera_frames=None):
             logging.debug(f"(control_logic.py): Executing radio commands: {command}...\n")
             IS_NEUTRAL, CURRENT_LEG = _execute_radio_commands(
                 command,  # command should be the full commands dict from interpret_commands
-                frame,
+                camera_frames,
                 IS_NEUTRAL,
                 CURRENT_LEG
             )
@@ -525,11 +482,10 @@ def _handle_command(command, frame, camera_frames=None):
         try:
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(
                 keys,
-                frame,
+                camera_frames,
                 IS_NEUTRAL,
                 CURRENT_LEG,
-                intensity,
-                camera_frames # Pass camera_frames to _execute_keyboard_commands
+                intensity
             )
             # logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
             IS_COMPLETE = True
@@ -580,7 +536,7 @@ def _convert_direction_parts_to_fixed_list(direction_parts):
 
 ##### keyboard commands #####
 
-def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, camera_frames):
+def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, intensity):
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
     if 'i' in keys:  # if user wishes to enable/disable imageless gait...
@@ -657,7 +613,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
         is_neutral = True
 
     elif direction:
-        move_direction(direction, frame, intensity, IMAGELESS_GAIT)
+        move_direction(direction, camera_frames, intensity, IMAGELESS_GAIT)
         # calibrate_joints_isaac()
         is_neutral = False
     else:
@@ -668,7 +624,7 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, 
 
 ##### radio commands #####
 
-def _execute_radio_commands(commands, frame, is_neutral, current_leg):
+def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
     # as radio is currently not reliable enough for individual button pressing, prevent image use and reserve radio as
@@ -802,7 +758,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
         logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
         if special_actions:
             logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
-        move_direction(direction, frame, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
+        move_direction(direction, camera_frames, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
         is_neutral = False
 
     elif special_actions:
