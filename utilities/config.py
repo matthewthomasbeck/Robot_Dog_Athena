@@ -178,10 +178,6 @@ ISAAC_ROBOT_ARTICULATION_CONTROLLERS = [] # array of isaac sim robot articulatio
 CAMERA_PROCESSES = [] # array of camera processes for each robot
 SERVO_CONFIGS = [] # array of servo configurations for each robot
 
-# Legacy single robot (deprecated - will be removed)
-ISAAC_ROBOT = None # isaac sim robot articulation (DEPRECATED)
-ISAAC_ROBOT_ARTICULATION_CONTROLLER = None # isaac sim robot articulation controller (DEPRECATED)
-
 ##### isaac sim joint config #####
 
 JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac sim
@@ -189,14 +185,15 @@ JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac
 ##### multi-robot configuration #####
 
 MULTI_ROBOT_CONFIG = {
-    'num_robots': 4,  # number of robots to spawn for parallel training
+    'num_robots': 1,  # number of robots to spawn for parallel training (back to 2 robots)
     'robot_spacing': 2.0,  # spacing between robots in meters
     'robot_start_z': 0.14,  # starting height for robots to avoid clipping
-    'robot_positions': [  # predefined positions for robots (x, y, z)
-        (-3.0, -3.0, 0.14),  # robot 0: front-left
-        (3.0, -3.0, 0.14),   # robot 1: front-right  
-        (-3.0, 3.0, 0.14),   # robot 2: back-left
-        (3.0, 3.0, 0.14),    # robot 3: back-right
+    'robot_positions': [  # predefined positions for robots (x, y, z) - 2 robots
+        #(-3.0, -3.0, 0.14),  # robot 0: front-left
+        #(3.0, -3.0, 0.14),   # robot 1: front-right  
+        (0.0, 0.0, 0.14),   # robot 0: center position (commented out)
+        #(-3.0, 3.0, 0.14),   # robot 2: back-left (commented out)
+        #(3.0, 3.0, 0.14),    # robot 3: back-right (commented out)
     ]
 }
 

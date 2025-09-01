@@ -331,21 +331,12 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
         config.ISAAC_WORLD.step(render=True)
 
     try:  # try to run robot startup sequence for all robots
-        # Move all robots to neutral position
-        for robot_id in range(len(config.ISAAC_ROBOTS)):
-            try:
-                # Import neutral position function for Isaac Sim
-                from movement.isaac_joints import neutral_position_isaac_multi
-                neutral_position_isaac_multi(robot_id)
-                logging.info(f"(control_logic.py): Robot {robot_id} moved to neutral position.\n")
-            except Exception as e:
-                logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral position: {e}\n")
-        
+        neutral_position_isaac()
         time.sleep(3)
         IS_NEUTRAL = True  # set is_neutral to True
 
     except Exception as e:  # if there is an error, log error
-        logging.error(f"(control_logic.py): Failed to move to neutral standing position in runRobot: {e}\n")
+        logging.error(f"(control_logic.py): Failed to move to neutral standing position: {e}\n")
 
     ##### stream video, run inference, and control the robot #####
 
@@ -355,16 +346,67 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             ##### decode frame #####
 
-            # Skip camera frame decoding for now since cameras aren't working properly
-            # but keep camera objects for orientation tracking
-            # mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(  # run camera and decode frame
-            #     CAMERA_PROCESS
-            # )
-            #inference_frame = None # not going to worry about making cameras for
-            
-            # Set inference_frame to None for now to avoid camera errors
-            # TODO: Fix camera frame collection when orientation tracking is needed
-            inference_frame = None
+            # Process all camera processes for multi-robot setup
+            # Each robot gets its own camera frame for proper orientation tracking
+            #camera_frames = []
+            #if config.CAMERA_PROCESSES:
+                #for robot_id, camera_process in enumerate(config.CAMERA_PROCESSES):
+                    #try:
+                        #if camera_process is not None:
+                            #mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(camera_process)
+                            #camera_frames.append({
+                                #'robot_id': robot_id,
+                                #'mjpeg_buffer': mjpeg_buffer,
+                                #'streamed_frame': streamed_frame,
+                                #'inference_frame': inference_frame
+                            #})
+
+                        #else:
+                            # Create empty frame data for robots without working cameras
+                            #camera_frames.append({
+                                #'robot_id': robot_id,
+                                #'mjpeg_buffer': b'',
+                                #'streamed_frame': None,
+                                #'inference_frame': None
+                                #'inference_frame': None
+                            #})
+                            #logging.debug(f"(control_logic.py): Camera frame {robot_id}: No camera process")
+                    #except Exception as e:
+                        #logging.warning(f"(control_logic.py): Failed to decode frame for robot {robot_id}: {e}\n")
+                        # Create empty frame data for failed cameras
+                        #camera_frames.append({
+                            #'robot_id': robot_id,
+                            #'mjpeg_buffer': b'',
+                            #'streamed_frame': None,
+                            #'inference_frame': None
+                        #})
+                        #logging.debug(f"(control_logic.py): Camera frame {robot_id}: Failed - {e}")
+                
+                # Use first robot's frame for main inference (fallback)
+                #if camera_frames:
+                    #main_frame = camera_frames[0]['inference_frame']
+                #else:
+                    #main_frame = None
+                    #logging.warning("(control_logic.py): No camera frames processed")
+            #else:
+                # Fallback to single camera if no multi-robot setup
+                #try:
+                    #mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(CAMERA_PROCESS)
+                    #main_frame = inference_frame
+                    #camera_frames = [{
+                        #'robot_id': 0,
+                        ##'mjpeg_buffer': mjpeg_buffer,
+                        #'streamed_frame': streamed_frame,
+                        #'inference_frame': inference_frame
+                    #}]
+                    #logging.debug("(control_logic.py): Single camera fallback processed")
+                #except Exception as e:
+                    #logging.warning(f"(control_logic.py): Failed to decode single camera frame: {e}\n")
+                    #main_frame = None
+                    #camera_frames = []
+
+            main_frame = None
+            camera_frames = []
 
             ##### get command #####
 
@@ -404,19 +446,18 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             ##### command handling #####
 
             if command and IS_COMPLETE:  # if command present and movement complete...
-                # logging.debug(f"(control_logic.py): Running command: {command}...\n")
-                threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
+                _handle_command(command, main_frame, camera_frames)
 
             # NEUTRAL POSITION HANDLING (for both modes)
             elif not command and IS_COMPLETE and not IS_NEUTRAL:  # if no command and movement complete and not neutral...
                 logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
-                threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
+                _handle_command('n', main_frame, camera_frames)
 
             ##### step simulation #####
 
             config.ISAAC_WORLD.step(render=True)
 
-            if config.USE_SIMULATION:
+            if config.USE_SIMULATION: # TODO ensure all robots pause when one robot resets
                 from training.training import integrate_with_main_loop
                 episode_reset_occurred = integrate_with_main_loop()
                 if episode_reset_occurred:
@@ -433,7 +474,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
 ########## HANDLE COMMANDS ##########
 
-def _handle_command(command, frame):
+def _handle_command(command, frame, camera_frames=None):
     # logging.debug(f"(control_logic.py): Threading command: {command}...\n")
 
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
@@ -487,7 +528,8 @@ def _handle_command(command, frame):
                 frame,
                 IS_NEUTRAL,
                 CURRENT_LEG,
-                intensity
+                intensity,
+                camera_frames # Pass camera_frames to _execute_keyboard_commands
             )
             # logging.info(f"(control_logic.py): Executed keyboard command: {keys}\n")
             IS_COMPLETE = True
@@ -538,7 +580,7 @@ def _convert_direction_parts_to_fixed_list(direction_parts):
 
 ##### keyboard commands #####
 
-def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
+def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity, camera_frames):
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
 
     if 'i' in keys:  # if user wishes to enable/disable imageless gait...
@@ -611,30 +653,11 @@ def _execute_keyboard_commands(keys, frame, is_neutral, current_leg, intensity):
 
     # neutral and special actions
     if 'n' in keys or not keys:
-        if config.USE_SIMULATION:
-            # For Isaac Sim, move all robots to neutral position
-            from movement.movement_coordinator import neutral_position_multi
-            for robot_id in range(len(config.ISAAC_ROBOTS)):
-                try:
-                    neutral_position_multi(10, robot_id)
-                except Exception as e:
-                    logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral: {e}\n")
-        else:
-            neutral_position(10)
+        neutral_position(10)
         is_neutral = True
+
     elif direction:
-        # logging.debug(f"(control_logic.py): {keys}: {direction}\n")
-        # Use trot_forward for all modes (now supports Isaac Sim queue system)
-        if config.USE_SIMULATION:
-            # For Isaac Sim, execute the same command on all robots
-            from movement.movement_coordinator import move_direction_multi
-            for robot_id in range(len(config.ISAAC_ROBOTS)):
-                try:
-                    move_direction_multi(direction, frame, intensity, IMAGELESS_GAIT, robot_id)
-                except Exception as e:
-                    logging.error(f"(control_logic.py): Failed to execute command on robot {robot_id}: {e}\n")
-        else:
-            move_direction(direction, frame, intensity, IMAGELESS_GAIT)
+        move_direction(direction, frame, intensity, IMAGELESS_GAIT)
         # calibrate_joints_isaac()
         is_neutral = False
     else:
@@ -658,16 +681,7 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
 
     if not active_commands:
         logging.info(f"(control_logic.py): All channels neutral, returning to neutral position.\n")
-        if config.USE_SIMULATION:
-            # For Isaac Sim, move all robots to neutral position
-            from movement.movement_coordinator import neutral_position_multi
-            for robot_id in range(len(config.ISAAC_ROBOTS)):
-                try:
-                    neutral_position_multi(10, robot_id)
-                except Exception as e:
-                    logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral: {e}\n")
-        else:
-            neutral_position(10)
+        neutral_position(10)
         is_neutral = True
         return is_neutral, current_leg
 
@@ -788,18 +802,9 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
         logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
         if special_actions:
             logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
-        # move_direction(direction, frame, max_intensity, IMAGELESS_GAIT)
-        if config.USE_SIMULATION:
-            # For Isaac Sim, execute the same command on all robots
-            from movement.movement_coordinator import move_direction_multi
-            for robot_id in range(len(config.ISAAC_ROBOTS)):
-                try:
-                    move_direction_multi(direction, frame, 10, IMAGELESS_GAIT, robot_id)
-                except Exception as e:
-                    logging.error(f"(control_logic.py): Failed to execute radio command on robot {robot_id}: {e}\n")
-        else:
-            move_direction(direction, frame, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
+        move_direction(direction, frame, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
         is_neutral = False
+
     elif special_actions:
         # only special actions, no movement
         logging.debug(f"(control_logic.py): Special actions only: ({special_actions})\n")
@@ -807,17 +812,9 @@ def _execute_radio_commands(commands, frame, is_neutral, current_leg):
         if 'SQUAT_DOWN' in special_actions:
             pass
             is_neutral = False
+
         elif 'SQUAT_UP' in special_actions:
-            if config.USE_SIMULATION:
-                # For Isaac Sim, move all robots to neutral position
-                from movement.movement_coordinator import neutral_position_multi
-                for robot_id in range(len(config.ISAAC_ROBOTS)):
-                    try:
-                        neutral_position_multi(10, robot_id)
-                    except Exception as e:
-                        logging.error(f"(control_logic.py): Failed to move robot {robot_id} to neutral: {e}\n")
-            else:
-                neutral_position(10)
+            neutral_position(10)
             is_neutral = True
 
     return is_neutral, current_leg

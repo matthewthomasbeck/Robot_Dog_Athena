@@ -42,9 +42,16 @@ from scipy.spatial.transform import Rotation
 
 ########## ORIENTATION FUNCTION ##########
 
-def track_orientation():
+def track_orientation(robot_idx=0):
     try:
-        positions, rotations = config.ISAAC_ROBOT.get_world_poses()
+        # Get the specific robot's data
+        if robot_idx >= len(config.ISAAC_ROBOTS):
+            logging.error(f"(orientation.py): Robot {robot_idx} not found, using robot 0")
+            robot_idx = 0
+            
+        positions, rotations = config.ISAAC_ROBOTS[robot_idx].get_world_poses()
+        print(f"(orientation.py): Positions: {positions}")
+        print(f"(orientation.py): Rotations: {rotations}")
         center_pos = positions[0]
         rotation = rotations[0]
         quat_wxyz = [rotation[0], rotation[1], rotation[2], rotation[3]]
@@ -75,7 +82,14 @@ def track_orientation():
         height = center_pos[2]
 
         # Store current facing direction for reward function (even on first call)
-        track_orientation.last_facing_deg = facing_deg
+        # Use robot-specific storage
+        if not hasattr(track_orientation, 'robot_data'):
+            track_orientation.robot_data = {}
+        
+        if robot_idx not in track_orientation.robot_data:
+            track_orientation.robot_data[robot_idx] = {}
+            
+        track_orientation.robot_data[robot_idx]['last_facing_deg'] = facing_deg
 
         # Calculate current directions relative to robot's current facing (WASD format)
         # These change as the robot rotates
@@ -84,29 +98,26 @@ def track_orientation():
         curr_a = (facing_deg + 90) % 360  # 90° left of forward (A key)
         curr_d = (facing_deg + 270) % 360  # 90° right of forward (D key)
 
-        # Print position, facing direction, balance, height, and current WASD directions
-        # logging.(f"center: x {center_pos[0]:.3f}, y {center_pos[1]:.3f}, z {center_pos[2]:.3f} facing(deg): {facing_deg:.0f} off_balance(deg): {off_balance:.1f} height(m): {height:.3f} curr_w(deg): {curr_w:.0f} curr_s(deg): {curr_s:.0f} curr_a(deg): {curr_a:.0f} curr_d(deg): {curr_d:.0f}")
-
         # Check if position is changing (robot is actually moving)
-        if not hasattr(track_orientation, 'last_position'):
-            track_orientation.last_position = center_pos
-            track_orientation.static_count = 0
+        if 'last_position' not in track_orientation.robot_data[robot_idx]:
+            track_orientation.robot_data[robot_idx]['last_position'] = center_pos
+            track_orientation.robot_data[robot_idx]['static_count'] = 0
         else:
             # Calculate horizontal distance moved (ignore Z-axis bouncing)
-            dx = center_pos[0] - track_orientation.last_position[0]  # X movement
-            dy = center_pos[1] - track_orientation.last_position[1]  # Y movement
+            dx = center_pos[0] - track_orientation.robot_data[robot_idx]['last_position'][0]  # X movement
+            dy = center_pos[1] - track_orientation.robot_data[robot_idx]['last_position'][1]  # Y movement
 
             horizontal_distance = np.sqrt(dx ** 2 + dy ** 2)
 
             if horizontal_distance < 0.001:  # Less than 1mm horizontal movement
-                track_orientation.static_count += 1
-                if track_orientation.static_count > 10:
-                    logging.warning(f"   ⚠️  Robot hasn't moved horizontally in {track_orientation.static_count} steps!")
+                track_orientation.robot_data[robot_idx]['static_count'] += 1
+                if track_orientation.robot_data[robot_idx]['static_count'] > 10:
+                    logging.warning(f"   ⚠️  Robot {robot_idx} hasn't moved horizontally in {track_orientation.robot_data[robot_idx]['static_count']} steps!")
 
                 # Store current facing direction even when not moving (for reward function)
-                track_orientation.last_facing_deg = facing_deg
+                track_orientation.robot_data[robot_idx]['last_facing_deg'] = facing_deg
             else:
-                track_orientation.static_count = 0
+                track_orientation.robot_data[robot_idx]['static_count'] = 0
 
                 # Calculate directional movement components relative to robot's current facing (WASD format)
                 facing_rad = np.radians(facing_deg)
@@ -136,12 +147,12 @@ def track_orientation():
                     movement_direction = "n"  # No significant movement
 
                 # Calculate rotation (change in facing direction)
-                if not hasattr(track_orientation, 'last_facing'):
-                    track_orientation.last_facing = facing_deg
+                if 'last_facing' not in track_orientation.robot_data[robot_idx]:
+                    track_orientation.robot_data[robot_idx]['last_facing'] = facing_deg
                     rotation_deg = 0.0
                 else:
                     # Calculate rotation as change in facing direction
-                    rotation_change = facing_deg - track_orientation.last_facing
+                    rotation_change = facing_deg - track_orientation.robot_data[robot_idx]['last_facing']
 
                     # Handle wrapping around 360° boundary
                     if rotation_change > 180:
@@ -150,13 +161,10 @@ def track_orientation():
                         rotation_change += 360
 
                     rotation_deg = rotation_change
-                    track_orientation.last_facing = facing_deg
-
-                # logging.debug(f"   moved(m): {horizontal_distance:.3f} ({movement_direction}) w: {w_movement:.3f} s: {s_movement:.3f} a: {a_movement:.3f} d: {d_movement:.3f}")
-                # logging.debug(f"   rotated(deg): {rotation_deg:.1f}")
+                    track_orientation.robot_data[robot_idx]['last_facing'] = facing_deg
 
                 # Store movement data for reward function to access
-                track_orientation.last_movement_data = {
+                track_orientation.robot_data[robot_idx]['last_movement_data'] = {
                     'w': w_movement,
                     's': s_movement,
                     'a': a_movement,
@@ -164,14 +172,14 @@ def track_orientation():
                     'movement_direction': movement_direction,
                     'horizontal_distance': horizontal_distance
                 }
-                track_orientation.last_rotation = rotation_deg
-                track_orientation.last_off_balance = off_balance
-                track_orientation.last_facing_deg = facing_deg  # Store current facing direction for strict movement detection
+                track_orientation.robot_data[robot_idx]['last_rotation'] = rotation_deg
+                track_orientation.robot_data[robot_idx]['last_off_balance'] = off_balance
+                track_orientation.robot_data[robot_idx]['last_facing_deg'] = facing_deg  # Store current facing direction for strict movement detection
 
-            track_orientation.last_position = center_pos
+            track_orientation.robot_data[robot_idx]['last_position'] = center_pos
 
         return center_pos, facing_deg
 
     except Exception as e:
-        logging.error(f"❌ Failed to track orientation: {e}")
+        logging.error(f"❌ Failed to track orientation for robot {robot_idx}: {e}")
         return None, None

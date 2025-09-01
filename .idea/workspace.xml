@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="I think I decoupled episode logic from model saving???? Bro I am so confused">
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/isaac_joints.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Multiple robots spawning in" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -213,7 +206,7 @@
       <workItem from="1755488510179" duration="243000" />
       <workItem from="1756266694009" duration="1000" />
       <workItem from="1756266699504" duration="51000" />
-      <workItem from="1756568926507" duration="2901000" />
+      <workItem from="1756568926507" duration="3518000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -354,14 +347,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00107" summary="MODELS SAVED, EPISODE RESETS">
-      <option name="closed" value="true" />
-      <created>1754971205092</created>
-      <option name="number" value="00107" />
-      <option name="presentableId" value="LOCAL-00107" />
-      <option name="project" value="LOCAL" />
-      <updated>1754971205092</updated>
     </task>
     <task id="LOCAL-00108" summary="Model validity created">
       <option name="closed" value="true" />
@@ -587,7 +572,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756596289639</updated>
     </task>
-    <option name="localTasksCounter" value="136" />
+    <task id="LOCAL-00136" summary="Multiple robots spawning in">
+      <option name="closed" value="true" />
+      <created>1756660546688</created>
+      <option name="number" value="00136" />
+      <option name="presentableId" value="LOCAL-00136" />
+      <option name="project" value="LOCAL" />
+      <updated>1756660546688</updated>
+    </task>
+    <option name="localTasksCounter" value="137" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -605,7 +598,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cleaned up control_logic and training" />
     <MESSAGE value="Cleaned up control_logic" />
     <MESSAGE value="Created accurate orientation tracking" />
     <MESSAGE value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
@@ -630,7 +622,8 @@
     <MESSAGE value="Going to resume training, hopefully things go better but I doubt they will :l" />
     <MESSAGE value="UPDATE: Things have gone a little better, at around 1.28 million steps, somewhat of a very shitty gait can be seen; pushing before I hopefully get multiagent continuous training going" />
     <MESSAGE value="I think I decoupled episode logic from model saving???? Bro I am so confused" />
-    <option name="LAST_COMMIT_MESSAGE" value="I think I decoupled episode logic from model saving???? Bro I am so confused" />
+    <MESSAGE value="Multiple robots spawning in" />
+    <option name="LAST_COMMIT_MESSAGE" value="Multiple robots spawning in" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

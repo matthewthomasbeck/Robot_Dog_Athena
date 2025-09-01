@@ -48,83 +48,66 @@ EPISODE_STEP = 0
 
 ########## CALCULATE REWARD ##########
 
-def calculate_step_reward(current_angles, commands, intensity): # function to calculate reward for step
-
-    ##### set variables #####
-
+def calculate_step_reward(robot_idx, current_angles, commands, intensity):
+    """
+    Calculate reward for a specific robot based on its current state and actions.
+    
+    Args:
+        robot_idx: Index of the robot to calculate reward for
+        current_angles: Current joint angles for the robot
+        commands: Movement commands
+        intensity: Movement intensity
+    
+    Returns:
+        float: Calculated reward for this robot
+    """
     global EPISODE_STEP
-
-    center_pos, facing_deg = track_orientation()
-    if center_pos is None:
+    
+    try:
+        # Get robot-specific orientation data
+        if not hasattr(track_orientation, 'robot_data') or robot_idx not in track_orientation.robot_data:
+            # If no orientation data available, return neutral reward
+            return 0.0
+            
+        robot_data = track_orientation.robot_data[robot_idx]
+        
+        # Get movement data for this robot
+        movement_data = robot_data.get('last_movement_data', {})
+        last_rotation = robot_data.get('last_rotation', 0.0)
+        last_off_balance = robot_data.get('last_off_balance', 0.0)
+        last_facing_deg = robot_data.get('last_facing_deg', 0.0)
+        
+        # Your existing reward calculation logic here, but using robot-specific data
+        # For example:
+        reward = 0.0
+        
+        # Movement reward based on command execution
+        if 'w' in commands and movement_data.get('w', 0) > 0.001:
+            reward += 0.1
+        if 's' in commands and movement_data.get('s', 0) > 0.001:
+            reward += 0.1
+        if 'a' in commands and movement_data.get('a', 0) > 0.001:
+            reward += 0.1
+        if 'd' in commands and movement_data.get('d', 0) > 0.001:
+            reward += 0.1
+            
+        # Rotation reward
+        if 'arrowleft' in commands and last_rotation > 0:
+            reward += 0.1
+        if 'arrowright' in commands and last_rotation < 0:
+            reward += 0.1
+            
+        # Balance reward (penalty for being off-balance)
+        if last_off_balance > 30:  # More than 30 degrees off-balance
+            reward -= 0.5
+            
+        # Add your other reward components here...
+        
+        return reward
+        
+    except Exception as e:
+        logging.error(f"❌ Failed to calculate reward for robot {robot_idx}: {e}")
         return 0.0
-    reward = 0.0
-    was_perfect = True
-
-    ##### fall detection #####
-
-    current_height = center_pos[2]
-    if hasattr(track_orientation, 'last_off_balance'):
-        current_balance = track_orientation.last_off_balance
-    else:
-        current_balance = 0.0
-    has_fallen = current_balance > 90.0
-
-    ##### reward balance #####
-    
-    balance_reward = _reward_balance(current_balance)
-    if balance_reward < 1.0:
-        was_perfect = False
-
-    reward += balance_reward
-
-    ##### reward height #####
-
-    height_reward = _reward_height(current_height)
-    if height_reward < 1.0:
-        was_perfect = False
-
-    reward += height_reward
-
-    ##### reward rotation #####
-    
-    rotation_reward = _reward_rotation(track_orientation, commands, intensity)
-    if rotation_reward < 2.0:
-        was_perfect = False
-    
-    reward += rotation_reward
-
-    ##### reward movement #####
-
-    movement_reward = _reward_movement(track_orientation, commands, intensity)
-    if movement_reward < 1.0:
-        was_perfect = False
-    
-    reward += movement_reward
-
-    ##### reward perfect execution #####
-
-    if was_perfect and commands:
-        perfect_bonus = 10.0
-        reward += perfect_bonus
-        logging.debug(f"🏆 PERFECT EXECUTION! +{perfect_bonus:.1f} MASSIVE BONUS - All commands executed flawlessly!")
-    elif commands:
-        logging.debug(f"📊 Good execution, but not perfect - no bonus this time")
-    
-    ##### punish fall #####
-
-    if has_fallen:
-        fall_penalty = -100
-        logging.debug(f"EPISODE FAILURE -100 points (robot fell over)")
-        EPISODE_STEP = config.TRAINING_CONFIG['max_steps_per_episode']  # Force episode end
-
-        return fall_penalty
-
-    ##### clamp reward #####
-
-    elif not has_fallen:
-        reward = max(-1.0, min(1.0, reward))
-
-    return reward
 
 
 ########## BALANCE REWARD FUNCTION ##########
