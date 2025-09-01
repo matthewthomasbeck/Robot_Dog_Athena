@@ -111,7 +111,7 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
             config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS[robot_idx].apply_action(mid_action)
 
         # Wait after applying all mid angles
-        #time.sleep(0.05)
+        time.sleep(0.05)
         
         # STEP 2: Move all robots to target angles
         for robot_idx in range(num_robots):
@@ -159,7 +159,7 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
             config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS[robot_idx].apply_action(target_action)
 
         # Wait after applying all target angles
-        #time.sleep(0.05)
+        time.sleep(0.05)
         
     except Exception as e:
         logging.error(f"(isaac_joints.py): Failed to apply multi-robot joint angles: {e}\n")

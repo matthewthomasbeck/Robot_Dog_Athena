@@ -342,12 +342,8 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
         logging.error(f"(control_logic.py): Isaac Sim loop only works with web control mode, exiting.\n")
         return
 
-    ##### set/initialize variables #####
-
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG  # declare as global as these will be edited by function
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
-
-    ##### run robotic logic #####
 
     for _ in range(3):  # let isaac sim load a few steps for general process
         config.ISAAC_WORLD.step(render=True)
@@ -370,6 +366,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             # Multi-robot camera processing
             camera_frames = []
+            
             #if config.CAMERA_PROCESSES:
                 #for robot_id, camera_process in enumerate(config.CAMERA_PROCESSES):
                     #try:
@@ -398,7 +395,6 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 # Set training phase here (1, 2, or 3)
                 training_phase = 1  # Start with phase 1 for basic movement
                 command = get_random_command(phase=training_phase)
-                print(f"🎮 COMMAND: {command}")
 
             # Check RL command queue for Isaac Sim
             if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
@@ -424,12 +420,12 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             ##### command handling #####
 
             if command and IS_COMPLETE:  # if command present and movement complete...
-                _handle_command(command, camera_frames)
+                threading.Thread(target=_handle_command, args=(command, camera_frames), daemon=True).start()
 
             # NEUTRAL POSITION HANDLING (for both modes)
             elif not command and IS_COMPLETE and not IS_NEUTRAL:  # if no command and movement complete and not neutral...
                 logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
-                _handle_command('n', camera_frames)
+                threading.Thread(target=_handle_command, args=('n', camera_frames), daemon=True).start()
 
             ##### step simulation #####
 

@@ -129,15 +129,6 @@ INTERNET_CONFIG = {
 
 ########## PHYSICAL CONFIGURATION ##########
 
-##### set link configuration #####
-
-LINK_CONFIG = { # dictionary of leg linkages # TODO rename anything 'hip' related to 'pelvis' for 3d object consistency
-    'HIP_OFFSET': 0.0485394, # centerline to hip servo
-    'HIP_TO_LEG_PLANE': 0.0290068, # axis to leg plane
-    'FEMUR_LENGTH': 0.11, # femur length
-    'TIBIA_LENGTH': 0.125, # tibia length
-}
-
 ##### set dictionary of servos and their ranges #####
 
 SERVO_CONFIG = { # dictionary of leg configurations
@@ -184,8 +175,8 @@ JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac
 ##### multi-robot configuration #####
 
 MULTI_ROBOT_CONFIG = {
-    'num_robots': 20,  # number of robots to spawn for parallel training
-    'robot_spacing': 5.0,  # spacing between robots in meters
+    'num_robots': 4,  # number of robots to spawn for parallel training
+    'robot_spacing': 2.0,  # spacing between robots in meters
     'robot_start_z': 0.14,  # starting height for robots to avoid clipping
 }
 

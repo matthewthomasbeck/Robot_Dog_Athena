@@ -253,7 +253,7 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
 
     ##### force robot to slow down so the raspberry doesnt crash #####
 
-    #time.sleep(0.175) # only allow inference to run at rate # was 0.175
+    time.sleep(0.175) # only allow inference to run at rate # was 0.175
 
 
 ########## THREAD LEG MOVEMENT ##########

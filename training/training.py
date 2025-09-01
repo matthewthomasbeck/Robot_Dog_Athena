@@ -225,7 +225,6 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity):
     Get action for a single robot - used for parallel processing
     """
     import time
-    single_start = time.time()
     global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list
 
     # STEP 1 COMPLETE: Safety checks already done in main function
@@ -244,7 +243,6 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity):
 
     # Build state vector for this robot
     state = []
-    state_creation_start = time.time()
 
     # 1. Extract and normalize joint angles (12D) for this robot
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
@@ -297,12 +295,8 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity):
     if len(state) != expected_state_size:
         raise ValueError(f"State size mismatch: expected {expected_state_size}, got {len(state)}")
 
-    state_creation_time = time.time() - state_creation_start
-
     # Get action from PPO for this robot (stochastic during training, deterministic for deployment)
-    inference_start = time.time()
     action = ppo_policy.select_action(state, deterministic=False)
-    inference_time = time.time() - inference_start
 
     # Store experience for training
     if episode_states_robot and episode_actions_robot:
@@ -372,7 +366,6 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity):
     total_steps_list[robot_idx] += 1
 
     # Convert 36D action vector to joint angles and velocities for this robot
-    conversion_start = time.time()
     target_angles = {}
     mid_angles = {}
     movement_rates = {}
@@ -416,12 +409,6 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity):
 
             action_idx += 1
 
-    conversion_time = time.time() - conversion_start
-    total_single_time = time.time() - single_start
-    
-    if robot_idx == 0:  # Only log first robot to avoid spam
-        print(f"  Robot {robot_idx} - State creation: {state_creation_time:.4f}s, Model inference: {inference_time:.4f}s, Action conversion: {conversion_time:.4f}s, Total: {total_single_time:.4f}s")
-
     return target_angles, mid_angles, movement_rates
 
 def get_rl_action_blind(all_current_angles, commands, intensity):
@@ -439,8 +426,6 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
         all_mid_angles: List of mid joint angles for each robot  
         all_movement_rates: List of movement rates for each robot
     """
-    import time
-    start_time = time.time()
     global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list
 
     # Initialize training system if not done yet
@@ -483,30 +468,19 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
     all_target_angles = []
     all_mid_angles = []
     all_movement_rates = []
-    
-    robot_processing_start = time.time()
+
     for robot_idx in range(num_robots):
         # Process each robot directly - no thread pool overhead
-        single_robot_start = time.time()
         target_angles, mid_angles, movement_rates = get_single_robot_action(robot_idx, all_current_angles[robot_idx], commands, intensity)
-        single_robot_time = time.time() - single_robot_start
         
         # Add results directly to arrays (no future.result() calls)
         if target_angles is not None:
             all_target_angles.append(target_angles)
             all_mid_angles.append(mid_angles)
             all_movement_rates.append(movement_rates)
-        
-        if robot_idx == 0:  # Only log first robot to avoid spam
-            print(f"Robot {robot_idx} processing time: {single_robot_time:.4f}s")
-    
-    robot_processing_time = time.time() - robot_processing_start
-    total_time = time.time() - start_time
     
     # CRITICAL: Only increment episode step ONCE per call, not per robot
     rewards.EPISODE_STEP += 1
-
-    print(f"get_rl_action_blind total time: {total_time:.4f}s (robot processing: {robot_processing_time:.4f}s)")
     
     # Return predictions for ALL robots
     return all_target_angles, all_mid_angles, all_movement_rates
