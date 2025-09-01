@@ -220,10 +220,12 @@ def get_rl_action_standard(state, commands, intensity, frame):  # will eventuall
 
 ##### summon blind agent #####
 
-def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_multi_robot_config):
+def get_single_robot_action(robot_idx, current_angles, commands, intensity):
     """
     Get action for a single robot - used for parallel processing
     """
+    import time
+    single_start = time.time()
     global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list
 
     # STEP 1 COMPLETE: Safety checks already done in main function
@@ -242,18 +244,15 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
 
     # Build state vector for this robot
     state = []
+    state_creation_start = time.time()
 
     # 1. Extract and normalize joint angles (12D) for this robot
     for leg_id in ['FL', 'FR', 'BL', 'BR']:
         for joint_name in ['hip', 'upper', 'lower']:
             angle = current_angles[leg_id][joint_name]
             
-            # Get joint limits for normalization from this robot's config
-            # STEP 1 COMPLETE: Config validation already done in main function
-            if use_multi_robot_config:
-                servo_data = config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]
-            else:
-                servo_data = config.SERVO_CONFIG[leg_id][joint_name]  # Fallback to single robot config
+            # Get joint limits for normalization from static config (same for all robots)
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
             
             min_angle = servo_data['FULL_BACK_ANGLE']
             max_angle = servo_data['FULL_FRONT_ANGLE']
@@ -298,8 +297,12 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
     if len(state) != expected_state_size:
         raise ValueError(f"State size mismatch: expected {expected_state_size}, got {len(state)}")
 
+    state_creation_time = time.time() - state_creation_start
+
     # Get action from PPO for this robot (stochastic during training, deterministic for deployment)
+    inference_start = time.time()
     action = ppo_policy.select_action(state, deterministic=False)
+    inference_time = time.time() - inference_start
 
     # Store experience for training
     if episode_states_robot and episode_actions_robot:
@@ -369,6 +372,7 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
     total_steps_list[robot_idx] += 1
 
     # Convert 36D action vector to joint angles and velocities for this robot
+    conversion_start = time.time()
     target_angles = {}
     mid_angles = {}
     movement_rates = {}
@@ -381,12 +385,8 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
         movement_rates[leg_id] = {}
 
         for joint_name in ['hip', 'upper', 'lower']:
-            # Get joint limits from config for this specific robot
-            # Safety check for SERVO_CONFIGS array
-            if robot_idx >= len(config.SERVO_CONFIGS):
-                servo_data = config.SERVO_CONFIG[leg_id][joint_name]  # Fallback to single robot config
-            else:
-                servo_data = config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]
+            # Get joint limits from static config (same for all robots)
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
             
             min_angle = servo_data['FULL_BACK_ANGLE']
             max_angle = servo_data['FULL_FRONT_ANGLE']
@@ -399,35 +399,48 @@ def get_single_robot_action(robot_idx, current_angles, commands, intensity, use_
             mid_action = action[action_idx]
             mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
             mid_angle = np.clip(mid_angle, min_angle, max_angle)
-            mid_angles[leg_id][joint_name] = float(mid_angle)
+            mid_angles[leg_id][joint_name] = round(float(mid_angle), 4)  # Round to 4 decimal places
 
             # Convert target action (-1 to 1) to joint angle
             target_action = action[action_idx + 12]
             target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
             target_angle = np.clip(target_angle, min_angle, max_angle)
-            target_angles[leg_id][joint_name] = float(target_angle)
+            target_angles[leg_id][joint_name] = round(float(target_angle), 4)  # Round to 4 decimal places
 
             # Convert velocity action (-1 to 1) to movement rate in radians/second
             velocity_action = action[action_idx + 24]
             joint_speed = (velocity_action + 1.0) * 4.75
             joint_speed = np.clip(joint_speed, 0.0, 9.5)
             
-            movement_rates[leg_id][joint_name] = float(joint_speed)
+            movement_rates[leg_id][joint_name] = round(float(joint_speed), 3)  # Round to 3 decimal places
 
             action_idx += 1
 
+    conversion_time = time.time() - conversion_start
+    total_single_time = time.time() - single_start
+    
+    if robot_idx == 0:  # Only log first robot to avoid spam
+        print(f"  Robot {robot_idx} - State creation: {state_creation_time:.4f}s, Model inference: {inference_time:.4f}s, Action conversion: {conversion_time:.4f}s, Total: {total_single_time:.4f}s")
+
     return target_angles, mid_angles, movement_rates
 
-def get_rl_action_blind(current_angles, commands, intensity):
+def get_rl_action_blind(all_current_angles, commands, intensity):
     """
-    PPO RL agent that takes current joint angles, commands, and intensity as state
+    PPO RL agent that takes current joint angles for ALL robots, commands, and intensity as state
     and outputs predictions for ALL robots using parallel processing.
+    
+    Args:
+        all_current_angles: List of current joint angles for each robot
+        commands: Movement commands
+        intensity: Movement intensity
     
     Returns:
         all_target_angles: List of target joint angles for each robot
         all_mid_angles: List of mid joint angles for each robot  
         all_movement_rates: List of movement rates for each robot
     """
+    import time
+    start_time = time.time()
     global ppo_policies, episode_rewards, episode_states, episode_actions, episode_rewards_list, episode_values, episode_log_probs, episode_dones, total_steps_list
 
     # Initialize training system if not done yet
@@ -446,10 +459,7 @@ def get_rl_action_blind(current_angles, commands, intensity):
         logging.error(f"(training.py): Not enough tracking arrays ({len(episode_rewards)}) for {num_robots} robots")
         num_robots = len(episode_rewards)  # Limit to available tracking arrays
         
-    # Cache config validation - check if we need to fall back to single robot config
-    use_multi_robot_config = (len(config.SERVO_CONFIGS) > 0 and num_robots <= len(config.SERVO_CONFIGS))
-    if not use_multi_robot_config:
-        logging.warning(f"(training.py): Using single robot config fallback for {num_robots} robots")
+    # No more config validation needed - we use static SERVO_CONFIG for all robots
     
     # CRITICAL: Check episode completion but DON'T reset from worker thread
     episode_needs_reset = False
@@ -474,19 +484,30 @@ def get_rl_action_blind(current_angles, commands, intensity):
     all_mid_angles = []
     all_movement_rates = []
     
+    robot_processing_start = time.time()
     for robot_idx in range(num_robots):
         # Process each robot directly - no thread pool overhead
-        target_angles, mid_angles, movement_rates = get_single_robot_action(robot_idx, current_angles, commands, intensity, use_multi_robot_config)
+        single_robot_start = time.time()
+        target_angles, mid_angles, movement_rates = get_single_robot_action(robot_idx, all_current_angles[robot_idx], commands, intensity)
+        single_robot_time = time.time() - single_robot_start
         
         # Add results directly to arrays (no future.result() calls)
         if target_angles is not None:
             all_target_angles.append(target_angles)
             all_mid_angles.append(mid_angles)
             all_movement_rates.append(movement_rates)
+        
+        if robot_idx == 0:  # Only log first robot to avoid spam
+            print(f"Robot {robot_idx} processing time: {single_robot_time:.4f}s")
+    
+    robot_processing_time = time.time() - robot_processing_start
+    total_time = time.time() - start_time
     
     # CRITICAL: Only increment episode step ONCE per call, not per robot
     rewards.EPISODE_STEP += 1
 
+    print(f"get_rl_action_blind total time: {total_time:.4f}s (robot processing: {robot_processing_time:.4f}s)")
+    
     # Return predictions for ALL robots
     return all_target_angles, all_mid_angles, all_movement_rates
 

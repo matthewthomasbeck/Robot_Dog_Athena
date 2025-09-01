@@ -99,9 +99,6 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
                     
                     joint_positions[joint_index] = mid_angle
                     joint_velocities[joint_index] = velocity
-                    
-                    # Update the current angle in config
-                    config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]['CURRENT_ANGLE'] = mid_angle
                 else:
                     logging.error(f"(isaac_joints.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
             
@@ -114,7 +111,7 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
             config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS[robot_idx].apply_action(mid_action)
 
         # Wait after applying all mid angles
-        time.sleep(0.05)
+        #time.sleep(0.05)
         
         # STEP 2: Move all robots to target angles
         for robot_idx in range(num_robots):
@@ -148,8 +145,8 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
                     joint_positions[joint_index] = target_angle
                     joint_velocities[joint_index] = velocity
                     
-                    # Update the current angle in config
-                    config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]['CURRENT_ANGLE'] = target_angle
+                    # Update the current angle in lightweight array
+                    config.CURRENT_ANGLES[robot_idx][leg_id][joint_name] = target_angle
                 else:
                     logging.error(f"(isaac_joints.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
             
@@ -162,7 +159,7 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
             config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS[robot_idx].apply_action(target_action)
 
         # Wait after applying all target angles
-        time.sleep(0.05)
+        #time.sleep(0.05)
         
     except Exception as e:
         logging.error(f"(isaac_joints.py): Failed to apply multi-robot joint angles: {e}\n")
@@ -197,14 +194,15 @@ def neutral_position_isaac(): # used to move all joints to neutral position in i
                 joint_index = config.JOINT_INDEX_MAP.get(joint_full_name)
                 
                 if joint_index is not None:
-                    servo_data = config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]
+                    # Get neutral angle from static config (same for all robots)
+                    servo_data = config.SERVO_CONFIG[leg_id][joint_name]
                     neutral_angle = servo_data['NEUTRAL_ANGLE']  # Always 0.0 radians
                     
                     joint_positions[joint_index] = neutral_angle
                     joint_velocities[joint_index] = 1.0  # Moderate velocity
                     
-                    # Update the current angle in config
-                    config.SERVO_CONFIGS[robot_idx][leg_id][joint_name]['CURRENT_ANGLE'] = neutral_angle
+                    # Update the current angle in lightweight array
+                    config.CURRENT_ANGLES[robot_idx][leg_id][joint_name] = neutral_angle
                 else:
                     logging.error(f"(isaac_joints.py): Joint {joint_full_name} not found in JOINT_INDEX_MAP\n")
             

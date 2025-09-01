@@ -109,10 +109,24 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
 
     ##### spawn multiple robots for parallel training #####
 
+    # Import grid positioning function
+    from training.isaac_sim import generate_grid_positions
+
     # Initialize camera processes list for multi-robot setup
     config.CAMERA_PROCESSES = []
     
+    # Initialize lightweight current angles array for multi-robot setup
+    config.CURRENT_ANGLES = []
+    
+    # Generate robot positions using grid algorithm
+    robot_positions = generate_grid_positions(
+        config.MULTI_ROBOT_CONFIG['num_robots'],
+        config.MULTI_ROBOT_CONFIG['robot_spacing'],
+        config.MULTI_ROBOT_CONFIG['robot_start_z']
+    )
+    
     logging.info(f"(control_logic.py): Spawning {config.MULTI_ROBOT_CONFIG['num_robots']} robots for parallel training...\n")
+    logging.info(f"(control_logic.py): Generated grid positions: {robot_positions}\n")
 
     for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
         try:
@@ -140,8 +154,8 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
                             break
                     
                     if translate_op:
-                        # Get position from config
-                        pos = config.MULTI_ROBOT_CONFIG['robot_positions'][robot_id]
+                        # Get position from generated grid
+                        pos = robot_positions[robot_id]
                         translate_op.Set(Gf.Vec3d(pos[0], pos[1], pos[2]))
                         logging.info(f"(control_logic.py): Robot {robot_id} positioned at {pos}\n")
                     else:
@@ -171,13 +185,18 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
             config.ISAAC_WORLD.scene.add(robot)
             config.ISAAC_ROBOTS.append(robot)
             
-            # Create deep copy of SERVO_CONFIG for this robot
-            robot_servo_config = copy.deepcopy(config.SERVO_CONFIG)
-            config.SERVO_CONFIGS.append(robot_servo_config)
+            # Initialize lightweight current angles array for this robot
+            robot_current_angles = {
+                'FL': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0},
+                'FR': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0},
+                'BL': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0},
+                'BR': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0}
+            }
+            config.CURRENT_ANGLES.append(robot_current_angles)
             
             # Initialize camera process for this robot
-            camera_process = initialize_camera(robot_id=robot_id)
-            config.CAMERA_PROCESSES.append(camera_process)
+            #camera_process = initialize_camera(robot_id=robot_id)
+            #config.CAMERA_PROCESSES.append(camera_process)
             
             logging.info(f"(control_logic.py): Robot {robot_id} initialized successfully.\n")
             
@@ -351,21 +370,21 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             # Multi-robot camera processing
             camera_frames = []
-            if config.CAMERA_PROCESSES:
-                for robot_id, camera_process in enumerate(config.CAMERA_PROCESSES):
-                    try:
-                        mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(camera_process)
-                        camera_frames.append({
-                            'robot_id': robot_id,
-                            'mjpeg_buffer': mjpeg_buffer,
-                            'streamed_frame': streamed_frame,
-                            'inference_frame': inference_frame
-                        })
-                    except Exception as e:
-                        logging.error(f"(control_logic.py): Failed to decode frame for robot {robot_id}: {e}\n")
+            #if config.CAMERA_PROCESSES:
+                #for robot_id, camera_process in enumerate(config.CAMERA_PROCESSES):
+                    #try:
+                        #mjpeg_buffer, streamed_frame, inference_frame = decode_isaac_frame(camera_process)
+                        #camera_frames.append({
+                            #'robot_id': robot_id,
+                            #'mjpeg_buffer': mjpeg_buffer,
+                            #'streamed_frame': streamed_frame,
+                            #'inference_frame': inference_frame
+                        #})
+                    #except Exception as e:
+                        #logging.error(f"(control_logic.py): Failed to decode frame for robot {robot_id}: {e}\n")
                 
-                if not camera_frames:
-                    logging.warning("(control_logic.py): No camera frames processed")
+                #if not camera_frames:
+                    #logging.warning("(control_logic.py): No camera frames processed")
 
             ##### get command #####
 
@@ -614,7 +633,6 @@ def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, int
 
     elif direction:
         move_direction(direction, camera_frames, intensity, IMAGELESS_GAIT)
-        # calibrate_joints_isaac()
         is_neutral = False
     else:
         logging.warning(f"(control_logic.py): Invalid command: {keys}.\n")

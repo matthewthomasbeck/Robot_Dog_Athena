@@ -218,29 +218,6 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
         elif config.USE_SIMULATION: # if running code in simulator...
 
             ##### rl agent integration point #####
-            # gather state for RL agent (define get_simulation_state later if needed)
-            current_angles = {
-                'FL': {
-                    'hip': config.SERVO_CONFIG['FL']['hip']['CURRENT_ANGLE'],
-                    'upper': config.SERVO_CONFIG['FL']['upper']['CURRENT_ANGLE'],
-                    'lower': config.SERVO_CONFIG['FL']['lower']['CURRENT_ANGLE']
-                },
-                'FR': {
-                    'hip': config.SERVO_CONFIG['FR']['hip']['CURRENT_ANGLE'],
-                    'upper': config.SERVO_CONFIG['FR']['upper']['CURRENT_ANGLE'],
-                    'lower': config.SERVO_CONFIG['FR']['lower']['CURRENT_ANGLE']
-                },
-                'BL': {
-                    'hip': config.SERVO_CONFIG['BL']['hip']['CURRENT_ANGLE'],
-                    'upper': config.SERVO_CONFIG['BL']['upper']['CURRENT_ANGLE'],
-                    'lower': config.SERVO_CONFIG['BL']['lower']['CURRENT_ANGLE']
-                },
-                'BR': {
-                    'hip': config.SERVO_CONFIG['BR']['hip']['CURRENT_ANGLE'],
-                    'upper': config.SERVO_CONFIG['BR']['upper']['CURRENT_ANGLE'],
-                    'lower': config.SERVO_CONFIG['BR']['lower']['CURRENT_ANGLE']
-                }
-            }
             
             if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
                 # TODO using the blind agent for now until I get image support going
@@ -251,19 +228,16 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                     #camera_frames[0]['inference_frame'],
                 #)
                 target_angles, mid_angles, movement_rates = get_rl_action_blind(
-                    current_angles,
+                    config.CURRENT_ANGLES,
                     commands,
                     intensity
                 )
             elif imageless_gait:  # if using imageless gait adjustment (no image)...
                 target_angles, mid_angles, movement_rates = get_rl_action_blind(
-                    current_angles,
+                    config.CURRENT_ANGLES,
                     commands,
                     intensity
                 )
-                #logging.warning(
-                #    "(movement_coordinator.py): Using get_rl_action_blind placeholder. Replace with RL agent output when available."
-                #)
 
             ##### apply direct joint control for Isaac Sim #####
 
@@ -273,14 +247,13 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                 target_angles,
                 movement_rates
             )
-            # logging.debug(f"(movement_coordinator.py): Applied joint angles for Isaac Sim: {commands}\n")
 
     except Exception as e: # if either model fails...
         logging.error(f"(movement_coordinator.py): Failed to run AI for command: {e}\n")
 
     ##### force robot to slow down so the raspberry doesnt crash #####
 
-    time.sleep(0.175) # only allow inference to run at rate # was 0.175
+    #time.sleep(0.175) # only allow inference to run at rate # was 0.175
 
 
 ########## THREAD LEG MOVEMENT ##########

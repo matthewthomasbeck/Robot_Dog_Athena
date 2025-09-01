@@ -4,16 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Losing my mind trying to parallel processing to work without horrible lag">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/ppo_steps_1280000_episode_84086_reward_-23.94.pth" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Saving before starting training from scratch" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,7 +60,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/matthewthomasbeck/Projects/Robot_Dog_Working",
+    "last_opened_file_path": "/home/matthewthomasbeck/Projects/Robot_Dog",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -217,6 +208,7 @@
       <workItem from="1756266699504" duration="51000" />
       <workItem from="1756568926507" duration="3518000" />
       <workItem from="1756745483097" duration="55000" />
+      <workItem from="1756747025123" duration="34000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -357,14 +349,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00108" summary="Model validity created">
-      <option name="closed" value="true" />
-      <created>1754972463713</created>
-      <option name="number" value="00108" />
-      <option name="presentableId" value="LOCAL-00108" />
-      <option name="project" value="LOCAL" />
-      <updated>1754972463714</updated>
     </task>
     <task id="LOCAL-00109" summary="Model validity created">
       <option name="closed" value="true" />
@@ -590,7 +574,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756660546688</updated>
     </task>
-    <option name="localTasksCounter" value="137" />
+    <task id="LOCAL-00137" summary="Saving before starting training from scratch">
+      <option name="closed" value="true" />
+      <created>1756747053924</created>
+      <option name="number" value="00137" />
+      <option name="presentableId" value="LOCAL-00137" />
+      <option name="project" value="LOCAL" />
+      <updated>1756747053924</updated>
+    </task>
+    <option name="localTasksCounter" value="138" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -608,7 +600,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cleaned up control_logic" />
     <MESSAGE value="Created accurate orientation tracking" />
     <MESSAGE value="Going to remove the backend files as the context is no longer needed, added model testing and exporting" />
     <MESSAGE value="Cleaned up movement so it's not an 800 line mess" />
@@ -633,7 +624,8 @@
     <MESSAGE value="UPDATE: Things have gone a little better, at around 1.28 million steps, somewhat of a very shitty gait can be seen; pushing before I hopefully get multiagent continuous training going" />
     <MESSAGE value="I think I decoupled episode logic from model saving???? Bro I am so confused" />
     <MESSAGE value="Multiple robots spawning in" />
-    <option name="LAST_COMMIT_MESSAGE" value="Multiple robots spawning in" />
+    <MESSAGE value="Saving before starting training from scratch" />
+    <option name="LAST_COMMIT_MESSAGE" value="Saving before starting training from scratch" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

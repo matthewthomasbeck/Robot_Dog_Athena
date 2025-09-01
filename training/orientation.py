@@ -50,8 +50,6 @@ def track_orientation(robot_idx=0):
             robot_idx = 0
             
         positions, rotations = config.ISAAC_ROBOTS[robot_idx].get_world_poses()
-        print(f"(orientation.py): Positions: {positions}")
-        print(f"(orientation.py): Rotations: {rotations}")
         center_pos = positions[0]
         rotation = rotations[0]
         quat_wxyz = [rotation[0], rotation[1], rotation[2], rotation[3]]
