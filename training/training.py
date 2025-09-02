@@ -49,7 +49,7 @@ total_steps = 0
 
 ##### multi-agent training data #####
 
-# Shared experience buffer for all agents
+# MASSIVE shared experience buffer for all agents (100k experiences)
 shared_experience_buffer = {
     'states': [],
     'actions': [],
@@ -59,6 +59,9 @@ shared_experience_buffer = {
     'dones': [],
     'agent_ids': []  # Track which agent generated each experience
 }
+
+# Buffer size limit to prevent memory overflow
+MAX_BUFFER_SIZE = config.TRAINING_CONFIG.get('experience_buffer_size', 100000)
 
 # Per-agent data
 agent_data = {}  # Will be initialized with num_robots agents
@@ -149,11 +152,11 @@ def integrate_with_main_loop():
         # Check if robot is marked as fallen (from reward system)
         if not agent.get('is_active', True):
             fallen_robots.append(robot_id)
-            print(f"🤖 Robot {robot_id} FELL - will be reset at step {total_steps}")
+            #print(f"🤖 Robot {robot_id} FELL - will be reset at step {total_steps}")
     
     # If any robots have fallen, reset the entire world
     if fallen_robots:
-        print(f"⏸️ SIMULATION PAUSED - {len(fallen_robots)} robot(s) fell, resetting world: {fallen_robots}")
+        #print(f"⏸️ SIMULATION PAUSED - {len(fallen_robots)} robot(s) fell, resetting world: {fallen_robots}")
         
         # Use the existing reset_episode() function from episodes.py
         episodes.reset_episode()
@@ -166,7 +169,7 @@ def integrate_with_main_loop():
                 agent['last_reset_step'] = total_steps
                 agent['total_reward'] = 0.0
         
-        print(f"▶️ SIMULATION RESUMED - world reset complete, all robots active")
+        #print(f"▶️ SIMULATION RESUMED - world reset complete, all robots active")
         return True
     
     return False
@@ -334,6 +337,12 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
                 shared_experience_buffer['values'][-1] = value.item()
                 shared_experience_buffer['log_probs'][-1] = log_prob.item()
             
+            # Manage buffer size to prevent memory overflow
+            if len(shared_experience_buffer['states']) > MAX_BUFFER_SIZE:
+                # Remove oldest experiences (FIFO)
+                for key in shared_experience_buffer:
+                    shared_experience_buffer[key].pop(0)
+            
             # Increment shared step counter
             total_steps += 1
 
@@ -390,7 +399,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             all_movement_rates.append({})
             continue
 
-    # Train PPO when shared buffer has enough experiences
+    # Train PPO when shared buffer has enough experiences (MASSIVE batches!)
     if len(shared_experience_buffer['states']) >= config.TRAINING_CONFIG['batch_size']:
         train_shared_ppo()
 
@@ -405,15 +414,15 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
 ########## SHARED PPO TRAINING ##########
 
 def train_shared_ppo():
-    """Train PPO using shared experience buffer from all agents"""
+    """Train PPO using shared experience buffer from all agents - SCALED UP VERSION"""
     global ppo_policy, shared_experience_buffer
     
     if len(shared_experience_buffer['states']) < config.TRAINING_CONFIG['batch_size']:
         return
     
-    print(f"🧠 Training PPO with shared buffer, buffer size: {len(shared_experience_buffer['states'])}")
+    print(f"🧠 Training PPO with MASSIVE batch size: {len(shared_experience_buffer['states'])} experiences")
     
-    # Convert to tensors
+    # Convert to tensors (keep it simple, just bigger)
     states = torch.FloatTensor(shared_experience_buffer['states'])
     actions = torch.FloatTensor(shared_experience_buffer['actions'])
     rewards_tensor = torch.FloatTensor(shared_experience_buffer['rewards'])
@@ -428,7 +437,7 @@ def train_shared_ppo():
     with torch.no_grad():
         final_value = ppo_policy.actor_critic.get_value(states[-1:]).item()
     
-    # Train PPO on shared buffer data
+    # Train PPO on shared buffer data (same method, just bigger batches)
     ppo_policy.train(states, actions, log_probs, rewards_tensor, dones, final_value)
     
     # Clear the shared buffer after training
@@ -442,4 +451,4 @@ def train_shared_ppo():
         'agent_ids': []
     }
     
-    print(f"✅ PPO training completed, shared buffer cleared")
+    print(f"✅ MASSIVE batch PPO training completed, shared buffer cleared")

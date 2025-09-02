@@ -116,7 +116,8 @@ def track_orientation(robot_id):
             if horizontal_distance < 0.001:  # Less than 1mm horizontal movement
                 track_orientation.robot_data[robot_id]['static_count'] += 1
                 if track_orientation.robot_data[robot_id]['static_count'] > 10:
-                    logging.warning(f"   ⚠️  Robot {robot_id} hasn't moved horizontally in {track_orientation.robot_data[robot_id]['static_count']} steps!")
+                    pass
+                    #logging.warning(f"   ⚠️  Robot {robot_id} hasn't moved horizontally in {track_orientation.robot_data[robot_id]['static_count']} steps!")
 
                 # Store current facing direction even when not moving (for reward function)
                 track_orientation.robot_data[robot_id]['last_facing_deg'] = facing_deg

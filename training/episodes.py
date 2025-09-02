@@ -141,7 +141,7 @@ def reset_episode(agent_data=None, robot_id=None):
     import time
 
     try:
-        logging.info(f"(episodes.py): Multi-agent episode reset - resetting Isaac Sim world.\n")
+        #logging.debug(f"(episodes.py): Multi-agent episode reset - resetting Isaac Sim world.\n")
         
         # CRITICAL: Small delay to ensure all experiences are processed
         time.sleep(0.2)  # 200ms delay for experience processing
@@ -163,8 +163,8 @@ def reset_episode(agent_data=None, robot_id=None):
             for _ in range(5):
                 config.ISAAC_WORLD.step(render=True)
 
-        logging.info(f"(episodes.py): Multi-agent episode reset complete - World and all robots reset.\n")
-        print(f"🔄 Multi-agent episode reset complete - all robots ready for new episodes")
+        #logging.info(f"(episodes.py): Multi-agent episode reset complete - World and all robots reset.\n")
+        #print(f"🔄 Multi-agent episode reset complete - all robots ready for new episodes")
 
     except Exception as e:
         logging.error(f"(episodes.py): Failed to reset multi-agent episode: {e}\n")
