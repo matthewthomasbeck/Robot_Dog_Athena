@@ -244,7 +244,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             # Log progress every 100 steps
             if total_steps % 100 == 0:
                 steps_since_reset = total_steps - agent.get('last_reset_step', 0)
-                print(f"Robot {robot_id} - Step {total_steps}, Active for {steps_since_reset} steps, Avg Reward: {agent.get('average_reward', 0.0):.3f}")
+                #print(f"Robot {robot_id} - Step {total_steps}, Active for {steps_since_reset} steps, Avg Reward: {agent.get('average_reward', 0.0):.3f}")
             
             # Track orientation every 50 steps
             if total_steps % 50 == 0:
@@ -405,8 +405,23 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
 
     # Save model every 20k steps (continuous learning)
     if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None and total_steps > 0:
-        save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_continuous.pth", ppo_policy, agent_data, total_steps)
-        print(f"💾 Continuous learning model saved: steps_{total_steps}")
+        # Calculate average score across all robots
+        total_avg_score = 0.0
+        active_robots = 0
+        for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
+            if robot_id in agent_data:
+                robot_avg = agent_data[robot_id].get('average_reward', 0.0)
+                total_avg_score += robot_avg
+                active_robots += 1
+        
+        overall_avg_score = total_avg_score / active_robots if active_robots > 0 else 0.0
+        
+        # Create filename with average score
+        filename = f"{total_steps}_{overall_avg_score:.3f}.pth"
+        filepath = f"/home/matthewthomasbeck/Projects/Robot_Dog/model/{filename}"
+        
+        save_model(filepath, ppo_policy, agent_data, total_steps)
+        print(f"💾 Continuous learning model saved: {filename}")
 
     return all_target_angles, all_mid_angles, all_movement_rates
 

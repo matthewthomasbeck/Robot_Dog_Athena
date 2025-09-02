@@ -46,9 +46,11 @@ import training.episodes as episodes
 def find_latest_model():
     """Find the latest saved model file"""
     
-    # Look for model files in the models directory
-    model_pattern = os.path.join(config.MODELS_DIRECTORY, "ppo_steps_*_episode_*_reward_*.pth")
-    model_files = glob.glob(model_pattern)
+    # Look for model files in the models directory (both old and new formats)
+    old_pattern = os.path.join(config.MODELS_DIRECTORY, "ppo_steps_*_episode_*_reward_*.pth")
+    new_pattern = os.path.join(config.MODELS_DIRECTORY, "*_*.pth")  # New format: steps_avg.pth
+    
+    model_files = glob.glob(old_pattern) + glob.glob(new_pattern)
     
     if not model_files:
         return None
@@ -58,13 +60,23 @@ def find_latest_model():
     latest_steps = 0
     
     for model_file in model_files:
-        # Extract step number from filename like "ppo_steps_700000_episode_47474_avg_-109.76.pth"
-        match = re.search(r'ppo_steps_(\d+)_episode_', os.path.basename(model_file))
+        filename = os.path.basename(model_file)
+        
+        # Try old format first: "ppo_steps_700000_episode_47474_avg_-109.76.pth"
+        match = re.search(r'ppo_steps_(\d+)_episode_', filename)
         if match:
             steps = int(match.group(1))
             if steps > latest_steps:
                 latest_steps = steps
                 latest_model = model_file
+        else:
+            # Try new format: "1300000_-5.22.pth"
+            match = re.search(r'^(\d+)_', filename)
+            if match:
+                steps = int(match.group(1))
+                if steps > latest_steps:
+                    latest_steps = steps
+                    latest_model = model_file
     
     return latest_model
 
