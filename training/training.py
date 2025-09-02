@@ -36,6 +36,7 @@ from training.agents import *
 import training.rewards as rewards
 from training.orientation import track_orientation
 import training.episodes as episodes
+from training.model_manager import save_model, load_model, find_latest_model
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -95,7 +96,10 @@ def initialize_training():
     latest_model = find_latest_model()
     if latest_model:
         logging.debug(f"🔄 Loading latest model: {latest_model}...\n")
-        if load_model(latest_model):
+        success, loaded_steps, loaded_agent_data = load_model(latest_model, ppo_policy)
+        if success:
+            total_steps = loaded_steps
+            agent_data = loaded_agent_data
             logging.info(f"✅ Successfully loaded model from step {total_steps}\n")
         else:
             logging.warning(f"❌ Failed to load model, starting fresh.\n")
@@ -113,34 +117,6 @@ def initialize_training():
     logging.info(f"  - PPO policy created: {ppo_policy is not None}")
     logging.info(f"  - Starting from step: {total_steps}\n")
 
-
-def find_latest_model():
-    """Find the latest saved model file"""
-    import glob
-    import re
-    
-    # Look for model files in the models directory
-    model_pattern = os.path.join(config.MODELS_DIRECTORY, "ppo_steps_*_episode_*_reward_*.pth")
-    model_files = glob.glob(model_pattern)
-    
-    if not model_files:
-        return None
-    
-    # Extract step numbers and find the latest
-    latest_model = None
-    latest_steps = 0
-    
-    for model_file in model_files:
-        # Extract step number from filename like "ppo_steps_700000_episode_47474_avg_-109.76.pth"
-        match = re.search(r'ppo_steps_(\d+)_episode_', os.path.basename(model_file))
-        if match:
-            steps = int(match.group(1))
-            if steps > latest_steps:
-                latest_steps = steps
-                latest_model = model_file
-    
-    return latest_model
-
 ##### integrate with main loop #####
 
 def integrate_with_main_loop():
@@ -154,8 +130,6 @@ def integrate_with_main_loop():
         integrate_with_main_loop()
     """
     global total_steps, agent_data
-
-    import utilities.config as config
 
     # Safety check: ensure training system is initialized
     if not agent_data:
@@ -449,7 +423,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
 
     # Save model periodically based on total steps
     if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None:
-        save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_multi_agent.pth")
+        save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_multi_agent.pth", ppo_policy, agent_data, total_steps)
         print(f"💾 Multi-agent model saved: steps_{total_steps}")
 
     return all_target_angles, all_mid_angles, all_movement_rates
@@ -496,85 +470,6 @@ def train_shared_ppo():
     }
     
     print(f"✅ PPO training completed, shared buffer cleared")
-
-
-########## MODEL FUNCTIONS ##########
-
-##### save trained model #####
-
-def save_model(filepath):
-    """Save the current PPO model"""
-    if ppo_policy:
-
-        logging.info(f"💾 Saving multi-agent PPO model to: {filepath}")
-        logging.info(f"   📊 Total steps: {total_steps}")
-        logging.info(f"   📊 Number of agents: {len(agent_data)}")
-        logging.info(f"   📊 Current average score: {episodes.AVERAGE_SCORE:.4f}\n")
-
-        # Create the checkpoint data
-        checkpoint = {
-            'actor_critic_state_dict': ppo_policy.actor_critic.state_dict(),
-            'optimizer_state_dict': ppo_policy.optimizer.state_dict(),
-            'total_steps': total_steps,
-            'agent_data': agent_data,
-            'average_score': episodes.AVERAGE_SCORE,
-        }
-
-        # Verify checkpoint data before saving
-        logging.info(f"   🔍 Checkpoint contains {len(checkpoint)} keys:")
-        for key, value in checkpoint.items():
-            if 'state_dict' in key:
-                if isinstance(value, dict):
-                    logging.info(f"      ✅ {key}: {len(value)} layers\n")
-                else:
-                    logging.warning(f"      ❌ {key}: Invalid type {type(value)}\n")
-            else:
-                logging.info(f"      📊 {key}: {value}\n")
-
-        # Save the model
-        torch.save(checkpoint, filepath)
-
-        # Verify the file was created and has content
-        if os.path.exists(filepath):
-            file_size = os.path.getsize(filepath) / (1024 * 1024)
-            logging.info(f"   ✅ Model saved successfully! File size: {file_size:.1f} MB\n")
-        else:
-            logging.error(f"   ❌ Failed to save model - file not created.\n")
-
-        logging.info(f"Multi-agent model saved to: {filepath}")
-        logging.info(f"   📊 Current average score: {episodes.AVERAGE_SCORE:.3f}\n")
-    else:
-        logging.error(f"❌ Cannot save model - PPO policy not initialized.\n")
-
-
-##### load the model #####
-
-def load_model(filepath):
-    """Load a PPO model from file"""
-    global ppo_policy, total_steps, agent_data
-
-    if ppo_policy and os.path.exists(filepath):
-        checkpoint = torch.load(filepath, weights_only=False)
-        ppo_policy.actor_critic.load_state_dict(checkpoint['actor_critic_state_dict'])
-        ppo_policy.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-
-        # Restore training state
-        total_steps = checkpoint.get('total_steps', 0)
-        agent_data = checkpoint.get('agent_data', {})
-        episodes.AVERAGE_SCORE = checkpoint.get('average_score', 0.0)
-
-        # CRITICAL: If agent_data is empty or doesn't match expected number of robots, reinitialize it
-        num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
-        if not agent_data or len(agent_data) != num_robots:
-            logging.warning(f"Agent data from checkpoint is invalid (got {len(agent_data)} agents, expected {num_robots}), reinitializing...")
-            agent_data = initialize_agent_data()
-
-        logging.info(f"Multi-agent model loaded from: {filepath}")
-        logging.info(f"  - Total steps: {total_steps}")
-        logging.info(f"  - Number of agents: {len(agent_data)}")
-        logging.info(f"  - Average score: {episodes.AVERAGE_SCORE:.4f}\n")
-        return True
-    return False
 
 ##### monitor learning progress #####
 
