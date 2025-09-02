@@ -180,6 +180,10 @@ MULTI_ROBOT_CONFIG = {
     'robot_start_z': 0.14,  # starting height for robots to avoid clipping
 }
 
+##### n robots spawn positions #####
+
+SPAWN_POSITIONS = [] # array of spawn positions for each robot
+
 ##### current angles configuration #####
 
 CURRENT_ANGLES = [] # array of current angles for each robot

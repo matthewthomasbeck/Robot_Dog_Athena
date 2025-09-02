@@ -221,19 +221,19 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
             
             if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
                 # TODO using the blind agent for now until I get image support going
-                #target_angles, mid_angles, movement_rates = get_rl_action_standard(
+                #all_target_angles, all_mid_angles, all_movement_rates = get_rl_action_standard(
                     #current_angles,
                     #commands,
                     #intensity,
                     #camera_frames[0]['inference_frame'],
                 #)
-                target_angles, mid_angles, movement_rates = get_rl_action_blind(
+                all_target_angles, all_mid_angles, all_movement_rates = get_rl_action_blind(
                     config.CURRENT_ANGLES,
                     commands,
                     intensity
                 )
             elif imageless_gait:  # if using imageless gait adjustment (no image)...
-                target_angles, mid_angles, movement_rates = get_rl_action_blind(
+                all_target_angles, all_mid_angles, all_movement_rates = get_rl_action_blind(
                     config.CURRENT_ANGLES,
                     commands,
                     intensity
@@ -241,11 +241,11 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
 
             ##### apply direct joint control for Isaac Sim #####
 
-            # Apply the joint angles directly
+            # Apply the joint angles directly for all robots
             apply_joint_angles_isaac(
-                mid_angles,
-                target_angles,
-                movement_rates
+                all_target_angles,
+                all_mid_angles,
+                all_movement_rates
             )
 
     except Exception as e: # if either model fails...

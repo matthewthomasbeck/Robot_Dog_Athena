@@ -1,57 +1,106 @@
-2025-09-01 17:49:02 INFO: (log.py): Logging setup complete.
+2025-09-01 22:36:05 INFO: (log.py): Logging setup complete.
 
-2025-09-01 17:49:10 INFO: (control_logic.py): Robot moved up 14cm.
+2025-09-01 22:36:14 INFO: (control_logic.py): Spawning 4 robots for parallel training...
 
-2025-09-01 17:49:11 INFO: (control_logic.py): Robot added to Isaac Sim scene.
+2025-09-01 22:36:14 INFO: (control_logic.py): Generated grid positions: [(-1.0, -1.0, 0.14), (1.0, -1.0, 0.14), (-1.0, 1.0, 0.14), (1.0, 1.0, 0.14)]
 
-2025-09-01 17:49:11 INFO: (camera.py): Successfully killed existing camera processes.
+2025-09-01 22:36:14 INFO: (control_logic.py): Saved spawn positions to config for individual resets
 
-2025-09-01 17:49:12 INFO: (camera.py) Computed aperture size for isaac camera.
+2025-09-01 22:36:14 INFO: (control_logic.py): Robot 0 positioned at (-1.0, -1.0, 0.14)
 
-2025-09-01 17:49:12 INFO: (camera.py) Computed focal length for isaac camera.
+2025-09-01 22:36:14 INFO: (control_logic.py): Robot 1 positioned at (1.0, -1.0, 0.14)
 
-2025-09-01 17:49:12 INFO: (camera.py) Applied optics to isaac camera.
+2025-09-01 22:36:14 INFO: (control_logic.py): Robot 2 positioned at (-1.0, 1.0, 0.14)
 
-2025-09-01 17:49:12 INFO: (camera.py) Initialized isaac camera.
+2025-09-01 22:36:14 INFO: (control_logic.py): Robot 3 positioned at (1.0, 1.0, 0.14)
 
-2025-09-01 17:49:12 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-09-01 22:36:15 INFO: (control_logic.py): Robot 0 initialized successfully.
 
-2025-09-01 17:49:16 INFO: Model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_1300000_episode_85419_reward_-5.22.pth
-2025-09-01 17:49:16 INFO:   - Episode: 85419
-2025-09-01 17:49:16 INFO:   - Total steps: 1300000
-2025-09-01 17:49:16 INFO:   - Episode reward: -5.2159
+2025-09-01 22:36:15 INFO: (control_logic.py): Robot 1 initialized successfully.
 
-2025-09-01 17:49:16 INFO: ✅ Successfully loaded model from step 1300000, episode 85419
+2025-09-01 22:36:15 INFO: (control_logic.py): Robot 2 initialized successfully.
 
-2025-09-01 17:49:16 INFO: Training system initialized:
-2025-09-01 17:49:16 INFO:   - State dimension: 19
-2025-09-01 17:49:16 INFO:   - Action dimension: 36
-2025-09-01 17:49:16 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-09-01 17:49:16 INFO:   - PPO policy created: True
-2025-09-01 17:49:16 INFO:   - Starting from episode: 85419
-2025-09-01 17:49:16 INFO:   - Starting from step: 1300000
+2025-09-01 22:36:15 INFO: (control_logic.py): Robot 3 initialized successfully.
 
-2025-09-01 17:49:18 INFO:    📊 Average Score (last 1 episodes): -104.649
+2025-09-01 22:36:15 INFO: (control_logic.py): Successfully spawned 4 robots for parallel training.
 
-2025-09-01 17:49:18 WARNING: 📝 Episode 85420 completed but not at save frequency (20000 steps)
+2025-09-01 22:36:15 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-09-01 17:49:18 INFO: (training.py): Episode 85420 ending - Episode complete, resetting Isaac Sim world.
+2025-09-01 22:36:15 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
 
-2025-09-01 17:49:18 INFO:    📊 Average Score (last 2 episodes): -104.649
+2025-09-01 22:36:15 INFO: (movement_coordinator.py): Controller initialized for robot 0
 
-2025-09-01 17:49:18 WARNING: 📝 Episode 85420 completed but not at save frequency (20000 steps)
+2025-09-01 22:36:15 INFO: (movement_coordinator.py): Controller initialized for robot 1
 
-2025-09-01 17:49:19 INFO: (training.py): Episode 85421 reset complete - World and robot state reset.
+2025-09-01 22:36:15 INFO: (movement_coordinator.py): Controller initialized for robot 2
 
-2025-09-01 17:49:19 INFO: (training.py): Episode 85421 reset in main loop integration
+2025-09-01 22:36:15 INFO: (movement_coordinator.py): Controller initialized for robot 3
 
-2025-09-01 17:49:20 INFO:    📊 Average Score (last 3 episodes): -103.766
+2025-09-01 22:36:15 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
 
-2025-09-01 17:49:20 WARNING: 📝 Episode 85421 completed but not at save frequency (20000 steps)
+2025-09-01 22:36:19 WARNING: Agent data from checkpoint is invalid (got 0 agents, expected 4), reinitializing...
+2025-09-01 22:36:19 INFO: Multi-agent model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_1300000_episode_85419_reward_-5.22.pth
+2025-09-01 22:36:19 INFO:   - Total steps: 1300000
+2025-09-01 22:36:19 INFO:   - Number of agents: 4
+2025-09-01 22:36:19 INFO:   - Average score: 0.0000
 
-2025-09-01 17:49:20 INFO: (training.py): Episode 85421 ending - Episode complete, resetting Isaac Sim world.
+2025-09-01 22:36:19 INFO: ✅ Successfully loaded model from step 1300000
 
-2025-09-01 17:49:20 INFO:    📊 Average Score (last 4 episodes): -103.325
+2025-09-01 22:36:19 INFO: Multi-agent training system initialized:
+2025-09-01 22:36:19 INFO:   - Number of agents: 4
+2025-09-01 22:36:19 INFO:   - State dimension: 19
+2025-09-01 22:36:19 INFO:   - Action dimension: 36
+2025-09-01 22:36:19 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-09-01 22:36:19 INFO:   - PPO policy created: True
+2025-09-01 22:36:19 INFO:   - Starting from step: 1300000
 
-2025-09-01 17:49:20 WARNING: 📝 Episode 85421 completed but not at save frequency (20000 steps)
-
+2025-09-01 22:36:20 ERROR: Error processing robot 3: name 'rewards' is not defined
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_lower, using neutral position
+2025-09-01 22:36:20 ERROR: Error processing robot 3: name 'rewards' is not defined
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 FR_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BL_lower, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_hip, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_upper, using neutral position
+2025-09-01 22:36:20 WARNING: (isaac_joints.py): Missing data for robot 3 BR_lower, using neutral position

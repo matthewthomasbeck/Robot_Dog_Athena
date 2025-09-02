@@ -125,8 +125,12 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
         config.MULTI_ROBOT_CONFIG['robot_start_z']
     )
     
+    # Save spawn positions to config for individual robot resets
+    config.SPAWN_POSITIONS = robot_positions
+    
     logging.info(f"(control_logic.py): Spawning {config.MULTI_ROBOT_CONFIG['num_robots']} robots for parallel training...\n")
     logging.info(f"(control_logic.py): Generated grid positions: {robot_positions}\n")
+    logging.info(f"(control_logic.py): Saved spawn positions to config for individual resets\n")
 
     for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
         try:
@@ -436,8 +440,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
                 episode_reset_occurred = integrate_with_main_loop()
                 if episode_reset_occurred:
                     for _ in range(3):
-                        config.ISAAC_WORLD.step(render)
-                camera_frames # Pass camera_frames to _execute_keyboard_commandsnly God knows what it is...
+                        config.ISAAC_WORLD.step(render=True)
 
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")

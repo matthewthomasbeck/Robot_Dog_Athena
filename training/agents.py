@@ -18,6 +18,10 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
+##### import config #####
+
+import utilities.config as config
+
 ##### import necessary libraries #####
 
 import numpy as np
@@ -28,6 +32,7 @@ import torch.nn.functional as F
 from collections import deque
 import random
 import math
+import logging
 
 
 
@@ -264,3 +269,36 @@ class PPO:
 ########## STANDARD AGENT ##########
 
 #TODO create a standard agent when the PPO agent is complete
+
+
+########## ADENT FUNCTIONS ##########
+
+##### initialize agent data #####
+
+def initialize_agent_data():
+    """Initialize only the agent data structures without reinitializing PPO policy"""
+    
+    logging.debug("(training.py): Initializing agent data structures...\n")
+    
+    # Initialize per-agent data
+    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
+    agent_data = {}
+    
+    for robot_id in range(num_robots):
+        agent_data[robot_id] = {
+            'episode_counter': 0,
+            'episode_reward': 0.0,
+            'episode_states': [],
+            'episode_actions': [],
+            'episode_rewards': [],
+            'episode_values': [],
+            'episode_log_probs': [],
+            'episode_dones': [],
+            'episode_scores': [],
+            'average_score': 0.0,
+            'episode_needs_reset': False
+        }
+    
+    logging.debug(f"Agent data initialized for {num_robots} robots\n")
+
+    return agent_data
