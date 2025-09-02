@@ -111,7 +111,7 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
                         joint_positions[joint_index] = mid_angle
                         joint_velocities[joint_index] = velocity
                     else:
-                        logging.warning(f"(isaac_joints.py): Missing data for robot {robot_idx} {leg_id}_{joint_name}, using neutral position")
+                        #logging.warning(f"(isaac_joints.py): Missing data for robot {robot_idx} {leg_id}_{joint_name}, using neutral position")
                         # Use neutral position as fallback
                         servo_data = config.SERVO_CONFIG[leg_id][joint_name]
                         neutral_angle = servo_data['NEUTRAL_ANGLE']
@@ -177,7 +177,7 @@ def apply_joint_angles_isaac(all_target_angles, all_mid_angles, all_movement_rat
                         # Update the current angle in lightweight array
                         config.CURRENT_ANGLES[robot_idx][leg_id][joint_name] = target_angle
                     else:
-                        logging.warning(f"(isaac_joints.py): Missing data for robot {robot_idx} {leg_id}_{joint_name}, using neutral position")
+                        #logging.warning(f"(isaac_joints.py): Missing data for robot {robot_idx} {leg_id}_{joint_name}, using neutral position")
                         # Use neutral position as fallback
                         servo_data = config.SERVO_CONFIG[leg_id][joint_name]
                         neutral_angle = servo_data['NEUTRAL_ANGLE']

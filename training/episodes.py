@@ -21,7 +21,12 @@
 ##### import config #####
 
 import utilities.config as config
+
+##### import necessary libraries #####
+
+import logging
 import training.rewards as rewards
+
 
 ########## CREATE DEPENDENCIES ##########
 
@@ -126,27 +131,22 @@ def check_and_reset_episode_if_needed(agent_data, robot_id):
 
 ##### reset episode #####
 
-def reset_episode(agent_data, robot_id):
+def reset_episode(agent_data=None, robot_id=None):
     """
-    Reset the current episode for a specific robot by resetting Isaac Sim world and moving robot to neutral position.
-    This is the critical function that was working in working_robot_reset.py
+    Reset the entire world and all robots when any robot falls.
+    Modified to handle multi-agent resets by resetting the entire world.
     """
+    import utilities.config as config
+    from movement.isaac_joints import neutral_position_isaac
+    import time
 
     try:
-        agent = agent_data[robot_id]
-        episode_step = getattr(rewards, f'EPISODE_STEP_{robot_id}', 0)
+        logging.info(f"(episodes.py): Multi-agent episode reset - resetting Isaac Sim world.\n")
         
-        logging.info(f"(training.py): Robot {robot_id} Episode {agent['episode_counter']} ending - Episode complete, resetting Isaac Sim world.\n")
-
-        # CRITICAL: Save the model before resetting (if episode had any progress)
-        if episode_step > 0:
-            end_episode(agent_data, robot_id)
-
         # CRITICAL: Small delay to ensure all experiences are processed
-        import time
         time.sleep(0.2)  # 200ms delay for experience processing
         
-        # CRITICAL: Reset Isaac Sim world (position, velocity, physics state) - TEMPORARY FOR TESTING
+        # CRITICAL: Reset Isaac Sim world (position, velocity, physics state)
         if config.USE_SIMULATION and config.USE_ISAAC_SIM:
             # Reset the world - this resets robot position, velocities, and physics state
             config.ISAAC_WORLD.reset()
@@ -155,7 +155,7 @@ def reset_episode(agent_data, robot_id):
             for _ in range(5):
                 config.ISAAC_WORLD.step(render=True)
 
-        # CRITICAL: Move robot to neutral position (joint angles)
+        # CRITICAL: Move all robots to neutral position (joint angles)
         neutral_position_isaac()  # Move to neutral position in Isaac Sim
 
         # Give Isaac Sim more steps to stabilize after neutral position
@@ -163,28 +163,9 @@ def reset_episode(agent_data, robot_id):
             for _ in range(5):
                 config.ISAAC_WORLD.step(render=True)
 
-        # Reset Python tracking variables for this robot
-        setattr(rewards, f'EPISODE_STEP_{robot_id}', 0)
-        agent['episode_reward'] = 0.0
-        agent['episode_states'] = []
-        agent['episode_actions'] = []
-
-        # Increment episode counter
-        agent['episode_counter'] += 1
-
-        logging.info(f"(training.py): Robot {robot_id} Episode {agent['episode_counter']} reset complete - World and robot state reset.\n")
-
-        # Log learning progress every 10 episodes
-        if agent['episode_counter'] % 10 == 0:
-            logging.debug(f"🎯 Robot {robot_id} Training Progress: {agent['episode_counter']} episodes completed.\n")
-            if agent['episode_states']: # Check if episode_states is not empty
-                logging.debug(f"   📊 Episode data size: {len(agent['episode_states'])}\n")
-            if ppo_policy is not None:
-                logging.debug(f"   🧠 PPO policy ready for training.\n")
+        logging.info(f"(episodes.py): Multi-agent episode reset complete - World and all robots reset.\n")
+        print(f"🔄 Multi-agent episode reset complete - all robots ready for new episodes")
 
     except Exception as e:
-        logging.error(f"(training.py): Failed to reset robot {robot_id} episode: {e}\n")
-        # Don't crash - try to continue with next episode
-        agent['episode_counter'] += 1
-        setattr(rewards, f'EPISODE_STEP_{robot_id}', 0)
-        agent['episode_reward'] = 0.0
+        logging.error(f"(episodes.py): Failed to reset multi-agent episode: {e}\n")
+        print(f"❌ Multi-agent reset failed, but continuing...")

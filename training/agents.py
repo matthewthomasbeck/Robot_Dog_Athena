@@ -286,17 +286,11 @@ def initialize_agent_data():
     
     for robot_id in range(num_robots):
         agent_data[robot_id] = {
-            'episode_counter': 0,
-            'episode_reward': 0.0,
-            'episode_states': [],
-            'episode_actions': [],
-            'episode_rewards': [],
-            'episode_values': [],
-            'episode_log_probs': [],
-            'episode_dones': [],
-            'episode_scores': [],
-            'average_score': 0.0,
-            'episode_needs_reset': False
+            'is_active': True,  # Whether robot is currently active in simulation
+            'last_reset_step': 0,  # Step when robot was last reset
+            'total_reward': 0.0,  # Cumulative reward since last reset
+            'recent_rewards': [],  # Last 100 rewards for performance tracking
+            'average_reward': 0.0  # Running average of recent rewards
         }
     
     logging.debug(f"Agent data initialized for {num_robots} robots\n")

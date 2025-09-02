@@ -28,6 +28,7 @@ import numpy as np
 import os
 import logging
 import torch
+import time
 
 ##### import necessary functions #####
 
@@ -121,50 +122,54 @@ def initialize_training():
 
 def integrate_with_main_loop():
     """
-    This function should be called from your main loop to integrate multi-agent episode management.
-    Call this function after each simulation step to check for episode resets.
-
+    Continuous multi-agent training system - no episodes, just shared step counter.
+    Individual robots can be reset independently when they fall.
+    
     Usage in main loop:
     if config.USE_SIMULATION and config.USE_ISAAC_SIM:
         from training.training import integrate_with_main_loop
         integrate_with_main_loop()
     """
-    global total_steps, agent_data
-
+    global agent_data, total_steps
+    
     # Safety check: ensure training system is initialized
     if not agent_data:
         return False
 
-    # Check each agent for episode reset signals
+    # Check if any robot needs a reset (fallen robots)
+    fallen_robots = []
     num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
-    any_reset_occurred = False
     
     for robot_id in range(num_robots):
-        # Safety check: ensure agent data exists for this robot
         if robot_id not in agent_data:
             continue
             
-        # Check if this agent needs a reset
-        if agent_data[robot_id]['episode_needs_reset']:
-            # Clear the signal
-            agent_data[robot_id]['episode_needs_reset'] = False
-            
-            # Perform the actual reset in the main thread (safe for Isaac Sim)
-            print(f"Main thread: Episode reset signal received for robot {robot_id}, performing reset...")
-            reset_episode(agent_data, robot_id)
-            any_reset_occurred = True
-
-        # Also check directly if episode should be reset (backup check)
-        if episodes.check_and_reset_episode_if_needed(agent_data, robot_id):
-            # Episode was reset, log the event
-            import logging
-            logging.info(f"(training.py): Robot {robot_id} episode {agent_data[robot_id]['episode_counter']} reset in main loop integration\n")
-            any_reset_occurred = True
-
-    return any_reset_occurred
-
-
-########## AGENT FUNCTIONS ##########
+        agent = agent_data[robot_id]
+        
+        # Check if robot is marked as fallen (from reward system)
+        if not agent.get('is_active', True):
+            fallen_robots.append(robot_id)
+            print(f"🤖 Robot {robot_id} FELL - will be reset at step {total_steps}")
+    
+    # If any robots have fallen, reset the entire world
+    if fallen_robots:
+        print(f"⏸️ SIMULATION PAUSED - {len(fallen_robots)} robot(s) fell, resetting world: {fallen_robots}")
+        
+        # Use the existing reset_episode() function from episodes.py
+        episodes.reset_episode()
+        
+        # Reset Python tracking variables for ALL robots
+        for robot_id in range(num_robots):
+            if robot_id in agent_data:
+                agent = agent_data[robot_id]
+                agent['is_active'] = True
+                agent['last_reset_step'] = total_steps
+                agent['total_reward'] = 0.0
+        
+        print(f"▶️ SIMULATION RESUMED - world reset complete, all robots active")
+        return True
+    
+    return False
 
 ##### summon standard agent #####
 
@@ -225,40 +230,21 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             current_angles = all_current_angles[robot_id]
             agent = agent_data[robot_id]
             
-            # Check if this agent's episode needs reset
-            episode_needs_reset = False
-            
-            # Check episode completion
-            if hasattr(rewards, f'EPISODE_STEP_{robot_id}'):
-                episode_step = getattr(rewards, f'EPISODE_STEP_{robot_id}')
-            else:
-                episode_step = 0
-            
-            # Check for fall detection (immediate reset)
-            if episode_step >= config.TRAINING_CONFIG['max_steps_per_episode']:
-                episode_needs_reset = True
-                if episode_step == config.TRAINING_CONFIG['max_steps_per_episode'] and episode_step > 0:
-                    print(f"Robot {robot_id} FELL OVER! Episode {agent['episode_counter']} failed - immediate reset!")
-                else:
-                    print(f"Robot {robot_id} Episode {agent['episode_counter']} completed after {episode_step} steps! (signaling main thread)")
-
-            # Store reset signal for main thread to check
-            agent['episode_needs_reset'] = episode_needs_reset
-            
-            # Skip processing this robot if it needs a reset (to avoid joint angle errors)
-            if episode_needs_reset:
-                # Add empty data for this robot to maintain consistency
+            # Check if robot is active
+            if not agent.get('is_active', True):
+                # Robot is fallen/inactive, add empty data to maintain consistency
                 all_target_angles.append({})
                 all_mid_angles.append({})
                 all_movement_rates.append({})
                 continue
 
-            # Log episode progress every 100 steps
-            if episode_step % 100 == 0:
-                print(f"Robot {robot_id} Episode {agent['episode_counter']}, Step {episode_step}, Total Steps: {total_steps}")
+            # Log progress every 100 steps
+            if total_steps % 100 == 0:
+                steps_since_reset = total_steps - agent.get('last_reset_step', 0)
+                print(f"Robot {robot_id} - Step {total_steps}, Active for {steps_since_reset} steps, Avg Reward: {agent.get('average_reward', 0.0):.3f}")
             
-            # Track orientation every 50 steps to understand robot facing direction
-            if episode_step % 50 == 0:
+            # Track orientation every 50 steps
+            if total_steps % 50 == 0:
                 track_orientation(robot_id)
 
             # Build state vector for this robot
@@ -322,46 +308,33 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             # Get action from PPO (stochastic during training)
             action = ppo_policy.select_action(state, deterministic=False)
 
-            # Store experience for training (only if previous step had data)
-            if agent['episode_states'] and agent['episode_actions']:
-                # Calculate reward using the dedicated reward function
-                reward = rewards.calculate_step_reward(current_angles, commands, intensity, robot_id)
+            # Calculate reward using the dedicated reward function
+            reward = rewards.calculate_step_reward(current_angles, commands, intensity, robot_id)
 
-                # Update episode reward for tracking
-                agent['episode_reward'] += reward
+            # Update robot's reward tracking
+            agent['total_reward'] += reward
+            agent['recent_rewards'].append(reward)
+            if len(agent['recent_rewards']) > 100:  # Keep only last 100 rewards
+                agent['recent_rewards'].pop(0)
+            agent['average_reward'] = sum(agent['recent_rewards']) / len(agent['recent_rewards'])
 
-                # Check if episode is done
-                done = episode_step >= config.TRAINING_CONFIG['max_steps_per_episode']
-
-                # Add to shared experience buffer
-                shared_experience_buffer['states'].append(state)
-                shared_experience_buffer['actions'].append(action)
-                shared_experience_buffer['rewards'].append(reward)
-                shared_experience_buffer['values'].append(None)  # Will be calculated later
-                shared_experience_buffer['log_probs'].append(None)  # Will be calculated later
-                shared_experience_buffer['dones'].append(done)
-                shared_experience_buffer['agent_ids'].append(robot_id)
-
-                # Log experience collection for debugging
-                if done:
-                    print(f"Robot {robot_id} 💾 Experience collected: State={len(state)}D, Action={len(action)}D, Reward={reward:.3f}, Done={done}")
-                    print(f"   📊 Shared buffer size: {len(shared_experience_buffer['states'])}")
-
-            # Update agent tracking variables
-            agent['episode_states'].append(state)
-            agent['episode_actions'].append(action)
+            # Add to shared experience buffer (continuous learning)
+            shared_experience_buffer['states'].append(state)
+            shared_experience_buffer['actions'].append(action)
+            shared_experience_buffer['rewards'].append(reward)
+            shared_experience_buffer['values'].append(None)  # Will be calculated later
+            shared_experience_buffer['log_probs'].append(None)  # Will be calculated later
+            shared_experience_buffer['dones'].append(False)  # No episodes, so never "done"
+            shared_experience_buffer['agent_ids'].append(robot_id)
             
             # Get value and log_prob for PPO training
             with torch.no_grad():
                 state_tensor = torch.FloatTensor(state).unsqueeze(0)
                 _, log_prob, _, value = ppo_policy.actor_critic.get_action_and_value(state_tensor, torch.FloatTensor(action).unsqueeze(0))
-                agent['episode_values'].append(value.item())
-                agent['episode_log_probs'].append(log_prob.item())
+                shared_experience_buffer['values'][-1] = value.item()
+                shared_experience_buffer['log_probs'][-1] = log_prob.item()
             
-            # Update episode step counter
-            if not hasattr(rewards, f'EPISODE_STEP_{robot_id}'):
-                setattr(rewards, f'EPISODE_STEP_{robot_id}', 0)
-            setattr(rewards, f'EPISODE_STEP_{robot_id}', episode_step + 1)
+            # Increment shared step counter
             total_steps += 1
 
             # Convert 36D action vector to joint angles and velocities for this robot
@@ -421,10 +394,10 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
     if len(shared_experience_buffer['states']) >= config.TRAINING_CONFIG['batch_size']:
         train_shared_ppo()
 
-    # Save model periodically based on total steps
-    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None:
-        save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_multi_agent.pth", ppo_policy, agent_data, total_steps)
-        print(f"💾 Multi-agent model saved: steps_{total_steps}")
+    # Save model every 20k steps (continuous learning)
+    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None and total_steps > 0:
+        save_model(f"/home/matthewthomasbeck/Projects/Robot_Dog/model/ppo_steps_{total_steps}_continuous.pth", ppo_policy, agent_data, total_steps)
+        print(f"💾 Continuous learning model saved: steps_{total_steps}")
 
     return all_target_angles, all_mid_angles, all_movement_rates
 

@@ -113,16 +113,19 @@ def calculate_step_reward(current_angles, commands, intensity, robot_id): # func
     elif commands:
         pass
         #logging.debug(f"📊 Good execution, but not perfect - no bonus this time")
-    
+
     ##### punish fall #####
 
     if has_fallen:
         fall_penalty = -100
-        logging.debug(f"Robot {robot_id} EPISODE FAILURE -100 points (robot fell over)")
-        # Force episode end for this specific robot
-        setattr(rewards, f'EPISODE_STEP_{robot_id}', config.TRAINING_CONFIG['max_steps_per_episode'])
-        # Also set the global for backward compatibility
-        EPISODE_STEP = config.TRAINING_CONFIG['max_steps_per_episode']
+        logging.debug(f"Robot {robot_id} FELL - marking as inactive")
+        
+        # Mark robot as inactive (will be reset by main loop)
+        import training.training as training_module
+        if hasattr(training_module, 'agent_data') and training_module.agent_data:
+            if robot_id in training_module.agent_data:
+                training_module.agent_data[robot_id]['is_active'] = False
+                print(f"🤖 Robot {robot_id} marked as INACTIVE (fell over)")
 
         return fall_penalty
 

@@ -175,7 +175,7 @@ JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac
 ##### multi-robot configuration #####
 
 MULTI_ROBOT_CONFIG = {
-    'num_robots': 4,  # number of robots to spawn for parallel training
+    'num_robots': 2,  # number of robots to spawn for parallel training
     'robot_spacing': 2.0,  # spacing between robots in meters
     'robot_start_z': 0.14,  # starting height for robots to avoid clipping
 }
