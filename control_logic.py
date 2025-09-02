@@ -395,7 +395,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
             if COMMAND_QUEUE is not None and COMMAND_QUEUE.empty() and IS_COMPLETE:
                 
                 # Import and use random command generation
-                from training.training import get_random_command
+                from training.isaac_sim import get_random_command
                 # Set training phase here (1, 2, or 3)
                 training_phase = 1  # Start with phase 1 for basic movement
                 command = get_random_command(phase=training_phase)
@@ -489,7 +489,7 @@ def _handle_command(command, camera_frames=None):
 
         if config.USE_SIMULATION:
             # Import and use random intensity generation
-            from training.training import get_random_intensity
+            from training.isaac_sim import get_random_intensity
             # Set training phase here (1, 2, or 3) - same as command phase
             training_phase = 1  # Start with phase 1 for basic movement
             intensity = get_random_intensity(phase=training_phase)
