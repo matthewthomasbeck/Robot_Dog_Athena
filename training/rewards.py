@@ -106,18 +106,18 @@ def calculate_step_reward(current_angles, commands, intensity, robot_id): # func
 
     ##### reward perfect execution ##### TODO fix me later, I am broken
 
-    if was_perfect and commands:
-        perfect_bonus = 10.0
-        reward += perfect_bonus
+    #if was_perfect and commands:
+       # perfect_bonus = 10.0
+        #reward += perfect_bonus
         #logging.debug(f"🏆 PERFECT EXECUTION! +{perfect_bonus:.1f} MASSIVE BONUS - All commands executed flawlessly!")
-    elif commands:
-        pass
+    #elif commands:
+        #pass
         #logging.debug(f"📊 Good execution, but not perfect - no bonus this time")
 
     ##### punish fall #####
 
-    if has_fallen:
-        fall_penalty = -100
+    if has_fallen: # fall penalty
+        reward -= 0.2
         #logging.debug(f"Robot {robot_id} FELL - marking as inactive")
         
         # Mark robot as inactive (will be reset by main loop)
@@ -127,12 +127,8 @@ def calculate_step_reward(current_angles, commands, intensity, robot_id): # func
                 training_module.agent_data[robot_id]['is_active'] = False
                 #print(f"🤖 Robot {robot_id} marked as INACTIVE (fell over)")
 
-        return fall_penalty
-
-    ##### clamp reward #####
-
-    elif not has_fallen:
-        reward = max(-1.0, min(1.0, reward))
+    else: # survival bonus
+        reward += 0.2
 
     ##### log reward #####
     
@@ -288,7 +284,7 @@ def _reward_rotation_direction(specific_rotation_command, actual_rotation, rotat
     perfect_rotation = 30.0
     terrible_rotation = 0.0
     total_range = perfect_rotation - terrible_rotation
-    rotation_direction_reward_magnitude = 1.0
+    rotation_direction_reward_magnitude = 4.0
     rotation_direction_penalty_magnitude = 1.0
     perfect_percentile = 25
     quick_percentile = 50
@@ -474,7 +470,7 @@ def _reward_movement_direction(command, total_displacement, intensity, multidire
     terrible_movement = 0.0
     acceptable_drift = 0.05 # 5cm of drift allowed
     total_range = perfect_movement - terrible_movement
-    movement_reward_magnitude = 1.0
+    movement_reward_magnitude = 4.0
     movement_penalty_magnitude = 1.0
     perfect_percentile = 25
     good_percentile = 50

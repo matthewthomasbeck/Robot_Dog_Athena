@@ -192,15 +192,14 @@ CURRENT_ANGLES = [] # array of current angles for each robot
 
 TRAINING_CONFIG = { # used to track training metrics and save frequencies
 
-    'save_frequency': 100000,  # Save model every 20000 steps (continuous learning)
+    'save_frequency': 100000,  # Save model every 100k steps
     'training_frequency': 1,  # Train every step for maximum learning speed
-    'batch_size': 2048,  # MASSIVE batch size for 24GB VRAM - 32x larger!
-    'learning_rate': 3e-4,  # Keep original learning rate
-    'gamma': 0.99,  # Discount factor
-    'tau': 0.005,  # Standard target network update rate
-    'exploration_noise': 0.1,  # Standard exploration noise
+    'batch_size': 2048,
+    'learning_rate': 3e-4,
+    'gamma': 0.99,
+    'tau': 0.005,
+    'exploration_noise': 0.1,
     'max_action': 1.0,
-    
-    # Simple performance improvements
-    'experience_buffer_size': 100000,  # Massive experience buffer (100k experiences)
+    'max_steps_per_episode': 1000,
+    'experience_buffer_size': 100000
 }

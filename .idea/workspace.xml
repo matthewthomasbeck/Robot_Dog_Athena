@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added threading again to isaac movement, saving before trying to fix rewards">
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/isaac_joints.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/agents.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/orientation.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/orientation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/rewards.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/rewards.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Everything going well, changing naming format of models saved" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -221,6 +210,7 @@
       <workItem from="1756745483097" duration="55000" />
       <workItem from="1756747025123" duration="34000" />
       <workItem from="1756764657590" duration="2933000" />
+      <workItem from="1756842735546" duration="1650000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -361,30 +351,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00111" summary="Cleaned up control_logic and training">
-      <option name="closed" value="true" />
-      <created>1755202709032</created>
-      <option name="number" value="00111" />
-      <option name="presentableId" value="LOCAL-00111" />
-      <option name="project" value="LOCAL" />
-      <updated>1755202709032</updated>
-    </task>
-    <task id="LOCAL-00112" summary="Cleaned up control_logic">
-      <option name="closed" value="true" />
-      <created>1755202835793</created>
-      <option name="number" value="00112" />
-      <option name="presentableId" value="LOCAL-00112" />
-      <option name="project" value="LOCAL" />
-      <updated>1755202835793</updated>
-    </task>
-    <task id="LOCAL-00113" summary="Created accurate orientation tracking">
-      <option name="closed" value="true" />
-      <created>1755210412330</created>
-      <option name="number" value="00113" />
-      <option name="presentableId" value="LOCAL-00113" />
-      <option name="project" value="LOCAL" />
-      <updated>1755210412331</updated>
     </task>
     <task id="LOCAL-00114" summary="Going to remove the backend files as the context is no longer needed, added model testing and exporting">
       <option name="closed" value="true" />
@@ -594,7 +560,31 @@
       <option name="project" value="LOCAL" />
       <updated>1756767017963</updated>
     </task>
-    <option name="localTasksCounter" value="140" />
+    <task id="LOCAL-00140" summary="Robots can now run in parallel (but they still all must respawn at once)">
+      <option name="closed" value="true" />
+      <created>1756842806880</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1756842806880</updated>
+    </task>
+    <task id="LOCAL-00141" summary="Parallel training complete, fingers crossed everything goes well">
+      <option name="closed" value="true" />
+      <created>1756847022847</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1756847022847</updated>
+    </task>
+    <task id="LOCAL-00142" summary="Everything going well, changing naming format of models saved">
+      <option name="closed" value="true" />
+      <created>1756847842335</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
+      <option name="project" value="LOCAL" />
+      <updated>1756847842335</updated>
+    </task>
+    <option name="localTasksCounter" value="143" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -612,9 +602,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cleaned up movement so it's not an 800 line mess" />
-    <MESSAGE value="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though" />
-    <MESSAGE value="Made it so models can be converted" />
     <MESSAGE value="Cleaned up cursor garbage in control_logic.py" />
     <MESSAGE value="Fixed control_logic to stop using the useless coordinate frame" />
     <MESSAGE value="Got isaac servos working again" />
@@ -637,7 +624,10 @@
     <MESSAGE value="Saving before starting training from scratch" />
     <MESSAGE value="Got multiple robots spawning in with individual control!!!" />
     <MESSAGE value="Added threading again to isaac movement, saving before trying to fix rewards" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added threading again to isaac movement, saving before trying to fix rewards" />
+    <MESSAGE value="Robots can now run in parallel (but they still all must respawn at once)" />
+    <MESSAGE value="Parallel training complete, fingers crossed everything goes well" />
+    <MESSAGE value="Everything going well, changing naming format of models saved" />
+    <option name="LAST_COMMIT_MESSAGE" value="Everything going well, changing naming format of models saved" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

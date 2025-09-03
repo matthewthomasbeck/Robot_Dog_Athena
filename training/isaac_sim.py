@@ -291,6 +291,8 @@ def get_random_command(phase=1): # returns semirandom, realistic command combina
     
     # Update previous command
     PREVIOUS_COMMAND = command
+
+    command = 'w' # TODO only forward for now
     
     return command
 

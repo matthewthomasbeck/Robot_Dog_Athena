@@ -139,29 +139,16 @@ def integrate_with_main_loop():
     if not agent_data:
         return False
 
-    # Check if any robot needs a reset (fallen robots)
-    fallen_robots = []
-    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
-    
-    for robot_id in range(num_robots):
-        if robot_id not in agent_data:
-            continue
-            
-        agent = agent_data[robot_id]
+    # Check for time-based reset (every max_steps_per_episode steps)
+    max_steps_per_episode = config.TRAINING_CONFIG.get('max_steps_per_episode', 10000)  # Default 10k steps
+    if total_steps > 0 and total_steps % max_steps_per_episode == 0:
+        print(f"⏰ TIME-BASED RESET at step {total_steps} (every {max_steps_per_episode} steps)")
         
-        # Check if robot is marked as fallen (from reward system)
-        if not agent.get('is_active', True):
-            fallen_robots.append(robot_id)
-            #print(f"🤖 Robot {robot_id} FELL - will be reset at step {total_steps}")
-    
-    # If any robots have fallen, reset the entire world
-    if fallen_robots:
-        #print(f"⏸️ SIMULATION PAUSED - {len(fallen_robots)} robot(s) fell, resetting world: {fallen_robots}")
-        
-        # Use the existing reset_episode() function from episodes.py
+        # Reset the entire world
         episodes.reset_episode()
         
         # Reset Python tracking variables for ALL robots
+        num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
         for robot_id in range(num_robots):
             if robot_id in agent_data:
                 agent = agent_data[robot_id]
@@ -169,8 +156,41 @@ def integrate_with_main_loop():
                 agent['last_reset_step'] = total_steps
                 agent['total_reward'] = 0.0
         
-        #print(f"▶️ SIMULATION RESUMED - world reset complete, all robots active")
+        print(f"🔄 Time-based reset complete - all robots active")
         return True
+
+    # Check if any robot needs a reset (fallen robots) - COMMENTED OUT
+    # fallen_robots = []
+    # num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
+    # 
+    # for robot_id in range(num_robots):
+    #     if robot_id not in agent_data:
+    #         continue
+    #         
+    #     agent = agent_data[robot_id]
+    #     
+    #     # Check if robot is marked as fallen (from reward system)
+    #     if not agent.get('is_active', True):
+    #         fallen_robots.append(robot_id)
+    #         #print(f"🤖 Robot {robot_id} FELL - will be reset at step {total_steps}")
+    # 
+    # # If any robots have fallen, reset the entire world
+    # if fallen_robots:
+    #     #print(f"⏸️ SIMULATION PAUSED - {len(fallen_robots)} robot(s) fell, resetting world: {fallen_robots}")
+    #     
+    #     # Use the existing reset_episode() function from episodes.py
+    #     episodes.reset_episode()
+    #     
+    #     # Reset Python tracking variables for ALL robots
+    #     for robot_id in range(num_robots):
+    #         if robot_id in agent_data:
+    #             agent = agent_data[robot_id]
+    #             agent['is_active'] = True
+    #             agent['last_reset_step'] = total_steps
+    #             agent['total_reward'] = 0.0
+    #     
+    #     #print(f"▶️ SIMULATION RESUMED - world reset complete, all robots active")
+    #     return True
     
     return False
 
@@ -367,7 +387,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
                     if min_angle > max_angle:
                         min_angle, max_angle = max_angle, min_angle
 
-                    # Convert mid action (-1 to 1) to joint angle
+                    # Convert mid action (-1 to 1) to joint angle TODO remove the 12 mid angle action dim(s)
                     mid_action = action[action_idx]
                     mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
                     mid_angle = np.clip(mid_angle, min_angle, max_angle)
@@ -379,7 +399,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
                     target_angle = np.clip(target_angle, min_angle, max_angle)
                     target_angles[leg_id][joint_name] = float(target_angle)
 
-                    # Convert velocity action (-1 to 1) to movement rate
+                    # Convert velocity action (-1 to 1) to movement rate TODO remove the 12 velocity action dim(s)
                     velocity_action = action[action_idx + 24]
                     joint_speed = (velocity_action + 1.0) * 4.75
                     joint_speed = np.clip(joint_speed, 0.0, 9.5)
@@ -387,9 +407,9 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
 
                     action_idx += 1
 
-            all_target_angles.append(target_angles)
-            all_mid_angles.append(mid_angles)
-            all_movement_rates.append(movement_rates)
+            all_target_angles.append(target_angles) # TODO find a way to save the last 5 target angle sets to a deque for the next model input dim
+            all_mid_angles.append(mid_angles) # TODO get rid of me
+            all_movement_rates.append(movement_rates) # TODO get rid of me
 
         except Exception as e:
             logging.error(f"Error processing robot {robot_id}: {e}")
