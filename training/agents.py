@@ -121,7 +121,7 @@ class ActorCritic(nn.Module):
 
 class PPO:
     def __init__(self, state_dim, action_dim, max_action, lr=3e-4, gamma=0.99, gae_lambda=0.95, 
-                 clip_ratio=0.2, target_kl=0.01, train_pi_iters=80, train_v_iters=80, 
+                 clip_ratio=0.2, target_kl=0.01, train_pi_iters=4, train_v_iters=4, 
                  target_entropy=0.01):
         self.actor_critic = ActorCritic(state_dim, action_dim, max_action)
         self.optimizer = optim.Adam(self.actor_critic.parameters(), lr=lr)

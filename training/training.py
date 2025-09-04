@@ -54,19 +54,15 @@ total_steps = 0
 
 ##### multi-agent training data #####
 
-# MASSIVE shared experience buffer for all agents (100k experiences)
-shared_experience_buffer = {
+# PPO rollout buffer - collect experiences then train immediately
+rollout_buffer = {
     'states': [],
     'actions': [],
     'rewards': [],
     'values': [],
     'log_probs': [],
-    'dones': [],
-    'agent_ids': []  # Track which agent generated each experience
+    'dones': []
 }
-
-# Buffer size limit to prevent memory overflow
-MAX_BUFFER_SIZE = config.TRAINING_CONFIG.get('experience_buffer_size', 100000)
 
 # Per-agent data
 agent_data = {}  # Will be initialized with num_robots agents
@@ -144,45 +140,46 @@ def initialize_training():
 ##### integrate with main loop #####
 
 def integrate_with_main_loop():
-    global agent_data, total_steps, last_saved_step
 
-    if total_steps % 10000 == 0 and total_steps != 0:
-        logging.debug(f"(training.py): Total steps: {total_steps}\n")
-    
-    # Safety check: ensure training system is initialized
-    if not agent_data:
-        return False
+    ##### set variables #####
 
-    ##### TRAINING AND MODEL MANAGEMENT #####
-    
-    # Train PPO when shared buffer has enough experiences
-    if len(shared_experience_buffer['states']) >= config.TRAINING_CONFIG['batch_size']:
-        train_shared_ppo()
+    global agent_data, total_steps, last_saved_step, rollout_buffer
 
-    # Save model every save_frequency steps - FIXED VERSION
-    if (total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and 
-        ppo_policy is not None and 
-        total_steps > 0 and 
-        total_steps > last_saved_step):  # NEW: Only save if we haven't saved this step yet
-        _save_training_model()
-        last_saved_step = total_steps  # NEW: Track the last saved step
+    ##### reset episode every x steps #####
 
-    ##### RESET CHECKS #####
-    
-    # Check for time-based reset (every max_steps_per_episode steps)
-    if total_steps > 0 and total_steps % config.TRAINING_CONFIG.get('max_steps_per_episode', 10000) == 0:
-        logging.debug(f"(training.py): Max episode steps reached at {total_steps}, resetting episode...\n")
+    if (total_steps / config.MULTI_ROBOT_CONFIG['num_robots']) % config.TRAINING_CONFIG['max_steps_per_episode'] == 0 and total_steps > last_saved_step:
         episodes.reset_episode(agent_data)
-        return True
 
-    # Check for fall-based reset (any robot falls)
+    ##### reset episode on fall #####
+
     fallen_robots = _get_fallen_robots()
     if fallen_robots:
         print("(training.py): ROBOT FELL! Resetting episode...")
         episodes.reset_episode(agent_data)
         return True
+
+    ##### train model every x steps #####
+
+    if (total_steps / config.MULTI_ROBOT_CONFIG['num_robots']) % (config.TRAINING_CONFIG['max_steps_per_episode'] * 2) == 0 and total_steps > last_saved_step:
+        train_shared_ppo()
+        logging.info(f"(training.py): Trained model at step {total_steps}\n")
+
+    ##### save model every x steps #####
+
+    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and last_saved_step != 0:
+
+        logging.info(f"(training.py): Saving model at total_steps {total_steps} and last_saved_step {last_saved_step}.\n")
+
+        _save_training_model()
+        last_saved_step = total_steps
+        logging.info(f"(training.py): Saved model at step {total_steps}\n")
     
-    return False
+    ##### safety check #####
+    
+    if not agent_data:
+        return False
+    
+    return False # return false if training is not done
 
 
 def _get_fallen_robots():
@@ -200,6 +197,7 @@ def _get_fallen_robots():
 
     return fallen_robots
 
+##### save model #####
 
 def _save_training_model():
     """Helper function to save the training model"""
@@ -241,7 +239,7 @@ def get_rl_action_blind(commands, intensity):
     Returns:
         List of target_angles for all robots (12D output - only target angles)
     """
-    global ppo_policy, total_steps, agent_data, shared_experience_buffer
+    global ppo_policy, total_steps, agent_data, rollout_buffer
 
     try:
         # Initialize training system if not done yet
@@ -350,27 +348,27 @@ def get_rl_action_blind(commands, intensity):
                 agent['recent_rewards'].pop(0)
             agent['average_reward'] = sum(agent['recent_rewards']) / len(agent['recent_rewards'])
 
-            # Add to shared experience buffer (continuous learning)
-            shared_experience_buffer['states'].append(state)
-            shared_experience_buffer['actions'].append(action)
-            shared_experience_buffer['rewards'].append(reward)
-            shared_experience_buffer['values'].append(None)  # Will be calculated later
-            shared_experience_buffer['log_probs'].append(None)  # Will be calculated later
-            shared_experience_buffer['dones'].append(False)  # No episodes, so never "done"
-            shared_experience_buffer['agent_ids'].append(robot_id)
+            # Add to rollout buffer (PPO on-policy learning)
+            rollout_buffer['states'].append(state)
+            rollout_buffer['actions'].append(action)
+            rollout_buffer['rewards'].append(reward)
+            rollout_buffer['values'].append(None)  # Will be calculated later
+            rollout_buffer['log_probs'].append(None)  # Will be calculated later
+            rollout_buffer['dones'].append(False)  # No episodes, so never "done"
             
             # Get value and log_prob for PPO training
             with torch.no_grad():
                 state_tensor = torch.FloatTensor(state).unsqueeze(0)
                 _, log_prob, _, value = ppo_policy.actor_critic.get_action_and_value(state_tensor, torch.FloatTensor(action).unsqueeze(0))
-                shared_experience_buffer['values'][-1] = value.item()
-                shared_experience_buffer['log_probs'][-1] = log_prob.item()
+                rollout_buffer['values'][-1] = value.item()
+                rollout_buffer['log_probs'][-1] = log_prob.item()
             
             # Manage buffer size to prevent memory overflow
-            if len(shared_experience_buffer['states']) > MAX_BUFFER_SIZE:
-                # Remove oldest experiences (FIFO)
-                for key in shared_experience_buffer:
-                    shared_experience_buffer[key].pop(0)
+            if len(rollout_buffer['states']) > config.TRAINING_CONFIG['batch_size']:
+                # Remove oldest experiences efficiently (keep only the last batch_size items)
+                batch_size = config.TRAINING_CONFIG['batch_size']
+                for key in rollout_buffer:
+                    rollout_buffer[key] = rollout_buffer[key][-batch_size:]
             
             # Increment shared step counter
             total_steps += 1
@@ -433,40 +431,52 @@ def get_rl_action_blind(commands, intensity):
 
 def train_shared_ppo():
     """Train PPO using shared experience buffer from all agents - SCALED UP VERSION"""
-    global ppo_policy, shared_experience_buffer
+    global ppo_policy, rollout_buffer
     
-    if len(shared_experience_buffer['states']) < config.TRAINING_CONFIG['batch_size']:
+    if len(rollout_buffer['states']) < config.TRAINING_CONFIG['batch_size']:
         return
     
-    logging.debug(f"(training.py): Training PPO with batch size: {len(shared_experience_buffer['states'])} experiences.\n")
+    logging.debug(f"(training.py): Training PPO with batch size: {len(rollout_buffer['states'])} experiences...\n")
     
-    # Convert to tensors (keep it simple, just bigger)
-    states = torch.FloatTensor(shared_experience_buffer['states'])
-    actions = torch.FloatTensor(shared_experience_buffer['actions'])
-    rewards_tensor = torch.FloatTensor(shared_experience_buffer['rewards'])
-    dones = torch.FloatTensor(shared_experience_buffer['dones'])
-    
-    # Calculate log probabilities for all actions in the buffer
-    with torch.no_grad():
-        _, log_probs, _, _ = ppo_policy.actor_critic.get_action_and_value(states, actions)
-        log_probs = log_probs.squeeze(-1)  # Remove extra dimension
-    
-    # Get final value estimate for GAE calculation
-    with torch.no_grad():
-        final_value = ppo_policy.actor_critic.get_value(states[-1:]).item()
-    
-    # Train PPO on shared buffer data (same method, just bigger batches)
-    ppo_policy.train(states, actions, log_probs, rewards_tensor, dones, final_value)
-    
-    # Clear the shared buffer after training
-    shared_experience_buffer = {
-        'states': [],
-        'actions': [],
-        'rewards': [],
-        'values': [],
-        'log_probs': [],
-        'dones': [],
-        'agent_ids': []
-    }
-    
-    logging.info(f"(training.py): MASSIVE batch PPO training completed, shared buffer cleared.\n")
+    try: # attempt to train PPO
+
+        # Convert to tensors efficiently - convert lists to numpy arrays first
+        # Ensure all buffers have exactly batch_size items
+        batch_size = config.TRAINING_CONFIG['batch_size']
+        if len(rollout_buffer['states']) != batch_size:
+            # Trim to exact batch size
+            for key in rollout_buffer:
+                rollout_buffer[key] = rollout_buffer[key][-batch_size:]
+
+        states = torch.FloatTensor(np.array(rollout_buffer['states']))
+        actions = torch.FloatTensor(np.array(rollout_buffer['actions']))
+        rewards_tensor = torch.FloatTensor(np.array(rollout_buffer['rewards']))
+        dones = torch.FloatTensor(np.array(rollout_buffer['dones']))
+        
+        # Calculate log probabilities for all actions in the buffer
+        with torch.no_grad():
+            _, log_probs, _, _ = ppo_policy.actor_critic.get_action_and_value(states, actions)
+            log_probs = log_probs.squeeze(-1)  # Remove extra dimension
+        
+        # Get final value estimate for GAE calculation
+        with torch.no_grad():
+            final_value = ppo_policy.actor_critic.get_value(states[-1:]).item()
+        
+        # Train PPO on shared buffer data (same method, just bigger batches)
+        ppo_policy.train(states, actions, log_probs, rewards_tensor, dones, final_value)
+        
+        # Clear the shared buffer after training
+        rollout_buffer = {
+            'states': [],
+            'actions': [],
+            'rewards': [],
+            'values': [],
+            'log_probs': [],
+            'dones': []
+        }
+        
+        logging.info(f"(training.py): MASSIVE batch PPO training completed, shared buffer cleared.\n")
+
+    except Exception as e:
+        logging.error(f"(training.py): Failed to train PPO: {e}\n")
+        return

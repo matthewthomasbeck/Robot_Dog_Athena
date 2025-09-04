@@ -179,7 +179,7 @@ JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac
 ##### multi-robot configuration #####
 
 MULTI_ROBOT_CONFIG = {
-    'num_robots': 30,  # number of robots to spawn for parallel training
+    'num_robots': 150,  # number of robots to spawn for parallel training
     'robot_spacing': 2.0,  # spacing between robots in meters
     'robot_start_z': 0.14,  # starting height for robots to avoid clipping
 }
@@ -190,16 +190,22 @@ SPAWN_POSITIONS = [] # array of spawn positions for each robot
 
 ##### training config #####
 
-TRAINING_CONFIG = { # used to track training metrics and save frequencies
-    'render': True,
-    'save_frequency': 100000,  # Save model every 100k steps
-    'training_frequency': 1,  # Train every step for maximum learning speed
-    'batch_size': MULTI_ROBOT_CONFIG['num_robots'] * 2048,
-    'learning_rate': 3e-4,
+TRAINING_CONFIG = {
+    'render': False,                        # turn off during training for speed
+    'save_frequency': 100000,               # still fine
+    'num_envs': MULTI_ROBOT_CONFIG['num_robots'],
+    
+    # PPO-specific rollout settings
+    'rollout_steps': 512,                   # per env, common range 128–2048
+    'batch_size': MULTI_ROBOT_CONFIG['num_robots'] * 512,  # total rollout batch
+    'mini_batch_size': 256,                 # split rollout batch for SGD
+    'ppo_epochs': 10,                       # passes per rollout batch
+    
+    # Discounting
     'gamma': 0.99,
-    'tau': 0.005,
-    'exploration_noise': 0.1,
-    'max_action': 1.0,
-    'max_steps_per_episode': MULTI_ROBOT_CONFIG['num_robots'] * 1000,
-    'experience_buffer_size': MULTI_ROBOT_CONFIG['num_robots'] * 10000
+    'learning_rate': 3e-4,
+    'max_action': 1.0,                      # needed for PPO action scaling
+    
+    # Episode horizon (per env, not scaled)
+    'max_steps_per_episode': 1000           
 }

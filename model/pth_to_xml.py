@@ -47,8 +47,8 @@ def convert_pth_to_openvino():
     print("=" * 55)
     
     # Model configuration - FIXED DIMENSIONS
-    STATE_DIM = 19  # Fixed: 12 joints + 6 commands + 1 intensity
-    ACTION_DIM = 36  # Fixed: 12 mid angles + 12 target angles + 12 velocity values
+    STATE_DIM = 67  # Fixed: 12 joints + 6 commands + 1 intensity
+    ACTION_DIM = 12  # Fixed: 12 target angles only (no mid angles or velocities)
     MAX_ACTION = 1.0
     
     # Paths
@@ -59,9 +59,7 @@ def convert_pth_to_openvino():
     print(f"📤 Output model: {xml_path}")
     print(f"🎯 State dimension: {STATE_DIM} (FIXED)")
     print(f"🎯 Action dimension: {ACTION_DIM} (FIXED)")
-    print(f"   - 12 mid angles")
-    print(f"   - 12 target angles") 
-    print(f"   - 12 velocity values")
+    print(f"   - 12 target angles")
     
     # Check if input file exists
     if not os.path.exists(pth_path):
