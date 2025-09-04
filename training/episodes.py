@@ -153,7 +153,7 @@ def reset_episode(agent_data=None, robot_id=None):
 
             # Give Isaac Sim a few steps to stabilize after world reset
             for _ in range(5):
-                config.ISAAC_WORLD.step(render=True)
+                config.ISAAC_WORLD.step(render=config.TRAINING_CONFIG['render'])
 
         # CRITICAL: Move all robots to neutral position (joint angles)
         neutral_position_isaac()  # Move to neutral position in Isaac Sim
@@ -161,7 +161,7 @@ def reset_episode(agent_data=None, robot_id=None):
         # Give Isaac Sim more steps to stabilize after neutral position
         if config.USE_SIMULATION and config.USE_ISAAC_SIM:
             for _ in range(5):
-                config.ISAAC_WORLD.step(render=True)
+                config.ISAAC_WORLD.step(render=config.TRAINING_CONFIG['render'])
 
         # CRITICAL: Reset Python tracking variables for ALL robots
         if agent_data is not None:

@@ -142,15 +142,6 @@ def initialize_training():
 ##### integrate with main loop #####
 
 def integrate_with_main_loop():
-    """
-    Continuous multi-agent training system - no episodes, just shared step counter.
-    Individual robots can be reset independently when they fall.
-    
-    Usage in main loop:
-    if config.USE_SIMULATION and config.USE_ISAAC_SIM:
-        from training.training import integrate_with_main_loop
-        integrate_with_main_loop()
-    """
     global agent_data, total_steps
     
     # Safety check: ensure training system is initialized
@@ -163,7 +154,7 @@ def integrate_with_main_loop():
     if len(shared_experience_buffer['states']) >= config.TRAINING_CONFIG['batch_size']:
         train_shared_ppo()
 
-    # Save model every save_frequency steps
+    # Save model every save_frequency steps - MOVED BEFORE RESET CHECKS
     if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None and total_steps > 0:
         _save_training_model()
 

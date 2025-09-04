@@ -224,7 +224,7 @@ def reset_individual_robot(robot_id):
         
         # Give Isaac Sim a few steps to stabilize after reset
         for _ in range(3):
-            config.ISAAC_WORLD.step(render=True)
+            config.ISAAC_WORLD.step(render=config.TRAINING_CONFIG['render'])
         
         logging.info(f"(isaac_joints.py): Robot {robot_id} reset complete - position and joints reset\n")
         return True

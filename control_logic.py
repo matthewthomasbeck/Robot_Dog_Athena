@@ -360,7 +360,7 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
 
     for _ in range(3):  # let isaac sim load a few steps for general process
-        config.ISAAC_WORLD.step(render=True)
+        config.ISAAC_WORLD.step(render=config.TRAINING_CONFIG['render'])
 
     try:  # try to run robot startup sequence for all robots
         neutral_position_isaac()
@@ -443,14 +443,14 @@ def _isaac_sim_loop():  # central function that runs robot in simulation
 
             ##### step simulation #####
 
-            config.ISAAC_WORLD.step(render=True)
+            config.ISAAC_WORLD.step(render=config.TRAINING_CONFIG['render'])
 
             if config.USE_SIMULATION: # TODO ensure all robots pause when one robot resets
                 from training.training import integrate_with_main_loop
                 episode_reset_occurred = integrate_with_main_loop()
                 if episode_reset_occurred:
                     for _ in range(3):
-                        config.ISAAC_WORLD.step(render=True)
+                        config.ISAAC_WORLD.step(render=config.TRAINING_CONFIG['render'])
 
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
