@@ -71,6 +71,8 @@ MAX_BUFFER_SIZE = config.TRAINING_CONFIG.get('experience_buffer_size', 100000)
 # Per-agent data
 agent_data = {}  # Will be initialized with num_robots agents
 
+last_saved_step = 0
+
 
 
 
@@ -105,29 +107,29 @@ def initialize_training():
     # Just verify it exists and has the right number of robots
     num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
     if not config.PREVIOUS_POSITIONS or len(config.PREVIOUS_POSITIONS) != num_robots:
-        logging.warning(f"PREVIOUS_POSITIONS not properly initialized, initializing now...")
+        logging.warning(f"(training.py): PREVIOUS_POSITIONS not properly initialized, initializing now...\n")
         config.PREVIOUS_POSITIONS = []
         for robot_id in range(num_robots):
             robot_history = deque(maxlen=5)
             for _ in range(5):
                 robot_history.append(np.zeros(12, dtype=np.float32))
             config.PREVIOUS_POSITIONS.append(robot_history)
-        logging.debug(f"PREVIOUS_POSITIONS initialized for {num_robots} robots with zeros")
+        logging.debug(f"(training.py): PREVIOUS_POSITIONS initialized for {num_robots} robots with zeros.\n")
 
     # Try to load the latest saved model to continue training
     latest_model = find_latest_model()
     if latest_model:
-        logging.debug(f"🔄 Loading latest model: {latest_model}...\n")
+        logging.debug(f"(training.py): Loading latest model: {latest_model}...\n")
         success, loaded_steps, loaded_agent_data = load_model(latest_model, ppo_policy)
         if success:
             total_steps = loaded_steps
             agent_data = loaded_agent_data
-            logging.info(f"✅ Successfully loaded model from step {total_steps}\n")
+            logging.info(f"(training.py): Successfully loaded model from step {total_steps}.\n")
         else:
-            logging.warning(f"❌ Failed to load model, starting fresh.\n")
+            logging.warning(f"(training.py): Failed to load model, starting fresh...\n")
             total_steps = 0
     else:
-        logging.warning(f"🆕 No saved models found, starting fresh training.\n")
+        logging.warning(f"(training.py): No saved models found, starting fresh training...\n")
         total_steps = 0
 
     logging.info(f"Multi-agent training system initialized:")
@@ -142,7 +144,10 @@ def initialize_training():
 ##### integrate with main loop #####
 
 def integrate_with_main_loop():
-    global agent_data, total_steps
+    global agent_data, total_steps, last_saved_step
+
+    if total_steps % 10000 == 0 and total_steps != 0:
+        logging.debug(f"(training.py): Total steps: {total_steps}\n")
     
     # Safety check: ensure training system is initialized
     if not agent_data:
@@ -154,22 +159,26 @@ def integrate_with_main_loop():
     if len(shared_experience_buffer['states']) >= config.TRAINING_CONFIG['batch_size']:
         train_shared_ppo()
 
-    # Save model every save_frequency steps - MOVED BEFORE RESET CHECKS
-    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and ppo_policy is not None and total_steps > 0:
+    # Save model every save_frequency steps - FIXED VERSION
+    if (total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and 
+        ppo_policy is not None and 
+        total_steps > 0 and 
+        total_steps > last_saved_step):  # NEW: Only save if we haven't saved this step yet
         _save_training_model()
+        last_saved_step = total_steps  # NEW: Track the last saved step
 
     ##### RESET CHECKS #####
     
     # Check for time-based reset (every max_steps_per_episode steps)
     if total_steps > 0 and total_steps % config.TRAINING_CONFIG.get('max_steps_per_episode', 10000) == 0:
-        print(f"⏰ TIME-BASED RESET at step {total_steps}")
+        logging.debug(f"(training.py): Max episode steps reached at {total_steps}, resetting episode...\n")
         episodes.reset_episode(agent_data)
-        print(f"🔄 Time-based reset complete - all robots active")
         return True
 
     # Check for fall-based reset (any robot falls)
     fallen_robots = _get_fallen_robots()
     if fallen_robots:
+        print("(training.py): ROBOT FELL! Resetting episode...")
         episodes.reset_episode(agent_data)
         return True
     
@@ -211,7 +220,7 @@ def _save_training_model():
     filepath = f"/home/matthewthomasbeck/Projects/Robot_Dog/model/{filename}"
     
     save_model(filepath, ppo_policy, agent_data, total_steps)
-    print(f"💾 Continuous learning model saved: {filename}")
+    logging.info(f"(training.py): Continuous learning model saved: {filename}\n")
 
 ##### summon standard agent #####
 
@@ -237,29 +246,29 @@ def get_rl_action_blind(commands, intensity):
     try:
         # Initialize training system if not done yet
         if ppo_policy is None:
-            logging.debug("Initializing training system...")
+            logging.debug("(training.py): Initializing training system...\n")
             initialize_training()
-            logging.debug("Training system initialized successfully")
+            logging.info("(training.py) Training system initialized successfully.\n")
         # CRITICAL: Always ensure agent_data is initialized, even if model was loaded
         elif not agent_data or len(agent_data) != config.MULTI_ROBOT_CONFIG['num_robots']:
-            logging.debug("Agent data not properly initialized, initializing now...")
+            logging.debug("(training.py): Agent data not properly initialized, initializing now...\n")
             agent_data = initialize_agent_data()
-            logging.debug("Agent data initialized successfully")
+            logging.info("(training.py): Agent data initialized successfully.\n")
     except Exception as e:
-        logging.error(f"Failed to initialize training system: {e}")
+        logging.error(f"(training.py): Failed to initialize training system: {e}\n")
         return []
 
     num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
     
     # Safety check: ensure agent_data is properly initialized
     if not agent_data or len(agent_data) != num_robots:
-        logging.error(f"Agent data not properly initialized. Expected {num_robots} agents, got {len(agent_data) if agent_data else 0}")
+        logging.error(f"(training.py): Agent data not properly initialized. Expected {num_robots} agents, got {len(agent_data) if agent_data else 0}\n")
         return []
     
     # PREVIOUS_POSITIONS should already be initialized in control_logic.py
     # Just verify it exists and has the right number of robots
     if not config.PREVIOUS_POSITIONS or len(config.PREVIOUS_POSITIONS) != num_robots:
-        logging.error(f"PREVIOUS_POSITIONS not properly initialized. Expected {num_robots} robots, got {len(config.PREVIOUS_POSITIONS) if config.PREVIOUS_POSITIONS else 0}")
+        logging.error(f"(training.py): PREVIOUS_POSITIONS not properly initialized. Expected {num_robots} robots, got {len(config.PREVIOUS_POSITIONS) if config.PREVIOUS_POSITIONS else 0}\n")
         return []
     
     all_target_angles = []
@@ -328,7 +337,11 @@ def get_rl_action_blind(commands, intensity):
             action = ppo_policy.select_action(state, deterministic=False)
 
             # Calculate reward using the dedicated reward function
+            if robot_id == 0:
+                print(f"(training.py): Calculating reward for robot {robot_id} with commands {commands} and intensity {intensity}...")
             reward = rewards.calculate_step_reward(commands, intensity, robot_id)
+            if robot_id == 0:
+                print(f"(training.py): Reward for robot {robot_id}: {reward}")
 
             # Update robot's reward tracking
             agent['total_reward'] += reward
@@ -425,7 +438,7 @@ def train_shared_ppo():
     if len(shared_experience_buffer['states']) < config.TRAINING_CONFIG['batch_size']:
         return
     
-    print(f"🧠 Training PPO with MASSIVE batch size: {len(shared_experience_buffer['states'])} experiences")
+    logging.debug(f"(training.py): Training PPO with batch size: {len(shared_experience_buffer['states'])} experiences.\n")
     
     # Convert to tensors (keep it simple, just bigger)
     states = torch.FloatTensor(shared_experience_buffer['states'])
@@ -456,4 +469,4 @@ def train_shared_ppo():
         'agent_ids': []
     }
     
-    print(f"✅ MASSIVE batch PPO training completed, shared buffer cleared")
+    logging.info(f"(training.py): MASSIVE batch PPO training completed, shared buffer cleared.\n")

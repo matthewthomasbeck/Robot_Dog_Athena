@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Everything going well, changing naming format of models saved">
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/isaac_joints.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/episodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/episodes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Rapid training achieved&#10;kms" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -360,14 +352,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00114" summary="Going to remove the backend files as the context is no longer needed, added model testing and exporting">
-      <option name="closed" value="true" />
-      <created>1755281565696</created>
-      <option name="number" value="00114" />
-      <option name="presentableId" value="LOCAL-00114" />
-      <option name="project" value="LOCAL" />
-      <updated>1755281565696</updated>
-    </task>
     <task id="LOCAL-00115" summary="Cleaned up movement so it's not an 800 line mess">
       <option name="closed" value="true" />
       <created>1755292635427</created>
@@ -592,7 +576,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756847842335</updated>
     </task>
-    <option name="localTasksCounter" value="143" />
+    <task id="LOCAL-00143" summary="Rapid training achieved&#10;kms">
+      <option name="closed" value="true" />
+      <created>1756952503390</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
+      <option name="project" value="LOCAL" />
+      <updated>1756952503390</updated>
+    </task>
+    <option name="localTasksCounter" value="144" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -610,7 +602,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cleaned up cursor garbage in control_logic.py" />
     <MESSAGE value="Fixed control_logic to stop using the useless coordinate frame" />
     <MESSAGE value="Got isaac servos working again" />
     <MESSAGE value="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files" />
@@ -635,7 +626,8 @@
     <MESSAGE value="Robots can now run in parallel (but they still all must respawn at once)" />
     <MESSAGE value="Parallel training complete, fingers crossed everything goes well" />
     <MESSAGE value="Everything going well, changing naming format of models saved" />
-    <option name="LAST_COMMIT_MESSAGE" value="Everything going well, changing naming format of models saved" />
+    <MESSAGE value="Rapid training achieved&#10;kms" />
+    <option name="LAST_COMMIT_MESSAGE" value="Rapid training achieved&#10;kms" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

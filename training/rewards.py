@@ -149,10 +149,10 @@ def _reward_balance(current_balance, robot_id): # function to reward balance
     total_range = perfect_balance - terrible_balance
     balance_reward_magnitude = 1.0
     balance_penalty_magnitude = 1.0
-    perfect_percentile = 10
-    good_percentile = 20
-    bad_percentile = 50
-    terrible_percentile = 90
+    perfect_percentile = 20
+    good_percentile = 45
+    bad_percentile = 55
+    terrible_percentile = 80
 
     ##### calculate ranges #####
 
@@ -200,10 +200,10 @@ def _reward_height(current_height, robot_id): # function to reward height
     total_range = perfect_height - terrible_height
     height_reward_magnitude = 1.0
     height_penalty_magnitude = 1.0
-    perfect_percentile = 10
-    good_percentile = 20
-    bad_percentile = 50
-    terrible_percentile = 90
+    perfect_percentile = 20
+    good_percentile = 45
+    bad_percentile = 55
+    terrible_percentile = 80
 
     ##### calculate ranges #####
 
@@ -494,26 +494,31 @@ def _reward_movement_direction(command, total_displacement, intensity, multidire
     if commanded_displacement > 0: # if moving in correct direction...
         if commanded_displacement > perfect_range: # if perfect...
             movement_direction_reward = movement_reward_magnitude
-            #logging.debug(f"🔴 ROBOT {robot_id} PERFECT '{command.upper()}' MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+            if robot_id == 0:
+                print(f"(rewards.py): 🔴 ROBOT {robot_id} PERFECT '{command.upper()}' MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
         elif commanded_displacement > good_range: # if good...
             movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
-            #logging.debug(f"🟠 QUICK '{command.upper()}' MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+            if robot_id == 0:
+                print(f"(rewards.py): 🟠 QUICK '{command.upper()}' MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
         elif commanded_displacement > acceptable_range: # if acceptable...
             movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
-            #logging.debug(f"🟡 ACCEPTABLE '{command.upper()}' MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+            if robot_id == 0:
+                print(f"(rewards.py): 🟡 ACCEPTABLE '{command.upper()}' MOVEMENT: +{movement_direction_reward:.2f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
         else: # if slow...
             movement_direction_reward = (((100 / perfect_range) * commanded_displacement) / 100) * movement_reward_magnitude
-            #logging.debug(f"🟢 SLOW '{command.upper()}' MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
+            if robot_id == 0:
+                print(f"(rewards.py): 🟢 SLOW '{command.upper()}' MOVEMENT: +{movement_direction_reward:.1f}/{movement_reward_magnitude:.1f} reward - Displacement: {commanded_displacement:.3f}m")
         
         # if unidirectional and significant perpendicular movement...
         if not multidirectional and perpendicular_displacement > acceptable_drift:
             drift_penalty = min(perpendicular_displacement * 10, movement_penalty_magnitude)
             movement_direction_reward -= drift_penalty
-            #logging.debug(f"⚠️ DRIFT PENALTY: -{drift_penalty:.2f} for {perpendicular_displacement:.3f}m perpendicular movement")
+            if robot_id == 0:
+                print(f"(rewards.py): ⚠️ DRIFT PENALTY: -{drift_penalty:.2f} for {perpendicular_displacement:.3f}m perpendicular movement")
             
     else: # if not moving in correct direction...
         movement_direction_reward = -movement_penalty_magnitude
-        #logging.debug(f"🔵 NO '{command.upper()}' MOVEMENT: {movement_direction_reward:.1f}/{movement_penalty_magnitude:.1f} penalty - Displacement: {commanded_displacement:.3f}m")
+        logging.debug(f"(rewards.py): 🔵 NO '{command.upper()}' MOVEMENT: {movement_direction_reward:.1f}/{movement_penalty_magnitude:.1f} penalty - Displacement: {commanded_displacement:.3f}m")
 
     return movement_direction_reward
 
