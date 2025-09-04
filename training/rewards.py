@@ -117,7 +117,7 @@ def calculate_step_reward(commands, intensity, robot_id): # function to calculat
     ##### punish fall #####
 
     if has_fallen: # fall penalty
-        reward -= 0.2
+        fall_penalty = -100
         #logging.debug(f"Robot {robot_id} FELL - marking as inactive")
         
         # Mark robot as inactive (will be reset by main loop)
@@ -126,6 +126,8 @@ def calculate_step_reward(commands, intensity, robot_id): # function to calculat
             if robot_id in training_module.agent_data:
                 training_module.agent_data[robot_id]['is_active'] = False
                 #print(f"🤖 Robot {robot_id} marked as INACTIVE (fell over)")
+
+        return fall_penalty
 
     else: # survival bonus
         reward += 0.2

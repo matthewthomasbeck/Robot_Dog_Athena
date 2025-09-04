@@ -163,6 +163,16 @@ def reset_episode(agent_data=None, robot_id=None):
             for _ in range(5):
                 config.ISAAC_WORLD.step(render=True)
 
+        # CRITICAL: Reset Python tracking variables for ALL robots
+        if agent_data is not None:
+            num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
+            for robot_id in range(num_robots):
+                if robot_id in agent_data:
+                    agent = agent_data[robot_id]
+                    agent['is_active'] = True
+                    agent['last_reset_step'] = getattr(config, 'total_steps', 0)  # Get current step count
+                    agent['total_reward'] = 0.0
+
         #logging.info(f"(episodes.py): Multi-agent episode reset complete - World and all robots reset.\n")
         #print(f"🔄 Multi-agent episode reset complete - all robots ready for new episodes")
 
