@@ -1,152 +1,147 @@
-2025-09-03 11:51:15 INFO: (log.py): Logging setup complete.
+2025-09-03 19:32:58 INFO: (log.py): Logging setup complete.
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Spawning 20 robots for parallel training...
+2025-09-03 19:33:07 INFO: (control_logic.py): Spawning 20 robots for parallel training...
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Generated grid positions: [(-4.0, -4.0, 0.14), (-2.0, -4.0, 0.14), (0.0, -4.0, 0.14), (2.0, -4.0, 0.14), (4.0, -4.0, 0.14), (-4.0, -2.0, 0.14), (-2.0, -2.0, 0.14), (0.0, -2.0, 0.14), (2.0, -2.0, 0.14), (4.0, -2.0, 0.14), (-4.0, 0.0, 0.14), (-2.0, 0.0, 0.14), (0.0, 0.0, 0.14), (2.0, 0.0, 0.14), (4.0, 0.0, 0.14), (-4.0, 2.0, 0.14), (-2.0, 2.0, 0.14), (0.0, 2.0, 0.14), (2.0, 2.0, 0.14), (4.0, 2.0, 0.14)]
+2025-09-03 19:33:07 INFO: (control_logic.py): Generated grid positions: [(-4.0, -4.0, 0.14), (-2.0, -4.0, 0.14), (0.0, -4.0, 0.14), (2.0, -4.0, 0.14), (4.0, -4.0, 0.14), (-4.0, -2.0, 0.14), (-2.0, -2.0, 0.14), (0.0, -2.0, 0.14), (2.0, -2.0, 0.14), (4.0, -2.0, 0.14), (-4.0, 0.0, 0.14), (-2.0, 0.0, 0.14), (0.0, 0.0, 0.14), (2.0, 0.0, 0.14), (4.0, 0.0, 0.14), (-4.0, 2.0, 0.14), (-2.0, 2.0, 0.14), (0.0, 2.0, 0.14), (2.0, 2.0, 0.14), (4.0, 2.0, 0.14)]
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Saved spawn positions to config for individual resets
+2025-09-03 19:33:07 INFO: (control_logic.py): Saved spawn positions to config for individual resets
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 0 positioned at (-4.0, -4.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 0 positioned at (-4.0, -4.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 1 positioned at (-2.0, -4.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 1 positioned at (-2.0, -4.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 2 positioned at (0.0, -4.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 2 positioned at (0.0, -4.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 3 positioned at (2.0, -4.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 3 positioned at (2.0, -4.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 4 positioned at (4.0, -4.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 4 positioned at (4.0, -4.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 5 positioned at (-4.0, -2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 5 positioned at (-4.0, -2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 6 positioned at (-2.0, -2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 6 positioned at (-2.0, -2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 7 positioned at (0.0, -2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 7 positioned at (0.0, -2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 8 positioned at (2.0, -2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 8 positioned at (2.0, -2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 9 positioned at (4.0, -2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 9 positioned at (4.0, -2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 10 positioned at (-4.0, 0.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 10 positioned at (-4.0, 0.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 11 positioned at (-2.0, 0.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 11 positioned at (-2.0, 0.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 12 positioned at (0.0, 0.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 12 positioned at (0.0, 0.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 13 positioned at (2.0, 0.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 13 positioned at (2.0, 0.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 14 positioned at (4.0, 0.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 14 positioned at (4.0, 0.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 15 positioned at (-4.0, 2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 15 positioned at (-4.0, 2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 16 positioned at (-2.0, 2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 16 positioned at (-2.0, 2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 17 positioned at (0.0, 2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 17 positioned at (0.0, 2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 18 positioned at (2.0, 2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 18 positioned at (2.0, 2.0, 0.14)
 
-2025-09-03 11:51:23 INFO: (control_logic.py): Robot 19 positioned at (4.0, 2.0, 0.14)
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 19 positioned at (4.0, 2.0, 0.14)
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 0 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 0 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 1 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 1 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 2 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 2 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 3 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 3 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 4 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 4 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 5 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 5 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 6 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 6 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 7 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 7 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 8 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 8 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 9 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 9 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 10 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 10 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 11 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 11 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 12 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 12 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 13 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 13 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 14 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 14 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 15 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 15 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 16 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 16 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 17 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 17 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 18 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 18 initialized successfully.
 
-2025-09-03 11:51:24 INFO: (control_logic.py): Robot 19 initialized successfully.
+2025-09-03 19:33:08 INFO: (control_logic.py): Robot 19 initialized successfully.
 
-2025-09-03 11:51:25 INFO: (control_logic.py): Successfully spawned 20 robots for parallel training.
+2025-09-03 19:33:09 INFO: (control_logic.py): Successfully spawned 20 robots for parallel training.
 
-2025-09-03 11:51:25 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
+2025-09-03 19:33:09 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 0
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 0
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 1
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 1
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 2
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 2
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 3
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 3
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 4
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 4
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 5
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 5
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 6
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 6
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 7
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 7
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 8
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 8
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 9
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 9
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 10
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 10
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 11
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 11
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 12
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 12
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 13
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 13
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 14
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 14
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 15
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 15
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 16
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 16
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 17
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 17
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 18
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 18
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Controller initialized for robot 19
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Controller initialized for robot 19
 
-2025-09-03 11:51:25 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
+2025-09-03 19:33:09 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
 
-2025-09-03 11:51:29 WARNING: Agent data from checkpoint is invalid (got 25 agents, expected 20), reinitializing...
-2025-09-03 11:51:29 INFO: Multi-agent model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/3700000_-1.014.pth
-2025-09-03 11:51:29 INFO:   - Total steps: 3700000
-2025-09-03 11:51:29 INFO:   - Number of agents: 20
-2025-09-03 11:51:29 INFO:   - Average score: 0.0000
+2025-09-03 19:33:13 WARNING: 🆕 No saved models found, starting fresh training.
 
-2025-09-03 11:51:29 INFO: ✅ Successfully loaded model from step 3700000
-
-2025-09-03 11:51:29 INFO: Multi-agent training system initialized:
-2025-09-03 11:51:29 INFO:   - Number of agents: 20
-2025-09-03 11:51:29 INFO:   - State dimension: 19
-2025-09-03 11:51:29 INFO:   - Action dimension: 36
-2025-09-03 11:51:29 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-09-03 11:51:29 INFO:   - PPO policy created: True
-2025-09-03 11:51:29 INFO:   - Starting from step: 3700000
+2025-09-03 19:33:13 INFO: Multi-agent training system initialized:
+2025-09-03 19:33:13 INFO:   - Number of agents: 20
+2025-09-03 19:33:13 INFO:   - State dimension: 67
+2025-09-03 19:33:13 INFO:   - Action dimension: 12
+2025-09-03 19:33:13 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-09-03 19:33:13 INFO:   - PPO policy created: True
+2025-09-03 19:33:13 INFO:   - Starting from step: 0
+2025-09-03 19:33:13 INFO:   - PREVIOUS_POSITIONS verified for 20 robots
 

@@ -45,21 +45,17 @@ from utilities.servos import map_angle_to_servo_position, set_target, map_radian
 
 ##### swing selected leg #####
 
-def swing_leg(leg_id, current_angles, mid_angles, target_angles, movement_rates):
+def swing_leg(leg_id, target_angles, movement_rates):
     """
     Swing leg using direct joint angles instead of coordinates.
     Args:
         leg_id: Leg identifier ('FL', 'FR', 'BL', 'BR')
-        current_angles: Current joint angles for the leg (dict with 'hip', 'upper', 'lower' keys mapping to angle values in radians)
-        mid_angles: Mid joint angles for the leg (dict with 'hip', 'upper', 'lower' keys mapping to angle values in radians)
         target_angles: Target joint angles for the leg (dict with 'hip', 'upper', 'lower' keys mapping to angle values in radians)
         movement_rates: Movement rates for each joint (dict with 'hip', 'upper', 'lower' keys mapping to speed values in rad/s)
     """
     try:
-        # Move to mid angles first, then to target angles
-        move_joints_to_angles(leg_id, current_angles, mid_angles, movement_rates)
-        time.sleep(0.05)
-        move_joints_to_angles(leg_id, mid_angles, target_angles, movement_rates)
+        # Move directly to target angles (no mid angles needed)
+        move_joints_to_angles(leg_id, target_angles, movement_rates)
         time.sleep(0.05)
 
     except Exception as e:
@@ -67,7 +63,7 @@ def swing_leg(leg_id, current_angles, mid_angles, target_angles, movement_rates)
 
 ##### move joint from mid to target angles #####
 
-def move_joints_to_angles(leg_id, start_angles, end_angles, movement_rates):
+def move_joints_to_angles(leg_id, end_angles, movement_rates):
     """
     Move leg joints to target angles.
     Args:
@@ -79,7 +75,6 @@ def move_joints_to_angles(leg_id, start_angles, end_angles, movement_rates):
     for joint_name in ['hip', 'upper', 'lower']:
         try:
             # All angle parameters now have the correct structure with direct angle values
-            start_angle = start_angles[joint_name]
             end_angle = end_angles[joint_name]
             speed = movement_rates[joint_name]
             

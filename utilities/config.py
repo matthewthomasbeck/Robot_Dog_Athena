@@ -150,6 +150,10 @@ SERVO_CONFIG = { # dictionary of leg configurations
            'lower': {'servo': 9, 'FULL_FRONT': 2000.00, 'FULL_BACK': 1221.75, 'NEUTRAL': 1610.875, 'CURRENT': 1610.875, 'FULL_FRONT_ANGLE': 0.698, 'FULL_BACK_ANGLE': -0.698, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0}},
 }
 
+##### previous positions #####
+
+PREVIOUS_POSITIONS = [] # array of previous positions for each robot
+
 
 ########## ISAAC SIM CONFIGURATION ##########
 
@@ -183,10 +187,6 @@ MULTI_ROBOT_CONFIG = {
 ##### n robots spawn positions #####
 
 SPAWN_POSITIONS = [] # array of spawn positions for each robot
-
-##### current angles configuration #####
-
-CURRENT_ANGLES = [] # array of current angles for each robot
 
 ##### training config #####
 

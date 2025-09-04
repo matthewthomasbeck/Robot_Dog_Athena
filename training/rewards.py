@@ -49,7 +49,7 @@ EPISODE_STEP = 0  # Legacy single-robot support
 
 ########## CALCULATE REWARD ##########
 
-def calculate_step_reward(current_angles, commands, intensity, robot_id): # function to calculate reward for step
+def calculate_step_reward(commands, intensity, robot_id): # function to calculate reward for step
 
     ##### set variables #####
 

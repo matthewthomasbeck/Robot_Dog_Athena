@@ -162,37 +162,33 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
 
                 if not imageless_gait: # if not using imageless gait adjustment...
                     # TODO use the blind model until I get image support going
-                    target_angles, mid_angles, movement_rates = run_gait_adjustment_blind(  # run blind
+                    target_angles, movement_rates = run_gait_adjustment_blind(  # run blind
                         BLIND_RL_MODEL,
                         BLIND_INPUT_LAYER,
                         BLIND_OUTPUT_LAYER,
                         commands,
-                        intensity,
-                        config.SERVO_CONFIG
+                        intensity
                     )
-                    #target_angles, mid_angles, movement_rates = run_gait_adjustment_standard( # run standard
+                    #target_angles, movement_rates = run_gait_adjustment_standard( # run standard
                         #STANDARD_RL_MODEL,
                         #STANDARD_INPUT_LAYER,
                         #STANDARD_OUTPUT_LAYER,
                         #commands,
                         #camera_frames[0]['inference_frame'],
-                        #intensity,
-                        #config.SERVO_CONFIG
+                        #intensity
                     #)
 
                 else: # if using imageless gait adjustment...
-                    target_angles, mid_angles, movement_rates = run_gait_adjustment_blind( # run blind
+                    target_angles, movement_rates = run_gait_adjustment_blind( # run blind
                         BLIND_RL_MODEL,
                         BLIND_INPUT_LAYER,
                         BLIND_OUTPUT_LAYER,
                         commands,
-                        intensity,
-                        config.SERVO_CONFIG
+                        intensity
                     )
 
                 logging.debug("(movement_coordinator.py): Inference Results:\n")
                 logging.debug(f"(movement_coordinator.py): Target angles: {target_angles}\n")
-                logging.debug(f"(movement_coordinator.py): Mid angles: {mid_angles}\n")
                 logging.debug(f"(movement_coordinator.py): Movement rates: {movement_rates}\n")
 
                 ##### move legs and update current position #####
@@ -200,7 +196,6 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                 # move legs and update current angles
                 thread_leg_movement(
                     config.SERVO_CONFIG,
-                    mid_angles,
                     target_angles,
                     movement_rates
                 )
@@ -227,14 +222,12 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                     #intensity,
                     #camera_frames[0]['inference_frame'],
                 #)
-                all_target_angles, all_mid_angles, all_movement_rates = get_rl_action_blind(
-                    config.CURRENT_ANGLES,
+                all_target_angles, all_movement_rates = get_rl_action_blind(
                     commands,
                     intensity
                 )
             elif imageless_gait:  # if using imageless gait adjustment (no image)...
-                all_target_angles, all_mid_angles, all_movement_rates = get_rl_action_blind(
-                    config.CURRENT_ANGLES,
+                all_target_angles, all_movement_rates = get_rl_action_blind(
                     commands,
                     intensity
                 )
@@ -244,7 +237,6 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
             # Apply the joint angles directly for all robots
             apply_joint_angles_isaac(
                 all_target_angles,
-                all_mid_angles,
                 all_movement_rates
             )
 
@@ -253,27 +245,19 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
 
     ##### force robot to slow down so the raspberry doesnt crash #####
 
-    time.sleep(0.175) # only allow inference to run at rate # was 0.175
+    time.sleep(0.0875) # only allow inference to run at rate # was 0.175
 
 
 ########## THREAD LEG MOVEMENT ##########
 
-def thread_leg_movement(current_servo_config, mid_angles, target_angles, movement_rates):
+def thread_leg_movement(current_servo_config, target_angles, movement_rates):
     """
     Move all legs using threading to avoid blocking.
     
     Args:
-        current_servo_config: Current servo configuration with CURRENT_ANGLE values
-        mid_angles: Mid joint angles for each leg (dict with 'FL', 'FR', 'BL', 'BR' keys)
         target_angles: Target joint angles for each leg (dict with 'FL', 'FR', 'BL', 'BR' keys)
         movement_rates: Movement rates for each joint (dict with 'FL', 'FR', 'BL', 'BR' keys)
     """
-    # Extract current angles from servo config
-    current_angles = {}
-    for leg_id in ['FL', 'FR', 'BL', 'BR']:
-        current_angles[leg_id] = {}
-        for joint_name in ['hip', 'upper', 'lower']:
-            current_angles[leg_id][joint_name] = current_servo_config[leg_id][joint_name]['CURRENT_ANGLE']
     
     leg_threads = []  # create a list to hold threads for each leg
     for leg_id in ['FL', 'FR', 'BL', 'BR']:  # loop through each leg and create a thread to move
@@ -281,8 +265,6 @@ def thread_leg_movement(current_servo_config, mid_angles, target_angles, movemen
             target=swing_leg,
             args=(
                 leg_id,
-                current_angles[leg_id],
-                mid_angles[leg_id],
                 target_angles[leg_id],
                 movement_rates[leg_id]
             )

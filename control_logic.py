@@ -23,6 +23,8 @@ import time
 import os
 import socket
 import logging
+from collections import deque
+import numpy as np
 
 ##### mandatory dependencies #####
 
@@ -58,6 +60,16 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
 
     global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP, internet
 
+    ##### initialize PREVIOUS_POSITIONS for physical robot (1 robot) #####
+    
+    # Initialize PREVIOUS_POSITIONS for single physical robot
+    config.PREVIOUS_POSITIONS = []
+    robot_history = deque(maxlen=5)
+    for _ in range(5):
+        robot_history.append(np.zeros(12, dtype=np.float32))
+    config.PREVIOUS_POSITIONS.append(robot_history)
+    logging.debug("PREVIOUS_POSITIONS initialized for physical robot with zeros")
+
     ##### initialize camera process #####
 
     CAMERA_PROCESS = initialize_camera()  # create camera process
@@ -91,6 +103,7 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
     import carb
     import numpy
     import copy
+    from collections import deque
 
     # IMPORTANT 'SimulationApp' MUST be imported and made before any other isaac utilization of any kind!!!
     from isaacsim.simulation_app import SimulationApp
@@ -115,8 +128,8 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
     # Initialize camera processes list for multi-robot setup
     config.CAMERA_PROCESSES = []
     
-    # Initialize lightweight current angles array for multi-robot setup
-    config.CURRENT_ANGLES = []
+    # Initialize PREVIOUS_POSITIONS for movement history (replaces CURRENT_ANGLES)
+    config.PREVIOUS_POSITIONS = []
     
     # Generate robot positions using grid algorithm
     robot_positions = generate_grid_positions(
@@ -189,14 +202,11 @@ def set_isaac_dependencies():  # function to initialize isaac sim dependencies
             config.ISAAC_WORLD.scene.add(robot)
             config.ISAAC_ROBOTS.append(robot)
             
-            # Initialize lightweight current angles array for this robot
-            robot_current_angles = {
-                'FL': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0},
-                'FR': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0},
-                'BL': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0},
-                'BR': {'hip': 0.0, 'upper': 0.0, 'lower': 0.0}
-            }
-            config.CURRENT_ANGLES.append(robot_current_angles)
+            # Initialize movement history for this robot (5 zero arrays of 12D each)
+            robot_history = deque(maxlen=5)
+            for _ in range(5):
+                robot_history.append(np.zeros(12, dtype=np.float32))
+            config.PREVIOUS_POSITIONS.append(robot_history)
             
             # Initialize camera process for this robot
             #camera_process = initialize_camera(robot_id=robot_id)

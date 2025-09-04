@@ -29,6 +29,7 @@ import os
 import logging
 import torch
 import time
+from collections import deque
 
 ##### import necessary functions #####
 
@@ -46,6 +47,10 @@ from training.model_manager import save_model, load_model, find_latest_model
 
 ppo_policy = None
 total_steps = 0
+
+# Movement history for each robot - stores last 5 target angle sets (12D each)
+# Remove the local movement_history and use config.PREVIOUS_POSITIONS instead
+# movement_history = {}  # robot_id -> deque of last 5 target angle arrays
 
 ##### multi-agent training data #####
 
@@ -87,14 +92,27 @@ def initialize_training():
     os.makedirs(config.MODELS_DIRECTORY, exist_ok=True)
 
     # Initialize PPO (shared across all agents)
-    state_dim = 19  # 12 joints + 6 commands + 1 intensity
-    action_dim = 36  # 12 mid + 12 target angles + 12 velocity values
+    state_dim = 67  # (12 joints * 5 history) + 6 commands + 1 intensity = 60 + 6 + 1 = 67
+    action_dim = 12  # 12 target angles only (no mid angles or velocities)
     max_action = config.TRAINING_CONFIG['max_action']
 
     ppo_policy = PPO(state_dim, action_dim, max_action)
 
     # Initialize per-agent data
     agent_data = initialize_agent_data()
+
+    # PREVIOUS_POSITIONS should already be initialized in control_logic.py
+    # Just verify it exists and has the right number of robots
+    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
+    if not config.PREVIOUS_POSITIONS or len(config.PREVIOUS_POSITIONS) != num_robots:
+        logging.warning(f"PREVIOUS_POSITIONS not properly initialized, initializing now...")
+        config.PREVIOUS_POSITIONS = []
+        for robot_id in range(num_robots):
+            robot_history = deque(maxlen=5)
+            for _ in range(5):
+                robot_history.append(np.zeros(12, dtype=np.float32))
+            config.PREVIOUS_POSITIONS.append(robot_history)
+        logging.debug(f"PREVIOUS_POSITIONS initialized for {num_robots} robots with zeros")
 
     # Try to load the latest saved model to continue training
     latest_model = find_latest_model()
@@ -112,14 +130,14 @@ def initialize_training():
         logging.warning(f"🆕 No saved models found, starting fresh training.\n")
         total_steps = 0
 
-    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
     logging.info(f"Multi-agent training system initialized:")
     logging.info(f"  - Number of agents: {num_robots}")
     logging.info(f"  - State dimension: {state_dim}")
     logging.info(f"  - Action dimension: {action_dim}")
     logging.info(f"  - Models directory: {config.MODELS_DIRECTORY}")
     logging.info(f"  - PPO policy created: {ppo_policy is not None}")
-    logging.info(f"  - Starting from step: {total_steps}\n")
+    logging.info(f"  - Starting from step: {total_steps}")
+    logging.info(f"  - PREVIOUS_POSITIONS verified for {num_robots} robots\n")
 
 ##### integrate with main loop #####
 
@@ -199,20 +217,19 @@ def integrate_with_main_loop():
 def get_rl_action_standard(state, commands, intensity, frame):  # will eventually take camera frame as input
     pass
 
-
 ##### summon blind agent #####
 
-def get_rl_action_blind(all_current_angles, commands, intensity):
+def get_rl_action_blind(commands, intensity):
     """
     Multi-agent PPO RL system that processes all robots in parallel.
+    Uses movement history instead of current joint angles for state representation.
     
     Args:
-        all_current_angles: List of current joint angles for each robot
         commands: Commands for all robots (same for all)
         intensity: Intensity for all robots (same for all)
     
     Returns:
-        Tuple of (all_target_angles, all_mid_angles, all_movement_rates) for all robots
+        List of target_angles for all robots (12D output - only target angles)
     """
     global ppo_policy, total_steps, agent_data, shared_experience_buffer
 
@@ -229,35 +246,33 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             logging.debug("Agent data initialized successfully")
     except Exception as e:
         logging.error(f"Failed to initialize training system: {e}")
-        return [], [], []
+        return []
 
     num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
     
     # Safety check: ensure agent_data is properly initialized
     if not agent_data or len(agent_data) != num_robots:
         logging.error(f"Agent data not properly initialized. Expected {num_robots} agents, got {len(agent_data) if agent_data else 0}")
-        return [], [], []
+        return []
+    
+    # PREVIOUS_POSITIONS should already be initialized in control_logic.py
+    # Just verify it exists and has the right number of robots
+    if not config.PREVIOUS_POSITIONS or len(config.PREVIOUS_POSITIONS) != num_robots:
+        logging.error(f"PREVIOUS_POSITIONS not properly initialized. Expected {num_robots} robots, got {len(config.PREVIOUS_POSITIONS) if config.PREVIOUS_POSITIONS else 0}")
+        return []
     
     all_target_angles = []
-    all_mid_angles = []
     all_movement_rates = []
 
     # Process each robot
     for robot_id in range(num_robots):
         try:
-            # Safety check: ensure we have data for this robot
-            if robot_id >= len(all_current_angles):
-                logging.error(f"Robot {robot_id} current angles not available. Available robots: {len(all_current_angles)}")
-                continue
-                
-            current_angles = all_current_angles[robot_id]
             agent = agent_data[robot_id]
             
             # Check if robot is active
             if not agent.get('is_active', True):
                 # Robot is fallen/inactive, add empty data to maintain consistency
                 all_target_angles.append({})
-                all_mid_angles.append({})
                 all_movement_rates.append({})
                 continue
 
@@ -273,29 +288,9 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             # Build state vector for this robot
             state = []
 
-            # 1. Extract and normalize joint angles (12D)
-            for leg_id in ['FL', 'FR', 'BL', 'BR']:
-                for joint_name in ['hip', 'upper', 'lower']:
-                    angle = current_angles[leg_id][joint_name]
-                    
-                    # Get joint limits for normalization
-                    servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-                    min_angle = servo_data['FULL_BACK_ANGLE']
-                    max_angle = servo_data['FULL_FRONT_ANGLE']
-                    
-                    # Ensure correct order
-                    if min_angle > max_angle:
-                        min_angle, max_angle = max_angle, min_angle
-                    
-                    # Normalize to [-1, 1] range
-                    angle_range = max_angle - min_angle
-                    if angle_range > 0:
-                        normalized_angle = 2.0 * (float(angle) - min_angle) / angle_range - 1.0
-                        normalized_angle = np.clip(normalized_angle, -1.0, 1.0)
-                    else:
-                        normalized_angle = 0.0
-                        
-                    state.append(normalized_angle)
+            # 1. Add last 5 target angle sets (60D total: 12 * 5) from PREVIOUS_POSITIONS
+            for historical_angles in config.PREVIOUS_POSITIONS[robot_id]:
+                state.extend(historical_angles)
 
             # 2. Encode commands (6D one-hot for movement commands only)
             if isinstance(commands, list):
@@ -323,8 +318,8 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             # Convert to numpy array and validate state size
             state = np.array(state, dtype=np.float32)
             
-            # Validate state size: 12 (joints) + 6 (commands) + 1 (intensity) = 19
-            expected_state_size = 19
+            # Validate state size: (12 * 5) + 6 (commands) + 1 (intensity) = 67
+            expected_state_size = 67
             if len(state) != expected_state_size:
                 raise ValueError(f"Robot {robot_id} state size mismatch: expected {expected_state_size}, got {len(state)}")
 
@@ -332,7 +327,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             action = ppo_policy.select_action(state, deterministic=False)
 
             # Calculate reward using the dedicated reward function
-            reward = rewards.calculate_step_reward(current_angles, commands, intensity, robot_id)
+            reward = rewards.calculate_step_reward(commands, intensity, robot_id)
 
             # Update robot's reward tracking
             agent['total_reward'] += reward
@@ -366,15 +361,13 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
             # Increment shared step counter
             total_steps += 1
 
-            # Convert 36D action vector to joint angles and velocities for this robot
+            # Convert 12D action vector to target joint angles for this robot
             target_angles = {}
-            mid_angles = {}
             movement_rates = {}
 
             action_idx = 0
             for leg_id in ['FL', 'FR', 'BL', 'BR']:
                 target_angles[leg_id] = {}
-                mid_angles[leg_id] = {}
                 movement_rates[leg_id] = {}
 
                 for joint_name in ['hip', 'upper', 'lower']:
@@ -387,35 +380,35 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
                     if min_angle > max_angle:
                         min_angle, max_angle = max_angle, min_angle
 
-                    # Convert mid action (-1 to 1) to joint angle TODO remove the 12 mid angle action dim(s)
-                    mid_action = action[action_idx]
-                    mid_angle = min_angle + (mid_action + 1.0) * 0.5 * (max_angle - min_angle)
-                    mid_angle = np.clip(mid_angle, min_angle, max_angle)
-                    mid_angles[leg_id][joint_name] = float(mid_angle)
-
                     # Convert target action (-1 to 1) to joint angle
-                    target_action = action[action_idx + 12]
+                    target_action = action[action_idx]
                     target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
                     target_angle = np.clip(target_angle, min_angle, max_angle)
                     target_angles[leg_id][joint_name] = float(target_angle)
 
-                    # Convert velocity action (-1 to 1) to movement rate TODO remove the 12 velocity action dim(s)
-                    velocity_action = action[action_idx + 24]
-                    joint_speed = (velocity_action + 1.0) * 4.75
-                    joint_speed = np.clip(joint_speed, 0.0, 9.5)
-                    movement_rates[leg_id][joint_name] = float(joint_speed)
+                    movement_rates[leg_id][joint_name] = 1 # legacy support for velocity action dims
 
                     action_idx += 1
 
-            all_target_angles.append(target_angles) # TODO find a way to save the last 5 target angle sets to a deque for the next model input dim
-            all_mid_angles.append(mid_angles) # TODO get rid of me
-            all_movement_rates.append(movement_rates) # TODO get rid of me
+            # Update movement history with current target angles (normalized to [-1, 1])
+            current_target_array = np.zeros(12, dtype=np.float32)
+            action_idx = 0
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                for joint_name in ['hip', 'upper', 'lower']:
+                    # Store the raw action value (already normalized to [-1, 1])
+                    current_target_array[action_idx] = action[action_idx]
+                    action_idx += 1
+            
+            # Add to movement history (deque automatically maintains maxlen=5)
+            config.PREVIOUS_POSITIONS[robot_id].append(current_target_array)
+
+            all_target_angles.append(target_angles)
+            all_movement_rates.append(movement_rates)
 
         except Exception as e:
             logging.error(f"Error processing robot {robot_id}: {e}")
             # Add empty data for this robot to maintain consistency
             all_target_angles.append({})
-            all_mid_angles.append({})
             all_movement_rates.append({})
             continue
 
@@ -443,7 +436,7 @@ def get_rl_action_blind(all_current_angles, commands, intensity):
         save_model(filepath, ppo_policy, agent_data, total_steps)
         print(f"💾 Continuous learning model saved: {filename}")
 
-    return all_target_angles, all_mid_angles, all_movement_rates
+    return all_target_angles, all_movement_rates
 
 
 ########## SHARED PPO TRAINING ##########

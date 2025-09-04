@@ -56,7 +56,7 @@ class ActorCritic(nn.Module):
         self.shared_layer_2 = nn.Linear(400, 300)
         
         # Actor head (policy) - outputs action means and log standard deviations
-        # For 36D actions: [mid_angles(12) + target_angles(12) + velocities(12) in rad/s]
+        # For 12D actions: [target_angles(12) only - no mid angles or velocities]
         self.actor_mean = nn.Linear(300, action_dim)
         self.actor_logstd = nn.Parameter(torch.zeros(action_dim))  # Fixed log std for stability
         
