@@ -39,8 +39,6 @@ import logging # import logging library for debugging
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
 CONTROL_MODE = 'web' # current control mode of the robot (web or radio)
 RL_NOT_CNN = True # boolean to switch between testing and RL models (true is RL, false is testing)
-USE_SIMULATION = True # boolean to switch between using simulator or not
-USE_ISAAC_SIM = True # boolean to switch between using pybullet and isaac sim
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
 ##### set logging configuration #####
@@ -153,59 +151,3 @@ SERVO_CONFIG = { # dictionary of leg configurations
 ##### previous positions #####
 
 PREVIOUS_POSITIONS = [] # array of previous positions for each robot
-
-
-########## ISAAC SIM CONFIGURATION ##########
-
-##### isaac sim paths #####
-
-ISAAC_ROBOT_PATH = "/home/matthewthomasbeck/Projects/Robot_Dog/training/urdf/robot_dog/robot_dog.usd"
-MODELS_DIRECTORY = "/home/matthewthomasbeck/Projects/Robot_Dog/model"
-
-##### isaac sim objects #####
-
-ISAAC_SIM_APP = None # isaac sim application instance
-ISAAC_WORLD = None # isaac sim world
-
-# Multi-robot arrays for parallel training
-ISAAC_ROBOTS = [] # array of isaac sim robot articulations
-ISAAC_ROBOT_ARTICULATION_CONTROLLERS = [] # array of isaac sim robot articulation controllers
-CAMERA_PROCESSES = [] # array of camera processes for each robot
-
-##### isaac sim joint config #####
-
-JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac sim
-
-##### multi-robot configuration #####
-
-MULTI_ROBOT_CONFIG = {
-    'num_robots': 50,  # number of robots to spawn for parallel training
-    'robot_spacing': 2.0,  # spacing between robots in meters
-    'robot_start_z': 0.14,  # starting height for robots to avoid clipping
-}
-
-##### n robots spawn positions #####
-
-SPAWN_POSITIONS = [] # array of spawn positions for each robot
-
-##### training config #####
-
-TRAINING_CONFIG = {
-    'render': False,                        # turn off during training for speed
-    'save_frequency': 100000,               # still fine
-    'num_envs': MULTI_ROBOT_CONFIG['num_robots'],
-    
-    # PPO-specific rollout settings
-    'rollout_steps': 512,                   # per env, common range 128–2048
-    'batch_size': MULTI_ROBOT_CONFIG['num_robots'] * 512,  # total rollout batch
-    'mini_batch_size': 256,                 # split rollout batch for SGD
-    'ppo_epochs': 10,                       # passes per rollout batch
-    
-    # Discounting
-    'gamma': 0.99,
-    'learning_rate': 3e-4,
-    'max_action': 1.0,                      # needed for PPO action scaling
-    
-    # Episode horizon (per env, not scaled)
-    'max_steps_per_episode': 1000           
-}

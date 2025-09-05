@@ -29,82 +29,28 @@ import threading # import threading for thread management
 import random # import random for random angle radians
 import logging # import logging for error handling
 
-##### import dependencies for physical robot
+##### import necessary functions #####
 
-if not config.USE_SIMULATION:
+from movement.physical_joints import swing_leg, neutral_position_physical
+from utilities.inference import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
+    run_person_detection # load function/models for gait adjustment and person detection
 
-    ##### import necessary functions #####
-
-    from movement.physical_joints import swing_leg, neutral_position_physical
-    from utilities.inference import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
-        run_person_detection # load function/models for gait adjustment and person detection
-
-    if config.RL_NOT_CNN:
-        # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
-        #STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(
-            #config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
-        BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(
-            config.INFERENCE_CONFIG['BLIND_RL_PATH'])
-    elif not config.RL_NOT_CNN:
-        CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
-
-##### import dependencies for isaac sim #####
-
-elif config.USE_SIMULATION:
-
-    ##### import libraries for isaac sim #####
-
-    import queue
-        
-    ##### import functions for isaac sim #####
-
-    from isaacsim.core.api.controllers.articulation_controller import ArticulationController
-    from training.isaac_sim import build_isaac_joint_index_map
-    from movement.isaac_joints import neutral_position_isaac, apply_joint_angles_isaac
-    from training.training import get_rl_action_standard, get_rl_action_blind
-        
-    ##### build dependencies for isaac sim #####
-
-    # Note: JOINT_INDEX_MAP and articulation controllers are now built here
-    # for multiple robots after the articulations are properly initialized
-    
-    # Initialize articulation controllers for all robots
-    if hasattr(config, 'ISAAC_ROBOTS') and config.ISAAC_ROBOTS:
-        logging.info("(movement_coordinator.py): Initializing articulation controllers for all robots...\n")
-        
-        for robot_id, robot in enumerate(config.ISAAC_ROBOTS):
-            try:
-                # Create articulation controller
-                controller = ArticulationController()
-                controller.initialize(robot)
-                config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS.append(controller)
-                logging.info(f"(movement_coordinator.py): Controller initialized for robot {robot_id}\n")
-            except Exception as e:
-                logging.error(f"(movement_coordinator.py): Failed to initialize controller for robot {robot_id}: {e}\n")
-        
-        # Build joint index map using first robot (all robots have same joint structure)
-        if config.ISAAC_ROBOT_ARTICULATION_CONTROLLERS:
-            try:
-                config.JOINT_INDEX_MAP = build_isaac_joint_index_map(config.ISAAC_ROBOTS[0].dof_names)
-                logging.info(f"(movement_coordinator.py): Joint index map built using robot 0: {config.JOINT_INDEX_MAP}\n")
-            except Exception as e:
-                logging.error(f"(movement_coordinator.py): Failed to build joint index map: {e}\n")
-        else:
-            logging.error("(movement_coordinator.py): No articulation controllers were successfully initialized!\n")
-    else:
-        logging.warning("(movement_coordinator.py): No robots available for controller initialization.\n")
+if config.RL_NOT_CNN:
+    # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
+    #STANDARD_RL_MODEL, STANDARD_INPUT_LAYER, STANDARD_OUTPUT_LAYER = load_and_compile_model(
+        #config.INFERENCE_CONFIG['STANDARD_RL_PATH'])
+    BLIND_RL_MODEL, BLIND_INPUT_LAYER, BLIND_OUTPUT_LAYER = load_and_compile_model(
+        config.INFERENCE_CONFIG['BLIND_RL_PATH'])
+elif not config.RL_NOT_CNN:
+    CNN_MODEL, CNN_INPUT_LAYER, CNN_OUTPUT_LAYER = load_and_compile_model(config.INFERENCE_CONFIG['CNN_PATH'])
 
 
 ########## CREATE DEPENDENCIES ##########
 
 ##### simulation variables (set by control_logic.py) #####
 
-if config.USE_SIMULATION:
-    ROBOT_ID = None  # will be set by control_logic.py
-    JOINT_MAP = {}   # will be set by control_logic.py
-else:
-    ROBOT_ID = None
-    JOINT_MAP = {}
+ROBOT_ID = None
+JOINT_MAP = {}
 
 
 
@@ -151,99 +97,68 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
     ##### run inference before moving #####
 
     try: # try to run a model
-        if not config.USE_SIMULATION: # if user wants to use real servos...
-            if config.RL_NOT_CNN: # if running gait adjustment (production)...
+        if config.RL_NOT_CNN: # if running gait adjustment (production)...
 
-                ##### run RL model(s) #####
+            ##### run RL model(s) #####
 
-                logging.debug("Inference input:\n")
-                logging.debug(f"(movement_coordinator.py): Commands: {commands}\n")
-                logging.debug(f"(movement_coordinator.py): Intensity: {intensity}\n")
+            logging.debug("Inference input:\n")
+            logging.debug(f"(movement_coordinator.py): Commands: {commands}\n")
+            logging.debug(f"(movement_coordinator.py): Intensity: {intensity}\n")
 
-                if not imageless_gait: # if not using imageless gait adjustment...
-                    # TODO use the blind model until I get image support going
-                    target_angles, movement_rates = run_gait_adjustment_blind(  # run blind
-                        BLIND_RL_MODEL,
-                        BLIND_INPUT_LAYER,
-                        BLIND_OUTPUT_LAYER,
-                        commands,
-                        intensity
-                    )
-                    #target_angles, movement_rates = run_gait_adjustment_standard( # run standard
-                        #STANDARD_RL_MODEL,
-                        #STANDARD_INPUT_LAYER,
-                        #STANDARD_OUTPUT_LAYER,
-                        #commands,
-                        #camera_frames[0]['inference_frame'],
-                        #intensity
-                    #)
-
-                else: # if using imageless gait adjustment...
-                    target_angles, movement_rates = run_gait_adjustment_blind( # run blind
-                        BLIND_RL_MODEL,
-                        BLIND_INPUT_LAYER,
-                        BLIND_OUTPUT_LAYER,
-                        commands,
-                        intensity
-                    )
-
-                logging.debug("(movement_coordinator.py): Inference Results:\n")
-                logging.debug(f"(movement_coordinator.py): Target angles: {target_angles}\n")
-                logging.debug(f"(movement_coordinator.py): Movement rates: {movement_rates}\n")
-
-                ##### move legs and update current position #####
-
-                # move legs and update current angles
-                thread_leg_movement(
-                    config.SERVO_CONFIG,
-                    target_angles,
-                    movement_rates
+            if not imageless_gait: # if not using imageless gait adjustment...
+                # TODO use the blind model until I get image support going
+                target_angles, movement_rates = run_gait_adjustment_blind(  # run blind
+                    BLIND_RL_MODEL,
+                    BLIND_INPUT_LAYER,
+                    BLIND_OUTPUT_LAYER,
+                    commands,
+                    intensity
                 )
-
-            else: # if running person detection (testing)...
-                run_person_detection(
-                    CNN_MODEL,
-                    CNN_INPUT_LAYER,
-                    CNN_OUTPUT_LAYER,
-                    frame,
-                    run_inference=False
-                )
-            logging.info(f"(movement_coordinator.py): Ran AI for command(s) {commands} with intensity {intensity}\n")
-
-        elif config.USE_SIMULATION: # if running code in simulator...
-
-            ##### rl agent integration point #####
-            
-            if not imageless_gait:  # if not using imageless gait adjustment (image-based agent)...
-                # TODO using the blind agent for now until I get image support going
-                #all_target_angles, all_mid_angles, all_movement_rates = get_rl_action_standard(
-                    #current_angles,
+                #target_angles, movement_rates = run_gait_adjustment_standard( # run standard
+                    #STANDARD_RL_MODEL,
+                    #STANDARD_INPUT_LAYER,
+                    #STANDARD_OUTPUT_LAYER,
                     #commands,
-                    #intensity,
                     #camera_frames[0]['inference_frame'],
+                    #intensity
                 #)
-                all_target_angles, all_movement_rates = get_rl_action_blind(
-                    commands,
-                    intensity
-                )
-            elif imageless_gait:  # if using imageless gait adjustment (no image)...
-                all_target_angles, all_movement_rates = get_rl_action_blind(
+
+            else: # if using imageless gait adjustment...
+                target_angles, movement_rates = run_gait_adjustment_blind( # run blind
+                    BLIND_RL_MODEL,
+                    BLIND_INPUT_LAYER,
+                    BLIND_OUTPUT_LAYER,
                     commands,
                     intensity
                 )
 
-            ##### apply direct joint control for Isaac Sim #####
+            logging.debug("(movement_coordinator.py): Inference Results:\n")
+            logging.debug(f"(movement_coordinator.py): Target angles: {target_angles}\n")
+            logging.debug(f"(movement_coordinator.py): Movement rates: {movement_rates}\n")
 
-            # Apply the joint angles directly for all robots
-            apply_joint_angles_isaac(
-                all_target_angles,
-                all_movement_rates
+            ##### move legs and update current position #####
+
+            # move legs and update current angles
+            thread_leg_movement(
+                config.SERVO_CONFIG,
+                target_angles,
+                movement_rates
             )
+
+        else: # if running person detection (testing)...
+            run_person_detection(
+                CNN_MODEL,
+                CNN_INPUT_LAYER,
+                CNN_OUTPUT_LAYER,
+                frame,
+                run_inference=False
+            )
+        logging.info(f"(movement_coordinator.py): Ran AI for command(s) {commands} with intensity {intensity}\n")
 
     except Exception as e: # if either model fails...
         logging.error(f"(movement_coordinator.py): Failed to run AI for command: {e}\n")
 
-    ##### force robot to slow down so the raspberry doesnt crash #####
+    ##### force robot to slow down so the raspberry doesn't crash #####
 
     time.sleep(0.0875) # only allow inference to run at rate # was 0.175
 
@@ -329,11 +244,7 @@ def neutral_position(intensity):
     ##### move legs to neutral based on simulation mode #####
 
     try: # try to move legs to neutral position
-        if config.USE_SIMULATION: # if using isaac sim...
-            neutral_position_isaac() # dont use intensity, velocity is not controllable so there is no point
-        else: # if using physical robot...
-            neutral_position_physical(intensity) # pass intensity
-            
+        neutral_position_physical(intensity) # pass intensity
     except Exception as e: # if failed to move legs to neutral position...
         logging.error(f"(movement_coordinator.py): Failed to move legs to neutral position: {e}\n")
   

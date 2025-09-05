@@ -4,11 +4,56 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Solved annoying model duplication bug, testing regular model trainin and better episode resetting">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Rapid training achieved&#10;kms">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/robot_dog.log.bak" beforeDir="false" afterPath="$PROJECT_DIR$/robot_dog.log.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" afterPath="$PROJECT_DIR$/training/training.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/old_models/3700000_-1.014.pth" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/person-detection-0200.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/person-detection-0200.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/pth_to_xml.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/test_complete_pipeline.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/episodes.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/back/athena_back_butt.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/back/athena_back_top.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/DS3218.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/ai_module_mock.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/lipo_battery.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/feet/ares_feet_foot.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/femurs/ares_femurs_left.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/femurs/ares_femurs_right.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/front/athena_front_face.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/front/athena_front_top.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/disc_servo_horn.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/servo_horn.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/tierod.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/legpins/ares_legpins_legpin.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection_batteryplate.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection_bottom.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection_side.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/athena_midsection_connectorplate.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/athena_midsection_top.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis/ares_pelvis_foreleft_hindright.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis/ares_pelvis_foreright_hindleft.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis_blades/ares_pelvis_blades_left.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis_blades/ares_pelvis_blades_right.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/tibias/ares_tibias_left.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/meshes/tibias/ares_tibias_right.dae" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/model_manager.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/orientation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/rewards.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog.urdf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_base.usd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_physics.usd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_robot.usd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_sensor.usd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/robot_dog.usd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,7 +88,7 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2mcFIiLVWB9RbUjveGQlndNtXOm" />
-  <component name="ProjectLevelVcsManager">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -92,8 +137,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-PY-252.25557.130" />
-        <option value="bundled-python-sdk-1bde30d8e611-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.130" />
+        <option value="bundled-python-sdk-91d3a02ef49d-43b77aa2d136-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.23654.177" />
       </set>
     </attachedChunks>
   </component>
@@ -217,6 +261,8 @@
       <workItem from="1756747025123" duration="34000" />
       <workItem from="1756764657590" duration="2933000" />
       <workItem from="1756842735546" duration="1650000" />
+      <workItem from="1757075522387" duration="920000" />
+      <workItem from="1757078748956" duration="25000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
