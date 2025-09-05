@@ -1,1037 +1,435 @@
-2025-09-04 16:48:57 INFO: (log.py): Logging setup complete.
-
-2025-09-04 16:48:58 DEBUG: Using selector: EpollSelector
-2025-09-04 16:48:59 DEBUG: Defining data type 'any' as 'Any'
-2025-09-04 16:48:59 DEBUG: Defining data type 'bool' as 'Bool' and array 'BoolArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'bundle' as 'Bundle'
-2025-09-04 16:48:59 DEBUG: Defining data type 'colord[3]' as 'Color3d' and array 'Color3dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'colorf[3]' as 'Color3f' and array 'Color3fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'colorh[3]' as 'Color3h' and array 'Color3hArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'colord[4]' as 'Color4d' and array 'Color4dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'colorf[4]' as 'Color4f' and array 'Color4fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'colorh[4]' as 'Color4h' and array 'Color4hArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'double' as 'Double' and array 'DoubleArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'double[2]' as 'Double2' and array 'Double2Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'double[3]' as 'Double3' and array 'Double3Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'double[4]' as 'Double4' and array 'Double4Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'execution' as 'Execution'
-2025-09-04 16:48:59 DEBUG: Defining data type 'float' as 'Float' and array 'FloatArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'float[2]' as 'Float2' and array 'Float2Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'float[3]' as 'Float3' and array 'Float3Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'float[4]' as 'Float4' and array 'Float4Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'frame[4]' as 'Frame' and array 'FrameArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'half' as 'Half' and array 'HalfArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'half[2]' as 'Half2' and array 'Half2Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'half[3]' as 'Half3' and array 'Half3Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'half[4]' as 'Half4' and array 'Half4Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'int' as 'Int' and array 'IntArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'int[2]' as 'Int2' and array 'Int2Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'int[3]' as 'Int3' and array 'Int3Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'int[4]' as 'Int4' and array 'Int4Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'int64' as 'Int64' and array 'Int64Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'matrixd[2]' as 'Matrix2d' and array 'Matrix2dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'matrixd[3]' as 'Matrix3d' and array 'Matrix3dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'matrixd[4]' as 'Matrix4d' and array 'Matrix4dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'normald[3]' as 'Normal3d' and array 'Normal3dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'normalf[3]' as 'Normal3f' and array 'Normal3fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'normalh[3]' as 'Normal3h' and array 'Normal3hArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'objectId' as 'ObjectId' and array 'ObjectIdArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'path' as 'Path'
-2025-09-04 16:48:59 DEBUG: Defining data type 'pointd[3]' as 'Point3d' and array 'Point3dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'pointf[3]' as 'Point3f' and array 'Point3fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'pointh[3]' as 'Point3h' and array 'Point3hArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'quatd[4]' as 'Quatd' and array 'QuatdArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'quatf[4]' as 'Quatf' and array 'QuatfArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'quath[4]' as 'Quath' and array 'QuathArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'string' as 'String'
-2025-09-04 16:48:59 DEBUG: Defining data type 'target' as 'Target'
-2025-09-04 16:48:59 DEBUG: Defining data type 'texcoordd[2]' as 'TexCoord2d' and array 'TexCoord2dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'texcoordf[2]' as 'TexCoord2f' and array 'TexCoord2fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'texcoordh[2]' as 'TexCoord2h' and array 'TexCoord2hArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'texcoordd[3]' as 'TexCoord3d' and array 'TexCoord3dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'texcoordf[3]' as 'TexCoord3f' and array 'TexCoord3fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'texcoordh[3]' as 'TexCoord3h' and array 'TexCoord3hArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'timecode' as 'Timecode' and array 'TimecodeArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'token' as 'Token' and array 'TokenArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'uchar' as 'UChar' and array 'UCharArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'uint' as 'UInt' and array 'UIntArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'uint64' as 'UInt64' and array 'UInt64Array
-2025-09-04 16:48:59 DEBUG: Defining data type 'vectord[3]' as 'Vector3d' and array 'Vector3dArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'vectorf[3]' as 'Vector3f' and array 'Vector3fArray
-2025-09-04 16:48:59 DEBUG: Defining data type 'vectorh[3]' as 'Vector3h' and array 'Vector3hArray
-2025-09-04 16:49:02 DEBUG: Starting new HTTPS connection (1): docs.omniverse.nvidia.com:443
-2025-09-04 16:49:02 DEBUG: https://docs.omniverse.nvidia.com:443 "HEAD /kit/docs/omni_physics/107.3/index.html HTTP/1.1" 200 0
-2025-09-04 16:49:05 INFO: (control_logic.py): Spawning 150 robots for parallel training...
+2025-09-04 19:19:26 INFO: (log.py): Logging setup complete.
+
+2025-09-04 19:19:26 DEBUG: Using selector: EpollSelector
+2025-09-04 19:19:28 DEBUG: Defining data type 'any' as 'Any'
+2025-09-04 19:19:28 DEBUG: Defining data type 'bool' as 'Bool' and array 'BoolArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'bundle' as 'Bundle'
+2025-09-04 19:19:28 DEBUG: Defining data type 'colord[3]' as 'Color3d' and array 'Color3dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'colorf[3]' as 'Color3f' and array 'Color3fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'colorh[3]' as 'Color3h' and array 'Color3hArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'colord[4]' as 'Color4d' and array 'Color4dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'colorf[4]' as 'Color4f' and array 'Color4fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'colorh[4]' as 'Color4h' and array 'Color4hArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'double' as 'Double' and array 'DoubleArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'double[2]' as 'Double2' and array 'Double2Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'double[3]' as 'Double3' and array 'Double3Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'double[4]' as 'Double4' and array 'Double4Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'execution' as 'Execution'
+2025-09-04 19:19:28 DEBUG: Defining data type 'float' as 'Float' and array 'FloatArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'float[2]' as 'Float2' and array 'Float2Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'float[3]' as 'Float3' and array 'Float3Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'float[4]' as 'Float4' and array 'Float4Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'frame[4]' as 'Frame' and array 'FrameArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'half' as 'Half' and array 'HalfArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'half[2]' as 'Half2' and array 'Half2Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'half[3]' as 'Half3' and array 'Half3Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'half[4]' as 'Half4' and array 'Half4Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'int' as 'Int' and array 'IntArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'int[2]' as 'Int2' and array 'Int2Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'int[3]' as 'Int3' and array 'Int3Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'int[4]' as 'Int4' and array 'Int4Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'int64' as 'Int64' and array 'Int64Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'matrixd[2]' as 'Matrix2d' and array 'Matrix2dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'matrixd[3]' as 'Matrix3d' and array 'Matrix3dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'matrixd[4]' as 'Matrix4d' and array 'Matrix4dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'normald[3]' as 'Normal3d' and array 'Normal3dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'normalf[3]' as 'Normal3f' and array 'Normal3fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'normalh[3]' as 'Normal3h' and array 'Normal3hArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'objectId' as 'ObjectId' and array 'ObjectIdArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'path' as 'Path'
+2025-09-04 19:19:28 DEBUG: Defining data type 'pointd[3]' as 'Point3d' and array 'Point3dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'pointf[3]' as 'Point3f' and array 'Point3fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'pointh[3]' as 'Point3h' and array 'Point3hArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'quatd[4]' as 'Quatd' and array 'QuatdArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'quatf[4]' as 'Quatf' and array 'QuatfArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'quath[4]' as 'Quath' and array 'QuathArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'string' as 'String'
+2025-09-04 19:19:28 DEBUG: Defining data type 'target' as 'Target'
+2025-09-04 19:19:28 DEBUG: Defining data type 'texcoordd[2]' as 'TexCoord2d' and array 'TexCoord2dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'texcoordf[2]' as 'TexCoord2f' and array 'TexCoord2fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'texcoordh[2]' as 'TexCoord2h' and array 'TexCoord2hArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'texcoordd[3]' as 'TexCoord3d' and array 'TexCoord3dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'texcoordf[3]' as 'TexCoord3f' and array 'TexCoord3fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'texcoordh[3]' as 'TexCoord3h' and array 'TexCoord3hArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'timecode' as 'Timecode' and array 'TimecodeArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'token' as 'Token' and array 'TokenArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'uchar' as 'UChar' and array 'UCharArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'uint' as 'UInt' and array 'UIntArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'uint64' as 'UInt64' and array 'UInt64Array
+2025-09-04 19:19:28 DEBUG: Defining data type 'vectord[3]' as 'Vector3d' and array 'Vector3dArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'vectorf[3]' as 'Vector3f' and array 'Vector3fArray
+2025-09-04 19:19:28 DEBUG: Defining data type 'vectorh[3]' as 'Vector3h' and array 'Vector3hArray
+2025-09-04 19:19:31 DEBUG: Starting new HTTPS connection (1): docs.omniverse.nvidia.com:443
+2025-09-04 19:19:31 DEBUG: https://docs.omniverse.nvidia.com:443 "HEAD /kit/docs/omni_physics/107.3/index.html HTTP/1.1" 200 0
+2025-09-04 19:19:34 INFO: (control_logic.py): Spawning 50 robots for parallel training...
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Generated grid positions: [(-12.0, -12.0, 0.14), (-10.0, -12.0, 0.14), (-8.0, -12.0, 0.14), (-6.0, -12.0, 0.14), (-4.0, -12.0, 0.14), (-2.0, -12.0, 0.14), (0.0, -12.0, 0.14), (2.0, -12.0, 0.14), (4.0, -12.0, 0.14), (6.0, -12.0, 0.14), (8.0, -12.0, 0.14), (10.0, -12.0, 0.14), (12.0, -12.0, 0.14), (-12.0, -10.0, 0.14), (-10.0, -10.0, 0.14), (-8.0, -10.0, 0.14), (-6.0, -10.0, 0.14), (-4.0, -10.0, 0.14), (-2.0, -10.0, 0.14), (0.0, -10.0, 0.14), (2.0, -10.0, 0.14), (4.0, -10.0, 0.14), (6.0, -10.0, 0.14), (8.0, -10.0, 0.14), (10.0, -10.0, 0.14), (12.0, -10.0, 0.14), (-12.0, -8.0, 0.14), (-10.0, -8.0, 0.14), (-8.0, -8.0, 0.14), (-6.0, -8.0, 0.14), (-4.0, -8.0, 0.14), (-2.0, -8.0, 0.14), (0.0, -8.0, 0.14), (2.0, -8.0, 0.14), (4.0, -8.0, 0.14), (6.0, -8.0, 0.14), (8.0, -8.0, 0.14), (10.0, -8.0, 0.14), (12.0, -8.0, 0.14), (-12.0, -6.0, 0.14), (-10.0, -6.0, 0.14), (-8.0, -6.0, 0.14), (-6.0, -6.0, 0.14), (-4.0, -6.0, 0.14), (-2.0, -6.0, 0.14), (0.0, -6.0, 0.14), (2.0, -6.0, 0.14), (4.0, -6.0, 0.14), (6.0, -6.0, 0.14), (8.0, -6.0, 0.14), (10.0, -6.0, 0.14), (12.0, -6.0, 0.14), (-12.0, -4.0, 0.14), (-10.0, -4.0, 0.14), (-8.0, -4.0, 0.14), (-6.0, -4.0, 0.14), (-4.0, -4.0, 0.14), (-2.0, -4.0, 0.14), (0.0, -4.0, 0.14), (2.0, -4.0, 0.14), (4.0, -4.0, 0.14), (6.0, -4.0, 0.14), (8.0, -4.0, 0.14), (10.0, -4.0, 0.14), (12.0, -4.0, 0.14), (-12.0, -2.0, 0.14), (-10.0, -2.0, 0.14), (-8.0, -2.0, 0.14), (-6.0, -2.0, 0.14), (-4.0, -2.0, 0.14), (-2.0, -2.0, 0.14), (0.0, -2.0, 0.14), (2.0, -2.0, 0.14), (4.0, -2.0, 0.14), (6.0, -2.0, 0.14), (8.0, -2.0, 0.14), (10.0, -2.0, 0.14), (12.0, -2.0, 0.14), (-12.0, 0.0, 0.14), (-10.0, 0.0, 0.14), (-8.0, 0.0, 0.14), (-6.0, 0.0, 0.14), (-4.0, 0.0, 0.14), (-2.0, 0.0, 0.14), (0.0, 0.0, 0.14), (2.0, 0.0, 0.14), (4.0, 0.0, 0.14), (6.0, 0.0, 0.14), (8.0, 0.0, 0.14), (10.0, 0.0, 0.14), (12.0, 0.0, 0.14), (-12.0, 2.0, 0.14), (-10.0, 2.0, 0.14), (-8.0, 2.0, 0.14), (-6.0, 2.0, 0.14), (-4.0, 2.0, 0.14), (-2.0, 2.0, 0.14), (0.0, 2.0, 0.14), (2.0, 2.0, 0.14), (4.0, 2.0, 0.14), (6.0, 2.0, 0.14), (8.0, 2.0, 0.14), (10.0, 2.0, 0.14), (12.0, 2.0, 0.14), (-12.0, 4.0, 0.14), (-10.0, 4.0, 0.14), (-8.0, 4.0, 0.14), (-6.0, 4.0, 0.14), (-4.0, 4.0, 0.14), (-2.0, 4.0, 0.14), (0.0, 4.0, 0.14), (2.0, 4.0, 0.14), (4.0, 4.0, 0.14), (6.0, 4.0, 0.14), (8.0, 4.0, 0.14), (10.0, 4.0, 0.14), (12.0, 4.0, 0.14), (-12.0, 6.0, 0.14), (-10.0, 6.0, 0.14), (-8.0, 6.0, 0.14), (-6.0, 6.0, 0.14), (-4.0, 6.0, 0.14), (-2.0, 6.0, 0.14), (0.0, 6.0, 0.14), (2.0, 6.0, 0.14), (4.0, 6.0, 0.14), (6.0, 6.0, 0.14), (8.0, 6.0, 0.14), (10.0, 6.0, 0.14), (12.0, 6.0, 0.14), (-12.0, 8.0, 0.14), (-10.0, 8.0, 0.14), (-8.0, 8.0, 0.14), (-6.0, 8.0, 0.14), (-4.0, 8.0, 0.14), (-2.0, 8.0, 0.14), (0.0, 8.0, 0.14), (2.0, 8.0, 0.14), (4.0, 8.0, 0.14), (6.0, 8.0, 0.14), (8.0, 8.0, 0.14), (10.0, 8.0, 0.14), (12.0, 8.0, 0.14), (-12.0, 10.0, 0.14), (-10.0, 10.0, 0.14), (-8.0, 10.0, 0.14), (-6.0, 10.0, 0.14), (-4.0, 10.0, 0.14), (-2.0, 10.0, 0.14), (0.0, 10.0, 0.14)]
+2025-09-04 19:19:34 INFO: (control_logic.py): Generated grid positions: [(-7.0, -7.0, 0.14), (-5.0, -7.0, 0.14), (-3.0, -7.0, 0.14), (-1.0, -7.0, 0.14), (1.0, -7.0, 0.14), (3.0, -7.0, 0.14), (5.0, -7.0, 0.14), (7.0, -7.0, 0.14), (-7.0, -5.0, 0.14), (-5.0, -5.0, 0.14), (-3.0, -5.0, 0.14), (-1.0, -5.0, 0.14), (1.0, -5.0, 0.14), (3.0, -5.0, 0.14), (5.0, -5.0, 0.14), (7.0, -5.0, 0.14), (-7.0, -3.0, 0.14), (-5.0, -3.0, 0.14), (-3.0, -3.0, 0.14), (-1.0, -3.0, 0.14), (1.0, -3.0, 0.14), (3.0, -3.0, 0.14), (5.0, -3.0, 0.14), (7.0, -3.0, 0.14), (-7.0, -1.0, 0.14), (-5.0, -1.0, 0.14), (-3.0, -1.0, 0.14), (-1.0, -1.0, 0.14), (1.0, -1.0, 0.14), (3.0, -1.0, 0.14), (5.0, -1.0, 0.14), (7.0, -1.0, 0.14), (-7.0, 1.0, 0.14), (-5.0, 1.0, 0.14), (-3.0, 1.0, 0.14), (-1.0, 1.0, 0.14), (1.0, 1.0, 0.14), (3.0, 1.0, 0.14), (5.0, 1.0, 0.14), (7.0, 1.0, 0.14), (-7.0, 3.0, 0.14), (-5.0, 3.0, 0.14), (-3.0, 3.0, 0.14), (-1.0, 3.0, 0.14), (1.0, 3.0, 0.14), (3.0, 3.0, 0.14), (5.0, 3.0, 0.14), (7.0, 3.0, 0.14), (-7.0, 5.0, 0.14), (-5.0, 5.0, 0.14)]
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Saved spawn positions to config for individual resets
+2025-09-04 19:19:34 INFO: (control_logic.py): Saved spawn positions to config for individual resets
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 0 positioned at (-12.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 0 positioned at (-7.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 1 positioned at (-10.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 1 positioned at (-5.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 2 positioned at (-8.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 2 positioned at (-3.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 3 positioned at (-6.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 3 positioned at (-1.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 4 positioned at (-4.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 4 positioned at (1.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 5 positioned at (-2.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 5 positioned at (3.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 6 positioned at (0.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 6 positioned at (5.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 7 positioned at (2.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 7 positioned at (7.0, -7.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 8 positioned at (4.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 8 positioned at (-7.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 9 positioned at (6.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 9 positioned at (-5.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 10 positioned at (8.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 10 positioned at (-3.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 11 positioned at (10.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 11 positioned at (-1.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 12 positioned at (12.0, -12.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 12 positioned at (1.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 13 positioned at (-12.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 13 positioned at (3.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 14 positioned at (-10.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 14 positioned at (5.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 15 positioned at (-8.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 15 positioned at (7.0, -5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 16 positioned at (-6.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 16 positioned at (-7.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 17 positioned at (-4.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 17 positioned at (-5.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 18 positioned at (-2.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 18 positioned at (-3.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 19 positioned at (0.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 19 positioned at (-1.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 20 positioned at (2.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 20 positioned at (1.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 21 positioned at (4.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 21 positioned at (3.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 22 positioned at (6.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 22 positioned at (5.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 23 positioned at (8.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 23 positioned at (7.0, -3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 24 positioned at (10.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 24 positioned at (-7.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 25 positioned at (12.0, -10.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 25 positioned at (-5.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 26 positioned at (-12.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 26 positioned at (-3.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 27 positioned at (-10.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 27 positioned at (-1.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 28 positioned at (-8.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 28 positioned at (1.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 29 positioned at (-6.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 29 positioned at (3.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 30 positioned at (-4.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 30 positioned at (5.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 31 positioned at (-2.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 31 positioned at (7.0, -1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 32 positioned at (0.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 32 positioned at (-7.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 33 positioned at (2.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 33 positioned at (-5.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 34 positioned at (4.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 34 positioned at (-3.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 35 positioned at (6.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 35 positioned at (-1.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 36 positioned at (8.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 36 positioned at (1.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 37 positioned at (10.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 37 positioned at (3.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 38 positioned at (12.0, -8.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 38 positioned at (5.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 39 positioned at (-12.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 39 positioned at (7.0, 1.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 40 positioned at (-10.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 40 positioned at (-7.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 41 positioned at (-8.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 41 positioned at (-5.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 42 positioned at (-6.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 42 positioned at (-3.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 43 positioned at (-4.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 43 positioned at (-1.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 44 positioned at (-2.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 44 positioned at (1.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 45 positioned at (0.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 45 positioned at (3.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 46 positioned at (2.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 46 positioned at (5.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 47 positioned at (4.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 47 positioned at (7.0, 3.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 48 positioned at (6.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 48 positioned at (-7.0, 5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 49 positioned at (8.0, -6.0, 0.14)
+2025-09-04 19:19:34 INFO: (control_logic.py): Robot 49 positioned at (-5.0, 5.0, 0.14)
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 50 positioned at (10.0, -6.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 0 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 51 positioned at (12.0, -6.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 1 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 52 positioned at (-12.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 2 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 53 positioned at (-10.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 3 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 54 positioned at (-8.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 4 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 55 positioned at (-6.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 5 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 56 positioned at (-4.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 6 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 57 positioned at (-2.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 7 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 58 positioned at (0.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 8 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 59 positioned at (2.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 9 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 60 positioned at (4.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 10 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 61 positioned at (6.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 11 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 62 positioned at (8.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 12 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 63 positioned at (10.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 13 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 64 positioned at (12.0, -4.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 14 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 65 positioned at (-12.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 15 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 66 positioned at (-10.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 16 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 67 positioned at (-8.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 17 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 68 positioned at (-6.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 18 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 69 positioned at (-4.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 19 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 70 positioned at (-2.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 20 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 71 positioned at (0.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 21 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 72 positioned at (2.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 22 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 73 positioned at (4.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 23 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 74 positioned at (6.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 24 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 75 positioned at (8.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 25 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 76 positioned at (10.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 26 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 77 positioned at (12.0, -2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 27 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 78 positioned at (-12.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 28 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 79 positioned at (-10.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 29 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 80 positioned at (-8.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 30 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 81 positioned at (-6.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 31 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 82 positioned at (-4.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 32 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 83 positioned at (-2.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 33 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 84 positioned at (0.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 34 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 85 positioned at (2.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 35 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 86 positioned at (4.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 36 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 87 positioned at (6.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 37 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 88 positioned at (8.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 38 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 89 positioned at (10.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 39 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 90 positioned at (12.0, 0.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 40 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 91 positioned at (-12.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 41 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 92 positioned at (-10.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 42 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 93 positioned at (-8.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 43 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 94 positioned at (-6.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 44 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 95 positioned at (-4.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 45 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 96 positioned at (-2.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 46 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 97 positioned at (0.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 47 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 98 positioned at (2.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 48 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 99 positioned at (4.0, 2.0, 0.14)
+2025-09-04 19:19:35 INFO: (control_logic.py): Robot 49 initialized successfully.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 100 positioned at (6.0, 2.0, 0.14)
+2025-09-04 19:19:36 INFO: (control_logic.py): Successfully spawned 50 robots for parallel training.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 101 positioned at (8.0, 2.0, 0.14)
+2025-09-04 19:19:36 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 102 positioned at (10.0, 2.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 103 positioned at (12.0, 2.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 0
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 104 positioned at (-12.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 1
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 105 positioned at (-10.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 2
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 106 positioned at (-8.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 3
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 107 positioned at (-6.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 4
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 108 positioned at (-4.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 5
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 109 positioned at (-2.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 6
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 110 positioned at (0.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 7
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 111 positioned at (2.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 8
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 112 positioned at (4.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 9
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 113 positioned at (6.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 10
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 114 positioned at (8.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 11
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 115 positioned at (10.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 12
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 116 positioned at (12.0, 4.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 13
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 117 positioned at (-12.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 14
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 118 positioned at (-10.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 15
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 119 positioned at (-8.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 16
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 120 positioned at (-6.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 17
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 121 positioned at (-4.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 18
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 122 positioned at (-2.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 19
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 123 positioned at (0.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 20
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 124 positioned at (2.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 21
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 125 positioned at (4.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 22
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 126 positioned at (6.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 23
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 127 positioned at (8.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 24
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 128 positioned at (10.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 25
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 129 positioned at (12.0, 6.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 26
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 130 positioned at (-12.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 27
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 131 positioned at (-10.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 28
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 132 positioned at (-8.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 29
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 133 positioned at (-6.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 30
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 134 positioned at (-4.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 31
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 135 positioned at (-2.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 32
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 136 positioned at (0.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 33
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 137 positioned at (2.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 34
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 138 positioned at (4.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 35
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 139 positioned at (6.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 36
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 140 positioned at (8.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 37
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 141 positioned at (10.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 38
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 142 positioned at (12.0, 8.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 39
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 143 positioned at (-12.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 40
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 144 positioned at (-10.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 41
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 145 positioned at (-8.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 42
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 146 positioned at (-6.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 43
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 147 positioned at (-4.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 44
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 148 positioned at (-2.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 45
 
-2025-09-04 16:49:05 INFO: (control_logic.py): Robot 149 positioned at (0.0, 10.0, 0.14)
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 46
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 0 initialized successfully.
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 47
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 1 initialized successfully.
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 48
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 2 initialized successfully.
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Controller initialized for robot 49
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 3 initialized successfully.
+2025-09-04 19:19:36 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 4 initialized successfully.
+2025-09-04 19:19:39 ERROR: (training.py): Agent data not properly initialized. Expected 50 agents, got 0
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 5 initialized successfully.
+2025-09-04 19:19:39 ERROR: (movement_coordinator.py): Failed to run AI for command: not enough values to unpack (expected 2, got 0)
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 6 initialized successfully.
+2025-09-04 19:19:39 DEBUG: (training.py): Initializing training system...
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 7 initialized successfully.
+2025-09-04 19:19:39 DEBUG: (training.py): Initializing multi-agent training system...
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 8 initialized successfully.
+2025-09-04 19:19:40 DEBUG: (training.py): Initializing agent data structures...
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 9 initialized successfully.
+2025-09-04 19:19:40 DEBUG: Agent data initialized for 50 robots
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 10 initialized successfully.
+2025-09-04 19:19:40 WARNING: (training.py): No saved models found, starting fresh training...
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 11 initialized successfully.
+2025-09-04 19:19:40 INFO: Multi-agent training system initialized:
+2025-09-04 19:19:40 INFO:   - Number of agents: 50
+2025-09-04 19:19:40 INFO:   - State dimension: 67
+2025-09-04 19:19:40 INFO:   - Action dimension: 12
+2025-09-04 19:19:40 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-09-04 19:19:40 INFO:   - PPO policy created: True
+2025-09-04 19:19:40 INFO:   - Starting from time step: 0
+2025-09-04 19:19:40 INFO:   - Loaded robot steps: 0
+2025-09-04 19:19:40 INFO:   - PREVIOUS_POSITIONS verified for 50 robots
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 12 initialized successfully.
+2025-09-04 19:19:40 INFO: (training.py) Training system initialized successfully.
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 13 initialized successfully.
+2025-09-04 19:19:48 INFO: (training.py): Episode reset due to fall at step 673, new episode starts at step 673
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 14 initialized successfully.
+2025-09-04 19:19:54 INFO: (training.py): Episode reset due to fall at step 1149, new episode starts at step 1149
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 15 initialized successfully.
+2025-09-04 19:20:01 INFO: (training.py): Episode reset due to fall at step 1737, new episode starts at step 1737
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 16 initialized successfully.
+2025-09-04 19:20:03 INFO: (training.py) TIMING: Time from initialization to first training: 24.161 seconds
+2025-09-04 19:20:03 INFO: (training.py) TIMING: Steps to first training: 2000
+2025-09-04 19:20:03 INFO: (training.py) TIMING: Robots: 50
+2025-09-04 19:20:03 INFO: (training.py) TIMING: Time per step: 0.0121 seconds
+2025-09-04 19:20:03 INFO: (training.py) TIMING: Time per robot per step: 0.000242 seconds
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 17 initialized successfully.
+2025-09-04 19:20:03 INFO: (training.py): Trained model at step 2000
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 18 initialized successfully.
+2025-09-04 19:20:07 INFO: (training.py): Episode reset due to fall at step 2279, new episode starts at step 2279
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 19 initialized successfully.
+2025-09-04 19:20:12 INFO: (training.py): Episode reset due to fall at step 2787, new episode starts at step 2787
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 20 initialized successfully.
+2025-09-04 19:20:17 INFO: (training.py): Episode reset due to fall at step 3310, new episode starts at step 3310
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 21 initialized successfully.
+2025-09-04 19:20:24 INFO: (training.py): Trained model at step 4000
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 22 initialized successfully.
+2025-09-04 19:20:26 INFO: (training.py): Episode reset due to fall at step 4230, new episode starts at step 4230
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 23 initialized successfully.
+2025-09-04 19:20:32 INFO: (training.py): Episode reset due to fall at step 4784, new episode starts at step 4784
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 24 initialized successfully.
+2025-09-04 19:20:39 INFO: (training.py): Episode reset due to fall at step 5281, new episode starts at step 5281
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 25 initialized successfully.
+2025-09-04 19:20:47 INFO: (training.py): Episode reset due to fall at step 5865, new episode starts at step 5865
 
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 26 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 27 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 28 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 29 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 30 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 31 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 32 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 33 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 34 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 35 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 36 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 37 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 38 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 39 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 40 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 41 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 42 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 43 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 44 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 45 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 46 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 47 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 48 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 49 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 50 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 51 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 52 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 53 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 54 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 55 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 56 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 57 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 58 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 59 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 60 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 61 initialized successfully.
-
-2025-09-04 16:49:07 INFO: (control_logic.py): Robot 62 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 63 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 64 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 65 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 66 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 67 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 68 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 69 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 70 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 71 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 72 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 73 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 74 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 75 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 76 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 77 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 78 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 79 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 80 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 81 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 82 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 83 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 84 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 85 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 86 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 87 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 88 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 89 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 90 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 91 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 92 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 93 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 94 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 95 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 96 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 97 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 98 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 99 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 100 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 101 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 102 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 103 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 104 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 105 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 106 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 107 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 108 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 109 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 110 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 111 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 112 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 113 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 114 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 115 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 116 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 117 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 118 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 119 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 120 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 121 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 122 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 123 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 124 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 125 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 126 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 127 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 128 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 129 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 130 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 131 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 132 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 133 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 134 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 135 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 136 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 137 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 138 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 139 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 140 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 141 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 142 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 143 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 144 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 145 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 146 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 147 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 148 initialized successfully.
-
-2025-09-04 16:49:08 INFO: (control_logic.py): Robot 149 initialized successfully.
-
-2025-09-04 16:49:10 INFO: (control_logic.py): Successfully spawned 150 robots for parallel training.
-
-2025-09-04 16:49:10 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 0
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 1
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 2
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 3
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 4
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 5
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 6
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 7
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 8
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 9
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 10
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 11
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 12
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 13
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 14
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 15
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 16
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 17
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 18
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 19
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 20
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 21
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 22
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 23
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 24
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 25
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 26
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 27
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 28
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 29
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 30
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 31
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 32
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 33
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 34
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 35
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 36
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 37
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 38
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 39
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 40
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 41
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 42
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 43
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 44
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 45
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 46
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 47
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 48
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 49
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 50
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 51
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 52
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 53
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 54
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 55
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 56
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 57
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 58
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 59
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 60
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 61
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 62
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 63
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 64
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 65
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 66
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 67
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 68
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 69
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 70
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 71
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 72
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 73
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 74
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 75
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 76
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 77
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 78
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 79
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 80
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 81
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 82
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 83
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 84
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 85
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 86
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 87
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 88
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 89
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 90
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 91
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 92
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 93
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 94
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 95
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 96
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 97
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 98
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 99
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 100
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 101
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 102
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 103
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 104
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 105
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 106
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 107
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 108
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 109
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 110
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 111
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 112
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 113
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 114
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 115
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 116
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 117
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 118
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 119
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 120
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 121
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 122
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 123
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 124
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 125
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 126
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 127
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 128
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 129
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 130
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 131
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 132
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 133
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 134
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 135
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 136
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 137
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 138
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 139
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 140
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 141
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 142
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 143
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 144
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 145
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 146
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 147
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 148
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Controller initialized for robot 149
-
-2025-09-04 16:49:10 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
-
-2025-09-04 16:49:13 DEBUG: (training.py): Initializing training system...
-
-2025-09-04 16:49:13 DEBUG: (training.py): Initializing multi-agent training system...
-
-2025-09-04 16:49:23 DEBUG: (training.py): Initializing agent data structures...
-
-2025-09-04 16:49:23 DEBUG: Agent data initialized for 150 robots
-
-2025-09-04 16:49:23 DEBUG: (training.py): Loading latest model: /home/matthewthomasbeck/Projects/Robot_Dog/model/500000_-1.116.pth...
-
-2025-09-04 16:49:23 WARNING: Agent data from checkpoint is invalid (got 30 agents, expected 150), reinitializing...
-2025-09-04 16:49:23 DEBUG: (training.py): Initializing agent data structures...
-
-2025-09-04 16:49:23 DEBUG: Agent data initialized for 150 robots
-
-2025-09-04 16:49:23 INFO: Multi-agent model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/500000_-1.116.pth
-2025-09-04 16:49:23 INFO:   - Total steps: 500000
-2025-09-04 16:49:23 INFO:   - Number of agents: 150
-2025-09-04 16:49:23 INFO:   - Average score: 0.0000
-
-2025-09-04 16:49:23 INFO: (training.py): Successfully loaded model from step 500000.
-
-2025-09-04 16:49:23 INFO: (training.py): Saving model at total_steps 500000 and last_saved_step 0.
-
-2025-09-04 16:49:23 INFO: Multi-agent training system initialized:
-2025-09-04 16:49:23 INFO: 💾 Saving multi-agent PPO model to: /home/matthewthomasbeck/Projects/Robot_Dog/model/500000_0.000.pth
-2025-09-04 16:49:23 INFO:   - Number of agents: 150
-2025-09-04 16:49:23 INFO:    📊 Total steps: 500000
-2025-09-04 16:49:23 INFO:   - State dimension: 67
-2025-09-04 16:49:23 INFO:    📊 Number of agents: 150
-2025-09-04 16:49:23 INFO:   - Action dimension: 12
-2025-09-04 16:49:23 INFO:    📊 Current average score: 0.0000
-
-2025-09-04 16:49:23 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-09-04 16:49:23 INFO:   - PPO policy created: True
-2025-09-04 16:49:23 INFO:   - Starting from step: 500000
-2025-09-04 16:49:23 INFO:   - PREVIOUS_POSITIONS verified for 150 robots
-
-2025-09-04 16:49:23 INFO:    🔍 Checkpoint contains 5 keys:
-2025-09-04 16:49:23 INFO: (training.py) Training system initialized successfully.
-
-2025-09-04 16:49:23 INFO:       ✅ actor_critic_state_dict: 9 layers
-
-2025-09-04 16:49:23 INFO:       ✅ optimizer_state_dict: 2 layers
-
-2025-09-04 16:49:23 INFO:       📊 total_steps: 500000
-
-2025-09-04 16:49:23 INFO:       📊 agent_data: {0: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 1: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 2: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 3: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 4: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 5: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 6: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 7: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 8: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 9: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 10: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 11: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 12: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 13: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 14: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 15: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 16: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 17: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 18: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 19: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 20: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 21: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 22: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 23: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 24: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 25: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 26: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 27: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 28: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 29: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 30: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 31: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 32: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 33: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 34: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 35: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 36: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 37: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 38: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 39: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 40: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 41: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 42: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 43: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 44: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 45: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 46: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 47: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 48: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 49: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 50: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 51: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 52: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 53: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 54: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 55: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 56: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 57: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 58: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 59: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 60: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 61: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 62: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 63: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 64: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 65: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 66: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 67: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 68: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 69: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 70: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 71: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 72: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 73: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 74: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 75: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 76: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 77: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 78: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 79: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 80: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 81: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 82: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 83: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 84: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 85: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 86: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 87: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 88: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 89: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 90: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 91: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 92: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 93: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 94: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 95: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 96: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 97: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 98: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 99: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 100: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 101: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 102: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 103: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 104: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 105: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 106: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 107: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 108: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 109: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 110: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 111: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 112: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 113: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 114: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 115: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 116: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 117: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 118: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 119: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 120: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 121: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 122: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 123: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 124: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 125: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 126: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 127: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 128: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 129: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 130: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 131: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 132: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 133: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 134: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 135: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 136: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 137: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 138: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 139: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 140: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 141: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 142: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 143: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 144: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 145: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 146: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 147: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 148: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}, 149: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [], 'average_reward': 0.0}}
-
-2025-09-04 16:49:23 INFO:       📊 average_score: 0.0
-
-2025-09-04 16:49:23 INFO:    ✅ Model saved successfully! File size: 1.8 MB
-
-2025-09-04 16:49:23 INFO: Multi-agent model saved to: /home/matthewthomasbeck/Projects/Robot_Dog/model/500000_0.000.pth
-2025-09-04 16:49:23 INFO:    📊 Current average score: 0.000
-
-2025-09-04 16:49:23 INFO: (training.py): Continuous learning model saved: 500000_0.000.pth
-
-2025-09-04 16:49:23 INFO: (training.py): Saved model at step 500002
+2025-09-04 19:20:49 INFO: (training.py): Trained model at step 6000
 

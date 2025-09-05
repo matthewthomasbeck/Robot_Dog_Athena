@@ -47,7 +47,7 @@ DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
 LOG_CONFIG = {
     'LOG_PATH': "/home/matthewthomasbeck/Projects/Robot_Dog/robot_dog.log", # path to log file DO NOT CHANGE
-    'LOG_LEVEL': logging.DEBUG # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
+    'LOG_LEVEL': logging.INFO # set log level to logging.<DEBUG, INFO, WARNING, ERROR, or CRITICAL>
 }
 
 ########## CAMERA CONFIGURATION ##########
@@ -179,7 +179,7 @@ JOINT_INDEX_MAP = None # placeholder for joint configuration, to be set by isaac
 ##### multi-robot configuration #####
 
 MULTI_ROBOT_CONFIG = {
-    'num_robots': 150,  # number of robots to spawn for parallel training
+    'num_robots': 50,  # number of robots to spawn for parallel training
     'robot_spacing': 2.0,  # spacing between robots in meters
     'robot_start_z': 0.14,  # starting height for robots to avoid clipping
 }

@@ -46,7 +46,16 @@ from training.model_manager import save_model, load_model, find_latest_model
 ##### global PPO instance and episode data #####
 
 ppo_policy = None
-total_steps = 0
+time_steps = 0
+robot_steps = 0
+loaded_robot_steps = 0  # Track robot steps from loaded model
+
+# Timing variables for performance analysis
+training_start_time = None
+first_training_time = None
+
+# Episode tracking
+current_episode_start_step = 0
 
 # Movement history for each robot - stores last 5 target angle sets (12D each)
 # Remove the local movement_history and use config.PREVIOUS_POSITIONS instead
@@ -80,11 +89,131 @@ last_saved_step = 0
 
 ########## TRAINING FUNCTIONS ##########
 
+##### integrate with main loop #####
+
+def integrate_with_main_loop():
+    
+    ##### initialize training #####
+
+    global agent_data, time_steps, last_saved_step, rollout_buffer, ppo_policy, robot_steps, loaded_robot_steps, training_start_time, first_training_time, current_episode_start_step
+
+    try:
+        # Initialize training system if not done yet
+        if ppo_policy is None:
+            logging.debug("(training.py): Initializing training system...\n")
+            training_start_time = time.time()
+            initialize_training()
+            current_episode_start_step = 0  # Initialize episode tracking
+            logging.info("(training.py) Training system initialized successfully.\n")
+        # CRITICAL: Always ensure agent_data is initialized, even if model was loaded
+        elif not agent_data or len(agent_data) != config.MULTI_ROBOT_CONFIG['num_robots']:
+            logging.debug("(training.py): Agent data not properly initialized, initializing now...\n")
+            agent_data = initialize_agent_data()
+            logging.info("(training.py): Agent data initialized successfully.\n")
+    except Exception as e:
+        logging.error(f"(training.py): Failed to initialize training system: {e}\n")
+        return []
+
+    time_steps += 1
+
+    ##### reset episode every x steps #####
+
+    # Check if current episode has reached max duration
+    if time_steps >= current_episode_start_step + config.TRAINING_CONFIG['max_steps_per_episode']:
+        episodes.reset_episode(agent_data)
+        current_episode_start_step = time_steps  # Start new episode from current step
+        logging.debug(f"(training.py): Episode reset at step {time_steps}, new episode starts at step {current_episode_start_step}\n")
+
+    ##### reset episode on fall #####
+
+    fallen_robots = _get_fallen_robots()
+    if fallen_robots:
+        print("(training.py): ROBOT FELL! Resetting episode...")
+        episodes.reset_episode(agent_data)
+        current_episode_start_step = time_steps  # Start new episode from current step
+        logging.debug(f"(training.py): Episode reset due to fall at step {time_steps}, new episode starts at step {current_episode_start_step}\n")
+        return True
+
+    ##### train model every x time steps #####
+
+    if time_steps % (config.TRAINING_CONFIG['max_steps_per_episode'] * 2) == 0 and time_steps != 0:
+        first_training_time = time.time()
+        if training_start_time is not None and time_steps == (config.TRAINING_CONFIG['max_steps_per_episode'] * 2):
+            # Only log detailed timing for the first training
+            total_time_to_first_training = first_training_time - training_start_time
+            logging.info(f"(training.py) TIMING: Time from initialization to first training: {total_time_to_first_training:.3f} seconds")
+            logging.info(f"(training.py) TIMING: Steps to first training: {time_steps}")
+            logging.info(f"(training.py) TIMING: Robots: {config.MULTI_ROBOT_CONFIG['num_robots']}")
+            logging.info(f"(training.py) TIMING: Time per step: {total_time_to_first_training/time_steps:.4f} seconds")
+            logging.info(f"(training.py) TIMING: Time per robot per step: {total_time_to_first_training/(time_steps * config.MULTI_ROBOT_CONFIG['num_robots']):.6f} seconds\n")
+        train_shared_ppo()
+        logging.debug(f"(training.py): Trained model at step {time_steps}\n")
+
+    ##### save model every x robot steps #####
+
+    if robot_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and robot_steps != 0:
+        logging.info(
+            f"(training.py): Saving model at time_steps {time_steps} and robot_steps {robot_steps}.\n")
+
+        _save_training_model()
+        last_saved_step = time_steps
+        logging.info(f"(training.py): Saved model at robot_steps {robot_steps}\n")
+
+    ##### safety check #####
+
+    if not agent_data:
+        return False
+
+    return False  # return false if training is not done
+
+##### fallen robots helper #####
+
+def _get_fallen_robots():
+    """Helper function to identify fallen robots"""
+    fallen_robots = []
+    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
+
+    for robot_id in range(num_robots):
+        if robot_id not in agent_data:
+            continue
+
+        agent = agent_data[robot_id]
+        if not agent.get('is_active', True):
+            fallen_robots.append(robot_id)
+
+    return fallen_robots
+
+##### save model #####
+
+def _save_training_model():
+    """Helper function to save the training model"""
+    global robot_steps, loaded_robot_steps
+    
+    # Calculate average score across all robots
+    total_avg_score = 0.0
+    active_robots = 0
+
+    for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
+        if robot_id in agent_data:
+            robot_avg = agent_data[robot_id].get('average_reward', 0.0)
+            total_avg_score += robot_avg
+            active_robots += 1
+
+    overall_avg_score = total_avg_score / active_robots if active_robots > 0 else 0.0
+
+    # Create filename with robot steps (including loaded steps) and average score
+    total_robot_steps = loaded_robot_steps + robot_steps
+    filename = f"{total_robot_steps}_{overall_avg_score:.3f}.pth"
+    filepath = f"/home/matthewthomasbeck/Projects/Robot_Dog/model/{filename}"
+
+    save_model(filepath, ppo_policy, agent_data, total_robot_steps)
+    logging.info(f"(training.py): Continuous learning model saved: {filename} (total robot steps: {total_robot_steps})\n")
+
 ##### initialize training #####
 
 def initialize_training():
     """Initialize the complete multi-agent training system"""
-    global ppo_policy, total_steps, agent_data
+    global ppo_policy, time_steps, agent_data, loaded_robot_steps
 
     logging.debug("(training.py): Initializing multi-agent training system...\n")
     os.makedirs(config.MODELS_DIRECTORY, exist_ok=True)
@@ -118,15 +247,19 @@ def initialize_training():
         logging.debug(f"(training.py): Loading latest model: {latest_model}...\n")
         success, loaded_steps, loaded_agent_data = load_model(latest_model, ppo_policy)
         if success:
-            total_steps = loaded_steps
+            # loaded_steps now represents robot steps from the saved model
+            loaded_robot_steps = loaded_steps
+            time_steps = 0  # Reset time steps for new training session
             agent_data = loaded_agent_data
-            logging.info(f"(training.py): Successfully loaded model from step {total_steps}.\n")
+            logging.info(f"(training.py): Successfully loaded model with {loaded_robot_steps} robot steps.\n")
         else:
             logging.warning(f"(training.py): Failed to load model, starting fresh...\n")
-            total_steps = 0
+            loaded_robot_steps = 0
+            time_steps = 0
     else:
         logging.warning(f"(training.py): No saved models found, starting fresh training...\n")
-        total_steps = 0
+        loaded_robot_steps = 0
+        time_steps = 0
 
     logging.info(f"Multi-agent training system initialized:")
     logging.info(f"  - Number of agents: {num_robots}")
@@ -134,91 +267,9 @@ def initialize_training():
     logging.info(f"  - Action dimension: {action_dim}")
     logging.info(f"  - Models directory: {config.MODELS_DIRECTORY}")
     logging.info(f"  - PPO policy created: {ppo_policy is not None}")
-    logging.info(f"  - Starting from step: {total_steps}")
+    logging.info(f"  - Starting from time step: {time_steps}")
+    logging.info(f"  - Loaded robot steps: {loaded_robot_steps}")
     logging.info(f"  - PREVIOUS_POSITIONS verified for {num_robots} robots\n")
-
-##### integrate with main loop #####
-
-def integrate_with_main_loop():
-
-    ##### set variables #####
-
-    global agent_data, total_steps, last_saved_step, rollout_buffer
-
-    ##### reset episode every x steps #####
-
-    if (total_steps / config.MULTI_ROBOT_CONFIG['num_robots']) % config.TRAINING_CONFIG['max_steps_per_episode'] == 0 and total_steps > last_saved_step:
-        episodes.reset_episode(agent_data)
-
-    ##### reset episode on fall #####
-
-    fallen_robots = _get_fallen_robots()
-    if fallen_robots:
-        print("(training.py): ROBOT FELL! Resetting episode...")
-        episodes.reset_episode(agent_data)
-        return True
-
-    ##### train model every x steps #####
-
-    if (total_steps / config.MULTI_ROBOT_CONFIG['num_robots']) % (config.TRAINING_CONFIG['max_steps_per_episode'] * 2) == 0 and total_steps > last_saved_step:
-        train_shared_ppo()
-        logging.info(f"(training.py): Trained model at step {total_steps}\n")
-
-    ##### save model every x steps #####
-
-    if total_steps % config.TRAINING_CONFIG['save_frequency'] == 0 and last_saved_step != 0:
-
-        logging.info(f"(training.py): Saving model at total_steps {total_steps} and last_saved_step {last_saved_step}.\n")
-
-        _save_training_model()
-        last_saved_step = total_steps
-        logging.info(f"(training.py): Saved model at step {total_steps}\n")
-    
-    ##### safety check #####
-    
-    if not agent_data:
-        return False
-    
-    return False # return false if training is not done
-
-
-def _get_fallen_robots():
-    """Helper function to identify fallen robots"""
-    fallen_robots = []
-    num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
-
-    for robot_id in range(num_robots):
-        if robot_id not in agent_data:
-            continue
-
-        agent = agent_data[robot_id]
-        if not agent.get('is_active', True):
-            fallen_robots.append(robot_id)
-
-    return fallen_robots
-
-##### save model #####
-
-def _save_training_model():
-    """Helper function to save the training model"""
-    # Calculate average score across all robots
-    total_avg_score = 0.0
-    active_robots = 0
-    
-    for robot_id in range(config.MULTI_ROBOT_CONFIG['num_robots']):
-        if robot_id in agent_data:
-            robot_avg = agent_data[robot_id].get('average_reward', 0.0)
-            total_avg_score += robot_avg
-            active_robots += 1
-    
-    overall_avg_score = total_avg_score / active_robots if active_robots > 0 else 0.0
-    
-    # Create filename with average score
-    filename = f"{total_steps}_{overall_avg_score:.3f}.pth"
-    filepath = f"/home/matthewthomasbeck/Projects/Robot_Dog/model/{filename}"
-    
-    save_model(filepath, ppo_policy, agent_data, total_steps)
-    logging.info(f"(training.py): Continuous learning model saved: {filename}\n")
 
 ##### summon standard agent #####
 
@@ -239,22 +290,7 @@ def get_rl_action_blind(commands, intensity):
     Returns:
         List of target_angles for all robots (12D output - only target angles)
     """
-    global ppo_policy, total_steps, agent_data, rollout_buffer
-
-    try:
-        # Initialize training system if not done yet
-        if ppo_policy is None:
-            logging.debug("(training.py): Initializing training system...\n")
-            initialize_training()
-            logging.info("(training.py) Training system initialized successfully.\n")
-        # CRITICAL: Always ensure agent_data is initialized, even if model was loaded
-        elif not agent_data or len(agent_data) != config.MULTI_ROBOT_CONFIG['num_robots']:
-            logging.debug("(training.py): Agent data not properly initialized, initializing now...\n")
-            agent_data = initialize_agent_data()
-            logging.info("(training.py): Agent data initialized successfully.\n")
-    except Exception as e:
-        logging.error(f"(training.py): Failed to initialize training system: {e}\n")
-        return []
+    global ppo_policy, time_steps, agent_data, rollout_buffer, robot_steps
 
     num_robots = config.MULTI_ROBOT_CONFIG['num_robots']
     
@@ -285,12 +321,12 @@ def get_rl_action_blind(commands, intensity):
                 continue
 
             # Log progress every 100 steps
-            if total_steps % 100 == 0:
-                steps_since_reset = total_steps - agent.get('last_reset_step', 0)
+            if time_steps % 100 == 0:
+                steps_since_reset = time_steps - agent.get('last_reset_step', 0)
                 #print(f"Robot {robot_id} - Step {total_steps}, Active for {steps_since_reset} steps, Avg Reward: {agent.get('average_reward', 0.0):.3f}")
             
             # Track orientation every 50 steps
-            if total_steps % 50 == 0:
+            if time_steps % 50 == 0:
                 track_orientation(robot_id)
 
             # Build state vector for this robot
@@ -369,9 +405,6 @@ def get_rl_action_blind(commands, intensity):
                 batch_size = config.TRAINING_CONFIG['batch_size']
                 for key in rollout_buffer:
                     rollout_buffer[key] = rollout_buffer[key][-batch_size:]
-            
-            # Increment shared step counter
-            total_steps += 1
 
             # Convert 12D action vector to target joint angles for this robot
             target_angles = {}
@@ -417,6 +450,9 @@ def get_rl_action_blind(commands, intensity):
             all_target_angles.append(target_angles)
             all_movement_rates.append(movement_rates)
 
+            robot_steps += 1
+            print(f"{robot_steps}")
+
         except Exception as e:
             logging.error(f"Error processing robot {robot_id}: {e}")
             # Add empty data for this robot to maintain consistency
@@ -436,6 +472,7 @@ def train_shared_ppo():
     if len(rollout_buffer['states']) < config.TRAINING_CONFIG['batch_size']:
         return
     
+    training_start = time.time()
     logging.debug(f"(training.py): Training PPO with batch size: {len(rollout_buffer['states'])} experiences...\n")
     
     try: # attempt to train PPO
@@ -474,8 +511,6 @@ def train_shared_ppo():
             'log_probs': [],
             'dones': []
         }
-        
-        logging.info(f"(training.py): MASSIVE batch PPO training completed, shared buffer cleared.\n")
 
     except Exception as e:
         logging.error(f"(training.py): Failed to train PPO: {e}\n")

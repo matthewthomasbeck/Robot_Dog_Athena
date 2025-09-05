@@ -1,1010 +1,592 @@
-2025-09-04 16:51:14 INFO: (log.py): Logging setup complete.
-
-2025-09-04 16:51:15 DEBUG: Using selector: EpollSelector
-2025-09-04 16:51:16 DEBUG: Defining data type 'any' as 'Any'
-2025-09-04 16:51:16 DEBUG: Defining data type 'bool' as 'Bool' and array 'BoolArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'bundle' as 'Bundle'
-2025-09-04 16:51:16 DEBUG: Defining data type 'colord[3]' as 'Color3d' and array 'Color3dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'colorf[3]' as 'Color3f' and array 'Color3fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'colorh[3]' as 'Color3h' and array 'Color3hArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'colord[4]' as 'Color4d' and array 'Color4dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'colorf[4]' as 'Color4f' and array 'Color4fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'colorh[4]' as 'Color4h' and array 'Color4hArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'double' as 'Double' and array 'DoubleArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'double[2]' as 'Double2' and array 'Double2Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'double[3]' as 'Double3' and array 'Double3Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'double[4]' as 'Double4' and array 'Double4Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'execution' as 'Execution'
-2025-09-04 16:51:16 DEBUG: Defining data type 'float' as 'Float' and array 'FloatArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'float[2]' as 'Float2' and array 'Float2Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'float[3]' as 'Float3' and array 'Float3Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'float[4]' as 'Float4' and array 'Float4Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'frame[4]' as 'Frame' and array 'FrameArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'half' as 'Half' and array 'HalfArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'half[2]' as 'Half2' and array 'Half2Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'half[3]' as 'Half3' and array 'Half3Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'half[4]' as 'Half4' and array 'Half4Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'int' as 'Int' and array 'IntArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'int[2]' as 'Int2' and array 'Int2Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'int[3]' as 'Int3' and array 'Int3Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'int[4]' as 'Int4' and array 'Int4Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'int64' as 'Int64' and array 'Int64Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'matrixd[2]' as 'Matrix2d' and array 'Matrix2dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'matrixd[3]' as 'Matrix3d' and array 'Matrix3dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'matrixd[4]' as 'Matrix4d' and array 'Matrix4dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'normald[3]' as 'Normal3d' and array 'Normal3dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'normalf[3]' as 'Normal3f' and array 'Normal3fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'normalh[3]' as 'Normal3h' and array 'Normal3hArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'objectId' as 'ObjectId' and array 'ObjectIdArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'path' as 'Path'
-2025-09-04 16:51:16 DEBUG: Defining data type 'pointd[3]' as 'Point3d' and array 'Point3dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'pointf[3]' as 'Point3f' and array 'Point3fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'pointh[3]' as 'Point3h' and array 'Point3hArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'quatd[4]' as 'Quatd' and array 'QuatdArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'quatf[4]' as 'Quatf' and array 'QuatfArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'quath[4]' as 'Quath' and array 'QuathArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'string' as 'String'
-2025-09-04 16:51:16 DEBUG: Defining data type 'target' as 'Target'
-2025-09-04 16:51:16 DEBUG: Defining data type 'texcoordd[2]' as 'TexCoord2d' and array 'TexCoord2dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'texcoordf[2]' as 'TexCoord2f' and array 'TexCoord2fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'texcoordh[2]' as 'TexCoord2h' and array 'TexCoord2hArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'texcoordd[3]' as 'TexCoord3d' and array 'TexCoord3dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'texcoordf[3]' as 'TexCoord3f' and array 'TexCoord3fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'texcoordh[3]' as 'TexCoord3h' and array 'TexCoord3hArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'timecode' as 'Timecode' and array 'TimecodeArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'token' as 'Token' and array 'TokenArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'uchar' as 'UChar' and array 'UCharArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'uint' as 'UInt' and array 'UIntArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'uint64' as 'UInt64' and array 'UInt64Array
-2025-09-04 16:51:16 DEBUG: Defining data type 'vectord[3]' as 'Vector3d' and array 'Vector3dArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'vectorf[3]' as 'Vector3f' and array 'Vector3fArray
-2025-09-04 16:51:16 DEBUG: Defining data type 'vectorh[3]' as 'Vector3h' and array 'Vector3hArray
-2025-09-04 16:51:19 DEBUG: Starting new HTTPS connection (1): docs.omniverse.nvidia.com:443
-2025-09-04 16:51:19 DEBUG: https://docs.omniverse.nvidia.com:443 "HEAD /kit/docs/omni_physics/107.3/index.html HTTP/1.1" 200 0
-2025-09-04 16:51:22 INFO: (control_logic.py): Spawning 150 robots for parallel training...
+2025-09-04 19:21:14 INFO: (log.py): Logging setup complete.
+
+2025-09-04 19:21:15 DEBUG: Using selector: EpollSelector
+2025-09-04 19:21:16 DEBUG: Defining data type 'any' as 'Any'
+2025-09-04 19:21:16 DEBUG: Defining data type 'bool' as 'Bool' and array 'BoolArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'bundle' as 'Bundle'
+2025-09-04 19:21:16 DEBUG: Defining data type 'colord[3]' as 'Color3d' and array 'Color3dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'colorf[3]' as 'Color3f' and array 'Color3fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'colorh[3]' as 'Color3h' and array 'Color3hArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'colord[4]' as 'Color4d' and array 'Color4dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'colorf[4]' as 'Color4f' and array 'Color4fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'colorh[4]' as 'Color4h' and array 'Color4hArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'double' as 'Double' and array 'DoubleArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'double[2]' as 'Double2' and array 'Double2Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'double[3]' as 'Double3' and array 'Double3Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'double[4]' as 'Double4' and array 'Double4Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'execution' as 'Execution'
+2025-09-04 19:21:16 DEBUG: Defining data type 'float' as 'Float' and array 'FloatArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'float[2]' as 'Float2' and array 'Float2Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'float[3]' as 'Float3' and array 'Float3Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'float[4]' as 'Float4' and array 'Float4Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'frame[4]' as 'Frame' and array 'FrameArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'half' as 'Half' and array 'HalfArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'half[2]' as 'Half2' and array 'Half2Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'half[3]' as 'Half3' and array 'Half3Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'half[4]' as 'Half4' and array 'Half4Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'int' as 'Int' and array 'IntArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'int[2]' as 'Int2' and array 'Int2Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'int[3]' as 'Int3' and array 'Int3Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'int[4]' as 'Int4' and array 'Int4Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'int64' as 'Int64' and array 'Int64Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'matrixd[2]' as 'Matrix2d' and array 'Matrix2dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'matrixd[3]' as 'Matrix3d' and array 'Matrix3dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'matrixd[4]' as 'Matrix4d' and array 'Matrix4dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'normald[3]' as 'Normal3d' and array 'Normal3dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'normalf[3]' as 'Normal3f' and array 'Normal3fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'normalh[3]' as 'Normal3h' and array 'Normal3hArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'objectId' as 'ObjectId' and array 'ObjectIdArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'path' as 'Path'
+2025-09-04 19:21:16 DEBUG: Defining data type 'pointd[3]' as 'Point3d' and array 'Point3dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'pointf[3]' as 'Point3f' and array 'Point3fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'pointh[3]' as 'Point3h' and array 'Point3hArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'quatd[4]' as 'Quatd' and array 'QuatdArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'quatf[4]' as 'Quatf' and array 'QuatfArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'quath[4]' as 'Quath' and array 'QuathArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'string' as 'String'
+2025-09-04 19:21:16 DEBUG: Defining data type 'target' as 'Target'
+2025-09-04 19:21:16 DEBUG: Defining data type 'texcoordd[2]' as 'TexCoord2d' and array 'TexCoord2dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'texcoordf[2]' as 'TexCoord2f' and array 'TexCoord2fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'texcoordh[2]' as 'TexCoord2h' and array 'TexCoord2hArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'texcoordd[3]' as 'TexCoord3d' and array 'TexCoord3dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'texcoordf[3]' as 'TexCoord3f' and array 'TexCoord3fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'texcoordh[3]' as 'TexCoord3h' and array 'TexCoord3hArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'timecode' as 'Timecode' and array 'TimecodeArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'token' as 'Token' and array 'TokenArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'uchar' as 'UChar' and array 'UCharArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'uint' as 'UInt' and array 'UIntArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'uint64' as 'UInt64' and array 'UInt64Array
+2025-09-04 19:21:16 DEBUG: Defining data type 'vectord[3]' as 'Vector3d' and array 'Vector3dArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'vectorf[3]' as 'Vector3f' and array 'Vector3fArray
+2025-09-04 19:21:16 DEBUG: Defining data type 'vectorh[3]' as 'Vector3h' and array 'Vector3hArray
+2025-09-04 19:21:19 DEBUG: Starting new HTTPS connection (1): docs.omniverse.nvidia.com:443
+2025-09-04 19:21:20 DEBUG: https://docs.omniverse.nvidia.com:443 "HEAD /kit/docs/omni_physics/107.3/index.html HTTP/1.1" 200 0
+2025-09-04 19:21:22 INFO: (control_logic.py): Spawning 50 robots for parallel training...
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Generated grid positions: [(-12.0, -12.0, 0.14), (-10.0, -12.0, 0.14), (-8.0, -12.0, 0.14), (-6.0, -12.0, 0.14), (-4.0, -12.0, 0.14), (-2.0, -12.0, 0.14), (0.0, -12.0, 0.14), (2.0, -12.0, 0.14), (4.0, -12.0, 0.14), (6.0, -12.0, 0.14), (8.0, -12.0, 0.14), (10.0, -12.0, 0.14), (12.0, -12.0, 0.14), (-12.0, -10.0, 0.14), (-10.0, -10.0, 0.14), (-8.0, -10.0, 0.14), (-6.0, -10.0, 0.14), (-4.0, -10.0, 0.14), (-2.0, -10.0, 0.14), (0.0, -10.0, 0.14), (2.0, -10.0, 0.14), (4.0, -10.0, 0.14), (6.0, -10.0, 0.14), (8.0, -10.0, 0.14), (10.0, -10.0, 0.14), (12.0, -10.0, 0.14), (-12.0, -8.0, 0.14), (-10.0, -8.0, 0.14), (-8.0, -8.0, 0.14), (-6.0, -8.0, 0.14), (-4.0, -8.0, 0.14), (-2.0, -8.0, 0.14), (0.0, -8.0, 0.14), (2.0, -8.0, 0.14), (4.0, -8.0, 0.14), (6.0, -8.0, 0.14), (8.0, -8.0, 0.14), (10.0, -8.0, 0.14), (12.0, -8.0, 0.14), (-12.0, -6.0, 0.14), (-10.0, -6.0, 0.14), (-8.0, -6.0, 0.14), (-6.0, -6.0, 0.14), (-4.0, -6.0, 0.14), (-2.0, -6.0, 0.14), (0.0, -6.0, 0.14), (2.0, -6.0, 0.14), (4.0, -6.0, 0.14), (6.0, -6.0, 0.14), (8.0, -6.0, 0.14), (10.0, -6.0, 0.14), (12.0, -6.0, 0.14), (-12.0, -4.0, 0.14), (-10.0, -4.0, 0.14), (-8.0, -4.0, 0.14), (-6.0, -4.0, 0.14), (-4.0, -4.0, 0.14), (-2.0, -4.0, 0.14), (0.0, -4.0, 0.14), (2.0, -4.0, 0.14), (4.0, -4.0, 0.14), (6.0, -4.0, 0.14), (8.0, -4.0, 0.14), (10.0, -4.0, 0.14), (12.0, -4.0, 0.14), (-12.0, -2.0, 0.14), (-10.0, -2.0, 0.14), (-8.0, -2.0, 0.14), (-6.0, -2.0, 0.14), (-4.0, -2.0, 0.14), (-2.0, -2.0, 0.14), (0.0, -2.0, 0.14), (2.0, -2.0, 0.14), (4.0, -2.0, 0.14), (6.0, -2.0, 0.14), (8.0, -2.0, 0.14), (10.0, -2.0, 0.14), (12.0, -2.0, 0.14), (-12.0, 0.0, 0.14), (-10.0, 0.0, 0.14), (-8.0, 0.0, 0.14), (-6.0, 0.0, 0.14), (-4.0, 0.0, 0.14), (-2.0, 0.0, 0.14), (0.0, 0.0, 0.14), (2.0, 0.0, 0.14), (4.0, 0.0, 0.14), (6.0, 0.0, 0.14), (8.0, 0.0, 0.14), (10.0, 0.0, 0.14), (12.0, 0.0, 0.14), (-12.0, 2.0, 0.14), (-10.0, 2.0, 0.14), (-8.0, 2.0, 0.14), (-6.0, 2.0, 0.14), (-4.0, 2.0, 0.14), (-2.0, 2.0, 0.14), (0.0, 2.0, 0.14), (2.0, 2.0, 0.14), (4.0, 2.0, 0.14), (6.0, 2.0, 0.14), (8.0, 2.0, 0.14), (10.0, 2.0, 0.14), (12.0, 2.0, 0.14), (-12.0, 4.0, 0.14), (-10.0, 4.0, 0.14), (-8.0, 4.0, 0.14), (-6.0, 4.0, 0.14), (-4.0, 4.0, 0.14), (-2.0, 4.0, 0.14), (0.0, 4.0, 0.14), (2.0, 4.0, 0.14), (4.0, 4.0, 0.14), (6.0, 4.0, 0.14), (8.0, 4.0, 0.14), (10.0, 4.0, 0.14), (12.0, 4.0, 0.14), (-12.0, 6.0, 0.14), (-10.0, 6.0, 0.14), (-8.0, 6.0, 0.14), (-6.0, 6.0, 0.14), (-4.0, 6.0, 0.14), (-2.0, 6.0, 0.14), (0.0, 6.0, 0.14), (2.0, 6.0, 0.14), (4.0, 6.0, 0.14), (6.0, 6.0, 0.14), (8.0, 6.0, 0.14), (10.0, 6.0, 0.14), (12.0, 6.0, 0.14), (-12.0, 8.0, 0.14), (-10.0, 8.0, 0.14), (-8.0, 8.0, 0.14), (-6.0, 8.0, 0.14), (-4.0, 8.0, 0.14), (-2.0, 8.0, 0.14), (0.0, 8.0, 0.14), (2.0, 8.0, 0.14), (4.0, 8.0, 0.14), (6.0, 8.0, 0.14), (8.0, 8.0, 0.14), (10.0, 8.0, 0.14), (12.0, 8.0, 0.14), (-12.0, 10.0, 0.14), (-10.0, 10.0, 0.14), (-8.0, 10.0, 0.14), (-6.0, 10.0, 0.14), (-4.0, 10.0, 0.14), (-2.0, 10.0, 0.14), (0.0, 10.0, 0.14)]
+2025-09-04 19:21:22 INFO: (control_logic.py): Generated grid positions: [(-7.0, -7.0, 0.14), (-5.0, -7.0, 0.14), (-3.0, -7.0, 0.14), (-1.0, -7.0, 0.14), (1.0, -7.0, 0.14), (3.0, -7.0, 0.14), (5.0, -7.0, 0.14), (7.0, -7.0, 0.14), (-7.0, -5.0, 0.14), (-5.0, -5.0, 0.14), (-3.0, -5.0, 0.14), (-1.0, -5.0, 0.14), (1.0, -5.0, 0.14), (3.0, -5.0, 0.14), (5.0, -5.0, 0.14), (7.0, -5.0, 0.14), (-7.0, -3.0, 0.14), (-5.0, -3.0, 0.14), (-3.0, -3.0, 0.14), (-1.0, -3.0, 0.14), (1.0, -3.0, 0.14), (3.0, -3.0, 0.14), (5.0, -3.0, 0.14), (7.0, -3.0, 0.14), (-7.0, -1.0, 0.14), (-5.0, -1.0, 0.14), (-3.0, -1.0, 0.14), (-1.0, -1.0, 0.14), (1.0, -1.0, 0.14), (3.0, -1.0, 0.14), (5.0, -1.0, 0.14), (7.0, -1.0, 0.14), (-7.0, 1.0, 0.14), (-5.0, 1.0, 0.14), (-3.0, 1.0, 0.14), (-1.0, 1.0, 0.14), (1.0, 1.0, 0.14), (3.0, 1.0, 0.14), (5.0, 1.0, 0.14), (7.0, 1.0, 0.14), (-7.0, 3.0, 0.14), (-5.0, 3.0, 0.14), (-3.0, 3.0, 0.14), (-1.0, 3.0, 0.14), (1.0, 3.0, 0.14), (3.0, 3.0, 0.14), (5.0, 3.0, 0.14), (7.0, 3.0, 0.14), (-7.0, 5.0, 0.14), (-5.0, 5.0, 0.14)]
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Saved spawn positions to config for individual resets
+2025-09-04 19:21:22 INFO: (control_logic.py): Saved spawn positions to config for individual resets
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 0 positioned at (-12.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 0 positioned at (-7.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 1 positioned at (-10.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 1 positioned at (-5.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 2 positioned at (-8.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 2 positioned at (-3.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 3 positioned at (-6.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 3 positioned at (-1.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 4 positioned at (-4.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 4 positioned at (1.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 5 positioned at (-2.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 5 positioned at (3.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 6 positioned at (0.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 6 positioned at (5.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 7 positioned at (2.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 7 positioned at (7.0, -7.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 8 positioned at (4.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 8 positioned at (-7.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 9 positioned at (6.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 9 positioned at (-5.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 10 positioned at (8.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 10 positioned at (-3.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 11 positioned at (10.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 11 positioned at (-1.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 12 positioned at (12.0, -12.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 12 positioned at (1.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 13 positioned at (-12.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 13 positioned at (3.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 14 positioned at (-10.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 14 positioned at (5.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 15 positioned at (-8.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 15 positioned at (7.0, -5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 16 positioned at (-6.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 16 positioned at (-7.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 17 positioned at (-4.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 17 positioned at (-5.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 18 positioned at (-2.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 18 positioned at (-3.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 19 positioned at (0.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 19 positioned at (-1.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 20 positioned at (2.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 20 positioned at (1.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 21 positioned at (4.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 21 positioned at (3.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 22 positioned at (6.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 22 positioned at (5.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 23 positioned at (8.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 23 positioned at (7.0, -3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 24 positioned at (10.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 24 positioned at (-7.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 25 positioned at (12.0, -10.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 25 positioned at (-5.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 26 positioned at (-12.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 26 positioned at (-3.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 27 positioned at (-10.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 27 positioned at (-1.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 28 positioned at (-8.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 28 positioned at (1.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 29 positioned at (-6.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 29 positioned at (3.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 30 positioned at (-4.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 30 positioned at (5.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 31 positioned at (-2.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 31 positioned at (7.0, -1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 32 positioned at (0.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 32 positioned at (-7.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 33 positioned at (2.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 33 positioned at (-5.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 34 positioned at (4.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 34 positioned at (-3.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 35 positioned at (6.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 35 positioned at (-1.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 36 positioned at (8.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 36 positioned at (1.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 37 positioned at (10.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 37 positioned at (3.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 38 positioned at (12.0, -8.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 38 positioned at (5.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 39 positioned at (-12.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 39 positioned at (7.0, 1.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 40 positioned at (-10.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 40 positioned at (-7.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 41 positioned at (-8.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 41 positioned at (-5.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 42 positioned at (-6.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 42 positioned at (-3.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 43 positioned at (-4.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 43 positioned at (-1.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 44 positioned at (-2.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 44 positioned at (1.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 45 positioned at (0.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 45 positioned at (3.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 46 positioned at (2.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 46 positioned at (5.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 47 positioned at (4.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 47 positioned at (7.0, 3.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 48 positioned at (6.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 48 positioned at (-7.0, 5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 49 positioned at (8.0, -6.0, 0.14)
+2025-09-04 19:21:22 INFO: (control_logic.py): Robot 49 positioned at (-5.0, 5.0, 0.14)
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 50 positioned at (10.0, -6.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 0 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 51 positioned at (12.0, -6.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 1 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 52 positioned at (-12.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 2 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 53 positioned at (-10.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 3 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 54 positioned at (-8.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 4 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 55 positioned at (-6.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 5 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 56 positioned at (-4.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 6 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 57 positioned at (-2.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 7 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 58 positioned at (0.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 8 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 59 positioned at (2.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 9 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 60 positioned at (4.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 10 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 61 positioned at (6.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 11 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 62 positioned at (8.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 12 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 63 positioned at (10.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 13 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 64 positioned at (12.0, -4.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 14 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 65 positioned at (-12.0, -2.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 15 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 66 positioned at (-10.0, -2.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 16 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 67 positioned at (-8.0, -2.0, 0.14)
+2025-09-04 19:21:23 INFO: (control_logic.py): Robot 17 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 68 positioned at (-6.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 18 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 69 positioned at (-4.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 19 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 70 positioned at (-2.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 20 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 71 positioned at (0.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 21 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 72 positioned at (2.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 22 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 73 positioned at (4.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 23 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 74 positioned at (6.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 24 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 75 positioned at (8.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 25 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 76 positioned at (10.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 26 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 77 positioned at (12.0, -2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 27 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 78 positioned at (-12.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 28 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 79 positioned at (-10.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 29 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 80 positioned at (-8.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 30 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 81 positioned at (-6.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 31 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 82 positioned at (-4.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 32 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 83 positioned at (-2.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 33 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 84 positioned at (0.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 34 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 85 positioned at (2.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 35 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 86 positioned at (4.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 36 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 87 positioned at (6.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 37 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 88 positioned at (8.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 38 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 89 positioned at (10.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 39 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 90 positioned at (12.0, 0.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 40 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 91 positioned at (-12.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 41 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 92 positioned at (-10.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 42 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 93 positioned at (-8.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 43 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 94 positioned at (-6.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 44 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 95 positioned at (-4.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 45 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 96 positioned at (-2.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 46 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 97 positioned at (0.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 47 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 98 positioned at (2.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 48 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 99 positioned at (4.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Robot 49 initialized successfully.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 100 positioned at (6.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): Successfully spawned 50 robots for parallel training.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 101 positioned at (8.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 102 positioned at (10.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 103 positioned at (12.0, 2.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 0
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 104 positioned at (-12.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 1
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 105 positioned at (-10.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 2
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 106 positioned at (-8.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 3
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 107 positioned at (-6.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 4
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 108 positioned at (-4.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 5
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 109 positioned at (-2.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 6
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 110 positioned at (0.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 7
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 111 positioned at (2.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 8
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 112 positioned at (4.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 9
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 113 positioned at (6.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 10
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 114 positioned at (8.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 11
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 115 positioned at (10.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 12
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 116 positioned at (12.0, 4.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 13
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 117 positioned at (-12.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 14
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 118 positioned at (-10.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 15
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 119 positioned at (-8.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 16
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 120 positioned at (-6.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 17
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 121 positioned at (-4.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 18
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 122 positioned at (-2.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 19
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 123 positioned at (0.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 20
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 124 positioned at (2.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 21
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 125 positioned at (4.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 22
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 126 positioned at (6.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 23
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 127 positioned at (8.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 24
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 128 positioned at (10.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 25
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 129 positioned at (12.0, 6.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 26
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 130 positioned at (-12.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 27
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 131 positioned at (-10.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 28
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 132 positioned at (-8.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 29
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 133 positioned at (-6.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 30
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 134 positioned at (-4.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 31
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 135 positioned at (-2.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 32
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 136 positioned at (0.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 33
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 137 positioned at (2.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 34
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 138 positioned at (4.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 35
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 139 positioned at (6.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 36
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 140 positioned at (8.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 37
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 141 positioned at (10.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 38
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 142 positioned at (12.0, 8.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 39
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 143 positioned at (-12.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 40
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 144 positioned at (-10.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 41
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 145 positioned at (-8.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 42
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 146 positioned at (-6.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 43
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 147 positioned at (-4.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 44
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 148 positioned at (-2.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 45
 
-2025-09-04 16:51:22 INFO: (control_logic.py): Robot 149 positioned at (0.0, 10.0, 0.14)
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 46
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 0 initialized successfully.
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 47
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 1 initialized successfully.
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 48
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 2 initialized successfully.
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Controller initialized for robot 49
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 3 initialized successfully.
+2025-09-04 19:21:24 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 4 initialized successfully.
+2025-09-04 19:21:28 ERROR: (training.py): Agent data not properly initialized. Expected 50 agents, got 0
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 5 initialized successfully.
+2025-09-04 19:21:28 ERROR: (movement_coordinator.py): Failed to run AI for command: not enough values to unpack (expected 2, got 0)
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 6 initialized successfully.
+2025-09-04 19:21:28 DEBUG: (training.py): Initializing training system...
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 7 initialized successfully.
+2025-09-04 19:21:28 DEBUG: (training.py): Initializing multi-agent training system...
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 8 initialized successfully.
+2025-09-04 19:21:29 DEBUG: (training.py): Initializing agent data structures...
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 9 initialized successfully.
+2025-09-04 19:21:29 DEBUG: Agent data initialized for 50 robots
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 10 initialized successfully.
+2025-09-04 19:21:29 WARNING: (training.py): No saved models found, starting fresh training...
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 11 initialized successfully.
+2025-09-04 19:21:29 INFO: Multi-agent training system initialized:
+2025-09-04 19:21:29 INFO:   - Number of agents: 50
+2025-09-04 19:21:29 INFO:   - State dimension: 67
+2025-09-04 19:21:29 INFO:   - Action dimension: 12
+2025-09-04 19:21:29 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
+2025-09-04 19:21:29 INFO:   - PPO policy created: True
+2025-09-04 19:21:29 INFO:   - Starting from time step: 0
+2025-09-04 19:21:29 INFO:   - Loaded robot steps: 0
+2025-09-04 19:21:29 INFO:   - PREVIOUS_POSITIONS verified for 50 robots
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 12 initialized successfully.
+2025-09-04 19:21:29 INFO: (training.py) Training system initialized successfully.
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 13 initialized successfully.
+2025-09-04 19:21:35 INFO: (training.py): Episode reset due to fall at step 501, new episode starts at step 501
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 14 initialized successfully.
+2025-09-04 19:21:43 INFO: (training.py): Episode reset due to fall at step 1196, new episode starts at step 1196
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 15 initialized successfully.
+2025-09-04 19:21:51 INFO: (training.py): Episode reset due to fall at step 1843, new episode starts at step 1843
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 16 initialized successfully.
+2025-09-04 19:21:53 INFO: (training.py) TIMING: Time from initialization to first training: 25.520 seconds
+2025-09-04 19:21:53 INFO: (training.py) TIMING: Steps to first training: 2000
+2025-09-04 19:21:53 INFO: (training.py) TIMING: Robots: 50
+2025-09-04 19:21:53 INFO: (training.py) TIMING: Time per step: 0.0128 seconds
+2025-09-04 19:21:53 INFO: (training.py) TIMING: Time per robot per step: 0.000255 seconds
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 17 initialized successfully.
+2025-09-04 19:21:53 INFO: (training.py): Trained model at step 2000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 18 initialized successfully.
+2025-09-04 19:21:58 INFO: (training.py): Episode reset due to fall at step 2462, new episode starts at step 2462
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 19 initialized successfully.
+2025-09-04 19:22:05 INFO: (training.py): Episode reset due to fall at step 3039, new episode starts at step 3039
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 20 initialized successfully.
+2025-09-04 19:22:15 INFO: (training.py): Trained model at step 4000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 21 initialized successfully.
+2025-09-04 19:22:17 INFO: (training.py): Episode reset at step 4039, new episode starts at step 4039
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 22 initialized successfully.
+2025-09-04 19:22:27 INFO: (training.py): Episode reset due to fall at step 4823, new episode starts at step 4823
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 23 initialized successfully.
+2025-09-04 19:22:35 INFO: (training.py): Episode reset due to fall at step 5458, new episode starts at step 5458
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 24 initialized successfully.
+2025-09-04 19:22:40 INFO: (training.py): Trained model at step 6000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 25 initialized successfully.
+2025-09-04 19:22:43 INFO: (training.py): Episode reset due to fall at step 6197, new episode starts at step 6197
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 26 initialized successfully.
+2025-09-04 19:22:51 INFO: (training.py): Episode reset due to fall at step 6911, new episode starts at step 6911
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 27 initialized successfully.
+2025-09-04 19:22:58 INFO: (training.py): Episode reset due to fall at step 7453, new episode starts at step 7453
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 28 initialized successfully.
+2025-09-04 19:23:04 INFO: (training.py): Trained model at step 8000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 29 initialized successfully.
+2025-09-04 19:23:07 INFO: (training.py): Episode reset due to fall at step 8145, new episode starts at step 8145
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 30 initialized successfully.
+2025-09-04 19:23:16 INFO: (training.py): Episode reset due to fall at step 8928, new episode starts at step 8928
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 31 initialized successfully.
+2025-09-04 19:23:23 INFO: (training.py): Episode reset due to fall at step 9651, new episode starts at step 9651
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 32 initialized successfully.
+2025-09-04 19:23:26 INFO: (training.py): Trained model at step 10000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 33 initialized successfully.
+2025-09-04 19:23:30 INFO: (training.py): Episode reset due to fall at step 10189, new episode starts at step 10189
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 34 initialized successfully.
+2025-09-04 19:23:39 INFO: (training.py): Episode reset due to fall at step 11020, new episode starts at step 11020
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 35 initialized successfully.
+2025-09-04 19:23:45 INFO: (training.py): Episode reset due to fall at step 11522, new episode starts at step 11522
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 36 initialized successfully.
+2025-09-04 19:23:50 INFO: (training.py): Trained model at step 12000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 37 initialized successfully.
+2025-09-04 19:23:52 INFO: (training.py): Episode reset due to fall at step 12026, new episode starts at step 12026
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 38 initialized successfully.
+2025-09-04 19:23:58 INFO: (training.py): Episode reset due to fall at step 12668, new episode starts at step 12668
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 39 initialized successfully.
+2025-09-04 19:24:07 INFO: (training.py): Episode reset due to fall at step 13535, new episode starts at step 13535
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 40 initialized successfully.
+2025-09-04 19:24:10 INFO: (training.py): Trained model at step 14000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 41 initialized successfully.
+2025-09-04 19:24:18 INFO: (training.py): Episode reset due to fall at step 14510, new episode starts at step 14510
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 42 initialized successfully.
+2025-09-04 19:24:24 INFO: (training.py): Episode reset due to fall at step 15085, new episode starts at step 15085
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 43 initialized successfully.
+2025-09-04 19:24:32 INFO: (training.py): Episode reset due to fall at step 15776, new episode starts at step 15776
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 44 initialized successfully.
+2025-09-04 19:24:34 INFO: (training.py): Trained model at step 16000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 45 initialized successfully.
+2025-09-04 19:24:38 INFO: (training.py): Episode reset due to fall at step 16304, new episode starts at step 16304
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 46 initialized successfully.
+2025-09-04 19:24:43 INFO: (training.py): Episode reset due to fall at step 16723, new episode starts at step 16723
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 47 initialized successfully.
+2025-09-04 19:24:50 INFO: (training.py): Episode reset due to fall at step 17415, new episode starts at step 17415
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 48 initialized successfully.
+2025-09-04 19:24:57 INFO: (training.py): Episode reset due to fall at step 17907, new episode starts at step 17907
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 49 initialized successfully.
+2025-09-04 19:24:59 INFO: (training.py): Trained model at step 18000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 50 initialized successfully.
+2025-09-04 19:25:02 INFO: (training.py): Episode reset due to fall at step 18407, new episode starts at step 18407
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 51 initialized successfully.
+2025-09-04 19:25:11 INFO: (training.py): Episode reset due to fall at step 19144, new episode starts at step 19144
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 52 initialized successfully.
+2025-09-04 19:25:21 INFO: (training.py): Episode reset due to fall at step 19957, new episode starts at step 19957
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 53 initialized successfully.
+2025-09-04 19:25:23 INFO: (training.py): Trained model at step 20000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 54 initialized successfully.
+2025-09-04 19:25:28 INFO: (training.py): Episode reset due to fall at step 20502, new episode starts at step 20502
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 55 initialized successfully.
+2025-09-04 19:25:34 INFO: (training.py): Episode reset due to fall at step 21079, new episode starts at step 21079
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 56 initialized successfully.
+2025-09-04 19:25:42 INFO: (training.py): Episode reset due to fall at step 21662, new episode starts at step 21662
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 57 initialized successfully.
+2025-09-04 19:25:44 INFO: (training.py): Trained model at step 22000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 58 initialized successfully.
+2025-09-04 19:25:50 INFO: (training.py): Episode reset due to fall at step 22350, new episode starts at step 22350
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 59 initialized successfully.
+2025-09-04 19:25:57 INFO: (training.py): Episode reset due to fall at step 22924, new episode starts at step 22924
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 60 initialized successfully.
+2025-09-04 19:26:03 INFO: (training.py): Episode reset due to fall at step 23477, new episode starts at step 23477
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 61 initialized successfully.
+2025-09-04 19:26:08 INFO: (training.py): Episode reset due to fall at step 23996, new episode starts at step 23996
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 62 initialized successfully.
+2025-09-04 19:26:08 INFO: (training.py): Trained model at step 24000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 63 initialized successfully.
+2025-09-04 19:26:15 INFO: (training.py): Episode reset due to fall at step 24569, new episode starts at step 24569
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 64 initialized successfully.
+2025-09-04 19:26:20 INFO: (training.py): Episode reset due to fall at step 25076, new episode starts at step 25076
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 65 initialized successfully.
+2025-09-04 19:26:27 INFO: (training.py): Episode reset due to fall at step 25594, new episode starts at step 25594
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 66 initialized successfully.
+2025-09-04 19:26:29 INFO: (training.py): Trained model at step 26000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 67 initialized successfully.
+2025-09-04 19:26:34 INFO: (training.py): Episode reset due to fall at step 26172, new episode starts at step 26172
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 68 initialized successfully.
+2025-09-04 19:26:39 INFO: (training.py): Episode reset due to fall at step 26666, new episode starts at step 26666
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 69 initialized successfully.
+2025-09-04 19:26:46 INFO: (training.py): Episode reset due to fall at step 27174, new episode starts at step 27174
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 70 initialized successfully.
+2025-09-04 19:26:53 INFO: (training.py): Trained model at step 28000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 71 initialized successfully.
+2025-09-04 19:26:55 INFO: (training.py): Episode reset at step 28174, new episode starts at step 28174
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 72 initialized successfully.
+2025-09-04 19:27:04 INFO: (training.py): Episode reset due to fall at step 28830, new episode starts at step 28830
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 73 initialized successfully.
+2025-09-04 19:27:10 INFO: (training.py): Episode reset due to fall at step 29388, new episode starts at step 29388
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 74 initialized successfully.
+2025-09-04 19:27:17 INFO: (training.py): Trained model at step 30000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 75 initialized successfully.
+2025-09-04 19:27:19 INFO: (training.py): Episode reset due to fall at step 30133, new episode starts at step 30133
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 76 initialized successfully.
+2025-09-04 19:27:24 INFO: (training.py): Episode reset due to fall at step 30671, new episode starts at step 30671
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 77 initialized successfully.
+2025-09-04 19:27:30 INFO: (training.py): Episode reset due to fall at step 31178, new episode starts at step 31178
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 78 initialized successfully.
+2025-09-04 19:27:35 INFO: (training.py): Episode reset due to fall at step 31711, new episode starts at step 31711
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 79 initialized successfully.
+2025-09-04 19:27:38 INFO: (training.py): Trained model at step 32000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 80 initialized successfully.
+2025-09-04 19:27:43 INFO: (training.py): Episode reset due to fall at step 32313, new episode starts at step 32313
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 81 initialized successfully.
+2025-09-04 19:27:51 INFO: (training.py): Episode reset due to fall at step 32955, new episode starts at step 32955
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 82 initialized successfully.
+2025-09-04 19:27:59 INFO: (training.py): Episode reset due to fall at step 33661, new episode starts at step 33661
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 83 initialized successfully.
+2025-09-04 19:28:02 INFO: (training.py): Trained model at step 34000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 84 initialized successfully.
+2025-09-04 19:28:06 INFO: (training.py): Episode reset due to fall at step 34255, new episode starts at step 34255
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 85 initialized successfully.
+2025-09-04 19:28:12 INFO: (training.py): Episode reset due to fall at step 34793, new episode starts at step 34793
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 86 initialized successfully.
+2025-09-04 19:28:19 INFO: (training.py): Episode reset due to fall at step 35364, new episode starts at step 35364
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 87 initialized successfully.
+2025-09-04 19:28:25 INFO: (training.py): Trained model at step 36000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 88 initialized successfully.
+2025-09-04 19:28:27 INFO: (training.py): Episode reset due to fall at step 36099, new episode starts at step 36099
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 89 initialized successfully.
+2025-09-04 19:28:34 INFO: (training.py): Episode reset due to fall at step 36694, new episode starts at step 36694
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 90 initialized successfully.
+2025-09-04 19:28:39 INFO: (training.py): Episode reset due to fall at step 37163, new episode starts at step 37163
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 91 initialized successfully.
+2025-09-04 19:28:39 INFO: (training.py): Saving model at time_steps 37164 and robot_steps 6000.
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 92 initialized successfully.
+2025-09-04 19:28:39 INFO: 💾 Saving multi-agent PPO model to: /home/matthewthomasbeck/Projects/Robot_Dog/model/6000_-1.307.pth
+2025-09-04 19:28:39 INFO:    📊 Total steps: 6000
+2025-09-04 19:28:39 INFO:    📊 Number of agents: 50
+2025-09-04 19:28:39 INFO:    📊 Current average score: 0.0000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 93 initialized successfully.
+2025-09-04 19:28:39 INFO:    🔍 Checkpoint contains 5 keys:
+2025-09-04 19:28:39 INFO:       ✅ actor_critic_state_dict: 9 layers
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 94 initialized successfully.
+2025-09-04 19:28:39 INFO:       ✅ optimizer_state_dict: 2 layers
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 95 initialized successfully.
+2025-09-04 19:28:39 INFO:       📊 total_steps: 6000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 96 initialized successfully.
+2025-09-04 19:28:39 INFO:       📊 agent_data: {0: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.7039561537809151, 3.2, 1.8701554636658586, 2.2878889875379893, 0.6370036660516962, 2.6918520927560623, 1.5587790403521404, 2.2924950463199822, 0.37503423637281424, 3.2, 0.3050192583840126, 2.610236081870494, 2.7437428294936983, 3.2, 2.1885859399190135, 2.2966581668321284, 2.2966581668321284, 2.2966581668321284, 1.8628336667127807, 2.8729087799463784, 1.2, 2.2, 1.5882839160207292, 1.5882839160207292, 3.2, 0.5406220437535507, 3.2, 1.3382598361747788, 2.881507990075943, 1.2, 3.2, 2.4130656561851804, 3.2, 1.2, 3.2, 0.6318285387453284, 3.2, 3.2, 3.2, -0.17331125867716085, 2.5779695829923264, 1.0658667717081516, 2.240687379005059, 2.240687379005059, 2.240687379005059, 2.7960196145763008, 3.2, 0.7603239621583617, 2.8337860287153873, 2.2038680646670494, 2.573993355369123, 1.3046200891771236, 2.2342884057909034, 2.2342884057909034, 2.2342884057909034, 1.7747406155564065, 3.2, 2.072693631148233, 2.298756374177299, 2.293712419132854, 3.2, 1.0311769174522873, 3.2, 1.4320231116032673, 3.2, 0.29548138648630257, 3.0745867051236475, 2.1373907344285836, 3.2, 2.2838306415935765, 2.5397821661488558, 2.5397821661488558, 2.5397821661488558, 2.5397821661488558, 2.5397821661488558, 2.5397821661488558, 2.5397821661488558, 1.4167626087055651, 3.2, 2.169813398132995, 3.2, 2.1236752875868796, 2.1236752875868796, 0.6679855185738961, 2.1236752875868796, 0.31250428839988226, 3.2, 3.2, 3.2, 0.7714086705402863, 2.532904133676266, 1.199354398600862, 2.543867471442006, 2.2, 3.2, 2.17782466148206, 3.2, 0.5165343733156038, 2.86578697350199, 2.4280917482341513], 'average_reward': 2.2048711301282147}, 1: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.1286969336506865, 3.2, 2.0267392233922545, 3.1218832914658607, 1.650172799132591, 2.2, 3.0506719887589364, 2.5085877060632926, 1.2, 3.2, -0.6278999042712234, 2.2, 2.2, 2.2, 0.29932356581099734, 3.2, 0.6701554540987935, 3.2, 0.47085737593067417, 3.2, 0.4002845073607773, 3.2, 1.5598916898866635, -1.8296222684784336, 1.2, -0.8, 2.2, 2.2, 2.2, 2.00505077582134, 2.2, 2.55256647826701, 2.3831901141342806, 0.12909616972681665, 2.795020466799895, 3.0676777589851483, 3.0676777589851483, -0.18708404817773033, 2.2, 1.1791725291296984, 3.1791725291296986, 3.1791725291296986, 3.2, -1.0850121845326932, 2.2, 2.2, 2.2, 2.2, 3.2, 0.2613795889806397, 3.2, 3.2, 3.2, 1.2, 2.2, 2.0846922580585927, 3.2, 3.2, 3.2, 3.2, 3.2, 2.745661829674189, 3.0290640620637648, 3.105028240220323, 2.6924201817811277, 1.5288738733616332, 2.7948371371768914, 2.355450166010146, 2.643529273927652, 1.3972861014714921, 3.1294544308990613, 2.434604977452478, 3.2, 2.6617088615504043, 3.2, 3.2, 3.2, 3.2, 3.2, 1.2, 2.2, 2.2, 3.2, 2.5245444228792997, 3.152673033356102, 3.152673033356102, 3.152673033356102, 0.9506288360367414, 3.2, 3.2, 3.2, 2.894078973591136, 3.2, 2.9351874370044677, 3.2, 0.2, 2.2, 3.0620104899455844, 3.2, -0.0032983713723512276], 'average_reward': 2.257806051109817}, 2: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-0.2828367689096802, 3.2, 0.7261646516287588, 2.2, 2.2, 3.2, 1.5286782115846018, 2.945324825322693, 1.7407094958850835, 2.3223256834887063, 1.0925792741673817, 2.5856765715348353, 2.5856765715348353, 2.5856765715348353, 0.7358515546342637, 3.2, 3.2, 3.2, -0.2149327869641408, 2.5249638868877486, 2.5249638868877486, 3.2, 1.5377423325761694, 1.0636438110560897, 3.2, 1.1411688659892487, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.5706714213686894, 2.2, 0.33285406816947877, 2.53813698698058, 0.42856363428789573, 2.2, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.2, 2.2, 2.2, 3.2, 1.6699443360012125, 2.2, 1.1994407258668927, 2.5383225086937884, 2.3335633014449106, 2.692833096127507, -0.8, 2.2, -0.29101047075140635, 2.2615983237903494, 2.2615983237903494, 2.2615983237903494, -0.3508910132724757, 2.2, 2.2, 2.2, 1.8558206617477115, 2.8558206617477118, 2.917004606432764, 3.191575334099632, 2.8523992464935497, 3.2, 0.2767391301521473, 3.2, -0.15571816431202307, 2.2, 2.2, 3.2, -0.25986417337905504, 2.2, -0.4144337735058314, 3.2, 0.7782320414755588, 2.2, 2.2, 2.2, 1.0223776399915756, 3.2, 1.3978493244247192, 3.2, 1.4218885896699702, 2.2, 1.2232723891742237, 2.173099452755411, 0.035027043498843724, 2.2, 2.738036453097079, 3.1718064627551827, 1.9550543613492377], 'average_reward': 2.1162658749279553}, 3: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.899770768835694, 3.2, 3.2, 3.2, 2.9039595345347275, 3.2, -0.44282879708128536, 2.298132455283519, -0.565164388941721, 2.7077682195290365, 1.283322010934367, 2.2, -0.32604143846131234, 2.872378984809977, 1.908684589615391, 3.2, 0.7917112591703332, 2.2, 1.954971620894795, 2.2, 1.1511778180097434, 2.493639008289271, 2.493639008289271, -0.11106030775197157, 2.2, -0.8, 2.2, 0.7600051573191429, 3.2, 3.2, 3.2, -100, 1.7310395188488352, 0.12132001757375394, 2.2, 2.5364075495426195, 3.2, 1.5793777288392532, 3.1370567196803187, 0.0694812519470987, 2.2, 3.2, 3.2, 3.2, 3.2, 1.770996423723289, 3.133504379609095, 0.6700153481811375, 2.8288881037482008, 2.8288881037482008, 2.8288881037482008, 0.7084152446016081, 3.2, 0.7156819652995827, 1.8201868770900318, 1.6760912321985122, 2.8300315775896863, 2.8300315775896863, 2.8300315775896863, 1.1288523865058095, 3.124228203677634, 1.5799416770421042, 2.2, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.2, 2.2, 2.2, 3.2, 3.2, 3.2, 0.6153860646422886, 3.0654850445777244, 1.0472402698532541, 2.2263717644197056, -0.6805879353240407, 2.2, 3.2, 3.2, 0.184948991413315, 2.499088262549409, 0.7065868984533878, 3.1258937633463235, 3.1258937633463235, 3.2, 1.1947063713408013, 3.2, -1.8, 2.2, 2.2, 2.2, 0.8467698137054485, 2.8511265010923594, 2.6559991519709536, 2.4956382358764624, 3.2], 'average_reward': 1.1251396803291713}, 4: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.2, 3.0174775960756866, -0.09499191474154561, 2.2, -0.006127526056508292, 2.2, 2.2, 2.2, 2.178898912274834, 2.9934825707704555, 0.020282131846382, 2.433762112805266, 2.433762112805266, 2.433762112805266, -0.3517773803072611, 2.6779470823054723, 0.3867305989619614, 2.3867305989619614, 3.2, 3.2, 3.2, 3.2, 3.2, 0.04337830281014571, 3.2, 3.2, 2.334486704231563, 0.36187841915278557, 2.2, 1.2, 2.2, 2.5964579116352526, 3.028553033919055, 3.2, 2.3001837238152727, 0.6046668570781013, 3.2, 3.2, 3.2, 3.2, 3.2, 2.774807099677941, 2.7771902709182137, 2.7771902709182137, 2.7771902709182137, 1.2, 2.2, 3.2, 3.2, -0.3437227186639364, 2.2, 0.2, 2.2, 2.2, 3.2, 3.2, 3.2, 0.8546333144405331, 2.7946552992866907, 2.7946552992866907, 2.7946552992866907, 1.0488871383723901, 3.2, 3.2, 3.2, -100, 1.2, 2.623141814475723, 3.0522197572287197, 3.2, 3.2, 1.7537468261116311, 2.472738933258021, 1.7706449890319969, 2.2, 2.0626126832740255, 2.2, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.2, 3.2, -0.2757575279850936, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.340175915991508, 2.290829140865658, 0.2898578215152519, 3.2, 3.2, 3.2, 1.6243950816383503], 'average_reward': 1.304342909409969}, 5: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [0.5904675973669973, 2.963436638093898, 0.06613840781014552, 2.6931693670832453, 1.7155402471852859, 3.2, 3.2, 3.2, 3.2, 3.2, -0.3200791557232843, 2.2, 0.6441766827653408, 3.2, 1.5403734494411436, 2.2, 2.2, 3.2, 3.2, 3.2, 2.669484697389529, 3.0117659551142353, 3.0117659551142353, -100, 1.2, 1.2, 1.2, 1.2, 3.2, 3.2, 3.2, 1.887173189218683, 2.5130301392736407, 3.2, 3.2, 3.2, 3.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.1297918367616346, 2.3532017755140613, 1.2813127900830923, 2.376509881933498, 1.5931830006976462, 3.2, 2.1983967551271273, 3.1983967551271277, 3.1983967551271277, 3.1983967551271277, 3.1983967551271277, 3.1983967551271277, 1.6529282960672964, 2.606617500934431, 2.090139854709047, 3.2, 3.2, 3.2, -1.365919439892539, 1.6973866229178063, 3.2, 3.2, 0.05752479738769459, 2.606243954213191, 3.2, 3.2, 1.0472283498326445, 2.40252587087496, 0.22069387619628802, 2.357996928521603, -0.0012515451213454543, 3.0050013200327115, 0.0019204343571111449, 2.2, -0.8, 2.2, -0.17012733606135982, 2.4600532585669517, 0.6398994874749155, 3.2, 3.2, 3.2, 3.2, 3.2, 0.2, 2.2, 2.2, 3.2, -1.3223295456925113, 2.2, 2.2, 2.2, 1.2, 2.2, 2.516634585040948], 'average_reward': 0.19413990256245722}, 6: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.3951917526333832, 3.2, 3.2, 3.2, 0.2, 2.2, -0.19438821907699294, 2.2, 0.1990786214914108, 2.5542255534124294, 2.5542255534124294, 3.2, 2.4947446579538934, 2.509688572228327, 2.509688572228327, 3.2, 3.2, 3.2, 0.5359146034885502, 2.2, 2.2, 3.2, 3.2, 0.4111262182168454, 2.8220669941897993, 2.8220669941897993, 2.8220669941897993, 2.8220669941897993, 2.8220669941897993, 2.8220669941897993, 3.2, 1.4767884134350588, 3.2, 3.2, 3.2, -0.06669567354416334, 2.7672563507744337, 0.07478803833082664, 2.2, 0.8021612543320003, 3.2, 2.413195220758001, 3.2, 1.3092183904584187, 3.2, 3.2, 3.2, 2.997227055280958, 3.2, 3.2, 3.2, 3.2, 3.2, -0.8, 2.2, 2.5847795331436085, 3.2, 1.3806726889319543, 2.803662330327211, -0.49264733445779113, 2.744326657400916, 2.744326657400916, 3.2, 1.2, 3.2, 2.010694454043412, 3.2, -0.447384335003926, 3.180655117855804, 3.2, 3.2, 3.2, 3.2, 3.1823959450390973, 2.8434899316945654, 0.5428063486121868, 3.2, 1.48754699139788, 2.8634830218030367, 0.2357730204396153, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, -0.8, 2.2, 1.5371786799541738, 2.2, -100, 1.2, 3.2, 3.2, 0.35577838831755776, 3.2, 3.2, 3.2, 1.2199213766218255], 'average_reward': 1.3385329637447467}, 7: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 2.346065968509447, 2.357354664977485, 3.2, 3.2, 3.2, 3.2, 2.4674958521806025, 3.2, 3.2, 3.2, 3.2, 3.2, 0.1981030349249176, 3.2, -0.06100716599273709, 2.2, 1.8220373000056351, 3.2, 0.4375794616132796, 2.577634327505841, 1.0703492060175328, -100, 1.2, 3.2, 3.2, 0.5211985494818161, 3.2, -0.8, 2.2, -0.4772354259011023, 2.5646566359708842, 1.7837372450418105, 3.2, 2.281533852130595, 3.0871406815688567, 0.9306731054086756, 2.411620823449456, 2.5526318771894587, 3.2, 1.0238702303751523, 3.2, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.2, 2.2, 1.917135711270449, 2.2, 0.6502658593512944, 2.686014514494552, 3.2, 3.2, 0.6865500138875269, 3.2, 1.3122521959552957, 2.2, 2.2, 2.2, 2.2, 3.2, 1.4137994455323653, 2.8145349130809834, 0.8250121803376274, 3.2, 1.087388012822012, 3.2, -100, 3.2, -100, 2.2, 1.8577129682983629, 3.2, -0.10664257369604296, 3.2, 3.2, 3.2, 3.2, 3.2, 1.8329342000349311, 2.2031823092757956, -100, 1.2, 0.2, 2.2, 2.2, 2.2, 0.7675175707932411, 2.2, 2.2], 'average_reward': -1.7755690245410403}, 8: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.2, 3.2, 0.6452667175337328, 2.2, 2.240826413758038, 2.212763499941931, 2.212763499941931, 2.212763499941931, 1.5225699417440681, 2.898862460498352, 3.042752122869262, 2.251694086492925, 2.251694086492925, 2.251694086492925, 2.251694086492925, 3.2, 0.009674772350467098, 2.2, 1.200349680619835, 3.2, 3.2, 3.2, -0.8, -0.8, 2.2, 2.08698752650666, 2.2, 0.09136792463671056, 3.2, -100, 1.853779385987529, 1.853779385987529, 3.2, 0.4902075171191021, 2.6971651541097046, -100, 1.926350814579014, -0.18044316831226143, 2.8195568316877386, 2.2998451295998454, 3.2, 3.2, 3.2, 2.0005593323910604, 2.6102222157123323, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.6527516163378995, 2.2, 2.2, 2.2, -100, 1.2, 1.8591716196635284, 2.6492200935983234, -100, 2.1214681149146744, 3.2, 3.2, 2.6731632656052704, 2.2828261489265516, 3.2, 3.2, 3.2, 3.2, 2.306371266338509, 2.2, 2.665453607608601, 2.2079971422018922, 2.2079971422018922, 3.2, 3.2, 3.2, 0.1547159970394701, 2.2, 3.2, 3.2, -100, 1.2, -0.13929010171769457, 2.2, 3.2, 3.2, 3.2, 3.2, -100, 1.2, 1.1529310470403629, 2.2, -0.11881840318298281, 2.496412263325692, 2.496412263325692, 2.496412263325692, 3.2, 3.2, -100], 'average_reward': -4.880800576482706}, 9: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.699675842773083, 3.2, 3.2, 3.2, 2.5904070138931274, 3.2, 1.1868074742158843, 3.2, 3.2, 3.2, 3.2, 3.2, 0.07022292058673757, 3.2, 3.2, 3.2, 0.36579224633633584, 3.0095052802945403, 1.2, 3.2, 2.1674948868575195, 3.2, 3.2, 0.378726810079636, 3.2, 3.2, 3.2, 3.2, 3.2, -100, 1.2, 3.2, 3.2, 1.6549548268306211, 3.131781857221722, 2.8212916093681857, 2.2, -0.03506278612562047, 3.2, 3.2, 3.2, -0.2921587680823013, 2.2, 1.2230599771505355, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.2, 2.2, -100, 1.2, 3.2, 3.2, 1.1993229369515468, 3.2, 3.2, 3.2, -100, 1.2, 1.2, 1.2, 2.6135232363840073, 3.2, 2.837864942839315, 3.2, 1.37393424566402, 3.2, 1.7452944353578153, 2.418700431392127, 0.2, 3.2, 2.234090368225236, 2.207920135919411, -100, 1.2, -0.030959681721944465, 2.2, 3.2, 3.2, 0.7585747819834461, 3.2, 0.8943557026381468, 2.9421567072682935, 2.9421567072682935, 3.2, 1.5052615991448703, 3.2, -0.8131907110351055, 2.1868092889648945, -1.2125499184254125, 1.884876686154927, 1.6560690230604862, 3.2, 2.2, 3.2, 1.8709086318483314], 'average_reward': -1.744123812587175}, 10: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-0.6111315108561681, 3.1842145025934316, 1.2907939368499017, 2.4723258203359935, 2.4723258203359935, 3.2, 3.2, 3.2, 1.477939110101992, 2.477939110101992, 2.477939110101992, 2.477939110101992, 0.8884475444708075, 2.9939002332653715, 2.9939002332653715, 2.9939002332653715, 1.1053415072028074, 3.2, 1.1515237808004373, 3.2, 2.365238553745354, 3.2, 0.2, -100, 1.2, 3.2, 3.2, 1.3340940528803638, 2.1190241124727645, 3.2, 3.2, 2.1821495870017036, 2.589903225890218, 3.2, 3.2, -100, 1.2, 1.7851848164919242, 2.2, 2.2, 2.2, 0.9410135344065538, 2.2, 1.3846492201782936, 3.2, 3.2, 3.2, 3.2, 3.2, 1.1976651001034246, 2.4581680940602006, 0.3095081218668057, 2.480614125792531, 1.1902781776965703, 3.2, 2.9793038226959085, 2.2, 2.2, 2.2, 0.6234534333231021, 3.2, 3.2, 3.2, -100, 1.2, 1.2, 3.2, 3.2, 3.2, -0.8109414848553984, 2.2, 3.2, 3.2, 1.4314187670862955, 3.2, 3.2, 3.2, 3.2, 3.2, 0.2925462484166857, 2.2, 0.2, 2.2630350617538513, 3.2, 3.2, 3.2, 3.2, 1.445405066290567, 3.2, 1.11726514708443, 2.2, 2.2, 3.2, 3.2, 3.2, 3.0364281856947857, 2.630412504756741, 2.00032084376313, 3.2, 1.6632237977328237], 'average_reward': -0.717433393417331}, 11: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 2.7689720340153556, 3.2, 2.476753041074082, 3.2, 3.2, 3.2, 0.2, 3.2, -100, 1.2, 1.2, 3.2, 0.1203458415165975, 3.2, 3.2, 3.2, 0.2, 3.2, 0.281263264190928, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, -0.057911743464999554, 2.2, 2.647978438299631, 2.861739296282873, 0.04453213212366486, 3.1783575859275217, 0.45420922678570436, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.0902405914963844, 2.703571713960297, 0.1511217251575248, 3.2, 3.2, 3.2, 0.2, 3.2, 3.2, 3.2, 2.2249673624879014, 3.2, 3.2, 3.2, 1.6315697869568264, 3.2, -2.8, 1.2, 2.484617291550807, 3.2, -0.43113606837415924, 3.0882870431599487, 3.0882870431599487, 3.0882870431599487, 3.0882870431599487, 3.2, 1.161562569670951, 2.510943746117799, 2.510943746117799, 3.2, 3.2, 3.2, 3.2, 3.2, -0.736434559722043, 1.9764361575448457, 3.2, 3.2, 3.2, 3.2, 2.993467414353419, 3.2, 3.2, 3.2, 3.2, 3.2, 1.520433967160755, 2.2, -100, 2.853232716223405, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 2.962170515913798], 'average_reward': -0.5586290403399243}, 12: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 3.2, 3.2, -0.8, 2.2, 0.6733162566179176, 3.155159330825268, -0.8, 2.2, 0.04995119052547353, 2.6553425001951516, 3.2, 3.2, -100, 1.2, 2.020363023032213, 2.2, 2.3907904315140454, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.862336177135572, 3.2, 3.2, 3.2, -0.38971825178349856, 3.1983957233824114, 2.2870484036621086, 2.923146124973634, 2.923146124973634, 2.923146124973634, 2.0624877951865974, 3.2, 3.2, 3.2, 3.2, 3.2, 0.27316995145892164, 2.6677786417892477, 1.5117735165118358, 2.7971863304081923, 2.3359733144620494, 3.2, 3.2, 3.2, 3.2, 3.2, -100, 1.2, 3.2, 3.2, 1.6355223977288535, 3.2, 3.2, 3.2, 1.2878032814624698, 3.2, 1.2, 3.2, -0.7672837054663226, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, -0.084557690121218, 2.2, -100, 1.2, 3.2, 3.2, 1.7582139307501945, 3.2, 3.003230674318231, 3.2, 1.7212822714478369, 2.7038544414190753, 1.6845416776062925, 2.2899329872759724, 2.347127026970703, 3.2, 3.2, 3.2, 1.6642871834510982, 2.5032017941694678, 3.2, 3.2, 1.529913167422493, 2.2, 1.558814812141733, 2.7335580720858013, 1.2311567360178715, 2.6953650384561003, 2.6953650384561003], 'average_reward': -0.5968787815456276}, 13: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.2, 1.2, 1.4882148881927466, 2.838257306485154, 2.838257306485154, 3.2, 1.857157919871303, 3.2, 3.2, 3.2, 1.2, 3.2, 3.2, 3.2, -1.5294025148475312, 1.4116351295397531, 1.4116351295397531, 3.2, 3.2, 3.2, 1.2546537424242776, 3.2, 3.2, 0.2, 3.2, 2.2, 2.2, 2.0233445239621544, 3.2, 0.2, 3.2, 1.3334695938444978, 2.2, 3.2, 3.2, 0.8400969480784937, 3.2, 3.2, 3.2, 2.2, 3.2, 0.4032452882090351, 3.2, 1.8384341924223284, 2.4432217273135017, 2.4432217273135017, 2.4432217273135017, -100, 1.2, 1.4913579569945095, 3.2, 3.2, 3.2, 2.9395250690589463, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.13447884782191372, 2.2, 3.2, 3.2, 0.6209781713263935, 2.2, 2.2, 2.2, 3.2, 3.2, -0.05134410484480939, 2.976877867311366, -100, 1.2, 1.2, 3.2, -1.8, 2.2, 2.2, 2.2, 1.2, 2.2, -0.3339041993667912, 2.2, 2.2, 3.2, 0.08846103037194591, 2.3363262481028757, 0.977835627802923, 2.5178716691827505, 2.2, 2.2, -100, 1.2, 2.4678132900929315, 2.4678132900929315, 2.4678132900929315, 3.2, 1.9302519045154771], 'average_reward': -0.8342917940529602}, 14: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.411646343091445, 2.411646343091445, 0.3601935660027333, 2.9975675520622005, 2.9975675520622005, 3.2, 0.704340190151463, 3.2, 3.2, 3.2, 2.706920286836241, 3.2, 3.2, 3.2, 0.7940121878025146, 2.2, 1.8645020370935514, 3.2, 3.2, 3.2, 3.2, 3.2, 0.7912369875038869, 0.7912369875038869, 2.5999645902968043, 3.2, 3.2, 1.5773528337618814, 2.8155837342792367, 2.8155837342792367, 2.8155837342792367, 2.8155837342792367, 2.8155837342792367, 2.8155837342792367, 3.2, -100, 1.2, 0.2543161918101134, 3.2, -0.8, 3.2, 3.2, 3.2, -100, 1.2, -100, 1.2, 1.2, 3.2, 3.2, 3.2, 2.8224311092490866, 2.8224311092490866, 0.2382371911224777, 2.31290781245458, 2.31290781245458, 2.31290781245458, 2.31290781245458, 3.2, 1.6890662778883874, 2.2, 3.2, 3.2, 0.7365105850993305, 3.2, 2.803084105989342, 2.4811363545740295, 3.2, 3.2, 2.672819719113697, 2.672819719113697, 2.672819719113697, 3.2, 2.0577141378851063, 3.0577141378851067, 0.1853789496655946, 2.2, 2.3180409722231845, 2.3180409722231845, 3.2, 3.2, -0.08439012285954778, 2.2, 3.2, 3.2, 3.2, 3.2, 3.162364521691966, 2.495515497652673, 2.9701044469717544, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2], 'average_reward': -0.5370052329158405}, 15: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.8787583430610246, 3.2, 1.9072799486637677, 2.907279948663768, 1.0752581120576863, 3.2, 1.2829139328238908, 2.7188977657662123, 2.7188977657662123, 3.2, 3.2, 3.2, 0.33069258504856414, 3.2, -1.8, 2.2, -100, 1.2, -0.16120845522658295, 2.2, 3.2, 3.2, 2.2, -0.0945146601059545, 1.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.9885087199485296, 3.2, -0.13389493875552377, 2.2, 1.2, 3.2, 3.2, 3.2, 0.4542745102283565, 3.0873474288676377, 0.768435210959856, 3.2, 2.579370793368718, 3.2, -100, 1.2, 1.2, 3.2, 0.6414490738919185, 2.2, -1.1974696826716809, 2.2, 3.2, 3.2, 0.5775582003908861, 3.2, 1.044742377448578, 2.2, 1.663217242288981, 3.2, 3.2, 3.2, -0.3690931535189009, 2.2, -100, 2.2, 2.2, 2.2, 2.078482336621208, 2.3590794959589254, -0.7623901009962382, 2.2, 2.2, 3.2, 3.2, 3.2, 2.459678185283874, 3.2, -100, 1.2, 2.566197260987285, 2.6399555797996332, 2.2, 3.2, 1.2799719357391697, 2.921291473926101, 0.4864246930283976, 3.2, 2.263055776765215, 3.2, 3.2, 3.2, 3.2, 3.2, -100, 1.2, 3.2], 'average_reward': -3.916395522939209}, 16: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.153953894903494, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.2091869397990047, 2.757240933526032, 2.655659545299619, 3.2, 3.2, 3.2, 3.2, 3.2, 1.7608184246170389, 2.2, 1.9919568153581007, 1.9919568153581007, 0.8755970806935534, 0.6574689205112987, 2.6022169939953343, 2.6022169939953343, 3.2, 3.2, 3.2, 1.9914906180653758, 3.2, 3.2, 3.2, 3.2, 3.2, 1.9972495564487038, 3.2, -0.08240634976577965, 3.2, 1.9135923466298073, 2.2, 2.2, 3.2, 1.6049645268257975, 3.2, 1.5711702806380332, 3.2, 3.2, 3.2, 3.2, 3.2, 1.7491567969056911, 2.599783633331083, 1.9891075781301675, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.588795739577417, 3.2, 0.07277929949206002, 2.2, 3.2, 3.2, 1.2, 3.2, 1.2989091515541078, 2.393040980571785, 0.5603530900004443, 3.2, 3.2, 3.2, 1.9203222672411888, 3.0563984699425193, 3.2, 3.2, 3.2, 3.2, 1.738337234243046, 2.9402802152987157, 0.6279850328735557, 2.2, 0.039231973593565395, 2.1362141622005, 1.2, 3.2, 3.2, 3.2, 2.323895670192591, 3.2, -0.4111552424249963, 2.8971766788230036, 0.2620290424666147, 3.2, 2.0683512288470602], 'average_reward': 2.537053273397586}, 17: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.3301376219316423, 2.2, 1.9654345362015597, 2.2, 0.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.2188533773642805, 1.3183485193554418, 2.426963716811175, 0.45763269526245903, -0.09762822697997525, 1.2, 3.2, 3.2, 1.7194063266218715, 2.5178042053700667, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.3968763274289087, 3.2, 3.2, 3.2, 2.428065834149561, 2.428065834149561, 2.428065834149561, 3.2, 0.056041837303560216, 2.8758624450921886, 1.8288304458516362, 3.2, 3.2, 3.2, 0.5222294147144957, 2.710248637446239, 3.2, 3.2, 1.7072452861209249, 2.2, 2.332805785853112, 2.3374324123242736, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.17149913457844973, 2.2, 0.41931320617532813, 2.4748196301796876, 2.4748196301796876, 3.2, 3.2, 3.2, 1.7422908308890253, 2.7422908308890257, 1.2, 3.2, 3.2, 3.2, 0.26991283893585183, 2.1405414327344205, 3.2, 3.2, 3.2, 3.2, -0.2839179939345034, 2.972500361480828, 1.514566900009333, 3.2, 0.6613623887480136, 2.364101281502857, 2.6465767405565144, 3.2, 3.2, 3.2, 2.2, 2.2, 2.676263334127484, 3.2, 3.2, 3.2, 1.0999114278132944], 'average_reward': 2.505955748413876}, 18: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.2, 3.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.8644426994545518, 2.2, 2.2, 3.2, 3.2, 3.2, 2.239559225795835, 3.2, 3.2, 3.2, 3.2, 3.2, 1.9211029118525205, 0.6255235416614293, 3.2, 3.2, 3.2, -1.6279579486016342, 2.2, 2.2, 2.2, 2.5908495585664992, 3.2, 3.2, 3.2, 0.20960320040237085, 3.0475907068759764, 3.2, 3.2, 2.2, 2.9727444007398582, 0.8848265666810045, 2.7098380877673023, 1.1576337099937326, 2.601455908704937, 1.3778999433812436, 2.8940045512441395, 2.8940045512441395, 3.2, 0.7387327658779834, 2.2, 3.2, 3.2, 2.993517379026355, 2.9727444007398582, 1.7675658611584342, 2.2, -1.0529867838839881, 1.8442750723470804, 1.9272199054097021, 3.2, 2.107033603690392, 3.2, -100, 1.2, -0.23852638603759485, 2.567754834546683, 1.16122712263461, 3.2, 3.2, 3.2, 2.5392189708363384, 3.2, 0.2, 2.2, -0.1123078920349817, 2.6440563351289637, 3.0359262472982107, 3.2, -0.054168353818078774, 3.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.2705080581265829, 3.2, 3.2, 3.2, 1.1522818460020912, 3.2, 3.2, 3.2, 3.2, 3.2, -0.45148792793524234], 'average_reward': -0.6642429332512257}, 19: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.7647836021373873, 2.106123149979043, -100, 1.2, 0.2, 2.2, 1.121409463251061, 3.2, 3.2, 3.2, -0.5008439321370628, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, -100, 1.4471348924515126, 3.2, 3.2, 3.2, 3.2, 2.4010760622331606, 2.56956646065291, 1.269848000923971, 2.2, 1.5088331110503244, 2.7213042749666863, 1.2, 3.2, 0.0023881869239102405, 2.489798810047254, 3.2, 3.2, 3.2, 3.2, -0.8, 2.2, 0.37391346737333736, 2.276989877756205, -0.556934132160549, 2.2, 2.2, 3.2, 2.0469392223271563, 2.2, 1.1782533483773703, 2.2, 2.2, 2.2, -0.6607788469000104, 2.2, 1.9662070892203942, 2.212371428528013, 0.7311153690275993, 3.0342625207337357, 2.897871954213864, 3.2, 3.2, 3.2, 2.100652858360148, 2.6348122562408136, 0.2, 2.2, 2.7860278779561205, 3.2, -100, 1.2, 1.2, 1.2, 3.2, 3.2, 3.1046032030074144, 2.368668317132093, 2.9106027137056936, 3.2, 3.2, 3.2, 1.271126444502044, 2.2, -0.3493738182431298, 2.2, -100, 1.2, 1.2, 2.2, 2.1012656023336014, 2.2, 2.2, 2.2, 2.2132540045487694, 2.98475371710465, 1.3046549966840377], 'average_reward': -1.8696731844569054}, 20: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.83739453096772, 3.2, -2.8, 1.2, -0.8, 2.2, 0.2, 2.2, 2.745006059831205, 2.745006059831205, -0.8, 2.3447965133401683, 0.4188195455024431, 2.2, 2.9845858513041863, 3.2, 3.2, 3.2, -100, 2.986593655585743, 2.986593655585743, 3.2, 1.273466701623865, 0.7627564577455217, 2.2, -0.21790828163799236, 3.2, 3.0199912565371383, 3.2, 2.766002585765591, 3.2, 3.2, 3.2, 3.2, 3.2, 0.572374872134523, 2.2, 0.5873850211980425, 2.5873850211980427, 0.42009197587445063, 2.8168688180802826, 2.3467483570567635, 3.2, -100, 1.2, 0.2, 2.2, 3.2, 3.2, 3.2, 3.2, 2.701344772826794, 3.2, 2.6802045300949455, 3.2, 3.2, 3.2, 3.2, 3.2, 2.3636226773600226, 3.2, 3.2, 3.2, 0.1972877212422695, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.070111326536858, 2.6733344843310256, 3.2, 3.2, 2.2, 3.2, 0.4187820899448795, 2.4187820899448798, 3.2, 3.2, 0.42510489336806595, 2.321107062419507, 0.28436238186050294, 2.2, 3.2, 3.2, 0.8011336523464967, 2.8079434294289136, 0.8049050189560609, 3.2, 1.2, 2.2, 3.2, 3.2, -100, 1.2, 2.2], 'average_reward': -0.7324801521181402}, 21: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-0.3141743268294132, 2.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.15311193752478, 3.2, 1.8025915137010857, 2.537811287854095, -0.5275262136579775, 2.848174531850354, 0.3152648460367174, 3.2, 1.5212184966996658, 2.2, 3.2, 3.2, -0.5453700846510154, -0.016953310348539363, 1.3170415413808618, -100, 1.2, 2.7081355438756503, 3.2, -100, 1.2, 1.2, 3.2, 3.2, 3.2, -0.5104993676820584, 2.2, 1.1791905279095445, 3.2, 0.33748386491388754, 2.4229082165217735, 2.9952108040048286, 3.2, -100, 2.2, 1.2, 3.2, 3.2, 3.2, 2.724864104040025, 3.2, 0.5262072622442073, 3.2, 2.8840519604912047, 3.2, 3.2, 3.2, -100, 1.2, 1.8299717585475876, 2.842803730608421, 3.2, 3.2, 1.535143319960573, 3.2, 1.8202792894931719, 3.1052757296244637, 3.1052757296244637, 3.2, 3.2, 3.2, 3.2, 3.2, 0.35377788140137517, 2.526401845251762, 2.526401845251762, 2.526401845251762, 3.2, 3.2, -0.30547658183087684, 2.2, 3.2, 3.2, 0.7265227228561313, 2.5402631612971547, 2.5402631612971547, 2.5402631612971547, 2.5402631612971547, 2.5402631612971547, 1.2222686463970944, 2.2, 2.2, 2.2, -100, 1.2, 1.2, 2.2, 3.2, 3.2, -100], 'average_reward': -4.861248932951973}, 22: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [0.2, 3.2, 1.2, 3.2, 3.2, 3.2, 1.2, 2.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.6399668106485334, 2.825373237863831, -1.4743385402597988, 2.2, 2.1741886283494716, 2.77227589683683, 0.16500681986385168, 2.3114456735735796, 3.2, -0.7275686524635137, 2.2, 0.7057762354422268, 2.705776235442227, 1.816513464617491, 2.303546304169091, 0.2, 2.2, 2.2, 3.2, 3.2, 3.2, 0.2, 3.0378697044542147, 0.9234349678752454, 3.2, 0.13862987443089572, 3.2, 1.4223645067471176, 2.7866035381476046, 1.2, 3.2, -0.05803159043827355, 2.2679485490343647, 0.7379468760288528, 2.8090657495814377, 2.8090657495814377, 3.2, -0.032402530993574374, 2.5098590167431896, 2.5098590167431896, 2.5098590167431896, -0.7125348965731275, 2.2, -0.8, 2.2, 1.6094066454963227, 3.2, 1.2, 3.2, 0.2952401168090733, 2.2, 2.2, 3.2, 1.2481339255044623, 2.2, 2.2, 2.2, 2.0931016899925354, 2.2, 3.2, 3.2, 3.2, 3.2, -100, 1.2, 1.0805386773824008, 2.2, -100, 1.2, 1.2, 1.2, 1.9805252433229277, 2.543759158304863, 1.6387819401053496, 3.2, 1.2336834768916287, 3.2, 3.2, 3.2, 0.11562567530954743, 2.2, 2.2, 2.2, 2.2, 3.2, 2.1798015184180684], 'average_reward': 0.018960977297266778}, 23: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 0.19440429554480348, 3.1313147631916465, 3.1313147631916465, 3.1313147631916465, 3.1313147631916465, 3.1313147631916465, 3.1313147631916465, 3.2, 3.2, 3.2, 3.2, 3.2, 0.5910871429502278, 2.2, -1.804032160547923, 2.149193897408487, 2.5839654083083454, 2.738501596577855, 2.1666197783900634, 3.2, 3.2, 1.538483212504791, 3.2, 0.8904351066068075, 3.2, 3.2, 3.2, 0.25230212383870976, 3.2, 2.08460930555377, 2.2675491255107048, 1.6593785918262085, 3.2, 3.2, 3.2, 2.4058974980171035, 3.2, -0.34545595182389094, 2.2, 0.4027240191254516, 2.2, 3.2, 3.2, 1.2, 2.883710667438372, 1.863643880125897, 3.2, 3.2, 3.2, -100, 1.2, 3.2, 3.2, 1.5444181268839223, 2.186165492302339, 1.4393583345818661, 2.2, 2.2, 2.2, -0.7206344681755132, 2.2, 0.1690178195439878, 3.2, 0.4945398693843294, 3.2, 0.47986556648918205, 3.2, -1.6147633543775055, 1.6394003843202085, -0.20466618461500752, 2.2, 3.2, 3.2, 3.2, 3.2, 1.4536255082733212, 2.2, 2.065961538176301, 3.2, -100, 2.2787919790710514, -0.13726263315875836, 2.2, 0.20567252599862457, 3.2, 1.0726588318014314, 2.2, 2.2, 3.2, 1.1983665783039905, 2.53257063994472, 2.755685666182869, 2.2, 2.874467516116864, 2.6044853879157324, -0.02470971979319478, 2.3222297871228954, 0.44673454211296076], 'average_reward': 0.1337288585091235}, 24: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.5342315670548707, 3.2, 1.370044416791275, 2.652749031275308, 0.4991721875575808, 3.2, 2.155605549322537, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.35011433919519735, 2.568068365327001, 0.33596043342573306, 2.2, 0.06786408532350247, 2.2, -0.165626123960037, 2.2, -0.7406423732310672, 0.16612818883126784, 1.2, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.0621111360780815, 2.2, 2.2, 3.2, 3.2, 3.2, -0.0060855134462236005, 2.2, 2.2, 3.2, 3.2, 3.2, 1.2, 2.2, 2.6738842079488587, 2.8952558553178886, 0.2, 2.803564127284794, 1.6751420261367496, 2.669131903699008, -100, 1.2, -100, 1.2, -1.7531922300430955, 2.2, 2.2, 2.2, 0.6976062616867547, 2.2, 1.2, 3.2, 2.89402337129726, 3.2, 0.6162947293337384, 3.2, 0.6339604617749826, 3.2, -100, 1.2, 1.0065756710006355, 3.2, -100, 1.2, 3.2, 3.2, -100, 1.2, 1.0576143251137295, 1.9543192255008033, -100, 1.2, 1.2, 3.2, -0.6467288808498475, 3.2, 3.2, 3.2, 0.8914718622436231, 2.543876158316593, -100, 1.2, 0.818423259382808, 3.2, 1.9547767916391063, 2.2, 1.6105993690242026], 'average_reward': -5.071537062146462}, 25: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.2, 1.2, 1.1806281638169513, 2.5614493048052815, 2.980163518772569, 3.2, 3.2, 3.2, 3.2, 3.2, 0.1531859353400405, 2.2, 2.2, 2.2, -100, 1.2, 1.724047904790834, 2.2, 2.1535271814083967, 3.2, 1.1183296980729525, 3.2, 0.6578913564612701, 0.2, 2.2, 3.2, 3.2, 3.1701969353348796, 3.2, 2.478738995946782, 3.2, 2.4805945133014804, 3.2, 1.2516902735023827, 2.7618401291236148, 2.020126353862674, 2.2, -0.42910978694518837, 3.2, -0.8, 2.2, 2.2, 3.2, 3.2, 3.2, -0.38426886155183654, 2.2, 0.6180176688229113, 3.2, 3.2, 3.2, 2.149887965288264, 2.3653584104985454, 1.071255014000215, 2.2, 2.2, 3.2, -100, 2.2, 3.043855240178663, 3.2, 1.8565800889956916, 3.2, 3.2, 3.2, 2.2905604172661658, 3.2, 1.0324539992173822, 3.2, 0.7489057823250422, 2.8725988915587024, 2.5503216185436246, 2.319044030310363, 2.2680763284958667, 3.154524579853702, 1.4883776774250914, 2.2, 2.240225791101193, 2.240225791101193, 2.801462735001368, 3.2, -1.316286283552047, 2.2, 1.3756616520664542, 3.2, 3.2, 3.2, -0.44863002524079304, 1.67140319388843, 2.6239058638727943, 3.2, 1.593427155722287, 2.642763515199128, 0.02241445992403296, 2.859892609987179, 0.9982852758363239, 2.2, 0.9856386916723852, 1.5222417066565508, 2.2], 'average_reward': 0.14921481462059835}, 26: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 0.7575897178352753, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.47038547248200585, 2.498035170214329, 1.137855909824353, 2.5187837808187434, 0.8214374310849013, 3.2, -100, 1.2, 3.2, 3.2, 0.3448862642707495, 2.2, -0.08567495027518379, -0.5377747995429818, 2.6403245551069405, 0.8586058732373771, 2.8586058732373774, 3.2, 3.2, 2.6742262468576294, 3.2, -1.1267515362718805, 2.948008595095807, 2.948008595095807, 2.948008595095807, 3.2, 3.2, 3.083852635646651, 3.2, 2.826357839290504, 3.2, 3.2, 3.2, 2.829502373435192, 3.2, 3.2, 3.2, 2.4584552363667216, 3.2, -100, 1.2, 2.4077381838199705, 3.2, -100, 1.2, 2.4751680174539255, 3.2, -0.8, 2.2, 2.8783377001678456, 3.154664048193224, 2.497135671312136, 2.8422192252338734, 3.1130970495719454, 2.67493356550829, 2.5129899368729705, 3.2, 1.325475168701365, 2.44102030419391, 2.44102030419391, 2.44102030419391, 0.5006363691142607, 2.2, -100, 1.2, 1.2325483483077757, 3.0574116831898097, -0.014912562602902135, 2.2, 1.1268445123503954, 3.2, 0.4971963805770448, 3.2, 1.2, 2.2, -100, 1.2, 1.2, 3.2, 1.3438073612780437, 2.2, 0.9607926252077534, 2.9258035640185014, 3.151184141279595, 3.175009490302493, 3.175009490302493, 3.175009490302493, 3.175009490302493, 3.2, -0.5640361837778232], 'average_reward': -2.808051374415244}, 27: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-0.042789751281748056, 2.5293624783580833, 2.3629894962825917, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.2294816959735961, 3.2, 0.34683757622853206, 3.2, 0.8336178616011447, 3.2, 1.5654633754907654, 3.2, 3.2, 3.2, 3.2, 3.2, 1.2, 0.9276098094059892, 2.2, 2.2, 3.2, 3.2, 3.2, 1.1313979756516146, 3.2, 2.4754504464393436, 3.2, 0.15374058126234152, 2.877701915167878, 1.2, 2.2, -0.020598484722501087, 2.2, 0.2635540618312733, 2.275099886607594, 2.275099886607594, 2.275099886607594, -100, 1.4886580178247064, 1.4886580178247064, 3.2, 3.2, 3.2, 0.522344733181904, 2.2, 2.6409614089365703, 3.2, 2.2, 3.2, 1.2002529273179798, 2.2, 2.2912810622340394, 3.2, -1.8, 2.2, 1.5673455442359299, 2.9639787987383786, -100, 1.2, 1.9109118064138186, 3.2, 3.2, 3.2, 3.2, 3.2, 0.7069485914160225, 3.2, 1.2, 3.2, 0.09860826990754207, 2.2, 3.2, 3.2, 1.4612011987479263, 3.2, 3.2, 3.2, 1.2, 3.2, -0.1696725987708601, 2.2, 1.327515284651651, 2.2, -0.5548833236535056, 1.9901112710760098, 2.0497653223747436, 3.2, 2.5393528894579047, 3.2, 3.2, 3.2, 3.2, 3.2, 2.300177359089051], 'average_reward': 0.2368263527851626}, 28: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.411354015617019, 2.411354015617019, 2.4061501802399494, 3.2, -100, 1.2, 2.4359419847327324, 2.8659994598574414, 0.012562080208042115, 2.2, 3.2, 3.2, 3.2, 3.2, -0.5750793935584368, 2.2, 2.3992036971616377, 2.760860120897265, 1.6713145711412791, 2.2, 3.2, 3.2, -0.7142719908490391, 0.1515817802700184, 2.2, 1.2, 2.583645355416737, -100, 1.2, 1.9312926938408046, 2.072229368037992, 0.31544003405806326, 3.2, 2.878204229266145, 3.2, 2.580314855140434, 3.2, 2.072522648545199, 3.2, 3.2, 3.2, 2.106116315930389, 3.2, 0.8788723602016493, 3.2, -0.11191651428034116, 2.2, 2.3676502888917526, 2.4547964349435767, -0.14624990779561003, 2.2, 0.7931242278729007, 2.2, 3.0673983955662982, 3.2, -0.38240541729390004, 2.2, 0.5549814712175223, 2.2, 2.0465393942455914, 3.2, 3.2, 3.2, 2.127730930436056, 2.2, 0.48060359321051777, 3.2, 3.2, 3.2, 3.2, 3.2, 2.1491527733776117, 3.2, 3.2, 3.2, -100, 1.2, 1.2, 1.2, -0.06962855920373351, 2.0800977928000344, 3.2, 3.2, -100, 1.2, -0.9764637858954897, 2.370036043337632, -100, 1.2, 2.420167111794173, 3.1075782433869183, 1.5947479713998247, 3.2, 2.551127061915812, 3.2, 3.2, 3.2, 1.2, 2.2, 2.2], 'average_reward': -2.9306532406830055}, 29: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [0.5457056324967675, 1.357268610886419, 2.759122090019533, 3.2, -0.8, 2.2, 2.2, 3.2, 3.2, 3.2, 3.118994518767956, 3.2, 3.2, 3.2, 0.6318262551507003, 3.01729853538468, 0.04899759656838715, 2.2, 2.9826890484910837, 3.2, 3.2, 3.2, 1.1989080175838658, 1.2, 2.2, 1.3092058666359838, 3.2, 2.2843626089050986, 3.2, -100, 1.2, 0.6932917358961557, 2.4305569683045785, 2.4305569683045785, 2.4305569683045785, -100, 2.447330791796477, -100, 1.2, 1.2, 3.2, 2.232539082015877, 3.2, 0.44695393233050335, 3.2, 1.4427330410757728, 2.8310422234008117, 1.2498474961196773, 2.643140422950478, 0.1540949597632026, 2.2, 0.7766688080165585, 3.2, 2.7743448684381886, 3.2, 0.1822546235914913, 2.2, 3.2, 3.2, 1.2, 3.2, 2.5731302171785178, 2.663729661386361, -100, 1.2, 1.2, 2.2, 2.312721004384846, 2.4537026154216233, 2.4537026154216233, 3.2, 1.0033950502856028, 3.2, 3.2, 3.2, -0.536544401749355, 2.2, 0.9216585257466146, 2.2, -0.02929824926637309, 2.3433495002487463, 2.365847037038815, 3.2, -0.09726674369087868, 3.2, -0.290539937621875, 2.581461236565771, 1.2, 3.2, 1.4511000821756763, 3.2, 3.0826865407124946, 3.2, 2.731979269631152, 2.938620154803591, 2.938620154803591, 2.938620154803591, 0.1356090801584368, 2.2, 2.2], 'average_reward': -1.9284342476036238}, 30: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.1690187029263486, 3.2, 1.9486914390741392, 3.2, 0.38810899985633657, 3.2, 3.2, 3.2, 3.2, 3.2, 0.46291103890262253, 2.8510400792574275, 2.8510400792574275, 3.2, 2.2, 3.2, 0.2, 2.2, -100, 1.2, 0.2, 2.2, 2.2, 0.76070376957705, 2.2, 2.074689121468152, 2.6958749834068882, 1.2, 3.2, 0.4487214410027794, 2.2, 0.5398647426619201, 2.257656260584073, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 1.756498293307345, 2.70459909508254, 2.70459909508254, 3.2, -100, 1.2, -0.3840724447920439, 2.2332885980670505, 1.2, 3.2, 1.5658923301563241, 3.2, 2.0146548514626392, 3.2, 1.923381184730163, 2.0204134448188653, 1.6502860001918718, 2.7634001442632554, 1.2, 3.2, 0.3707625151278635, 3.2, 2.8133238803508673, 3.2, 0.9832481272205693, 2.9832481272205698, 1.0570451729227057, 2.4395860898642847, 1.8481625981150935, 2.6311777106649594, 2.6311777106649594, 3.2, -100, 1.2, 2.62193509867025, 2.4962840853987056, -100, 1.2, -0.33046059533293776, 2.2, 0.11153434538068244, 2.732932741751135, 1.5638167580892872, 2.2, 1.8279772840272208, 2.541930032747257, 0.09890015608366848, 2.2, -0.09681924986464752, 1.5472905752178028, 1.2053006717142114, 3.2, 2.8801244042925993, 2.2, -0.9013365417445434, 1.873992100859408, 2.432143085191159, 3.2, 0.3610774965286658, 3.2, 0.944623422068219], 'average_reward': -3.0492976094642446}, 31: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-100, 1.2, -0.14072887302646425, 2.2, 0.4710133275365333, 3.0186655319347935, -100, 1.2, -0.023771150467097046, 2.2674297393885015, 2.126202522322189, 2.2, -0.5070911332517274, 2.897786330353438, -0.8, 2.2155414699165514, 1.7618017415655995, 2.734936086284897, 0.8963108788922023, 3.2, 1.1442303769899302, 2.2, 3.2, 2.312768727201497, 2.65766596286785, 1.2, 3.2, 1.2, 3.2, 0.9160988608317617, 2.334643500374807, 0.1293359226012531, 2.550766110157917, 3.1878039226975554, 3.2, 3.2, 3.2, 3.2, 3.2, 1.2, 3.2, -0.5607738916772111, 2.2, 1.688281062133968, 2.2, 2.970464905180818, 3.2, 3.2, 3.2, -0.8, 2.2, 1.2, 3.2, 3.2, 3.2, 2.300581580706824, 2.594104062535203, 1.3195126338511807, 2.2, -100, 2.693823521637538, -100, 1.2, 0.27186690646274403, 2.2971840073596392, 2.2, 3.2, 3.2, 2.2951085576133248, 1.08105056220768, 3.2, 2.7262459140038047, 2.7262459140038047, 2.2, 2.2565058637664417, -0.7678300572664611, 2.2, 0.982740547546386, 2.2, -1.7328024254288783, 2.2, 3.2, 3.2, 1.6099451319920004, 3.2, 3.2, 3.2, 0.004114992328147438, 2.2, 2.93131130365847, 3.2, 3.2, 3.2, 1.1021069806827504, 3.1021069806827506, 0.1192149830489328, 2.96931301316935, 1.1987600411660433, 3.2, -0.12497457541646889], 'average_reward': -2.0399438162887957}, 32: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.6191212116880522, 2.727173870226534, 3.0489763880884926, 3.2, 1.819882336328196, 3.2, 0.2824385366864249, 2.282438536686425, 2.282438536686425, 2.282438536686425, 0.5274725982942354, 3.2, 2.336468282680372, 3.2, -1.611557524411315, 2.2, 0.32128426488923423, 2.420181808230033, 0.6835982431951766, 2.4087067112008187, 1.0085086446971874, 3.2, 0.2, 0.2, 1.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 1.64852387758955, 3.2, 1.1014846548976287, 2.2, 2.452676558921581, 3.2, 3.2, 3.2, -100, 1.2, 1.0414607588844647, 3.2, 0.6680702752917231, 3.2, -0.6219658921975089, 3.2, 3.2, 3.2, 0.2, 2.2, 0.5895448778922905, 3.2, 3.1333429508431014, 3.2, 2.2, 2.2, 2.408766366558978, 3.2, 0.3904244279742125, 2.2, -0.8, 2.2, 2.2, 2.2, 0.43558848616270457, 2.972647381410044, 0.7515278211050593, 2.264407207164133, 2.264407207164133, 2.264407207164133, 0.901528087051207, 2.3872840242740874, 0.2, 3.2, -100, 2.2, -0.7191488688403438, 2.2, 1.7190700751584658, 3.2, 3.2, 3.2, -0.007529340528900363, 3.1831104132996986, -100, 1.2, 0.6839208110603052, 2.6839208110603057, 3.2, 3.2, 1.823991057166581, 2.2, 3.2, 3.2, 1.728599275300542, 2.747138319024416, -0.26241522001753675, 2.2, 1.063826667204524], 'average_reward': -2.076618187401077}, 33: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.2, 3.2, 0.8049812614033454, 2.3497616017834964, 3.1039620362376636, 3.1264153178005474, 2.2, 3.2, 0.9018027538400888, 3.2, -0.7282122365628898, 2.2, 0.36693069990291166, 2.2, -0.3754340335724972, 2.2, 0.8997978436149645, 2.2, 2.2, 2.2, 1.4220265839467086, 2.2, 3.177128904325782, -100, 1.2, 1.8739421004480172, 3.2, 1.2, 2.2, 0.9821059967227839, 3.2, -0.1608464495044623, 2.6144031135949533, 1.2, 3.2, 1.2, 3.2, -100, 2.0370617357684675, -0.8, 2.2, 2.2, 2.2, 0.17887761291445994, 2.32485340186773, 0.5360776273522101, 2.2, 1.8560004233877134, 2.826012668625208, 0.2, 2.2, 1.2, 3.2, 1.3866837754208106, 2.5678560359935547, -1.1307537368417333, 2.2, 3.2, 3.2, -1.8, 2.2, 2.2334017568400863, 3.2, 3.2, 3.2, 2.2, 3.2, 1.2933642988478595, 2.2933642988478598, 0.07120945629827097, 2.2, -100, 1.2, -0.13674711224450237, 2.6759139011250075, 0.5341407352801275, 3.2, 2.1444429207460423, 2.2, 0.6646396715524223, 2.2, 2.2, 2.2, 1.3857550249543302, 3.2, -0.041364138760885905, 2.3908679923444844, -100, 1.2, 3.2, 2.412342757598909, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 2.022576940891355, 3.2, 0.2008538045433887], 'average_reward': -2.1451380265266558}, 34: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-0.5157019981965647, 2.2, -100, 1.2, 1.9813774016039398, 2.9075653460820874, 0.06017997855180393, 2.240369988040444, 0.5632046518671736, 2.7243506629941505, 1.747133273231637, 2.2, 1.0258462597247817, 3.2, -0.19314087770975435, 3.184173395414265, 1.8801544903430598, 3.2, 3.2, 3.2, 1.2, 3.2, 0.12542655633991445, -1.2121396292701243, 2.9275790155641745, 0.9286492852002179, 3.2, 0.9058220305981022, 2.1615689246094427, 2.373919311379583, 3.2, 1.8247258688033543, 3.2, -0.5083017227926308, 2.2, 2.2, 2.2, 1.7495482895707333, 3.2, 2.275648348082017, 3.2, 1.2, 2.2, 2.2, 3.2, 3.2, 3.2, 0.9480252895323182, 2.2, 0.5545995008256404, 3.2, -100, 1.2, 3.2, 3.2, 0.6281666289951273, 3.2, 3.2, 3.2, 0.07028089941334187, 2.2, 2.7256139350084063, 3.2, -100, 1.2, 1.2, 3.2, -0.5238978454584713, 2.2, -0.012398872458360521, 2.6102868544176143, 1.1427562924003432, 3.2, 1.7376357058374856, 2.947074593169392, 1.8256253087243368, 2.2, -100, 1.2, -0.8128846938250545, 1.953593767534009, 1.7379705188533292, 3.028344620820077, -100, 1.2, 3.048229943874271, 3.2, 0.4147408861587003, 2.7920551592827225, -0.3653101262619843, 2.2, 3.2, 3.2, -100, 1.2, -100, 1.2, 0.5987374785397783, 2.930093791891913, 2.2], 'average_reward': -5.182627015126933}, 35: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [0.4829664288408348, 2.037526730999495, 0.4105511938631568, 3.2, 1.0638122658396878, 2.2, 1.1930428370566952, 3.2, 3.2, 3.2, 2.447503314850862, 3.2, 0.5786872603633468, 2.0746217578514528, 2.0204450352247374, 3.2, -0.21303094059193145, 2.6862427277323158, 3.16359365179967, 2.766865760407609, 1.8559906222099485, 3.2, 0.3710099849869743, 0.2, 1.735644139128955, 2.8407326604044716, 3.2, 1.2, 2.2, 0.060598680161798535, 2.2, 1.2288026535233787, 3.2, 0.9848783204900504, 3.036496844298448, 1.7921862757483196, 3.2, 0.2, 3.2, 2.2, 3.2, 0.13796138800813734, 2.2, 3.2, 3.2, 3.2, 3.2, -100, 1.2, -100, 1.2, -100, 1.2, 3.2, 3.2, 2.7506544152768613, 2.4422194109233875, 0.6452173229813036, 3.2, 0.5362860428504483, 2.20279926366405, 1.9430752117305783, 2.5847371160510324, 1.7610183787900346, 2.2, 2.9194327207211384, 3.2, 1.8685599634648666, 3.2, 3.2, 3.2, 1.2, 3.2, 0.25562920216416324, 3.2, 2.738181321223845, 2.228778687118859, -0.36052010821586994, 2.2, 3.2, 3.2, 0.7163563508126534, 2.2, 2.3615726489952547, 3.2, 1.1116107421018007, 3.2, 1.2243364245392552, 2.2, -0.4976048339695071, 2.899123057422545, 3.2, 3.2, 1.2269794571601058, 3.2, 2.1030031640360374, 3.2, 1.9762273035906006, 2.9001089824775974, 2.13295781224273], 'average_reward': -0.9077213034864791}, 36: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.4634155215662095, 3.1076846223616714, -2.8, 1.2, 2.2, 3.2, -0.7747126712014583, 2.1507113071893373, 2.1507113071893373, 2.1507113071893373, 1.2, 3.2, 0.10412976573938898, 2.2, -100, 2.2, 2.7242731406017526, 3.2, 0.39425249875978, 2.833552964968696, 2.833552964968696, 2.833552964968696, 0.31796423224515685, -0.960957173495582, 1.2, 0.28117771192619817, 2.2, 1.720686692415282, 3.2, 0.5643502837176786, 3.2, 2.2, 2.2, -100, 1.2, 1.6691511279005644, 2.6442488100472894, 2.2, 3.2, 1.5082800828945224, 3.2, 1.0892043992143525, 3.2, 0.46959849470572473, 3.127022670153292, 0.6655846072283462, 3.2, -0.277277068837868, 2.3498343902645353, -0.2986213992777947, 2.3168304028411932, 1.056930163060328, 3.2, 0.5827640078382252, 2.5827640078382252, 1.0780401376292381, 2.2, 2.3590819565995567, 3.0127226306476325, 1.71441758699292, 2.329869389111908, 0.46047521718459233, 3.2, -100, 1.2, 0.29240787876010854, 3.2, -100, 1.2, 1.2, 3.2, 0.4577576527697352, 3.2, 1.9339512028961157, 3.2, -1.299807900536784, 1.8666693858089591, -100, 1.2, 3.2, 3.2, 1.122162794403061, 3.2, 1.4562414635059444, 3.2, 1.195136807036881, 2.173187042144981, 0.7080505277986155, 3.125614642229107, 2.119656028917113, 2.2, -0.153960244766221, 2.2, 1.173057530092639, 2.2, 1.9171885202629408, 3.2, 1.1105968905520096, 3.11059689055201, 2.111471789005138], 'average_reward': -3.262440420434209}, 37: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.2, 2.2, 2.367928917603374, 2.367928917603374, -0.7301033456338093, 2.1506599091954466, 2.6135522115335275, 2.3168116132394823, 1.1454399438589178, 2.2, 1.8588831801747168, 3.2, 3.2, 3.2, 2.9961931274087616, 3.2, 2.0209859450889103, 2.2, -0.3419028421091706, 2.2, 2.2, 3.2, -0.8, -100, 1.2, 0.4746148623393626, 2.9077847649300494, 2.9077847649300494, 3.2, 1.4872048030062128, 3.2, 1.2, 3.2, -0.5884956562061028, 2.2, 1.400399304828894, 3.2, 0.42323192846937446, 3.2, 3.2, 3.2, -100, 1.2, 0.08378247188597926, 2.670093917478001, -100, 1.2, 1.1848610357529679, 3.1359958173649645, 0.3947295904979005, 2.694169531151495, 0.510080136259307, 3.2, 0.9120317976464778, 2.2, 0.18135632573098104, 2.80443159862651, 1.6314864373095967, 2.2177978829016185, 1.3904864139843998, 2.2, 0.8515574365611926, 2.579990096341677, 1.2, 2.2, -0.6635819099799636, 2.2, -2.3029863866531235, 1.5551638547190536, 3.1676471020140453, 3.2, -0.4120884919137852, 2.3423523876716787, 1.2, 3.2, 1.3912189553826622, 3.2, 3.2, 3.2, 1.0606679972955526, 3.1638357875606404, -1.9223364114043762, 2.077663588595624, 0.8139630425644495, 3.2, -0.6781924941580144, 2.2, 0.7176648606474514, 3.2, 3.2, 3.2, 2.3683539681501755, 2.8824868716488297, 2.2, 2.8027229423758655, 0.07180993935084551, 2.6538042000373636, 1.0720153503516994, 3.2, -100], 'average_reward': -2.182160620059891}, 38: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.372243395476378, 3.2, 1.9336954604747685, 2.2, 1.8803644169208618, 3.2, 1.140764792311365, 2.2, -100, 1.2, -1.4408417672322344, 1.3990229006658714, 3.2, 3.2, 0.20608754294710302, 2.2, 3.2, 3.2, -0.7106031353993822, 2.2, 1.6440862319914156, 2.255487666792393, -0.8475038425005825, -0.8475038425005825, 1.9561983678561716, 0.6705456711525142, 2.2, 3.2, 3.2, 3.2, 3.2, 2.2, 3.2, 3.2, 3.2, -0.3448851287694373, 3.2, 3.2, 3.2, 1.3205773330744932, 2.3205773330744934, -0.505265891478605, 1.7568027603297593, -0.3215930132375487, 2.2, 2.8408123849348206, 3.0457618750399593, -0.6299736371080533, 2.8983644323264004, 0.9545572202232242, 2.9545572202232244, 1.1026520833606193, 2.67567097741441, 0.7651841125373173, 2.9131666785763857, 3.2, 3.2, 3.2, 3.2, -0.37903545307736214, 2.620964546922638, 1.8496492363628334, 2.2, 1.2, 3.0169627054838886, 0.12454324171342007, 2.6867572728260827, 2.156971553314564, 3.2, 0.5819278517065238, 3.2, 2.6902102219875936, 3.2, -100, 1.2, -0.13760724842301159, 2.2, 2.2, 2.2, 2.7157966188853973, 3.2, 1.7370122672789077, 2.2, 2.085894054035808, 3.2, 1.4620041594043875, 3.2, 0.07926224440958862, 2.407148788725116, 2.407148788725116, 2.407148788725116, 0.25626794959887317, 3.2, 1.0546777559485905, 2.4473299430363085, 2.2484184383894843, 2.8261463936404567, 0.868735966571542, 2.2, 0.6420499387382648], 'average_reward': -0.05184603375592271}, 39: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.144657505342182, 3.2, -1.2149720891830138, 1.9511943808167322, -1.3518347066967935, 1.9917589244244236, -1.608035198378118, 1.9120262723285388, 2.2337728323182584, 2.2337728323182584, 1.2, 3.2, 0.20908487117195845, 3.2, 1.3181775911180473, 3.2, 3.2, 3.2, 0.49699041533231486, 3.2, 0.06513723372223679, 2.2, 2.2, 2.001832536287353, 3.2, 1.2, 2.2, 3.2, 3.2, 1.4891224944130026, 2.2, 2.0988491884497713, 3.2, 3.2, 3.2, 1.188568487540888, 2.7172962711906887, 3.2, 3.2, 1.2, 3.2, 1.1384512429569562, 3.2, 2.749416772337614, 3.1539961367945395, -100, 1.2, 1.2, 2.8458025087936596, 3.2, 3.2, 1.2, 3.2, -2.033420422007546, 1.2, 1.2, 1.2, 1.2, 2.2, 0.5394597236927381, 3.2, -100, 1.2, 0.2, 2.2, -1.3465487908565241, 1.4095170467658629, -100, 1.2, 1.2, 1.2, 0.49038282866941035, 3.2, 0.9334134162924463, 2.6517853598327976, 2.2, 2.2, 1.8447426993171732, 2.958786192995028, 1.8341748278219594, 2.2, -1.8510161117700805, 1.9486156355992221, 1.8389694718427436, 3.1383068392223405, 1.6780402621557549, 3.2, -0.5053065406793686, 2.1642027970465962, -100, 1.2, -1.050586854237629, 2.2829794553112417, -100, 1.2, 3.2, 3.2, 1.3066060820291205, 2.2, 0.6341890706094835], 'average_reward': -3.269676405069479}, 40: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-0.73817874227595, 2.2, -0.04123780085389822, 2.2, 2.2, 3.2, -100, 1.2, 1.2, 3.2, -0.17492397190043224, 2.2, 2.650278339011882, 3.2, 0.9699227048108934, 1.5602489942001767, 1.2212099985411882, 2.3519008881563006, 0.9286230004270373, 3.2, 0.5117596602713093, 2.994095464282786, 1.2088489601142232, 1.2088489601142232, 2.6224484390188083, -0.09123801576855967, 3.2, -100, 1.2, 1.0042023525369697, 2.2, 1.338410785831917, 2.338410785831917, -0.8020698077212802, 2.1022797996552707, 2.7101741862961455, 3.092775756789945, 0.2, 2.2, 2.2, 2.2, -100, 1.2, 1.2, 3.2, 0.8019153573964029, 3.2, 1.5819508974486864, 3.2, 3.2, 3.2, -0.365658126383638, 3.2, 1.5502007101740987, 2.2, 2.2, 3.2, 0.31390668863104004, 2.2533366654048566, 3.0702611374300584, 3.2, -0.6631372213998443, 1.2, -100, 1.2, 0.8987843181217234, 2.5100078501794125, 0.2863598262926364, 2.2, 2.2, 3.2, -0.8, 2.8876824422674874, 2.0858795856542764, 2.2, 2.0541332224225526, 3.2, 0.2677171157939635, 2.2677171157939635, 2.329806150392044, 3.2, 1.4988999192757682, 2.716770572263435, 0.1912995273065568, 2.191299527306557, 2.100844630645819, 3.2, 1.9372317657845817, 3.2, -0.17183105246743552, 2.590346174524022, -100, 1.2, 2.0597708441565126, 2.2, 3.2, 3.2, -0.5996533272096194, 2.2, 1.2], 'average_reward': -3.251873669454237}, 41: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-100, 1.2, 0.3643562973506505, 2.3643562973506507, 0.6557715033906466, 3.2, 1.2218964460284207, 2.2, 2.2, 2.2, 0.2, 2.2, -0.8, 2.2, 1.2164306076351756, 3.147453932032943, -100, 1.2, 2.3716593537219737, 3.2, 1.546141011199995, 2.6099010373845433, 2.6099010373845433, 1.2836618101330626, 2.2, -100, 1.2, 0.22758627286645305, 2.227586272866453, 1.2903588037354705, 3.2, 2.6879551254321656, 2.6879551254321656, 0.3451784415807816, 2.4880289360797785, 1.3355244850122145, 2.2, 0.2, 2.2, 2.2, 2.2, 0.8890369315768041, 3.2, 0.49232925294109836, 2.737704707186417, 2.5167746234761403, 2.692563689118794, 1.131250265608711, 3.131250265608711, -100, 1.2, 1.1369326602700094, 3.2, -0.9929716578744834, 1.8272273081097665, 1.866719140187943, 2.2, 2.8001263089844004, 2.4009195100919216, 1.396452688954285, 3.1999234313795384, -0.8, 2.2, -2.7205655591586826, 1.2, 1.2, 3.2, -100, 1.2, 1.2, 1.2, 1.877945711446363, 3.2, 0.9834662450547209, 2.2, 2.3255818444629046, 3.2, 1.684796749033964, 3.2, 3.2, 3.2, -1.8743433069221263, 2.2, 2.356861738808641, 3.2, 2.286479623518117, 2.9865646241949664, -0.11241630892325288, 2.2, 3.2, 3.2, -0.620348627265698, 3.2, 2.1318244762546135, 2.7325954391192724, 2.7325954391192724, 3.2, -0.5601165526215632, 2.439883447378437, 0.8948368886356106], 'average_reward': -3.2674641620562648}, 42: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.150998637759483, 3.2, 3.142459652873898, 3.142459652873898, -100, 1.2, 1.2, 2.2, 1.0922600775962905, 3.2, 0.6337106747252739, 2.404119552386336, -100, 1.2, -1.1111323076378934, 1.596862684405434, -0.6501343638518333, 3.2, 0.5293982647730882, 1.2625528518185851, 1.2625528518185851, 1.2625528518185851, 1.2625528518185851, -1.0879371146122356, 2.1144229746821446, 0.3449494537599758, 3.2, 2.1187138317318803, 3.0422175007376233, 0.643455883212247, 2.733816931978455, 1.8984782407792122, 2.955648929053507, 3.034175022975937, 3.110864998422085, 3.2, 3.2, 0.5403413704330283, 2.2, 1.2, 3.2, 3.000231824602141, 2.598422657207088, 1.1173745083105209, 3.117374508310521, 1.262859669638303, 3.2, -2.759756261607732, 1.3406960302410311, 2.099851094506577, 2.226910360707632, -0.013077956539988111, 2.4559107407654817, 0.45785791971530926, 3.2, 1.6429763638545294, 2.2, 1.3345916557866833, 2.3345916557866837, 2.1853817622615708, 2.7504234942786, 0.38511902192652864, 2.825397419742285, -0.6780060011297644, 2.2, 0.15497888188355885, 2.2, 0.5786855951064613, 2.2, 2.2, 2.2, 0.47673633961072587, 3.2, 3.2, 3.2, 1.543268293603176, 1.9652751764172005, 1.2, 3.2, 3.2, 3.2, 2.141503101463128, 3.2, 0.767900848388672, 2.2, 1.0548607676251234, 3.2, 2.6379394658250805, 3.2, 3.2, 3.2, 0.6837112169259785, 3.2, 2.2, 3.2, 1.9355458838561186, 2.935545883856119, -100, 1.2, 1.2], 'average_reward': -1.1420855612074252}, 43: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 3.2, 3.2, 2.7716307269748928, 2.850899172501277, 1.6905858712981046, 3.2, -0.505156713066756, 2.2, 0.08533491735976778, 2.0853349173597677, 1.7223242216332013, 3.1311444783857993, 0.7102043814813177, 2.3545142779886725, 0.8929253074987711, 3.2, 1.3989564019679235, 2.2, 0.38855017578021983, 2.525862963446734, 2.525862963446734, 0.780786413960084, 2.2, 2.8509593562501245, 3.0845326515550675, 1.595391144863395, 3.2, 1.3815722328639388, 2.2, 0.8813950228136642, 3.2, 2.035328522948332, 3.2, 1.0757347348608046, 2.3740373997284716, 1.2, 2.2, 1.6440950704175374, 3.2, 0.36814419636025003, 2.776664228114832, 0.06553896019558342, 2.2, 2.166225026461554, 2.2, -0.20267686137146262, 2.7006262562016943, -100, 1.2, 1.4273475129315853, 3.2, 0.5866799112948908, 2.2, 1.8636695717656337, 3.2, 2.6385555152320257, 2.337007216091521, 2.2276134738493547, 3.2, 3.2, 3.2, -100, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.31296324121752456, 3.2, 1.2180682244474683, 3.1023211158489254, 3.2, 3.2, 2.2551835609036823, 3.2, 3.2, 3.2, 1.2, 3.2, -0.05653717393397212, 3.176298087326143, 1.2, 2.2, 2.2, 3.2, -100, 1.2, 0.2, 3.103712172529892, -100, 1.2, 0.2, 2.2, -0.013836010974840718, 3.2, 3.2], 'average_reward': -1.934136251611899}, 44: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-100, 1.2, 3.2, 3.2, 2.1135422922844116, 3.2, 0.5061116395236107, 2.8349718757958273, 0.5613106697802392, 2.9406496123978365, 2.2, 2.2, 0.3829336679502866, 2.4372561732966385, 1.3734107443420174, 2.6914766894761826, 1.3400848327681074, 2.2, 0.4877066811087983, 3.2, -100, 1.2, 2.4211088915665204, 1.513823795025033, 2.8788769508442558, 1.2375120779371134, 2.6168510205547024, -100, 1.2, 0.7974458790815386, 3.2, 3.1691998491526205, 3.2, -0.3977079837463748, 2.6022920162536254, -0.13623032322053702, 2.2, 1.2, 3.2, -100, 1.2, 1.5530710233181277, 3.2, 0.153794153330075, 3.0719386351833693, 2.1831324738475186, 3.2, 0.3692881558129654, 2.772057482475411, 0.8157984734156216, 2.1914721256653347, 0.2, 2.2, -1.792377133702123, 1.2, 0.4834868621616049, 3.2, -1.219544689558172, 1.2, -1.1268116010156162, 3.045854179380126, 3.045854179380126, 3.2, 0.2193886747467338, 2.689681282010622, 3.2, 3.2, 3.2, 3.2, 1.2, 3.2, 1.0102577341267998, 3.2, 2.239949890346731, 2.282946565983889, 2.282946565983889, 3.2, 3.2, 3.2, 3.2, 3.2, 0.9987450761694934, 2.749930687418737, 1.331047422587344, 2.2, 0.3195638571932988, 3.2, 3.2, 3.2, 2.7840995164688045, 2.8781452464386277, -0.6794894794293946, 2.2, -100, 1.2, 0.23987067783333782, 2.4599355861099186, 2.4599355861099186, 2.4599355861099186, 1.2], 'average_reward': -3.1375346815192504}, 45: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [1.3843559990468501, 3.2, 1.558782110657803, 3.2, 3.2, 3.2, 2.227754242927245, 3.2, -0.8, 2.2, 1.4535187608139617, 3.2, -100, 1.2, 2.353547872776722, 3.2, -100, 1.2, 0.42177563130968576, 2.2, 3.2, 3.2, 0.36185880660679254, -100, 2.2, 0.560387476033442, 3.2, 1.2, 3.2, -0.2657869941457032, 2.353102872720541, 0.5089796576389047, 2.2, 2.2053896575797505, 2.76550582441265, 1.715199306469801, 1.715199306469801, 0.7384829340667882, 3.2, -0.43714553652903926, 2.2, 2.169528861378515, 2.2, 1.2106391385544175, 2.947221981501393, -0.3295207268179811, 2.2420320841771706, 0.8633942824555125, 1.8390352225152802, 1.7902059203733602, 2.70851212048201, 1.1554660966221146, 3.2, 0.4440241289198172, 3.2, 2.0048002395525764, 2.2, 2.2, 2.2, 0.60469837380111, 3.2, 2.374918175626109, 2.374918175626109, 2.3352831934773643, 3.2, 1.4425285707424556, 2.6295115500036674, -0.45455657431050794, 2.2, 3.2, 3.2, -0.3543954245862892, 2.249208591122067, 2.249208591122067, 2.249208591122067, 2.249208591122067, 3.2, 3.2, 3.2, 2.635495221057835, 3.2, -0.7691222939768636, 2.2, -1.0557330926710777, 1.8607087646341465, 1.1952111378976022, 3.2, 3.2, 3.2, 0.19153414685337117, 2.2685069806370017, -0.0479385573484285, 2.2, 0.16970605861407762, 3.2, 1.2135895684707994, 2.2, 1.2, 3.2, 1.4928754933687312], 'average_reward': -1.1122917888902475}, 46: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [2.590869523976984, 3.2, -0.34427703311676267, 2.9231972571720655, 1.2, 3.2, -0.30462822590304656, 2.2, 2.5886116338122873, 2.5069225910723127, -100, 1.2, 0.6274097204255393, 3.2, 1.5555007582670188, 3.0805841953438535, -100, 2.2, -0.12754970116858555, 2.2300979491103514, 2.2300979491103514, 3.2, 3.2, -1.2705042373967008, 1.7294957626032992, 0.9884997864050895, 2.461238547431295, 3.1558478354870174, 3.2, 2.2, 3.2, 2.0948744634965215, 2.848809645881879, 2.1282677878278524, 3.079590828962895, 1.3087526342504208, 2.2, 1.2, 3.2, 1.2, 3.2, 0.0706218567009867, 2.464733489371944, -0.5577613739955278, 2.2, 0.5768591973589738, 2.312519494315848, -0.808126826600728, 2.2, -0.3020589887431954, 3.2, 3.2, 3.2, -100, 2.2, 2.1047310607873797, 3.2, 3.2, 3.2, 1.5140285864606202, 2.3284339304517254, -1.1990773310483762, 2.2, 2.8872619043649266, 3.2, -1.2983311871947933, 1.7016688128052067, -0.20970996012431048, 2.4368423091684996, 2.5691819040014323, 3.2, 0.2, 3.0287730520632032, 2.448958892054935, 3.2, 0.4363590995900552, 3.2, 1.9700517338375714, 3.2, 0.849984068094298, 2.2, 1.0312733772850864, 3.2, 0.7388883264253501, 2.471847788253202, 2.471847788253202, 2.471847788253202, 0.24850427404998454, 2.6205458042257157, -0.8757311979202906, 2.2, 2.2, 3.2, 0.7270695874857349, 2.2, 2.2, 3.2, 1.2, 3.2, 2.2], 'average_reward': -1.1088625306691642}, 47: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [0.48603185797491016, 3.2, 0.9934124179883679, 2.8638697711367174, 1.7766184951412103, 3.2, 1.6500286390615064, 2.2, 0.5669011577907226, 3.2, 1.0225312242069602, 2.2, -100, 1.2, 0.4347440605319988, 2.4083053202896396, 0.9411707590945055, 2.2, 3.2, 3.2, 3.2, 3.2, 1.3702470295161524, 1.5392840288840126, 3.2, 2.098422832742068, 3.0285474135107053, 0.349654005630368, 1.915303233089377, 1.3873820687360514, 2.2, 1.2, 2.281657316651312, 2.0329885401078682, 2.2, 1.6805044064502286, 3.2, 3.2, 3.2, 3.2, 3.2, -1.0126701924562487, 1.9873298075437513, 3.2, 3.2, 1.2, 2.2, -100, 1.2, -0.2524470893552386, 2.873153020509669, 2.873153020509669, 2.873153020509669, 2.873153020509669, 2.873153020509669, -0.47310455636576715, 2.2, 3.2, 3.2, 0.2, 3.2, 2.1682465342588206, 3.2, -1.1896879118094563, 2.2, 2.2, 3.2, 2.010794824303929, 2.3575842209844042, 1.3188117315602859, 3.2, 0.22565577104176576, 3.2, 1.1618008169768972, 3.2, 0.5578285754455692, 3.2, 1.898864741052692, 3.2, 0.7680045734010126, 3.2, -0.15932360871714918, 2.514128633939125, 0.382214594438373, 2.382214594438373, 3.2, 3.2, 2.063082455479822, 3.2, 1.2, 3.2, 2.5274982703891022, 3.2, 1.2889265929264437, 2.826019538668497, 2.826019538668497, 3.2, 0.6706077681659177, 2.3416141183505137, -0.22729587441534366], 'average_reward': 0.04556088149997716}, 48: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [3.2, 3.2, 3.2, 3.2, -100, 1.2, 0.8474891871939969, 3.2, 2.250009739121725, 3.2, 2.285398610802584, 3.2, 1.5189088167146194, 2.2, 2.2, 3.2, 3.2, 3.2, 2.5409885429108146, 3.2, 2.138073991745095, 2.2, 0.515078857978198, -100, 2.2, -1.2310411042965022, 3.075285367292463, 1.4886284833730654, 3.2, 0.2, 2.2, -0.5019187973890189, 2.636242081524673, 1.2, 3.2, -0.1444141366013853, 3.1688277307970267, 3.2, 3.2, 0.5534800219535934, 2.2, 0.9702912980692482, 1.9702912980692482, 3.2, 3.2, 1.2, 2.243165837533726, 1.4930091586227385, 1.970002802744102, 3.2, 3.2, -0.2514605452609234, 2.2, 2.2, 3.2, -100, 3.2, 0.2, 2.2, -100, 1.2, -100, 1.2, -0.7330330379461505, 3.2, 2.523876459713156, 3.2, 0.4343285078455984, 2.4910109137080214, 2.801027996595516, 3.2, 1.2, 3.2, 0.015072729254509365, 2.2, 0.2, 3.2, 2.265492861329048, 3.2, 1.0565299246611963, 3.2, 0.66208560296591, 3.2, 1.4743430851067352, 3.2, 1.7559954879490793, 2.2, 2.5045031577315457, 3.2, 2.6296836600022218, 3.2, 1.1408335546133461, 3.2, 1.406676821171857, 2.2, 1.817115858417625, 3.2, -0.5092258125223816, 2.2, -100], 'average_reward': -4.0152734498650435}, 49: {'is_active': True, 'last_reset_step': 0, 'total_reward': 0.0, 'recent_rewards': [-100, 1.2, 0.3993184771550767, 2.485776921968818, 0.2, 2.2, -100, 1.2, 1.0999494152127325, 2.459944361250083, 1.256268942120082, 2.2, 0.7098917903733535, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 3.2, 0.9791564905115322, 3.2, 1.2, 0.19923469680132183, 1.2, -1.7450103783216073, 1.3524595299516329, 1.7862306628116342, 3.2, 0.04594120380766281, 2.2, 2.2290620630459244, 3.2, 1.5625035890313084, 3.2, 0.08478225473239032, 3.2, 3.2, 3.2, 1.83807854546973, 2.676891311178956, -0.6132944029319185, 2.2, 3.2, 3.2, 1.2, 3.2, 3.2, 3.2, 3.2, 3.2, 1.5593369190082995, 3.2, 2.431851421970248, 3.2, -100, 1.7692446371436925, 2.1893587812787474, 2.4921327061259264, 2.714966688472286, 3.2, 1.4048709444109642, 2.9155204109690964, -100, 1.2, -0.9583557066701338, 2.2, 2.3286105921102127, 3.2, 0.2, 2.2, 0.8587499773067688, 2.2, 2.2795916448161466, 3.2, 1.118844641644089, 3.2, 1.2, 3.2, 2.2, 2.2, 1.9757727129892044, 2.5011753915790416, -0.3983060137079431, 2.1979933447658646, 2.4550171523900426, 3.2, 3.2, 3.2, 0.614997261069542, 2.2, 3.2, 3.2, 3.2, 3.2, 0.7795677499390192, 2.78765321312927, -0.13158946010690015, 2.2, 2.654034065106276], 'average_reward': -1.976517754500919}}
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 97 initialized successfully.
+2025-09-04 19:28:39 INFO:       📊 average_score: 0.0
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 98 initialized successfully.
+2025-09-04 19:28:39 INFO:    ✅ Model saved successfully! File size: 0.7 MB
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 99 initialized successfully.
+2025-09-04 19:28:39 INFO: Multi-agent model saved to: /home/matthewthomasbeck/Projects/Robot_Dog/model/6000_-1.307.pth
+2025-09-04 19:28:39 INFO:    📊 Current average score: 0.000
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 100 initialized successfully.
+2025-09-04 19:28:39 INFO: (training.py): Continuous learning model saved: 6000_-1.307.pth (total robot steps: 6000)
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 101 initialized successfully.
+2025-09-04 19:28:39 INFO: (training.py): Saved model at robot_steps 6001
 
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 102 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 103 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 104 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 105 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 106 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 107 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 108 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 109 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 110 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 111 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 112 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 113 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 114 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 115 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 116 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 117 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 118 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 119 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 120 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 121 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 122 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 123 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 124 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 125 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 126 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 127 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 128 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 129 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 130 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 131 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 132 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 133 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 134 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 135 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 136 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 137 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 138 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 139 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 140 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 141 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 142 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 143 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 144 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 145 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 146 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 147 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 148 initialized successfully.
-
-2025-09-04 16:51:24 INFO: (control_logic.py): Robot 149 initialized successfully.
-
-2025-09-04 16:51:26 INFO: (control_logic.py): Successfully spawned 150 robots for parallel training.
-
-2025-09-04 16:51:26 INFO: (control_logic.py): RL command queue initialized successfully for Isaac Sim.
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Initializing articulation controllers for all robots...
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 0
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 1
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 2
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 3
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 4
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 5
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 6
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 7
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 8
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 9
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 10
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 11
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 12
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 13
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 14
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 15
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 16
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 17
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 18
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 19
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 20
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 21
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 22
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 23
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 24
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 25
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 26
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 27
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 28
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 29
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 30
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 31
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 32
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 33
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 34
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 35
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 36
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 37
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 38
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 39
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 40
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 41
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 42
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 43
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 44
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 45
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 46
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 47
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 48
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 49
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 50
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 51
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 52
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 53
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 54
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 55
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 56
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 57
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 58
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 59
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 60
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 61
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 62
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 63
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 64
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 65
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 66
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 67
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 68
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 69
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 70
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 71
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 72
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 73
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 74
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 75
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 76
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 77
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 78
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 79
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 80
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 81
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 82
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 83
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 84
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 85
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 86
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 87
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 88
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 89
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 90
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 91
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 92
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 93
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 94
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 95
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 96
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 97
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 98
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 99
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 100
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 101
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 102
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 103
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 104
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 105
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 106
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 107
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 108
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 109
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 110
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 111
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 112
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 113
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 114
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 115
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 116
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 117
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 118
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 119
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 120
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 121
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 122
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 123
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 124
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 125
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 126
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 127
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 128
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 129
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 130
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 131
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 132
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 133
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 134
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 135
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 136
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 137
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 138
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 139
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 140
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 141
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 142
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 143
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 144
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 145
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 146
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 147
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 148
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Controller initialized for robot 149
-
-2025-09-04 16:51:26 INFO: (movement_coordinator.py): Joint index map built using robot 0: {'BL_hip': 0, 'BR_hip': 1, 'FL_hip': 2, 'FR_hip': 3, 'BL_upper': 4, 'BR_upper': 5, 'FL_upper': 6, 'FR_upper': 7, 'BL_lower': 8, 'BR_lower': 9, 'FL_lower': 10, 'FR_lower': 11}
-
-2025-09-04 16:51:30 DEBUG: (training.py): Initializing training system...
-
-2025-09-04 16:51:30 DEBUG: (training.py): Initializing multi-agent training system...
-
-2025-09-04 16:51:39 DEBUG: (training.py): Initializing agent data structures...
-
-2025-09-04 16:51:39 DEBUG: Agent data initialized for 150 robots
-
-2025-09-04 16:51:39 DEBUG: (training.py): Loading latest model: /home/matthewthomasbeck/Projects/Robot_Dog/model/500000_-1.116.pth...
-
-2025-09-04 16:51:39 WARNING: Agent data from checkpoint is invalid (got 30 agents, expected 150), reinitializing...
-2025-09-04 16:51:39 DEBUG: (training.py): Initializing agent data structures...
-
-2025-09-04 16:51:39 DEBUG: Agent data initialized for 150 robots
-
-2025-09-04 16:51:39 INFO: Multi-agent model loaded from: /home/matthewthomasbeck/Projects/Robot_Dog/model/500000_-1.116.pth
-2025-09-04 16:51:39 INFO:   - Total steps: 500000
-2025-09-04 16:51:39 INFO:   - Number of agents: 150
-2025-09-04 16:51:39 INFO:   - Average score: 0.0000
-
-2025-09-04 16:51:39 INFO: (training.py): Successfully loaded model from step 500000.
-
-2025-09-04 16:51:39 INFO: Multi-agent training system initialized:
-2025-09-04 16:51:39 INFO:   - Number of agents: 150
-2025-09-04 16:51:39 INFO:   - State dimension: 67
-2025-09-04 16:51:39 INFO:   - Action dimension: 12
-2025-09-04 16:51:39 INFO:   - Models directory: /home/matthewthomasbeck/Projects/Robot_Dog/model
-2025-09-04 16:51:39 INFO:   - PPO policy created: True
-2025-09-04 16:51:39 INFO:   - Starting from step: 500000
-2025-09-04 16:51:39 INFO:   - PREVIOUS_POSITIONS verified for 150 robots
-
-2025-09-04 16:51:39 INFO: (training.py) Training system initialized successfully.
+2025-09-04 19:28:47 INFO: (training.py): Episode reset due to fall at step 37896, new episode starts at step 37896
 
