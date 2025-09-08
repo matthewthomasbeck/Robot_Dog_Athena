@@ -1,8 +1,8 @@
 ##################################################################################
 # Copyright (c) 2025 Matthew Thomas Beck                                         #
 #                                                                                #
-# Personal and educational use only. This code and its associated files may be   #
-# copied, modified, and distributed by individuals for non-commercial purposes. #
+# Licensed under the Creative Commons Attribution-NonCommercial 4.0              #
+# International (CC BY-NC 4.0). Personal and educational use is permitted.       #
 # Commercial use by companies or for-profit entities is prohibited.              #
 ##################################################################################
 
@@ -74,30 +74,29 @@ def stream_to_backend(socket_param, frame_data): # function to send frame data t
     ##### send frame data to backend #####
 
     global SOCK
-    if frame_data is not None and socket_param is not None:
+    if frame_data is not None and socket_param is not None: # if there is frame data and a socket connection...
         #logging.debug("(internet.py): Streaming frame data to website backend...\n")
-        try:
+
+        try: # attempt to send frame data to backend
             with _send_lock:
-                # Send frame length first (4 bytes)
-                frame_length = len(frame_data)
+                frame_length = len(frame_data) # send frame length (4 bytes)
                 socket_param.sendall(frame_length.to_bytes(4, 'big'))
-                # Send frame data
-                socket_param.sendall(frame_data)
+                socket_param.sendall(frame_data) # send frame data
                 #logging.debug(
                     #f"(internet.py); Frame data sent to website backend successfully of size: {frame_length} bytes\n"
                 #)
 
-        except Exception as e:
+        except Exception as e: # if unable to send data...
             logging.error(f"(internet.py): Error sending data to website backend: {e}\n")
-            # Try to reconnect if connection is lost
-            try:
+
+            try: # attempt to reconnect
                 socket_param.close()
                 SOCK = None
                 SOCK = initialize_backend_socket()
             except Exception as reconnect_error:
                 logging.error(f"(internet.py): Failed to reconnect: {reconnect_error}\n")
 
-    else:
+    else: # if no frame data or no socket connection...
         if frame_data is None:
             logging.debug("(internet.py): No frame data to send.\n")
             pass

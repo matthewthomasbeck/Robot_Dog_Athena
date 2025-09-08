@@ -4,7 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed bugs from making code physical-exclusive">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Adjusted copyright statement">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/physical_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/physical_joints.py" afterDir="false" />
@@ -57,31 +58,31 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.control_logic.executor": "Run",
-    "Python.export_model.executor": "Run",
-    "Python.pth_to_xml.executor": "Run",
-    "Python.simulation_test.executor": "Run",
-    "Python.test_complete_pipeline.executor": "Run",
-    "Python.test_xml.executor": "Run",
-    "Python.test_xml_intel.executor": "Run",
-    "Python.visualize.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
+    &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.pth_to_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_complete_pipeline.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_xml_intel.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/model" />
@@ -225,7 +226,8 @@
       <workItem from="1757075522387" duration="920000" />
       <workItem from="1757078748956" duration="25000" />
       <workItem from="1757280273966" duration="631000" />
-      <workItem from="1757294984672" duration="1161000" />
+      <workItem from="1757294984672" duration="3520000" />
+      <workItem from="1757342772425" duration="849000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -366,14 +368,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00117" summary="Made it so models can be converted">
-      <option name="closed" value="true" />
-      <created>1755308187167</created>
-      <option name="number" value="00117" />
-      <option name="presentableId" value="LOCAL-00117" />
-      <option name="project" value="LOCAL" />
-      <updated>1755308187167</updated>
     </task>
     <task id="LOCAL-00118" summary="Cleaned up cursor garbage in control_logic.py">
       <option name="closed" value="true" />
@@ -599,7 +593,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757296146819</updated>
     </task>
-    <option name="localTasksCounter" value="146" />
+    <task id="LOCAL-00146" summary="Adjusted copyright statement">
+      <option name="closed" value="true" />
+      <created>1757296394688</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1757296394689</updated>
+    </task>
+    <option name="localTasksCounter" value="147" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -617,7 +619,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files" />
     <MESSAGE value="Divided up training.py successfully" />
     <MESSAGE value="Made balance and height rewards far more configurable" />
     <MESSAGE value="Made rotation reward function far more configurable" />
@@ -642,7 +643,8 @@
     <MESSAGE value="Rapid training achieved&#10;kms" />
     <MESSAGE value="Solved annoying model duplication bug, testing regular model trainin and better episode resetting" />
     <MESSAGE value="Fixed bugs from making code physical-exclusive" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed bugs from making code physical-exclusive" />
+    <MESSAGE value="Adjusted copyright statement" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adjusted copyright statement" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

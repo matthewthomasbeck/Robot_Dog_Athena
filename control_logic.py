@@ -1,8 +1,8 @@
 ##################################################################################
 # Copyright (c) 2025 Matthew Thomas Beck                                         #
 #                                                                                #
-# Personal and educational use only. This code and its associated files may be   #
-# copied, modified, and distributed by individuals for non-commercial purposes. #
+# Licensed under the Creative Commons Attribution-NonCommercial 4.0              #
+# International (CC BY-NC 4.0). Personal and educational use is permitted.       #
 # Commercial use by companies or for-profit entities is prohibited.              #
 ##################################################################################
 
@@ -63,8 +63,7 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
     global CAMERA_PROCESS, CHANNEL_DATA, SOCK, COMMAND_QUEUE, ROBOT_ID, JOINT_MAP, internet
 
     ##### initialize PREVIOUS_POSITIONS for physical robot (1 robot) #####
-    
-    # Initialize PREVIOUS_POSITIONS for single physical robot
+
     config.PREVIOUS_POSITIONS = []
     robot_history = deque(maxlen=5)
     for _ in range(5):
@@ -168,20 +167,17 @@ def _physical_loop(CHANNEL_DATA):  # central function that runs robot in real li
                         else:
                             logging.info(f"(control_logic.py): Received command '{command}' from queue (BLOCKED).\n")
 
-            # NEW MULTI-CHANNEL RADIO COMMAND SYSTEM
             if config.CONTROL_MODE == 'radio':
                 commands = interpret_commands(CHANNEL_DATA)
                 if IS_COMPLETE:  # if movement is complete, process radio commands
                     logging.debug(f"(control_logic.py): Processing radio commands: {commands}\n")
                     threading.Thread(target=_handle_command, args=(commands, inference_frame), daemon=True).start()
 
-            # WEB COMMAND HANDLING (includes RL commands for Isaac Sim)
             if command and IS_COMPLETE:  # if command present and movement complete...
                 # logging.debug(f"(control_logic.py): Running command: {command}...\n")
                 threading.Thread(target=_handle_command, args=(command, inference_frame), daemon=True).start()
 
-            # NEUTRAL POSITION HANDLING (for both modes)
-            elif not command and IS_COMPLETE and not IS_NEUTRAL:  # if no command and movement complete and not neutral...
+            elif not command and IS_COMPLETE and not IS_NEUTRAL:  # if no command and move complete and not neutral...
                 logging.debug(f"(control_logic.py): No command received, returning to neutral position...\n")
                 threading.Thread(target=_handle_command, args=('n', inference_frame), daemon=True).start()
 
@@ -254,30 +250,19 @@ def _handle_command(command, camera_frames=None):
 ########## EXECUTE COMMANDS ##########
 
 def _convert_direction_parts_to_fixed_list(direction_parts):
-    """
-    Convert direction parts into a fixed-length list of 4 elements:
-    [forward/backward, left/right, rotate_left/right, tilt_up/down]
-    
-    This ensures consistent input size for the model regardless of command complexity.
-    """
-    # Initialize fixed-length list with None values
-    fixed_direction = [None, None, None, None]
+
+    fixed_direction = [None, None, None, None] # initialize fixed-length list with None values
     
     for part in direction_parts:
         if part in ['w', 's']:
-            # Forward/backward movement (index 0)
             fixed_direction[0] = part
         elif part in ['a', 'd']:
-            # Left/right movement (index 1)
             fixed_direction[1] = part
         elif part in ['arrowleft', 'arrowright']:
-            # Rotation (index 2)
             fixed_direction[2] = part
         elif part in ['arrowup', 'arrowdown']:
-            # Tilt (index 3)
             fixed_direction[3] = part
         elif part in ['w+a', 'w+d', 's+a', 's+d']:
-            # Diagonal movements - split into individual components
             if 'w' in part:
                 fixed_direction[0] = 'w'
             elif 's' in part:
@@ -290,17 +275,24 @@ def _convert_direction_parts_to_fixed_list(direction_parts):
     return fixed_direction
 
 
-##### keyboard commands #####
+########## KEYBOARD COMMANDS ##########
 
 def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, intensity):
-    global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
+
+    ##### set variables #####
+
+    global IMAGELESS_GAIT # set IMAGELESS_GAIT as global to switch between modes via button press
+    direction_parts = [] # diretion part list
+
+    ##### handle special toggle keys #####
 
     if 'i' in keys:  # if user wishes to enable/disable imageless gait...
         IMAGELESS_GAIT = not IMAGELESS_GAIT  # toggle imageless gait mode
         logging.warning(f"(control_logic.py): Toggled IMAGELESS_GAIT to {IMAGELESS_GAIT}\n")
         keys = [k for k in keys if k != 'i']  # remove 'i' from the keys list
 
-    # cancel out contradictory keys
+    ##### cancel out contradictory keys #####
+
     if 'w' in keys and 's' in keys:
         keys = [k for k in keys if k not in ['w', 's']]
     if 'a' in keys and 'd' in keys:
@@ -310,24 +302,25 @@ def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, int
     if 'arrowup' in keys and 'arrowdown' in keys:
         keys = [k for k in keys if k not in ['arrowup', 'arrowdown']]
 
-    # build direction parts list (similar to radio commands)
-    direction_parts = []
+    ##### WASD and diagonals #####
 
-    # movement (WASD and diagonals)
     move_forward = 'w' in keys
     move_backward = 's' in keys
     shift_left = 'a' in keys
     shift_right = 'd' in keys
 
-    # rotation (arrow left/right)
+    ##### rotation #####
+
     rotate_left = 'arrowleft' in keys
     rotate_right = 'arrowright' in keys
 
-    # tilt (arrow up/down)
+    ##### tilt #####
+
     tilt_up = 'arrowup' in keys
     tilt_down = 'arrowdown' in keys
 
-    # handle diagonal movements (combine w/s with a/d)
+    ##### handle diagonals #####
+
     if move_forward and shift_left:
         direction_parts.append('w+a')
     elif move_forward and shift_right:
@@ -336,7 +329,9 @@ def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, int
         direction_parts.append('s+a')
     elif move_backward and shift_right:
         direction_parts.append('s+d')
-    # handle single movements
+
+    ##### handle single directions #####
+
     elif move_forward:
         direction_parts.append('w')
     elif move_backward:
@@ -346,28 +341,28 @@ def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, int
     elif shift_right:
         direction_parts.append('d')
 
-    # handle rotation (can combine with movement)
+    ##### handle rotation #####
+
     if rotate_left:
         direction_parts.append('arrowleft')
     elif rotate_right:
         direction_parts.append('arrowright')
 
-    # handle tilt (can combine with movement and rotation)
+    ##### handle tilt #####
+
     if tilt_up:
         direction_parts.append('arrowup')
     elif tilt_down:
         direction_parts.append('arrowdown')
 
-    # combine all direction parts into fixed-length list
+    ##### combine all direction parts into fixed-length list #####
+
     direction = None
     if direction_parts:
         direction = _convert_direction_parts_to_fixed_list(direction_parts)
-
-    # neutral and special actions
     if 'n' in keys or not keys:
         neutral_position(10)
         is_neutral = True
-
     elif direction:
         move_direction(direction, camera_frames, intensity, IMAGELESS_GAIT)
         is_neutral = False
@@ -377,18 +372,20 @@ def _execute_keyboard_commands(keys, camera_frames, is_neutral, current_leg, int
     return is_neutral, current_leg
 
 
-##### radio commands #####
+########## RADIO COMMANDS ##########
 
 def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
+
+    ##### set variables #####
+
     global IMAGELESS_GAIT  # set IMAGELESS_GAIT as global to switch between modes via button press
-
-    # as radio is currently not reliable enough for individual button pressing, prevent image use and reserve radio as
-    # backup control as model-switching is an expensive maneuver that should be avoided unless necessary
     IMAGELESS_GAIT = True
-
     active_commands = {
         channel: (action, intensity) for channel, (action, intensity) in commands.items() if action != 'NEUTRAL'
     }
+    direction_parts = []
+
+    ##### handle no active commands #####
 
     if not active_commands:
         logging.info(f"(control_logic.py): All channels neutral, returning to neutral position.\n")
@@ -396,8 +393,8 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
         is_neutral = True
         return is_neutral, current_leg
 
-    # cancel out contradictory commands (similar to keyboard logic)
-    # check for contradictory movement commands
+    ##### cancel out contradictory commands #####
+
     move_actions = []
     for channel in ['channel_5', 'channel_6']:
         if channel in active_commands:
@@ -405,25 +402,25 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
             if 'MOVE' in action or 'SHIFT' in action:
                 move_actions.append((channel, action))
 
-    # determine primary direction and intensity
-    direction = None
-    max_intensity = 0
+    ##### movement combinations (channels 5 and 6) #####
 
-    # movement combinations (channels 5 and 6)
     move_forward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE FORWARD'
     move_backward = active_commands.get('channel_5', ('NEUTRAL', 0))[0] == 'MOVE BACKWARD'
     shift_left = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT LEFT'
     shift_right = active_commands.get('channel_6', ('NEUTRAL', 0))[0] == 'SHIFT RIGHT'
 
-    # rotation (channel 3)
+    ##### rotation (channel 3) #####
+
     rotate_left = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE LEFT'
     rotate_right = active_commands.get('channel_3', ('NEUTRAL', 0))[0] == 'ROTATE RIGHT'
 
-    # tilt (channel 4)
+    ##### tilt (channel 4) #####
+
     tilt_up = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT UP'
     tilt_down = active_commands.get('channel_4', ('NEUTRAL', 0))[0] == 'TILT DOWN'
 
-    # special actions (channels 0, 1, 2, 7)
+    ###### special actions (channels 0, 1, 2, 7) #####
+
     look_up = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK UP'
     look_down = active_commands.get('channel_0', ('NEUTRAL', 0))[0] == 'LOOK DOWN'
     trigger_shoot = active_commands.get('channel_1', ('NEUTRAL', 0))[0] == 'TRIGGER SHOOT'
@@ -432,10 +429,8 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
     plus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '+'
     minus_action = active_commands.get('channel_7', ('NEUTRAL', 0))[0] == '-'
 
-    # build complex direction string for computer-friendly parsing
-    direction_parts = []
+    ##### handle diagonals #####
 
-    # handle diagonal movements (combine channels 5 and 6)
     if move_forward and shift_left:
         direction_parts.append('w+a')
         max_intensity = max(
@@ -460,7 +455,9 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
             active_commands.get('channel_5', ('NEUTRAL', 0))[1],
             active_commands.get('channel_6', ('NEUTRAL', 0))[1]
         )
-    # handle single movements
+
+    ##### handle single directions #####
+
     elif move_forward:
         direction_parts.append('w')
         max_intensity = active_commands.get('channel_5', ('NEUTRAL', 0))[1]
@@ -474,23 +471,26 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
         direction_parts.append('d')
         max_intensity = active_commands.get('channel_6', ('NEUTRAL', 0))[1]
 
-    # handle rotation (can combine with movement)
+    ##### handle rotation #####
+
     if rotate_left:
         direction_parts.append('arrowleft')
-        max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
+        max_intensity = max(config.DEFAULT_INTENSITY, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
     elif rotate_right:
         direction_parts.append('arrowright')
-        max_intensity = max(max_intensity, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
+        max_intensity = max(config.DEFAULT_INTENSITY, active_commands.get('channel_3', ('NEUTRAL', 0))[1])
 
-    # handle tilt (can combine with movement and rotation)
+    ##### handle tilt #####
+
     if tilt_up:
         direction_parts.append('arrowup')
-        max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
+        max_intensity = max(config.DEFAULT_INTENSITY, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
     elif tilt_down:
         direction_parts.append('arrowdown')
-        max_intensity = max(max_intensity, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
+        max_intensity = max(config.DEFAULT_INTENSITY, active_commands.get('channel_4', ('NEUTRAL', 0))[1])
 
-    # handle special actions (these don't add to direction but are logged)
+    ##### handle special actions #####
+
     special_actions = []
     if look_up:
         special_actions.append('LOOK_UP')
@@ -507,15 +507,15 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
     elif minus_action:
         special_actions.append('MINUS')
 
-    # combine all direction parts into fixed-length list
+    ##### execute movement or special actions #####
+
     if direction_parts:
         direction = _convert_direction_parts_to_fixed_list(direction_parts)
         logging.debug(f"(control_logic.py): Radio commands: ({active_commands}:{direction})\n")
         if special_actions:
             logging.debug(f"(control_logic.py): Special actions: ({special_actions})\n")
-        move_direction(direction, camera_frames, 10, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
+        move_direction(direction, camera_frames, config.DEFAULT_INTENSITY, IMAGELESS_GAIT) # TODO locking intensity at 10 for now
         is_neutral = False
-
     elif special_actions:
         # only special actions, no movement
         logging.debug(f"(control_logic.py): Special actions only: ({special_actions})\n")
@@ -523,7 +523,6 @@ def _execute_radio_commands(commands, camera_frames, is_neutral, current_leg):
         if 'SQUAT_DOWN' in special_actions:
             pass
             is_neutral = False
-
         elif 'SQUAT_UP' in special_actions:
             neutral_position(10)
             is_neutral = True

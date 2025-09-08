@@ -1,8 +1,8 @@
 ##################################################################################
 # Copyright (c) 2025 Matthew Thomas Beck                                         #
 #                                                                                #
-# Personal and educational use only. This code and its associated files may be   #
-# copied, modified, and distributed by individuals for non-commercial purposes. #
+# Licensed under the Creative Commons Attribution-NonCommercial 4.0              #
+# International (CC BY-NC 4.0). Personal and educational use is permitted.       #
 # Commercial use by companies or for-profit entities is prohibited.              #
 ##################################################################################
 
@@ -41,7 +41,7 @@ import cv2  # add cv2 for decoding frames for isaac sim and the real robot
 ########## INITIALIZE CAMERA ##########
 
 def initialize_camera( # function to initialize camera
-        robot_id=0,  # Add robot_id parameter for multi-robot support
+        robot_id=0, # add robot_id parameter for multi-robot support (from sim days)
         width=config.CAMERA_CONFIG['WIDTH'],
         height=config.CAMERA_CONFIG['HEIGHT'],
         frame_rate=config.CAMERA_CONFIG['FRAME_RATE']
@@ -129,13 +129,19 @@ def decode_real_frame(camera_process, mjpeg_buffer):
             inference_frame = cv2.imdecode(numpy.frombuffer(streamed_frame, dtype=numpy.uint8), cv2.IMREAD_COLOR)
 
             if config.RL_NOT_CNN:  # if running RL model for movement...
-                # 1. Crop
+
+                ##### crop #####
+
                 h = inference_frame.shape[0]
                 crop_start = int(h * (1 - config.CAMERA_CONFIG['CROP_FRACTION']))
                 cropped = inference_frame[crop_start:, :, :]
-                # 2. Grayscale
+
+                ##### grayscale #####
+
                 gray_frame = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-                # 3. Resize
+
+                ##### resize #####
+
                 output_size = (config.CAMERA_CONFIG['OUTPUT_WIDTH'], config.CAMERA_CONFIG['OUTPUT_HEIGHT'])
                 resized_frame = cv2.resize(gray_frame, output_size)
                 return mjpeg_buffer, streamed_frame, resized_frame

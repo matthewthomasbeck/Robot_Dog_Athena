@@ -1,8 +1,8 @@
 ##################################################################################
 # Copyright (c) 2025 Matthew Thomas Beck                                         #
 #                                                                                #
-# Personal and educational use only. This code and its associated files may be   #
-# copied, modified, and distributed by individuals for non-commercial purposes. #
+# Licensed under the Creative Commons Attribution-NonCommercial 4.0              #
+# International (CC BY-NC 4.0). Personal and educational use is permitted.       #
 # Commercial use by companies or for-profit entities is prohibited.              #
 ##################################################################################
 

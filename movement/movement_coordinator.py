@@ -1,8 +1,8 @@
 ##################################################################################
 # Copyright (c) 2025 Matthew Thomas Beck                                         #
 #                                                                                #
-# Personal and educational use only. This code and its associated files may be   #
-# copied, modified, and distributed by individuals for non-commercial purposes. #
+# Licensed under the Creative Commons Attribution-NonCommercial 4.0              #
+# International (CC BY-NC 4.0). Personal and educational use is permitted.       #
 # Commercial use by companies or for-profit entities is prohibited.              #
 ##################################################################################
 
@@ -65,14 +65,14 @@ JOINT_MAP = {}
 def move_direction(commands, camera_frames, intensity, imageless_gait): # function to trot forward
 
     ##### preprocess commands and intensity #####
-    
-    # Handle new fixed-length list format from control_logic.py
-    if isinstance(commands, list):
+
+    if isinstance(commands, list): # if new format...
         # Filter out tilt commands (arrowup/arrowdown) and create RL model input
         rl_commands = []
         tilt_command = None
-        
-        # Extract movement commands for RL model (indices 0, 1, 2)
+
+        ##### extract movement commands #####
+
         if commands[0] is not None:  # forward/backward
             rl_commands.append(commands[0])
         if commands[1] is not None:  # left/right
@@ -81,16 +81,15 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
             rl_commands.append(commands[2])
         if commands[3] is not None:  # tilt (store for later use if needed)
             tilt_command = commands[3]
-            
-        # Convert to string format expected by existing code
+
         commands = rl_commands
         
         # Log the command processing
         #logging.debug(f"(movement_coordinator.py): Processed fixed-length list: {rl_commands}")
         #if tilt_command:
             #logging.debug(f"(movement_coordinator.py): Tilt command detected: {tilt_command} (not passed to RL model)")
-    else:
-        # Fallback for old string format
+
+    else: # if old format...
         commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
 
     ##### run inference before moving #####
@@ -164,14 +163,7 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
 
 ########## THREAD LEG MOVEMENT ##########
 
-def thread_leg_movement(current_servo_config, target_angles, movement_rates):
-    """
-    Move all legs using threading to avoid blocking.
-    
-    Args:
-        target_angles: Target joint angles for each leg (dict with 'FL', 'FR', 'BL', 'BR' keys)
-        movement_rates: Movement rates for each joint (dict with 'FL', 'FR', 'BL', 'BR' keys)
-    """
+def thread_leg_movement(current_servo_config, target_angles, movement_rates): # function to separate leg movement
     
     leg_threads = []  # create a list to hold threads for each leg
     for leg_id in ['FL', 'FR', 'BL', 'BR']:  # loop through each leg and create a thread to move
@@ -192,44 +184,38 @@ def thread_leg_movement(current_servo_config, target_angles, movement_rates):
 ########## RANDOM ACTION FUNCTION ##########
 
 def get_random_action(state, commands, intensity): # used to generate random movement for testing
-    """
-    Generate random joint movements for testing purposes.
-    This function was moved from get_rl_action_blind to preserve random movement capability.
-    
-    Args:
-        state: The current state of the robot/simulation (to be defined).
-        commands: The movement commands.
-        intensity: The movement intensity.
-    Returns:
-        target_angles: dict of target joint angles for each leg (similar to SERVO_CONFIG structure).
-        mid_angles: dict of mid joint angles for each leg (similar to SERVO_CONFIG structure).
-        movement_rates: dict of movement rate parameters for each leg.
-    """
-    
+
+    ##### set variables #####
+
     target_angles = {}
     mid_angles = {}
     movement_rates = {}
-    
-    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+
+    ##### generate random angles and rates #####
+
+    for leg_id in ['FL', 'FR', 'BL', 'BR']: # loop through each leg
+
         target_angles[leg_id] = {}
         mid_angles[leg_id] = {}
         movement_rates[leg_id] = {'speed': 1.0, 'acceleration': 0.5}  # 1 rad/s, 0.5 rad/s²
         
-        for joint_name in ['hip', 'upper', 'lower']:
+        for joint_name in ['hip', 'upper', 'lower']: # loop through each joint
+
+            ##### get valid range #####
+
             servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-            
-            # Get the valid range for this joint
-            full_back_angle = servo_data['FULL_BACK_ANGLE']  # Already in radians
-            full_front_angle = servo_data['FULL_FRONT_ANGLE']  # Already in radians
-            
-            # Ensure we have the correct order (back < front)
+            full_back_angle = servo_data['FULL_BACK_ANGLE']
+            full_front_angle = servo_data['FULL_FRONT_ANGLE']
+
+            ##### ensure correct order #####
+
             min_angle = min(full_back_angle, full_front_angle)
             max_angle = max(full_back_angle, full_front_angle)
             
-            # Generate random angles within the valid range
+            ##### generate random angles #####
+
             target_angle = random.uniform(min_angle, max_angle)
             mid_angle = random.uniform(min_angle, max_angle)
-            
             target_angles[leg_id][joint_name] = target_angle
             mid_angles[leg_id][joint_name] = mid_angle
     
