@@ -20,7 +20,7 @@
 
 ##### import config #####
 
-from utilities.config import INFERENCE_CONFIG, USE_SIMULATION
+import utilities.config as config
 
 ##### import necessary libraries #####
 
@@ -29,9 +29,8 @@ import logging # import logging for logging messages
 
 ##### get physical robot dependencies #####
 
-if not USE_SIMULATION: # if not using simulation...
-    from openvino.runtime import Core  # import OpenVINO runtime
-    import cv2 # import OpenCV for image processing
+from openvino.runtime import Core  # import OpenVINO runtime
+import cv2 # import OpenCV for image processing
 
 ########## CREATE DEPENDENCIES ##########
 
@@ -78,7 +77,7 @@ def normalize_feet_positions(feet_dict, min_xyz, max_xyz):
 # function to load and compile an OpenVINO model
 def load_and_compile_model(
         model_path, # path to the model file
-        device_name=INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
+        device_name=config.INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
 ):
 
     ##### clean up OpenCV windows from last run #####
@@ -124,7 +123,7 @@ def load_and_compile_model(
 # function to load and compile an ONNX model
 def load_and_compile_onnx_model(
         model_path, # path to the ONNX model file
-        device_name=INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
+        device_name=config.INFERENCE_CONFIG['TPU_NAME'] # device name for inference (e.g., "CPU", "GPU", "MYRIAD")
 ):
     """
     Load and compile an ONNX model for inference.

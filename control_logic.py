@@ -103,7 +103,7 @@ set_real_robot_dependencies()
 ##### post-initialization dependencies #####
 
 from movement.movement_coordinator import *
-from utilities.camera import decode_real_frame, decode_isaac_frame
+from utilities.camera import decode_real_frame
 
 
 
@@ -231,15 +231,7 @@ def _handle_command(command, camera_frames=None):
 
     elif config.CONTROL_MODE == 'web':
 
-        if config.USE_SIMULATION:
-            # Import and use random intensity generation
-            from training.isaac_sim import get_random_intensity
-            # Set training phase here (1, 2, or 3) - same as command phase
-            training_phase = 1  # Start with phase 1 for basic movement
-            intensity = get_random_intensity(phase=training_phase)
-
-        else:
-            intensity = 10
+        intensity = 10
 
         try:
             IS_NEUTRAL, CURRENT_LEG = _execute_keyboard_commands(

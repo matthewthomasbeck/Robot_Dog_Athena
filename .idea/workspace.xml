@@ -4,57 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Rapid training achieved&#10;kms">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Removed isaac specific functions and files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/old_models/3700000_-1.014.pth" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/person-detection-0200.bin" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/person-detection-0200.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/pth_to_xml.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/test_complete_pipeline.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/isaac_joints.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/agents.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/episodes.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/isaac_sim.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/back/athena_back_butt.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/back/athena_back_top.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/DS3218.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/ai_module_mock.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/electronics/lipo_battery.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/feet/ares_feet_foot.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/femurs/ares_femurs_left.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/femurs/ares_femurs_right.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/front/athena_front_face.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/front/athena_front_top.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/disc_servo_horn.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/servo_horn.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/hardware/tierod.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/legpins/ares_legpins_legpin.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection_batteryplate.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection_bottom.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/ares_midsection_side.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/athena_midsection_connectorplate.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/midsection/athena_midsection_top.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis/ares_pelvis_foreleft_hindright.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis/ares_pelvis_foreright_hindleft.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis_blades/ares_pelvis_blades_left.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/pelvis_blades/ares_pelvis_blades_right.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/tibias/ares_tibias_left.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/meshes/tibias/ares_tibias_right.dae" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/model_manager.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/orientation.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/rewards.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/training.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog.urdf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_base.usd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_physics.usd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_robot.usd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/configuration/robot_dog_sensor.usd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/training/urdf/robot_dog/robot_dog.usd" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.bin" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.pth" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.pth" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/receiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/receiver.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,31 +52,31 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
-    &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
-    &quot;Python.pth_to_xml.executor&quot;: &quot;Run&quot;,
-    &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_complete_pipeline.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_xml.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_xml_intel.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/matthewthomasbeck/Projects/Robot_Dog&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.control_logic.executor": "Run",
+    "Python.export_model.executor": "Run",
+    "Python.pth_to_xml.executor": "Run",
+    "Python.simulation_test.executor": "Run",
+    "Python.test_complete_pipeline.executor": "Run",
+    "Python.test_xml.executor": "Run",
+    "Python.test_xml_intel.executor": "Run",
+    "Python.visualize.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/model" />
@@ -263,6 +219,8 @@
       <workItem from="1756842735546" duration="1650000" />
       <workItem from="1757075522387" duration="920000" />
       <workItem from="1757078748956" duration="25000" />
+      <workItem from="1757280273966" duration="631000" />
+      <workItem from="1757294984672" duration="806000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>

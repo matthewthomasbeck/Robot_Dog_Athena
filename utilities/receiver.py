@@ -18,22 +18,12 @@
 
 ########## IMPORT DEPENDENCIES ##########
 
-##### import config #####
-
-from utilities.config import USE_SIMULATION, USE_ISAAC_SIM
-
 ##### import necessary libraries #####
 
 import time # import time library for time functions
 import logging # import logging library for debugging
-if USE_SIMULATION:
-    if USE_ISAAC_SIM:
-        pass
-    else:
-        pass
-elif not USE_SIMULATION:
-    import RPi.GPIO as GPIO # import RPi.GPIO library for GPIO control
-    import pigpio # import pigpio library for PWM control
+import RPi.GPIO as GPIO # import RPi.GPIO library for GPIO control
+import pigpio # import pigpio library for PWM control
 
 ##### import config #####
 
