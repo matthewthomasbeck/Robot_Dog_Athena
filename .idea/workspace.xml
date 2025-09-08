@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Removed isaac specific functions and files">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed bugs from making code physical-exclusive">
       <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.bin" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.pth" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.pth" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/movement/physical_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/physical_joints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/internet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/internet.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/log.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/log.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/maestro.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/maestro.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/receiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/receiver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utilities/servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/servos.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -220,7 +225,7 @@
       <workItem from="1757075522387" duration="920000" />
       <workItem from="1757078748956" duration="25000" />
       <workItem from="1757280273966" duration="631000" />
-      <workItem from="1757294984672" duration="806000" />
+      <workItem from="1757294984672" duration="1161000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -361,14 +366,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00116" summary="Got physical robot dog servos moving again, there may still be bugs in regard to getting the model to actually move though">
-      <option name="closed" value="true" />
-      <created>1755303836609</created>
-      <option name="number" value="00116" />
-      <option name="presentableId" value="LOCAL-00116" />
-      <option name="project" value="LOCAL" />
-      <updated>1755303836609</updated>
     </task>
     <task id="LOCAL-00117" summary="Made it so models can be converted">
       <option name="closed" value="true" />
@@ -594,7 +591,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757023338166</updated>
     </task>
-    <option name="localTasksCounter" value="145" />
+    <task id="LOCAL-00145" summary="Fixed bugs from making code physical-exclusive">
+      <option name="closed" value="true" />
+      <created>1757296146818</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1757296146819</updated>
+    </task>
+    <option name="localTasksCounter" value="146" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -612,7 +617,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Got isaac servos working again" />
     <MESSAGE value="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files" />
     <MESSAGE value="Divided up training.py successfully" />
     <MESSAGE value="Made balance and height rewards far more configurable" />
@@ -637,7 +641,8 @@
     <MESSAGE value="Everything going well, changing naming format of models saved" />
     <MESSAGE value="Rapid training achieved&#10;kms" />
     <MESSAGE value="Solved annoying model duplication bug, testing regular model trainin and better episode resetting" />
-    <option name="LAST_COMMIT_MESSAGE" value="Solved annoying model duplication bug, testing regular model trainin and better episode resetting" />
+    <MESSAGE value="Fixed bugs from making code physical-exclusive" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bugs from making code physical-exclusive" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
