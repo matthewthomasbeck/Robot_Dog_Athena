@@ -46,7 +46,6 @@ from utilities.servos import map_angle_to_servo_position, set_target, map_radian
 def swing_leg(leg_id, target_angles, movement_rates):
 
     try:
-        # Move directly to target angles (no mid angles needed)
         move_joints_to_angles(leg_id, target_angles, movement_rates)
         time.sleep(0.05)
 

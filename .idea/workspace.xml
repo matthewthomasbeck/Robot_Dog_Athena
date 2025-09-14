@@ -4,19 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Adjusted copyright statement">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Cleaned up comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/movement/physical_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/physical_joints.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/internet.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/internet.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/log.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/log.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/maestro.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/maestro.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/receiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/receiver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/servos.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/servos.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -227,7 +217,8 @@
       <workItem from="1757078748956" duration="25000" />
       <workItem from="1757280273966" duration="631000" />
       <workItem from="1757294984672" duration="3520000" />
-      <workItem from="1757342772425" duration="849000" />
+      <workItem from="1757342772425" duration="1454000" />
+      <workItem from="1757509217397" duration="135000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -368,14 +359,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00118" summary="Cleaned up cursor garbage in control_logic.py">
-      <option name="closed" value="true" />
-      <created>1755361470852</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1755361470852</updated>
     </task>
     <task id="LOCAL-00119" summary="Fixed control_logic to stop using the useless coordinate frame">
       <option name="closed" value="true" />
@@ -601,7 +584,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757296394689</updated>
     </task>
-    <option name="localTasksCounter" value="147" />
+    <task id="LOCAL-00147" summary="Cleaned up comments">
+      <option name="closed" value="true" />
+      <created>1757344640384</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1757344640384</updated>
+    </task>
+    <option name="localTasksCounter" value="148" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -619,7 +610,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Divided up training.py successfully" />
     <MESSAGE value="Made balance and height rewards far more configurable" />
     <MESSAGE value="Made rotation reward function far more configurable" />
     <MESSAGE value="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic" />
@@ -644,7 +634,8 @@
     <MESSAGE value="Solved annoying model duplication bug, testing regular model trainin and better episode resetting" />
     <MESSAGE value="Fixed bugs from making code physical-exclusive" />
     <MESSAGE value="Adjusted copyright statement" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adjusted copyright statement" />
+    <MESSAGE value="Cleaned up comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up comments" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

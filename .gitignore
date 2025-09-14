@@ -18,7 +18,7 @@ venv/
 utilities/config.py
 
 # ignore workspace xml files
-*.xml
+workspace.xml
 
 # ignore backend and frontend directory
 backend_and_frontend/
