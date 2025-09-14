@@ -19,6 +19,7 @@ utilities/config.py
 
 # ignore workspace xml files
 workspace.xml
+.idea
 
 # ignore backend and frontend directory
 backend_and_frontend/
