@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Cleaned up comments">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/physical_joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/physical_joints.py" afterDir="false" />
-    </list>
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Deleted README, got rid of workspace.xml" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -219,6 +216,7 @@
       <workItem from="1757294984672" duration="3520000" />
       <workItem from="1757342772425" duration="1454000" />
       <workItem from="1757509217397" duration="135000" />
+      <workItem from="1757858334369" duration="428000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -359,22 +357,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00119" summary="Fixed control_logic to stop using the useless coordinate frame">
-      <option name="closed" value="true" />
-      <created>1755362434548</created>
-      <option name="number" value="00119" />
-      <option name="presentableId" value="LOCAL-00119" />
-      <option name="project" value="LOCAL" />
-      <updated>1755362434548</updated>
-    </task>
-    <task id="LOCAL-00120" summary="Got isaac servos working again">
-      <option name="closed" value="true" />
-      <created>1755364693086</created>
-      <option name="number" value="00120" />
-      <option name="presentableId" value="LOCAL-00120" />
-      <option name="project" value="LOCAL" />
-      <updated>1755364693086</updated>
     </task>
     <task id="LOCAL-00121" summary="Cleaned up cursor crap in control_logic.pv and isaac_sim.py, divided up training.py into sub-files">
       <option name="closed" value="true" />
@@ -592,7 +574,23 @@
       <option name="project" value="LOCAL" />
       <updated>1757344640384</updated>
     </task>
-    <option name="localTasksCounter" value="148" />
+    <task id="LOCAL-00148" summary="Deleted README, got rid of workspace.xml">
+      <option name="closed" value="true" />
+      <created>1757858714396</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1757858714396</updated>
+    </task>
+    <task id="LOCAL-00149" summary="Deleted README, got rid of workspace.xml">
+      <option name="closed" value="true" />
+      <created>1757858748437</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
+      <option name="project" value="LOCAL" />
+      <updated>1757858748437</updated>
+    </task>
+    <option name="localTasksCounter" value="150" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -610,7 +608,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Made balance and height rewards far more configurable" />
     <MESSAGE value="Made rotation reward function far more configurable" />
     <MESSAGE value="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic" />
     <MESSAGE value="Reward functions finished" />
@@ -635,7 +632,8 @@
     <MESSAGE value="Fixed bugs from making code physical-exclusive" />
     <MESSAGE value="Adjusted copyright statement" />
     <MESSAGE value="Cleaned up comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up comments" />
+    <MESSAGE value="Deleted README, got rid of workspace.xml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Deleted README, got rid of workspace.xml" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

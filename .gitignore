@@ -19,7 +19,11 @@ utilities/config.py
 
 # ignore workspace xml files
 workspace.xml
-.idea
+.idea/
 
 # ignore backend and frontend directory
 backend_and_frontend/
+
+robot_dog.log
+robot_dog.log.bak
+robot_dog.service.d
