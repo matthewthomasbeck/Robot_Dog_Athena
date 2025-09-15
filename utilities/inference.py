@@ -314,9 +314,9 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
             np.clip(orientation[0] / 30.0, -1.0, 1.0), # shift: normalize from [-2g, 2g] to [-1, 1]
             np.clip(orientation[1] / 30.0, -1.0, 1.0), # move: normalize from [-2g, 2g] to [-1, 1] 
             np.clip(orientation[2] / 30.0, -1.0, 1.0), # translate: normalize from [-2g, 2g] to [-1, 1]
-            np.clip(orientation[3] / 180.0, -1.0, 1.0), # yaw: normalize from [-500°/s, 500°/s] to [-1, 1]
-            np.clip(orientation[4] / 180.0, -1.0, 1.0), # roll: normalize from [-500°/s, 500°/s] to [-1, 1]
-            np.clip(orientation[5] / 180.0, -1.0, 1.0) # pitch: normalize from [-500°/s, 500°/s] to [-1, 1]
+            np.clip(orientation[3] / 500.0, -1.0, 1.0), # yaw: normalize from [-500°/s, 500°/s] to [-1, 1]
+            np.clip(orientation[4] / 500.0, -1.0, 1.0), # roll: normalize from [-500°/s, 500°/s] to [-1, 1]
+            np.clip(orientation[5] / 500.0, -1.0, 1.0) # pitch: normalize from [-500°/s, 500°/s] to [-1, 1]
         ], dtype=np.float32)
 
         config.PREVIOUS_ORIENTATIONS[0].append(normalized_orientation)

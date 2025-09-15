@@ -25,7 +25,6 @@ import utilities.config as config
 
 import logging
 import smbus
-import time
 
 
 ########## CREATE DEPENDENCIES ##########
@@ -72,41 +71,41 @@ def get_all_data(): # function to read all data from accelerometer (and gyroscop
 
     ##### read accelerometer data #####
 
-    acc_x = get_device_data(ACCEL_XOUT_H)
-	acc_y = get_device_data(ACCEL_YOUT_H)
-	acc_z = get_device_data(ACCEL_ZOUT_H)
+    acc_x = get_orientation_datapoint(config.ACCELEROMETER_CONFIG['ACCEL_XOUT_H'])
+    acc_y = get_orientation_datapoint(config.ACCELEROMETER_CONFIG['ACCEL_YOUT_H'])
+    acc_z = get_orientation_datapoint(config.ACCELEROMETER_CONFIG['ACCEL_ZOUT_H'])
 
     ##### read gyroscope data #####
 
-	gyro_x = get_device_data(GYRO_XOUT_H)
-	gyro_y = get_device_data(GYRO_YOUT_H)
-	gyro_z = get_device_data(GYRO_ZOUT_H)
+    gyro_x = get_orientation_datapoint(config.ACCELEROMETER_CONFIG['GYRO_XOUT_H'])
+    gyro_y = get_orientation_datapoint(config.ACCELEROMETER_CONFIG['GYRO_YOUT_H'])
+    gyro_z = get_orientation_datapoint(config.ACCELEROMETER_CONFIG['GYRO_ZOUT_H'])
 
     ##### calculate data #####
 
-	shift = acc_x/16384.0 # negative value shifts to the right
-	move = -acc_y/16384.0 # flipped sign to correct for upside-down orientation, positive value moves forward
-	translate = acc_z/16384.0  # positive value translates up
-	
-	yaw = -gyro_x/131.0 # flipped sign to correct for upside-down orientation, positive value yaw right
-	roll = gyro_y/131.0 # positive value roll right
-	pitch = -gyro_z/131.0 # flipped sign to correct for upside-down orientation, positive value pitch up
+    shift = acc_x/16384.0 # negative value shifts to the right
+    move = -acc_y/16384.0 # flipped sign to correct for upside-down orientation, positive value moves forward
+    translate = acc_z/16384.0  # positive value translates up
+
+    yaw = -gyro_x/131.0 # flipped sign to correct for upside-down orientation, positive value yaw right
+    roll = gyro_y/131.0 # positive value roll right
+    pitch = -gyro_z/131.0 # flipped sign to correct for upside-down orientation, positive value pitch up
 
     return shift, move, translate, yaw, roll, pitch
 
 
 ########## READ INDIVIDUAL DATA ##########
 
-def get_individual_data(addr): # function to read orientation data from accelerometer (and gyroscope)
+def get_orientation_datapoint(addr): # function to read orientation data from accelerometer (and gyroscope)
 
     try: # try to read orientation data from accelerometer (and gyroscope)
 
         ##### set variables #####
 
-        high = bus.read_byte_data(Device_Address, addr) # read higher byte
-        low = bus.read_byte_data(Device_Address, addr+1) # read lower byte
+        high = BUS.read_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], addr) # read higher byte
+        low = BUS.read_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], addr+1) # read lower byte
         value = ((high << 8) | low) # concatenate higher and lower byte
-        
+
         if (value > 32768): # if value is greater than 32768...
             value = value - 65536 # subtract 65536 from value
 

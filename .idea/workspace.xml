@@ -4,13 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added accelerometer to robot and added a working implementation">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/control_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/control_logic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/movement/movement_coordinator.py" beforeDir="false" afterPath="$PROJECT_DIR$/movement/movement_coordinator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/accelerometer.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/accelerometer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/camera.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/camera.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -226,7 +221,7 @@
       <workItem from="1757509217397" duration="135000" />
       <workItem from="1757858334369" duration="428000" />
       <workItem from="1757858895050" duration="449000" />
-      <workItem from="1757891787858" duration="2512000" />
+      <workItem from="1757891787858" duration="5529000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -367,14 +362,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00123" summary="Made balance and height rewards far more configurable">
-      <option name="closed" value="true" />
-      <created>1755405137151</created>
-      <option name="number" value="00123" />
-      <option name="presentableId" value="LOCAL-00123" />
-      <option name="project" value="LOCAL" />
-      <updated>1755405137151</updated>
     </task>
     <task id="LOCAL-00124" summary="Made rotation reward function far more configurable">
       <option name="closed" value="true" />
@@ -600,7 +587,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757906689367</updated>
     </task>
-    <option name="localTasksCounter" value="152" />
+    <task id="LOCAL-00152" summary="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side">
+      <option name="closed" value="true" />
+      <created>1757918536832</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1757918536832</updated>
+    </task>
+    <option name="localTasksCounter" value="153" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -618,7 +613,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Reward functions finished" />
     <MESSAGE value="Made commands structure human readable but also computer-consistent to avoid dynamic shapes" />
     <MESSAGE value="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me" />
     <MESSAGE value="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!" />
@@ -643,7 +637,8 @@
     <MESSAGE value="Deleted README, got rid of workspace.xml" />
     <MESSAGE value="Added model, removed BS files" />
     <MESSAGE value="Added accelerometer to robot and added a working implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added accelerometer to robot and added a working implementation" />
+    <MESSAGE value="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side" />
+    <option name="LAST_COMMIT_MESSAGE" value="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />

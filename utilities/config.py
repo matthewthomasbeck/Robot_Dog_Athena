@@ -159,7 +159,7 @@ PREVIOUS_ORIENTATIONS = [] # array of previous orientations for each robot (shif
 
 ACCELEROMETER_CONFIG = { # dictionary of accelerometer configuration
 
-    'ACCELEROMETER_ADDRESS': 0x68, # address of the accelerometer
+    'MPU_6050_ADDRESS': 0x68, # address of the accelerometer
     'PWR_MGMT_1': 0x6B, # power management register
     'SMPLRT_DIV': 0x19, # sample rate divider
     'CONFIG_REGISTER': 0x1A, # configuration register
