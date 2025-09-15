@@ -1,82 +1,117 @@
-'''
-        Read Gyro and Accelerometer by Interfacing Raspberry Pi with MPU6050 using Python
-	http://www.electronicwings.com
-'''
-import smbus					#import SMBus module of I2C
-from time import sleep          #import
-
-#some MPU6050 Registers and their Address
-PWR_MGMT_1   = 0x6B
-SMPLRT_DIV   = 0x19
-CONFIG       = 0x1A
-GYRO_CONFIG  = 0x1B
-INT_ENABLE   = 0x38
-ACCEL_XOUT_H = 0x3B
-ACCEL_YOUT_H = 0x3D
-ACCEL_ZOUT_H = 0x3F
-GYRO_XOUT_H  = 0x43
-GYRO_YOUT_H  = 0x45
-GYRO_ZOUT_H  = 0x47
+##################################################################################
+# Copyright (c) 2025 Matthew Thomas Beck                                         #
+#                                                                                #
+# Licensed under the Creative Commons Attribution-NonCommercial 4.0              #
+# International (CC BY-NC 4.0). Personal and educational use is permitted.       #
+# Commercial use by companies or for-profit entities is prohibited.              #
+##################################################################################
 
 
-def MPU_Init():
-	#write to sample rate register
-	bus.write_byte_data(Device_Address, SMPLRT_DIV, 7)
-	
-	#Write to power management register
-	bus.write_byte_data(Device_Address, PWR_MGMT_1, 1)
-	
-	#Write to Configuration register
-	bus.write_byte_data(Device_Address, CONFIG, 0)
-	
-	#Write to Gyro configuration register
-	bus.write_byte_data(Device_Address, GYRO_CONFIG, 24)
-	
-	#Write to interrupt enable register
-	bus.write_byte_data(Device_Address, INT_ENABLE, 1)
 
-def read_raw_data(addr):
-	#Accelero and Gyro value are 16-bit
-        high = bus.read_byte_data(Device_Address, addr)
-        low = bus.read_byte_data(Device_Address, addr+1)
-    
-        #concatenate higher and lower value
-        value = ((high << 8) | low)
+
+
+############################################################
+############### IMPORT / CREATE DEPENDENCIES ###############
+############################################################
+
+
+########## IMPORT DEPENDENCIES ##########
+
+##### import config #####
+
+import utilities.config as config
+
+##### import necessary libraries #####
+
+import logging
+import smbus
+import time
+
+
+########## CREATE DEPENDENCIES ##########
+
+##### setup variables #####
+
+BUS = smbus.SMBus(1) # used for I2C communication
+
+
+
+
+
+#######################################################
+############### ACCELEROMETER FUNCTIONS ###############
+#######################################################
+
+
+########## INITIALIZE ACCELEROMETER ##########
+
+def initialize_accelerometer(): # function to initialize accelerometer
+
+    try: # try to initialize accelerometer
+
+        ##### write to registers #####
+
+        logging.debug(f"(accelerometer.py): Initializing accelerometer...\n")
+
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['SMPLRT_DIV'], 7)	# write to sample rate register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['PWR_MGMT_1'], 1) # write to power management register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['CONFIG_REGISTER'], 0) # write to configuration register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['GYRO_CONFIG'], 24) # write to gyro configuration register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['INT_ENABLE'], 1) # write to interrupt enable register
+
+        logging.info(f"(accelerometer.py): Accelerometer initialized successfully.\n")
+
+    except Exception as e: # if error initializing accelerometer...
+        logging.error(f"(accelerometer.py): Error initializing accelerometer: {e}\n")
+        return None
+
+
+########## READ ALL DATA ##########
+
+def get_all_data(): # function to read all data from accelerometer (and gyroscope)
+
+    ##### read accelerometer data #####
+
+    acc_x = get_device_data(ACCEL_XOUT_H)
+	acc_y = get_device_data(ACCEL_YOUT_H)
+	acc_z = get_device_data(ACCEL_ZOUT_H)
+
+    ##### read gyroscope data #####
+
+	gyro_x = get_device_data(GYRO_XOUT_H)
+	gyro_y = get_device_data(GYRO_YOUT_H)
+	gyro_z = get_device_data(GYRO_ZOUT_H)
+
+    ##### calculate data #####
+
+	shift = acc_x/16384.0 # negative value shifts to the right
+	move = -acc_y/16384.0 # flipped sign to correct for upside-down orientation, positive value moves forward
+	translate = acc_z/16384.0  # positive value translates up
+	
+	yaw = -gyro_x/131.0 # flipped sign to correct for upside-down orientation, positive value yaw right
+	roll = gyro_y/131.0 # positive value roll right
+	pitch = -gyro_z/131.0 # flipped sign to correct for upside-down orientation, positive value pitch up
+
+    return shift, move, translate, yaw, roll, pitch
+
+
+########## READ INDIVIDUAL DATA ##########
+
+def get_individual_data(addr): # function to read orientation data from accelerometer (and gyroscope)
+
+    try: # try to read orientation data from accelerometer (and gyroscope)
+
+        ##### set variables #####
+
+        high = bus.read_byte_data(Device_Address, addr) # read higher byte
+        low = bus.read_byte_data(Device_Address, addr+1) # read lower byte
+        value = ((high << 8) | low) # concatenate higher and lower byte
         
-        #to get signed value from mpu6050
-        if(value > 32768):
-                value = value - 65536
+        if (value > 32768): # if value is greater than 32768...
+            value = value - 65536 # subtract 65536 from value
+
         return value
 
-
-bus = smbus.SMBus(1) 	# or bus = smbus.SMBus(0) for older version boards
-Device_Address = 0x68   # MPU6050 device address
-
-MPU_Init()
-
-print (" Reading Data of Gyroscope and Accelerometer")
-
-while True:
-	
-	#Read Accelerometer raw value
-	acc_x = read_raw_data(ACCEL_XOUT_H)
-	acc_y = read_raw_data(ACCEL_YOUT_H)
-	acc_z = read_raw_data(ACCEL_ZOUT_H)
-	
-	#Read Gyroscope raw value
-	gyro_x = read_raw_data(GYRO_XOUT_H)
-	gyro_y = read_raw_data(GYRO_YOUT_H)
-	gyro_z = read_raw_data(GYRO_ZOUT_H)
-	
-	#Full scale range +/- 250 degree/C as per sensitivity scale factor
-	Ax = acc_x/16384.0
-	Ay = acc_y/16384.0
-	Az = acc_z/16384.0
-	
-	Gx = gyro_x/131.0
-	Gy = gyro_y/131.0
-	Gz = gyro_z/131.0
-	
-
-	print ("Gx=%.2f" %Gx, u'\u00b0'+ "/s", "\tGy=%.2f" %Gy, u'\u00b0'+ "/s", "\tGz=%.2f" %Gz, u'\u00b0'+ "/s", "\tAx=%.2f g" %Ax, "\tAy=%.2f g" %Ay, "\tAz=%.2f g" %Az) 	
-	sleep(1)
+    except Exception as e: # if error reading orientation data...
+        logging.error(f"(accelerometer.py): Error reading orientation data: {e}\n")
+        return None

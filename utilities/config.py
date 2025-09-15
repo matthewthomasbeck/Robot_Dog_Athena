@@ -150,3 +150,25 @@ SERVO_CONFIG = { # dictionary of leg configurations
 ##### previous positions #####
 
 PREVIOUS_POSITIONS = [] # array of previous positions for each robot
+
+##### previous orientations #####
+
+PREVIOUS_ORIENTATIONS = [] # array of previous orientations for each robot (shift, move, translate, yaw, roll, pitch)
+
+##### set accelerometer configuration #####
+
+ACCELEROMETER_CONFIG = { # dictionary of accelerometer configuration
+
+    'ACCELEROMETER_ADDRESS': 0x68, # address of the accelerometer
+    'PWR_MGMT_1': 0x6B, # power management register
+    'SMPLRT_DIV': 0x19, # sample rate divider
+    'CONFIG_REGISTER': 0x1A, # configuration register
+    'GYRO_CONFIG': 0x1B, # gyro configuration register
+    'INT_ENABLE': 0x38, # interrupt enable register
+    'ACCEL_XOUT_H': 0x3B, # accelerometer x-axis output high register
+    'ACCEL_YOUT_H': 0x3D, # accelerometer y-axis output high register
+    'ACCEL_ZOUT_H': 0x3F, # accelerometer z-axis output high register
+    'GYRO_XOUT_H': 0x43, # gyroscope x-axis output high register
+    'GYRO_YOUT_H': 0x45, # gyroscope y-axis output high register
+    'GYRO_ZOUT_H': 0x47 # gyroscope z-axis output high register
+}

@@ -57,6 +57,7 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
     from utilities.receiver import initialize_receiver  # import receiver initialization functions
     from utilities.camera import initialize_camera  # import to start camera logic
     import utilities.internet as internet  # dynamically import internet utilities to be constantly updated
+    from utilities.accelerometer import initialize_accelerometer  # import accelerometer initialization functions
 
     ##### initialize global variables #####
 
@@ -70,6 +71,10 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
         robot_history.append(np.zeros(12, dtype=np.float32))
     config.PREVIOUS_POSITIONS.append(robot_history)
     logging.debug("PREVIOUS_POSITIONS initialized for physical robot with zeros")
+
+    ##### initialize accelerometer #####
+
+    initialize_accelerometer()
 
     ##### initialize camera process #####
 
@@ -93,6 +98,15 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
         CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
         if CHANNEL_DATA == None:
             logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA for robot!\n")
+
+    ##### initialize PREVIOUS_ORIENTATIONS for physical robot (1 robot) #####
+
+    config.PREVIOUS_ORIENTATIONS = []
+    orientation_history = deque(maxlen=5)
+    for _ in range(5):
+        orientation_history.append(np.zeros(6, dtype=np.float32))  # 6 values: shift, move, translate, yaw, roll, pitch
+    config.PREVIOUS_ORIENTATIONS.append(orientation_history)
+    logging.debug("PREVIOUS_ORIENTATIONS initialized for physical robot with zeros")
 
 
 ########## PREPARE ROBOT ##########

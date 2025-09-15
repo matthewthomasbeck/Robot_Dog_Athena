@@ -33,6 +33,7 @@ import logging # import logging for error handling
 from movement.physical_joints import swing_leg, neutral_position_physical
 from utilities.inference import load_and_compile_model, run_gait_adjustment_standard, run_gait_adjustment_blind, \
     run_person_detection # load function/models for gait adjustment and person detection
+from utilities.accelerometer import get_all_data # import function to get all accelerometer data
 
 if config.RL_NOT_CNN:
     # TODO Be aware that multiple models loaded on one NCS2 may be an issue... might be worth benching one of these
@@ -92,6 +93,11 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
     else: # if old format...
         commands = sorted(commands.split('+')) # alphabetize commands so they are uniform
 
+    ##### collect orientation data #####
+
+    shift, move, translate, yaw, roll, pitch = get_all_data() # get all orientation data
+    orientation = [shift, move, translate, yaw, roll, pitch] # store orientation data in list
+
     ##### run inference before moving #####
 
     try: # try to run a model
@@ -102,6 +108,7 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
             logging.debug("Inference input:\n")
             logging.debug(f"(movement_coordinator.py): Commands: {commands}\n")
             logging.debug(f"(movement_coordinator.py): Intensity: {intensity}\n")
+            logging.debug(f"(movement_coordinator.py): Orientation: {orientation}\n")
 
             if not imageless_gait: # if not using imageless gait adjustment...
                 # TODO use the blind model until I get image support going
@@ -110,7 +117,8 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                     BLIND_INPUT_LAYER,
                     BLIND_OUTPUT_LAYER,
                     commands,
-                    intensity
+                    intensity,
+                    orientation
                 )
                 #target_angles, movement_rates = run_gait_adjustment_standard( # run standard
                     #STANDARD_RL_MODEL,
@@ -118,7 +126,8 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                     #STANDARD_OUTPUT_LAYER,
                     #commands,
                     #camera_frames[0]['inference_frame'],
-                    #intensity
+                    #intensity,
+                    #orientation
                 #)
 
             else: # if using imageless gait adjustment...
@@ -127,7 +136,8 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                     BLIND_INPUT_LAYER,
                     BLIND_OUTPUT_LAYER,
                     commands,
-                    intensity
+                    intensity,
+                    orientation
                 )
 
             logging.debug("(movement_coordinator.py): Inference Results:\n")

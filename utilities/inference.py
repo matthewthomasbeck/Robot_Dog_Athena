@@ -183,112 +183,22 @@ def run_gait_adjustment_standard(  # function to run gait adjustment RL model wi
         output_layer,
         commands,
         frame,
-        intensity
+        intensity,
+        orientation
 ):
 
-    try: # try to run the model with vision
-
-        ##### set variables #####
-
-        state = [] # build state vector
-        target_angles = {}
-        mid_angles = {}
-
-        logging.debug(f"(inference.py): Starting standard gait adjustment inference for commands: {commands}, intensity: {intensity}...\n")
-
-        ##### add last 5 target angle sets (60D total: 12 * 5) #####
-
-        if not config.PREVIOUS_POSITIONS or len(config.PREVIOUS_POSITIONS) == 0: # if prev pos initialized...
-            logging.warning("PREVIOUS_POSITIONS not initialized, initializing for physical robot...\n")
-            config.PREVIOUS_POSITIONS = []
-            robot_history = deque(maxlen=5)
-            for _ in range(5):
-                robot_history.append(np.zeros(12, dtype=np.float32))
-            config.PREVIOUS_POSITIONS.append(robot_history)
-
-        for historical_angles in config.PREVIOUS_POSITIONS[0]: # add angle sets
-            state.extend(historical_angles)
-
-        ##### encode commands (6D one-hot for movement commands only) #####
-
-        if isinstance(commands, list):
-            command_list = commands
-        elif isinstance(commands, str):
-            command_list = commands.split('+') if commands else []
-        else:
-            command_list = []
-        
-        command_encoding = [
-            1.0 if 'w' in command_list else 0.0,
-            1.0 if 's' in command_list else 0.0,
-            1.0 if 'a' in command_list else 0.0,
-            1.0 if 'd' in command_list else 0.0,
-            1.0 if 'arrowleft' in command_list else 0.0,
-            1.0 if 'arrowright' in command_list else 0.0
-        ]
-        
-        state.extend(command_encoding)
-
-        ##### prepare fields #####
-
-        intensity_normalized = (float(intensity) - 5.5) / 4.5 # normalize intensity (1D)
-        state.append(intensity_normalized)
-        frame_flat = frame.astype(np.float32) / 255.0 # normalize frame to [0, 1]
-        frame_flat = frame_flat.flatten()
-        input_vec = np.concatenate([state, frame_flat]) # assemble input
-        input_vec = input_vec.reshape(1, -1)  # batch dimension
-
-        ##### run inference #####
-
-        result = model([input_vec])[output_layer] #assume result shape: (1, 24) for 4 legs * 2 points * 3 joints
-
-        ##### parse output #####
-
-        result = result.reshape(4, 2, 3)  # (leg, point, joint)
-        legs = ['FL', 'FR', 'BL', 'BR']
-        joints = ['hip', 'upper', 'lower']
-
-        ##### process output #####
-
-        for i, leg in enumerate(legs):
-            target_angles[leg] = {}
-            mid_angles[leg] = {}
-            for j, joint in enumerate(joints):
-                # Denormalize angles from [0, 1] back to [-pi, pi]
-                mid_angle_norm = result[i, 0, j]
-                target_angle_norm = result[i, 1, j]
-                mid_angles[leg][joint] = (mid_angle_norm * 2 * np.pi) - np.pi
-                target_angles[leg][joint] = (target_angle_norm * 2 * np.pi) - np.pi
-
-        ##### update movement history #####
-
-        current_target_array = np.zeros(12, dtype=np.float32)
-        action_idx = 0
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            for joint_name in ['hip', 'upper', 'lower']:
-                # Store the raw action value (normalized to [-1, 1])
-                current_target_array[action_idx] = result[0, 1, action_idx % 3]  # target angles
-                action_idx += 1
-
-        config.PREVIOUS_POSITIONS[0].append(current_target_array)
-        
-        logging.debug(f"(inference.py): Standard inference completed successfully.\n")
-
-        return target_angles, mid_angles
-        
-    except Exception as e: # if anything fails...
-        logging.error(f"(inference.py): Failed to run standard gait adjustment: {e}\n")
-        return {}, {}
+    pass # TODO get working with camera in future, but focus on basics first
 
 
-########## RUN GAIT ADJUSTMENT RL MODEL WITHOUT IMAGES ########## TODO finish me
+########## RUN GAIT ADJUSTMENT RL MODEL WITHOUT IMAGES ##########
 
 def run_gait_adjustment_blind( # function to run gait adjustment RL model without images for speedy processing
         model,
         input_layer,
         output_layer,
         commands,
-        intensity
+        intensity,
+        orientation
 ):
 
     try: # try to run the model without images
@@ -313,6 +223,19 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
 
         for historical_angles in config.PREVIOUS_POSITIONS[0]:  # Physical robot is always index 0
             state.extend(historical_angles)
+        
+        ##### initialize previous orientations #####
+
+        if not config.PREVIOUS_ORIENTATIONS or len(config.PREVIOUS_ORIENTATIONS) == 0:
+            logging.warning("PREVIOUS_ORIENTATIONS not initialized, initializing for physical robot...")
+            config.PREVIOUS_ORIENTATIONS = []
+            orientation_history = deque(maxlen=5)
+            for _ in range(5):
+                orientation_history.append(np.zeros(6, dtype=np.float32))
+            config.PREVIOUS_ORIENTATIONS.append(orientation_history)
+
+        for historical_orientation in config.PREVIOUS_ORIENTATIONS[0]:  # Physical robot is always index 0
+            state.extend(historical_orientation)
         
         ##### encode commands (6D one-hot for movement commands only) #####
 
@@ -339,7 +262,7 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         intensity_normalized = (float(intensity) - 5.5) / 4.5
         state.append(intensity_normalized)
         state = np.array(state, dtype=np.float32)
-        expected_state_size = 67
+        expected_state_size = 97
         if len(state) != expected_state_size:
             raise ValueError(f"State size mismatch: expected {expected_state_size}, got {len(state)}")
         input_vec = state.reshape(1, -1)  # batch dimension
@@ -383,6 +306,20 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
                 action_idx += 1
 
         config.PREVIOUS_POSITIONS[0].append(current_target_array)
+        
+        ##### update orientation history #####
+
+        # normalize orientation data to [-1, 1] range
+        normalized_orientation = np.array([
+            np.clip(orientation[0] / 30.0, -1.0, 1.0), # shift: normalize from [-2g, 2g] to [-1, 1]
+            np.clip(orientation[1] / 30.0, -1.0, 1.0), # move: normalize from [-2g, 2g] to [-1, 1] 
+            np.clip(orientation[2] / 30.0, -1.0, 1.0), # translate: normalize from [-2g, 2g] to [-1, 1]
+            np.clip(orientation[3] / 180.0, -1.0, 1.0), # yaw: normalize from [-500°/s, 500°/s] to [-1, 1]
+            np.clip(orientation[4] / 180.0, -1.0, 1.0), # roll: normalize from [-500°/s, 500°/s] to [-1, 1]
+            np.clip(orientation[5] / 180.0, -1.0, 1.0) # pitch: normalize from [-500°/s, 500°/s] to [-1, 1]
+        ], dtype=np.float32)
+
+        config.PREVIOUS_ORIENTATIONS[0].append(normalized_orientation)
         
         logging.debug(f"(inference.py): Blind inference completed successfully")
         return target_angles, movement_rates
