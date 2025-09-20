@@ -1,1 +1,1 @@
-![Alt Text](s3://cdn.matthewthomasbeck.com/assets/images/athena/athena-walking-1.gif)
+![Alt Text](/Users/matthewthomasbeck/Native_Assets/MTB_Website/assets/images/athena/athena-walking-1.gif)
