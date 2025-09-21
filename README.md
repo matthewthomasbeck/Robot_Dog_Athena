@@ -1,4 +1,4 @@
-![Alt Text](images/athena-walking-1.gif)
+![Athena Walking](images/athena-walking-1.gif)
 
 # Athena Robot Dog
 ### By Matthew Thomas Beck [LinkedIn](https://www.linkedin.com/in/matthewthomasbeck/)
