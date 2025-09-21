@@ -5,7 +5,7 @@
 
 Special thanks to Aaed Musa (https://www.linkedin.com/in/aaedmusa/) and Omar Ferrer (https://www.linkedin.com/in/omar-ferrer-0bb6355a/) for their help
 
-The story behind the build: https://www.matthewthomasbeck.com/pages/Athena.html
+The story behind the build: https://www.matthewthomasbeck.com/pages/athena.html
 
 Please consider: if you like it, **star it!**
 
