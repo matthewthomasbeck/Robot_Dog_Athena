@@ -21,7 +21,7 @@ Please consider: if you like it, **star it!**
 
 2. Asemble Aaed Musa's 'Ares' and buy hardware components like screws (**IMPORTANT!** do NOT buy the servos listed here): [Instructables](https://www.instructables.com/3D-Printed-Robot-Dog/)
 
-3. Purchase x12 45kg 8.4V servos: [Amazon](https://www.amazon.com/ANNIMOS-Coreless-Steering-Stainless-Waterproof/dp/B0C69BXL6V/ref=sr_1_1_sspa?crid=2CZYTFNIBMZB5&dib=eyJ2IjoiMSJ9.VzTVL5Lop0_Yo7Rclx1P0kO2cp7ohwbDt7B7rXalG4MsVGLa0FryPlcn-SrE6rDy0qo-lTfH70VDVMsDM-jQDLI-_-WiCpWL-WSlHzyH4CQCISmqboxoTY8Y-ynt7SQqmFj8ZRk0Gt9Filc5FiNrXsSKQOzpLyP5GSNfhjMawo2jog92e5XEfgTXn7Z0gk2yIjBBVJ0yKB6Lx0ZyPcQ3M63q5b7Jplu8NwipFpI1uh-We4zfnRz7NO6QHMuQK18hUQgB-gn_UIU28R_rg6OCoAk3JSbtqz0F4uTjACbcWkg.KrSoIdIEi_MDbt4yBtMP7t1w8LMzUjnk7HNWLFUnKj0&dib_tag=se&keywords=45kg%2Bservos&qid=1758412280&sprefix=45kg%2Bservo%2Caps%2C184&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1)
+3. Purchase x12 45kg 8.4V servos: [AliExpress](https://www.aliexpress.us/item/3256808881971265.html?spm=a2g0o.productlist.main.3.6bd8OyjiOyjimW&algo_pvid=2d42210d-34c2-4142-b895-4343adc5442b&algo_exp_id=2d42210d-34c2-4142-b895-4343adc5442b-2&pdp_ext_f=%7B%22order%22%3A%2218%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21USD%2166.60%2122.14%21%21%21471.31%21156.64%21%402101effb17584197518685533ef113%2112000047801309564%21sea%21US%210%21ABX%211%210%21n_tag%3A-29910%3Bd%3A61b1bf00%3Bm03_new_user%3A-29895%3BpisId%3A5000000174221208&curPageLogUid=ddJlcghRXnfD&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A1005009068286017%7C_p_origin_prod%3A)
 
 4. Print out my custom parts and replace their respective Ares counterparts
 
