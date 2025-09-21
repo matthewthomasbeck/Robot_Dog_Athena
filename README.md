@@ -9,10 +9,14 @@ Click [here](https://www.matthewthomasbeck.com/pages/athena.html) for the story 
 
 **Please consider:** if you like it, **star it!**
 
-## Tech Stack:
+## Tech Stack
 - **Language:** *Python*
 - **Libraries:** *threading, queue, time, os, socket, logging, collections.deque, subprocess, signal, sys, random, numpy, opencv-python, openvino, smbus, RPi.GPIO, pigpio, pyserial*
 - **Toolkits:** *OpenVino*
+
+## Basic Information
+
+Want to test/have fun with robot dogs, but don't want to spend multi-thousands for one? This project may be for you! Follow the instructions below to build one for yourself
 
 ## **(WIP)** Build For Yourself!
 ### Please carefully read every step before proceeding; robots get very expensive, very quickly
