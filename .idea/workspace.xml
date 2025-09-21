@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed orientation bugs, awaiting new model from simulation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/inference.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/inference.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,7 +220,8 @@
       <workItem from="1757509217397" duration="135000" />
       <workItem from="1757858334369" duration="428000" />
       <workItem from="1757858895050" duration="449000" />
-      <workItem from="1757891787858" duration="5529000" />
+      <workItem from="1757891787858" duration="5876000" />
+      <workItem from="1758402832526" duration="11000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -362,14 +362,6 @@
       <option name="presentableId" value="LOCAL-00020" />
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
-    </task>
-    <task id="LOCAL-00124" summary="Made rotation reward function far more configurable">
-      <option name="closed" value="true" />
-      <created>1755413209665</created>
-      <option name="number" value="00124" />
-      <option name="presentableId" value="LOCAL-00124" />
-      <option name="project" value="LOCAL" />
-      <updated>1755413209665</updated>
     </task>
     <task id="LOCAL-00125" summary="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic">
       <option name="closed" value="true" />
@@ -595,7 +587,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757918536832</updated>
     </task>
-    <option name="localTasksCounter" value="153" />
+    <task id="LOCAL-00153" summary="Fixed orientation bugs, awaiting new model from simulation">
+      <option name="closed" value="true" />
+      <created>1757966352868</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1757966352868</updated>
+    </task>
+    <option name="localTasksCounter" value="154" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -613,7 +613,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Made commands structure human readable but also computer-consistent to avoid dynamic shapes" />
     <MESSAGE value="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me" />
     <MESSAGE value="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!" />
     <MESSAGE value="100k steps model" />
@@ -638,7 +637,8 @@
     <MESSAGE value="Added model, removed BS files" />
     <MESSAGE value="Added accelerometer to robot and added a working implementation" />
     <MESSAGE value="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side" />
-    <option name="LAST_COMMIT_MESSAGE" value="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side" />
+    <MESSAGE value="Fixed orientation bugs, awaiting new model from simulation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed orientation bugs, awaiting new model from simulation" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
