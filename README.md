@@ -12,10 +12,10 @@ https://www.matthewthomasbeck.com/pages/Athena.html
 - Libraries: *threading, queue, time, os, socket, logging, collections.deque, subprocess, signal, sys, random, numpy, opencv-python, openvino, smbus, RPi.GPIO, pigpio, pyserial*
 - Toolkits: *OpenVino*
 
-## **WIP** Build For Yourself!
+## **(WIP)** Build For Yourself!
 ### Please carefully read every step before proceeding; robots get very expensive, very quickly
 
-1. **WIP** Put together an Edge AI Module, instructions and part list found here: https://github.com/matthewthomasbeck/Edge_AI_Module
+1. **(WIP)** Put together an Edge AI Module, instructions and part list found here: https://github.com/matthewthomasbeck/Edge_AI_Module
 
 2. Asemble Aaed Musa's 'Ares' and buy hardware components like screws (**IMPORTANT!** do NOT buy the servos listed here): https://www.instructables.com/3D-Printed-Robot-Dog/
 
@@ -28,25 +28,21 @@ https://www.matthewthomasbeck.com/pages/Athena.html
 ![Alt Text](images/maestro.jpeg)
 
 | **Joint Servo** | **Maestro Channel** |
-| ----------- | ----------- |
 | **Front Left Leg** |  |
 | hip servo | *channel 3* |
 | femur servo | *channel 5* |
 | tibia servo | *channel 4* |
-| ----------- | ----------- |
 | **Front Right Leg** |  |
 | hip servo | *channel 2* |
 | femur servo | *channel 1* |
 | tibia servo | *channel 0* |
-| ----------- | ----------- |
 | **Back Left Leg** |  |
 | hip servo | *channel 9* |
 | femur servo | *channel 7* |
 | tibia servo | *channel 6* |
-| ----------- | ----------- |
 | **Back Right Leg** |  |
 | hip servo | *channel 11* |
 | femur servo | *channel 10* |
 | tibia servo | *channel 9* |
 
-5. **WIP** Wait for me to upload a comprehensive model (it takes time to train, on top of this being a first for me)
+5. **(WIP)** Wait for me to upload a comprehensive model (it takes time to train, on top of this being a first for me)
