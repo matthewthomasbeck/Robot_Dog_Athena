@@ -27,9 +27,9 @@ Want to test/have fun with robot dogs, but don't want to spend multi-thousands f
 
 3. Purchase x12 45kg 8.4V servos: [AliExpress](https://www.aliexpress.us/item/3256808881971265.html?spm=a2g0o.productlist.main.3.6bd8OyjiOyjimW&algo_pvid=2d42210d-34c2-4142-b895-4343adc5442b&algo_exp_id=2d42210d-34c2-4142-b895-4343adc5442b-2&pdp_ext_f=%7B%22order%22%3A%2218%22%2C%22eval%22%3A%221%22%2C%22fromPage%22%3A%22search%22%7D&pdp_npi=6%40dis%21USD%2166.60%2122.14%21%21%21471.31%21156.64%21%402101effb17584197518685533ef113%2112000047801309564%21sea%21US%210%21ABX%211%210%21n_tag%3A-29910%3Bd%3A61b1bf00%3Bm03_new_user%3A-29895%3BpisId%3A5000000174221208&curPageLogUid=ddJlcghRXnfD&utparam-url=scene%3Asearch%7Cquery_from%3A%7Cx_object_id%3A1005009068286017%7C_p_origin_prod%3A)
 
-4. Print out my custom parts and replace their respective Ares counterparts
+4. Print out my custom parts found in the 'custom_parts' folder and replace their respective Ares counterparts
 
-5. Place the Edge AI Module into the robot; run the antenna through the antenna hole and wire the servos as follows:
+5. Place the Edge AI Module into the robot, run the antenna through the antenna hole, and wire the servos as follows:
 
 ![Alt Text](images/maestro.jpeg)
 
