@@ -1,11 +1,11 @@
 ![Alt Text](images/athena-walking-1.gif)
 
 # Athena Robot Dog
-### By Matthew Thomas Beck (https://www.linkedin.com/in/matthewthomasbeck/)
+### By Matthew Thomas Beck [LinkedIn](https://www.linkedin.com/in/matthewthomasbeck/)
 
-Special thanks to Aaed Musa (https://www.linkedin.com/in/aaedmusa/) and Omar Ferrer (https://www.linkedin.com/in/omar-ferrer-0bb6355a/) for their help
+Special thanks to Aaed Musa [LinkedIn](https://www.linkedin.com/in/aaedmusa/) and Omar Ferrer [LinkedIn](https://www.linkedin.com/in/omar-ferrer-0bb6355a/) for their help
 
-The story behind the build: https://www.matthewthomasbeck.com/pages/athena.html
+The story behind the build: [Athena](https://www.matthewthomasbeck.com/pages/athena.html)
 
 Please consider: if you like it, **star it!**
 
@@ -17,11 +17,11 @@ Please consider: if you like it, **star it!**
 ## **(WIP)** Build For Yourself!
 ### Please carefully read every step before proceeding; robots get very expensive, very quickly
 
-1. **(WIP)** Put together an Edge AI Module, instructions and part list found here: https://github.com/matthewthomasbeck/Edge_AI_Module
+1. **(WIP)** Put together an Edge AI Module, instructions and part list found here: [Edge AI Module](https://github.com/matthewthomasbeck/Edge_AI_Module)
 
-2. Asemble Aaed Musa's 'Ares' and buy hardware components like screws (**IMPORTANT!** do NOT buy the servos listed here): https://www.instructables.com/3D-Printed-Robot-Dog/
+2. Asemble Aaed Musa's 'Ares' and buy hardware components like screws (**IMPORTANT!** do NOT buy the servos listed here): [Instructables](https://www.instructables.com/3D-Printed-Robot-Dog/)
 
-3. Purchase x12 45kg 8.4V servos: https://www.amazon.com/ANNIMOS-Coreless-Steering-Stainless-Waterproof/dp/B0C69BXL6V/ref=sr_1_1_sspa?crid=2CZYTFNIBMZB5&dib=eyJ2IjoiMSJ9.VzTVL5Lop0_Yo7Rclx1P0kO2cp7ohwbDt7B7rXalG4MsVGLa0FryPlcn-SrE6rDy0qo-lTfH70VDVMsDM-jQDLI-_-WiCpWL-WSlHzyH4CQCISmqboxoTY8Y-ynt7SQqmFj8ZRk0Gt9Filc5FiNrXsSKQOzpLyP5GSNfhjMawo2jog92e5XEfgTXn7Z0gk2yIjBBVJ0yKB6Lx0ZyPcQ3M63q5b7Jplu8NwipFpI1uh-We4zfnRz7NO6QHMuQK18hUQgB-gn_UIU28R_rg6OCoAk3JSbtqz0F4uTjACbcWkg.KrSoIdIEi_MDbt4yBtMP7t1w8LMzUjnk7HNWLFUnKj0&dib_tag=se&keywords=45kg%2Bservos&qid=1758412280&sprefix=45kg%2Bservo%2Caps%2C184&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1
+3. Purchase x12 45kg 8.4V servos: [Amazon](https://www.amazon.com/ANNIMOS-Coreless-Steering-Stainless-Waterproof/dp/B0C69BXL6V/ref=sr_1_1_sspa?crid=2CZYTFNIBMZB5&dib=eyJ2IjoiMSJ9.VzTVL5Lop0_Yo7Rclx1P0kO2cp7ohwbDt7B7rXalG4MsVGLa0FryPlcn-SrE6rDy0qo-lTfH70VDVMsDM-jQDLI-_-WiCpWL-WSlHzyH4CQCISmqboxoTY8Y-ynt7SQqmFj8ZRk0Gt9Filc5FiNrXsSKQOzpLyP5GSNfhjMawo2jog92e5XEfgTXn7Z0gk2yIjBBVJ0yKB6Lx0ZyPcQ3M63q5b7Jplu8NwipFpI1uh-We4zfnRz7NO6QHMuQK18hUQgB-gn_UIU28R_rg6OCoAk3JSbtqz0F4uTjACbcWkg.KrSoIdIEi_MDbt4yBtMP7t1w8LMzUjnk7HNWLFUnKj0&dib_tag=se&keywords=45kg%2Bservos&qid=1758412280&sprefix=45kg%2Bservo%2Caps%2C184&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1)
 
 4. Print out my custom parts and replace their respective Ares counterparts
 
