@@ -30,6 +30,7 @@ Please consider: if you like it, **star it!**
 ![Alt Text](images/maestro.jpeg)
 
 | **Joint Servo** | **Maestro Channel** |
+| ----------- | ----------- |
 | **Front Left Leg** |  |
 | hip servo | *channel 3* |
 | femur servo | *channel 5* |
