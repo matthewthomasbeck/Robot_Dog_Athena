@@ -7,7 +7,7 @@ Special thanks to [Aaed Musa](https://www.linkedin.com/in/aaedmusa/) and [Omar F
 
 Click [here](https://www.matthewthomasbeck.com/pages/athena.html) for the story behind the build
 
-Please consider: if you like it, ==**star it!**==
+Please consider: if you like it, ==star it!==
 
 ## Tech Stack:
 - Language: *Python*
