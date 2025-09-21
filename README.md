@@ -7,12 +7,12 @@ Special thanks to [Aaed Musa](https://www.linkedin.com/in/aaedmusa/) and [Omar F
 
 Click [here](https://www.matthewthomasbeck.com/pages/athena.html) for the story behind the build
 
-Please consider: if you like it, ==star it!==
+**Please consider:** if you like it, **star it!**
 
 ## Tech Stack:
-- Language: *Python*
-- Libraries: *threading, queue, time, os, socket, logging, collections.deque, subprocess, signal, sys, random, numpy, opencv-python, openvino, smbus, RPi.GPIO, pigpio, pyserial*
-- Toolkits: *OpenVino*
+- **Language:** *Python*
+- **Libraries:** *threading, queue, time, os, socket, logging, collections.deque, subprocess, signal, sys, random, numpy, opencv-python, openvino, smbus, RPi.GPIO, pigpio, pyserial*
+- **Toolkits:** *OpenVino*
 
 ## **(WIP)** Build For Yourself!
 ### Please carefully read every step before proceeding; robots get very expensive, very quickly
