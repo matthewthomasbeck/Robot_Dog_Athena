@@ -52,11 +52,11 @@ def initialize_accelerometer(): # function to initialize accelerometer
 
         logging.debug(f"(accelerometer.py): Initializing accelerometer...\n")
 
-        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['SMPLRT_DIV'], 7)	# write to sample rate register
-        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['PWR_MGMT_1'], 1) # write to power management register
-        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['CONFIG_REGISTER'], 0) # write to configuration register
-        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['GYRO_CONFIG'], 24) # write to gyro configuration register
-        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['ACCELEROMETER_ADDRESS'], config.ACCELEROMETER_CONFIG['INT_ENABLE'], 1) # write to interrupt enable register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], config.ACCELEROMETER_CONFIG['SMPLRT_DIV'], 7)	# write to sample rate register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], config.ACCELEROMETER_CONFIG['PWR_MGMT_1'], 1) # write to power management register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], config.ACCELEROMETER_CONFIG['CONFIG_REGISTER'], 0) # write to configuration register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], config.ACCELEROMETER_CONFIG['GYRO_CONFIG'], 24) # write to gyro configuration register
+        BUS.write_byte_data(config.ACCELEROMETER_CONFIG['MPU_6050_ADDRESS'], config.ACCELEROMETER_CONFIG['INT_ENABLE'], 1) # write to interrupt enable register
 
         logging.info(f"(accelerometer.py): Accelerometer initialized successfully.\n")
 
