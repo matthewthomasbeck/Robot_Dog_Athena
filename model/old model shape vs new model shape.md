@@ -74,7 +74,7 @@ This document compares your current custom model (97-dimensional state vector) w
    - When idle: [0.0, 0.0, 0.0]
 
 5. **joint_pos** (12 values)
-   - Joint positions **relative to default positions**: [FL_hip, FL_upper, FL_lower, FR_hip, FR_upper, FR_lower, BL_hip, BL_upper, BL_lower, BR_hip, BR_upper, BR_lower]
+   - Joint positions **relative to default positions**
    - Units: **Radians** (relative to default, not absolute)
    - Default positions (absolute):
      - FL: [0.1465, -0.1465, 0.0]
@@ -82,17 +82,29 @@ This document compares your current custom model (97-dimensional state vector) w
      - BL: [-0.1465, 0.1465, 0.0]
      - BR: [0.1465, -0.1465, 0.0]
    - Noise during training: Uniform [-0.01, 0.01]
+   
+   **⚠️ CRITICAL: Joint Ordering**
+   
+   **Option A - Ordered by LEG (current code)**:
+   `[FL_hip, FL_upper, FL_lower, FR_hip, FR_upper, FR_lower, BL_hip, BL_upper, BL_lower, BR_hip, BR_upper, BR_lower]`
+   
+   **Option B - Ordered by JOINT TYPE (like Anymal)**:
+   `[FL_hip, FR_hip, BL_hip, BR_hip, FL_upper, FR_upper, BL_upper, BR_upper, FL_lower, FR_lower, BL_lower, BR_lower]`
+   
+   **You must verify which order your model expects!** See testing section below.
 
 6. **joint_vel** (12 values)
-   - Joint velocities: [FL_hip_vel, FL_upper_vel, FL_lower_vel, ...] (same order as joint_pos)
+   - Joint velocities: **Same order as joint_pos**
    - Units: **Radians/second**
    - Noise during training: Uniform [-1.5, 1.5]
 
 7. **actions** (12 values)
-   - Last action taken by the policy: [a0, a1, ..., a11]
+   - Last action taken by the policy: **Same order as joint_pos**
    - Range: [-1, 1] (raw model output before scaling)
    - Purpose: Provides temporal information to the policy
    - When idle/first step: Use zeros [0, 0, ..., 0] or previous action
+   
+   **⚠️ CRITICAL: Action output order MUST match joint_pos order!**
 
 **Total: 3 + 3 + 3 + 3 + 12 + 12 + 12 = 48 values**
 
@@ -433,6 +445,26 @@ def construct_isaac_lab_observation(
 4. **Actions**: Store the last model output (12 values in [-1, 1]) to use as the `actions` field in the next observation.
 
 5. **When Idle**: Set `velocity_commands = [0.0, 0.0, 0.0]` and `actions` can be zeros or the last action.
+
+6. **⚠️ JOINT ORDERING CRITICAL**: The order of joints in `joint_pos`, `joint_vel`, and `actions` MUST match exactly. If your physical robot moves differently than simulation, the joint ordering is likely wrong. See testing section below.
+
+---
+
+## Testing Joint Ordering
+
+### Method 1: Test with Single Active Joint
+1. Send observation with all joints at default positions
+2. Send action `[1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]` (only first action = 1.0)
+3. Observe which physical joint moves:
+   - If **FL_hip** moves → Order A (by leg) is correct
+   - If **FL_hip** doesn't move → Order B (by type) might be correct
+   - Try action `[1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]` with Order B to see if FL_hip moves
+
+### Method 2: Check Model IO Descriptors
+If you have access to the model's `.yaml` IO descriptor file, it will list the exact joint names in the order the model expects.
+
+### Method 3: Compare with Simulation
+Run the same command in simulation and observe which joints move. Compare with physical robot to identify mismatches.
 
 ---
 

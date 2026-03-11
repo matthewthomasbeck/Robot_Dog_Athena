@@ -155,6 +155,14 @@ PREVIOUS_POSITIONS = [] # array of previous positions for each robot
 
 PREVIOUS_ORIENTATIONS = [] # array of previous orientations for each robot (shift, move, translate, yaw, roll, pitch)
 
+##### joint ordering configuration #####
+
+# Joint ordering scheme for Isaac Lab model compatibility
+# "by_leg": [FL_hip, FL_upper, FL_lower, FR_hip, FR_upper, FR_lower, BL_hip, BL_upper, BL_lower, BR_hip, BR_upper, BR_lower]
+# "by_type": [FL_hip, FR_hip, BL_hip, BR_hip, FL_upper, FR_upper, BL_upper, BR_upper, FL_lower, FR_lower, BL_lower, BR_lower]
+# If physical robot moves differently than simulation, try switching this!
+JOINT_ORDERING_SCHEME = "by_type"  # Options: "by_leg" or "by_type"
+
 ##### set accelerometer configuration #####
 
 ACCELEROMETER_CONFIG = { # dictionary of accelerometer configuration

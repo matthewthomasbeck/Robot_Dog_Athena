@@ -268,18 +268,44 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         velocity_commands = np.array([lin_vel_x, lin_vel_y, ang_vel_z], dtype=np.float32)
 
         # 5) joint_pos (12): joint positions relative to default positions (radians)
+        # CRITICAL: Joint ordering must match model's expected order!
+        # Current scheme: "by_leg" = [FL_hip, FL_upper, FL_lower, FR_hip, FR_upper, FR_lower, BL_hip, BL_upper, BL_lower, BR_hip, BR_upper, BR_lower]
+        # Alternative: "by_type" = [FL_hip, FR_hip, BL_hip, BR_hip, FL_upper, FR_upper, BL_upper, BR_upper, FL_lower, FR_lower, BL_lower, BR_lower]
+        
         joint_pos_abs = []
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        default_positions_list = []
+        
+        if config.JOINT_ORDERING_SCHEME == "by_type":
+            # Order by joint type: all hips, then all uppers, then all lowers
             for joint_name in ['hip', 'upper', 'lower']:
-                joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
+                for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                    joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
+                    # Default positions in same order
+                    if joint_name == 'hip':
+                        defaults = [0.1465, -0.1465, -0.1465, 0.1465]  # FL, FR, BL, BR
+                    elif joint_name == 'upper':
+                        defaults = [-0.1465, 0.1465, 0.1465, -0.1465]  # FL, FR, BL, BR
+                    else:  # lower
+                        defaults = [0.0, 0.0, 0.0, 0.0]  # FL, FR, BL, BR
+                    default_positions_list.append(defaults[['FL', 'FR', 'BL', 'BR'].index(leg_id)])
+        else:  # "by_leg" (default)
+            # Order by leg: all FL joints, then all FR joints, then all BL joints, then all BR joints
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                for joint_name in ['hip', 'upper', 'lower']:
+                    joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
+                    # Default positions in same order
+                    if leg_id == 'FL':
+                        defaults = [0.1465, -0.1465, 0.0]
+                    elif leg_id == 'FR':
+                        defaults = [-0.1465, 0.1465, 0.0]
+                    elif leg_id == 'BL':
+                        defaults = [-0.1465, 0.1465, 0.0]
+                    else:  # BR
+                        defaults = [0.1465, -0.1465, 0.0]
+                    default_positions_list.append(defaults[['hip', 'upper', 'lower'].index(joint_name)])
+        
         joint_pos_abs = np.array(joint_pos_abs, dtype=np.float32)
-
-        default_positions = np.array([
-            0.1465, -0.1465, 0.0,    # FL
-            -0.1465, 0.1465, 0.0,    # FR
-            -0.1465, 0.1465, 0.0,    # BL
-            0.1465, -0.1465, 0.0     # BR
-        ], dtype=np.float32)
+        default_positions = np.array(default_positions_list, dtype=np.float32)
         joint_pos = joint_pos_abs - default_positions
 
         # 6) joint_vel (12): finite-difference of commanded positions
@@ -290,26 +316,46 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         joint_vel = (joint_pos_abs - prev_joint_pos_abs) / dt
 
         # 7) actions (12): previous action output in [-1, 1]
+        # CRITICAL: last_action order MUST match joint_pos/joint_vel order!
+        # The model outputs actions in the same order it expects observations
         if not hasattr(config, "LAST_ACTION") or config.LAST_ACTION is None:
             config.LAST_ACTION = np.zeros(12, dtype=np.float32)
         last_action = np.array(config.LAST_ACTION, dtype=np.float32)
         if last_action.shape != (12,):
             last_action = last_action.reshape(-1)[:12].astype(np.float32)
+        
+        # Verify last_action is in correct order (should already be, but ensure consistency)
+        # Model outputs actions in same order as observation joints, so this should be correct
 
         # Concatenate into 48-dim observation
+        # CRITICAL: Order MUST match Isaac Lab's expected format:
+        # [base_lin_vel(3), base_ang_vel(3), projected_gravity(3), velocity_commands(3),
+        #  joint_pos(12), joint_vel(12), last_action(12)]
+        # All joint-related vectors (joint_pos, joint_vel, last_action) MUST use the SAME ordering!
         obs = np.concatenate([
-            base_lin_vel,       # 3
-            base_ang_vel,       # 3
-            projected_gravity,  # 3
-            velocity_commands,  # 3
-            joint_pos,          # 12
-            joint_vel,          # 12
-            last_action,        # 12
+            base_lin_vel,       # 3: [vx, vy, vz] in m/s
+            base_ang_vel,       # 3: [wx, wy, wz] in rad/s
+            projected_gravity,  # 3: [gx, gy, gz] normalized unit vector
+            velocity_commands,  # 3: [lin_vel_x, lin_vel_y, ang_vel_z] in m/s, m/s, rad/s
+            joint_pos,          # 12: joint positions relative to defaults (order: JOINT_ORDERING_SCHEME)
+            joint_vel,          # 12: joint velocities in rad/s (SAME ORDER as joint_pos)
+            last_action,        # 12: previous actions [-1, 1] (SAME ORDER as joint_pos)
         ]).astype(np.float32)
 
         expected_state_size = 48
         if obs.shape[0] != expected_state_size:
             raise ValueError(f"State size mismatch: expected {expected_state_size}, got {obs.shape[0]}")
+        
+        # Verify component sizes
+        assert len(base_lin_vel) == 3, f"base_lin_vel must be 3, got {len(base_lin_vel)}"
+        assert len(base_ang_vel) == 3, f"base_ang_vel must be 3, got {len(base_ang_vel)}"
+        assert len(projected_gravity) == 3, f"projected_gravity must be 3, got {len(projected_gravity)}"
+        assert len(velocity_commands) == 3, f"velocity_commands must be 3, got {len(velocity_commands)}"
+        assert len(joint_pos) == 12, f"joint_pos must be 12, got {len(joint_pos)}"
+        assert len(joint_vel) == 12, f"joint_vel must be 12, got {len(joint_vel)}"
+        assert len(last_action) == 12, f"last_action must be 12, got {len(last_action)}"
+        
+        logging.debug(f"(inference.py): Observation vector shape: {obs.shape}, ordering scheme: {config.JOINT_ORDERING_SCHEME}")
 
         input_vec = obs.reshape(1, -1)  # batch dimension
 
@@ -318,33 +364,65 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         result = model([input_vec])[output_layer]
 
         ##### parse output #####
+        # CRITICAL: Action order MUST match observation order!
+        # Use the same ordering scheme as joint_pos above
 
         action_idx = 0
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            target_angles[leg_id] = {}
-            movement_rates[leg_id] = {}
-            
+        
+        if config.JOINT_ORDERING_SCHEME == "by_type":
+            # Order by joint type: all hips, then all uppers, then all lowers
             for joint_name in ['hip', 'upper', 'lower']:
-                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-                min_angle = servo_data['FULL_BACK_ANGLE']
-                max_angle = servo_data['FULL_FRONT_ANGLE']
+                for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                    target_angles[leg_id] = target_angles.get(leg_id, {})
+                    movement_rates[leg_id] = movement_rates.get(leg_id, {})
+                    
+                    servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                    min_angle = servo_data['FULL_BACK_ANGLE']
+                    max_angle = servo_data['FULL_FRONT_ANGLE']
 
-                if min_angle > max_angle:
-                    min_angle, max_angle = max_angle, min_angle
+                    if min_angle > max_angle:
+                        min_angle, max_angle = max_angle, min_angle
 
-                target_action = result[0, action_idx]  # get from model output
-                target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
-                target_angle = np.clip(target_angle, min_angle, max_angle)
-                target_angles[leg_id][joint_name] = float(target_angle)
+                    target_action = result[0, action_idx]  # get from model output
+                    target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
+                    target_angle = np.clip(target_angle, min_angle, max_angle)
+                    target_angles[leg_id][joint_name] = float(target_angle)
+                    
+                    movement_rates[leg_id][joint_name] = 1.0  # legacy support
+                    
+                    action_idx += 1
+        else:  # "by_leg" (default)
+            # Order by leg: all FL joints, then all FR joints, then all BL joints, then all BR joints
+            for leg_id in ['FL', 'FR', 'BL', 'BR']:
+                target_angles[leg_id] = {}
+                movement_rates[leg_id] = {}
                 
-                movement_rates[leg_id][joint_name] = 1.0  # legacy support
-                
-                action_idx += 1
+                for joint_name in ['hip', 'upper', 'lower']:
+                    servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                    min_angle = servo_data['FULL_BACK_ANGLE']
+                    max_angle = servo_data['FULL_FRONT_ANGLE']
+
+                    if min_angle > max_angle:
+                        min_angle, max_angle = max_angle, min_angle
+
+                    target_action = result[0, action_idx]  # get from model output
+                    target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
+                    target_angle = np.clip(target_angle, min_angle, max_angle)
+                    target_angles[leg_id][joint_name] = float(target_angle)
+                    
+                    movement_rates[leg_id][joint_name] = 1.0  # legacy support
+                    
+                    action_idx += 1
 
         ##### update state memory for next step #####
 
-        # Store last action (raw policy output in [-1, 1]) and previous joint positions for velocity.
+        # Store last action (raw policy output in [-1, 1]) in the SAME ORDER as observation joints
+        # Model outputs actions in the same order it expects observations, so result[0, :12] 
+        # is already in the correct order matching joint_pos/joint_vel
         config.LAST_ACTION = np.array(result[0, :12], dtype=np.float32).copy()
+        
+        # Store previous joint positions (absolute) in the SAME ORDER as current joint_pos_abs
+        # This ensures joint_vel calculation uses matching indices
         config.PREV_JOINT_POS_ABS = joint_pos_abs.copy()
         
         logging.debug(f"(inference.py): Blind inference completed successfully")
