@@ -209,64 +209,109 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         target_angles = {}
         movement_rates = {}
 
-        logging.info(f"(inference) orientation (accel+gyro): {orientation}")
+        # `orientation` is now expected to be a dict produced by accelerometer.get_orientation_vectors()
+        # containing: base_lin_vel (3), base_ang_vel (3), projected_gravity (3).
+        logging.info(f"(inference) orientation vectors: {orientation}")
         logging.debug(f"(inference.py): Starting blind gait adjustment inference for commands: {commands}, intensity: {intensity}...\n")
 
-        ##### initialize previous positions #####
+        ##### build Isaac Lab 48-dim observation #####
 
-        if not config.PREVIOUS_POSITIONS or len(config.PREVIOUS_POSITIONS) == 0:
-            logging.warning("PREVIOUS_POSITIONS not initialized, initializing for physical robot...")
-            config.PREVIOUS_POSITIONS = []
-            robot_history = deque(maxlen=5)
-            for _ in range(5):
-                robot_history.append(np.zeros(12, dtype=np.float32))
-            config.PREVIOUS_POSITIONS.append(robot_history)
+        # 1) base_lin_vel (3)
+        base_lin_vel = np.array(orientation.get("base_lin_vel", [0.0, 0.0, 0.0]), dtype=np.float32)
+        if base_lin_vel.shape != (3,):
+            base_lin_vel = base_lin_vel.reshape(-1)[:3].astype(np.float32)
 
-        for historical_angles in config.PREVIOUS_POSITIONS[0]:  # Physical robot is always index 0
-            state.extend(historical_angles)
-        
-        ##### initialize previous orientations #####
+        # 2) base_ang_vel (3) (rad/s)
+        base_ang_vel = np.array(orientation["base_ang_vel"], dtype=np.float32)
+        if base_ang_vel.shape != (3,):
+            base_ang_vel = base_ang_vel.reshape(-1)[:3].astype(np.float32)
 
-        if not config.PREVIOUS_ORIENTATIONS or len(config.PREVIOUS_ORIENTATIONS) == 0:
-            logging.warning("PREVIOUS_ORIENTATIONS not initialized, initializing for physical robot...")
-            config.PREVIOUS_ORIENTATIONS = []
-            orientation_history = deque(maxlen=5)
-            for _ in range(5):
-                orientation_history.append(np.zeros(6, dtype=np.float32))
-            config.PREVIOUS_ORIENTATIONS.append(orientation_history)
+        # 3) projected_gravity (3) (unit vector)
+        projected_gravity = np.array(orientation["projected_gravity"], dtype=np.float32)
+        if projected_gravity.shape != (3,):
+            projected_gravity = projected_gravity.reshape(-1)[:3].astype(np.float32)
 
-        for historical_orientation in config.PREVIOUS_ORIENTATIONS[0]:  # Physical robot is always index 0
-            state.extend(historical_orientation)
-        
-        ##### encode commands (6D one-hot for movement commands only) #####
-
+        # 4) velocity_commands (3) from discrete commands (w/s/a/d/arrowleft/arrowright)
         if isinstance(commands, list):
             command_list = commands
         elif isinstance(commands, str):
             command_list = commands.split('+') if commands else []
         else:
             command_list = []
-        
-        command_encoding = [
-            1.0 if 'w' in command_list else 0.0,
-            1.0 if 's' in command_list else 0.0,
-            1.0 if 'a' in command_list else 0.0,
-            1.0 if 'd' in command_list else 0.0,
-            1.0 if 'arrowleft' in command_list else 0.0,
-            1.0 if 'arrowright' in command_list else 0.0
-        ]
-        
-        state.extend(command_encoding)
-        
-        ##### prepare fields #####
 
-        intensity_normalized = (float(intensity) - 5.5) / 4.5
-        state.append(intensity_normalized)
-        state = np.array(state, dtype=np.float32)
-        expected_state_size = 97
-        if len(state) != expected_state_size:
-            raise ValueError(f"State size mismatch: expected {expected_state_size}, got {len(state)}")
-        input_vec = state.reshape(1, -1)  # batch dimension
+        lin_vel_x = 0.0
+        lin_vel_y = 0.0
+        ang_vel_z = 0.0
+
+        # Forward/backward
+        if 'w' in command_list:
+            lin_vel_x = 0.4
+        elif 's' in command_list:
+            lin_vel_x = -0.4
+
+        # Left/right strafe
+        if 'a' in command_list:
+            lin_vel_y = 0.3
+        elif 'd' in command_list:
+            lin_vel_y = -0.3
+
+        # Rotation
+        if 'arrowleft' in command_list:
+            ang_vel_z = 0.5
+        elif 'arrowright' in command_list:
+            ang_vel_z = -0.5
+
+        # Clamp to Isaac Lab typical ranges
+        lin_vel_x = float(np.clip(lin_vel_x, -0.6, 0.6))
+        lin_vel_y = float(np.clip(lin_vel_y, -0.6, 0.6))
+        ang_vel_z = float(np.clip(ang_vel_z, -0.8, 0.8))
+        velocity_commands = np.array([lin_vel_x, lin_vel_y, ang_vel_z], dtype=np.float32)
+
+        # 5) joint_pos (12): joint positions relative to default positions (radians)
+        joint_pos_abs = []
+        for leg_id in ['FL', 'FR', 'BL', 'BR']:
+            for joint_name in ['hip', 'upper', 'lower']:
+                joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
+        joint_pos_abs = np.array(joint_pos_abs, dtype=np.float32)
+
+        default_positions = np.array([
+            0.1465, -0.1465, 0.0,    # FL
+            -0.1465, 0.1465, 0.0,    # FR
+            -0.1465, 0.1465, 0.0,    # BL
+            0.1465, -0.1465, 0.0     # BR
+        ], dtype=np.float32)
+        joint_pos = joint_pos_abs - default_positions
+
+        # 6) joint_vel (12): finite-difference of commanded positions
+        if not hasattr(config, "PREV_JOINT_POS_ABS") or config.PREV_JOINT_POS_ABS is None:
+            config.PREV_JOINT_POS_ABS = joint_pos_abs.copy()
+        prev_joint_pos_abs = np.array(config.PREV_JOINT_POS_ABS, dtype=np.float32)
+        dt = 0.033  # ~30 Hz
+        joint_vel = (joint_pos_abs - prev_joint_pos_abs) / dt
+
+        # 7) actions (12): previous action output in [-1, 1]
+        if not hasattr(config, "LAST_ACTION") or config.LAST_ACTION is None:
+            config.LAST_ACTION = np.zeros(12, dtype=np.float32)
+        last_action = np.array(config.LAST_ACTION, dtype=np.float32)
+        if last_action.shape != (12,):
+            last_action = last_action.reshape(-1)[:12].astype(np.float32)
+
+        # Concatenate into 48-dim observation
+        obs = np.concatenate([
+            base_lin_vel,       # 3
+            base_ang_vel,       # 3
+            projected_gravity,  # 3
+            velocity_commands,  # 3
+            joint_pos,          # 12
+            joint_vel,          # 12
+            last_action,        # 12
+        ]).astype(np.float32)
+
+        expected_state_size = 48
+        if obs.shape[0] != expected_state_size:
+            raise ValueError(f"State size mismatch: expected {expected_state_size}, got {obs.shape[0]}")
+
+        input_vec = obs.reshape(1, -1)  # batch dimension
 
         ##### run inference #####
 
@@ -295,32 +340,12 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
                 movement_rates[leg_id][joint_name] = 1.0  # legacy support
                 
                 action_idx += 1
-        
-        ##### update movement history #####
 
-        current_target_array = np.zeros(12, dtype=np.float32)
-        action_idx = 0
-        for leg_id in ['FL', 'FR', 'BL', 'BR']:
-            for joint_name in ['hip', 'upper', 'lower']:
-                # Store the raw action value (already normalized to [-1, 1])
-                current_target_array[action_idx] = result[0, action_idx]
-                action_idx += 1
+        ##### update state memory for next step #####
 
-        config.PREVIOUS_POSITIONS[0].append(current_target_array)
-        
-        ##### update orientation history #####
-
-        # normalize orientation data to [-1, 1] range
-        normalized_orientation = np.array([
-            np.clip(orientation[0] / 30.0, -1.0, 1.0), # shift: normalize from [-2g, 2g] to [-1, 1]
-            np.clip(orientation[1] / 30.0, -1.0, 1.0), # move: normalize from [-2g, 2g] to [-1, 1] 
-            np.clip(orientation[2] / 30.0, -1.0, 1.0), # translate: normalize from [-2g, 2g] to [-1, 1]
-            np.clip(orientation[3] / 500.0, -1.0, 1.0), # yaw: normalize from [-500°/s, 500°/s] to [-1, 1]
-            np.clip(orientation[4] / 500.0, -1.0, 1.0), # roll: normalize from [-500°/s, 500°/s] to [-1, 1]
-            np.clip(orientation[5] / 500.0, -1.0, 1.0) # pitch: normalize from [-500°/s, 500°/s] to [-1, 1]
-        ], dtype=np.float32)
-
-        config.PREVIOUS_ORIENTATIONS[0].append(normalized_orientation)
+        # Store last action (raw policy output in [-1, 1]) and previous joint positions for velocity.
+        config.LAST_ACTION = np.array(result[0, :12], dtype=np.float32).copy()
+        config.PREV_JOINT_POS_ABS = joint_pos_abs.copy()
         
         logging.debug(f"(inference.py): Blind inference completed successfully")
         return target_angles, movement_rates
