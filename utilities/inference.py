@@ -209,6 +209,7 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         target_angles = {}
         movement_rates = {}
 
+        logging.info(f"(inference) orientation (accel+gyro): {orientation}")
         logging.debug(f"(inference.py): Starting blind gait adjustment inference for commands: {commands}, intensity: {intensity}...\n")
 
         ##### initialize previous positions #####
