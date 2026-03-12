@@ -71,34 +71,66 @@ def set_target(channel, target, speed, acceleration): # function to set target p
 
 def map_angle_to_servo_position(angle, joint_data): # map radian to pwm
 
+    ##### set constants #####
+
+    rad_per_microsecond = 0.002356 # radian change per microsecond of pwm
+
     ##### set variables #####
 
-    full_back_angle = joint_data['FULL_BACK_ANGLE']  # radian position for FULL_BACK PWM
-    full_front_angle = joint_data['FULL_FRONT_ANGLE']  # radian position for FULL_FRONT PWM
-    full_back_pwm = joint_data['FULL_BACK']  # value for full back position
-    full_front_pwm = joint_data['FULL_FRONT']  # value for full front position
-    angle_range = full_front_angle - full_back_angle #
-    pwm_range = full_front_pwm - full_back_pwm
+    neutral_pwm = joint_data['NEUTRAL'] # pwm value for neutral position
+    neutral_angle = joint_data.get('NEUTRAL_ANGLE', 0.0) # radian position for neutral pwm
 
-    logging.debug(f"(servos.py): Mapping radian {angle} to servo position...\n")
+    full_back_angle = joint_data['FULL_BACK_ANGLE'] # radian position for FULL_BACK pwm
+    full_front_angle = joint_data['FULL_FRONT_ANGLE'] # radian position for FULL_FRONT pwm
+    full_back_pwm = joint_data['FULL_BACK'] # value for full back position
+    full_front_pwm = joint_data['FULL_FRONT'] # value for full front position
 
-    ##### map angle to pwm #####
+    logging.debug(f"(servos.py): mapping angle {angle:.4f} rad using neutral "
+                  f"({neutral_angle:.4f} rad -> {neutral_pwm:.1f} us) "
+                  f"and rate {rad_per_microsecond} rad/us...\n")
 
-    if abs(angle_range) < 1e-6: # if dividing by zero...
-        logging.error(f"(servos.py): Invalid angle range: {angle_range}")
-        return full_back_pwm
+    ##### infer servo direction from calibration #####
 
-    pwm = full_back_pwm + (angle - full_back_angle) * (pwm_range / angle_range) # map via interpolation
+    sign = 1.0 # default sign
+    slope_ref = None # reference slope for angle vs pwm near neutral
+
+    if (abs(full_front_pwm - neutral_pwm) > 1e-3 and
+        abs(full_front_angle - neutral_angle) > 1e-6): # prefer front side if valid
+
+        slope_ref = (full_front_angle - neutral_angle) / (full_front_pwm - neutral_pwm)
+
+    elif (abs(full_back_pwm - neutral_pwm) > 1e-3 and
+          abs(full_back_angle - neutral_angle) > 1e-6): # otherwise use back side
+
+        slope_ref = (full_back_angle - neutral_angle) / (full_back_pwm - neutral_pwm)
+
+    if slope_ref is not None: # if able to infer direction...
+        sign = 1.0 if slope_ref > 0 else -1.0 # set sign based on calibration
+    else:
+        logging.warning("(servos.py): could not infer servo direction from calibration; defaulting to positive direction.\n")
+
+    ##### map angle to pwm using neutral anchor and fixed rate #####
+
+    angle_delta = angle - neutral_angle # angle offset from neutral
+
+    if abs(rad_per_microsecond) < 1e-9: # if dividing by zero...
+        logging.error("(servos.py): invalid radian rate; defaulting to neutral pwm.\n")
+        pwm = neutral_pwm
+    else:
+        pwm = neutral_pwm + (angle_delta / (sign * rad_per_microsecond)) # map via fixed rad/us rate
+
+    ##### clamp pwm to calibrated bounds #####
 
     if full_back_pwm < full_front_pwm: # if back value scalar less than front value scalar...
         pwm = max(full_back_pwm, min(full_front_pwm, pwm)) # clamp pwm to valid range
 
     else: # if back value scalar greater than front value scalar...
         pwm = max(full_front_pwm, min(full_back_pwm, pwm)) # clamp pwm to valid range
-    
-    logging.debug(f"(servos.py): Angle {angle:.3f} rad -> PWM {pwm:.1f} (range: {full_back_pwm} to {full_front_pwm})\n")
-    logging.debug(f"(servos.py): Angle range: {full_back_angle:.3f} to {full_front_angle:.3f} rad\n")
-    
+
+    logging.debug(f"(servos.py): angle {angle:.3f} rad -> pwm {pwm:.1f} us "
+                  f"(range: {min(full_back_pwm, full_front_pwm)} to {max(full_back_pwm, full_front_pwm)})\n")
+    logging.debug(f"(servos.py): angle range (config): {full_back_angle:.3f} to {full_front_angle:.3f} rad\n")
+
     return int(round(pwm)) # return calculated pulse width
 
 
