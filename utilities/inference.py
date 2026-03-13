@@ -242,18 +242,21 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         lin_vel_x = 0.0
         lin_vel_y = 0.0
         ang_vel_z = 0.0
+        # NOTE: Training-side frame uses +x as "shift left" and +y as "move backward".
+        # To match this, we remap keys on the robot side:
+        #   a = +x (left), d = -x (right), s = +y (backward), w = -y (forward).
 
-        # Forward/backward
-        if 'w' in command_list:
-            lin_vel_x = 0.4
-        elif 's' in command_list:
-            lin_vel_x = -0.4
-
-        # Left/right strafe
+        # X-axis (left/right in training frame: +x = left)
         if 'a' in command_list:
-            lin_vel_y = 0.3
+            lin_vel_x = 0.4   # shift left → +x
         elif 'd' in command_list:
-            lin_vel_y = -0.3
+            lin_vel_x = -0.4  # shift right → -x
+
+        # Y-axis (forward/backward in training frame: +y = backward)
+        if 's' in command_list:
+            lin_vel_y = 0.3   # move backward → +y
+        elif 'w' in command_list:
+            lin_vel_y = -0.3  # move forward → -y
 
         # Rotation
         if 'arrowleft' in command_list:
