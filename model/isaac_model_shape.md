@@ -431,6 +431,49 @@ class RobotDogPPORunnerCfg(RslRlOnPolicyRunnerCfg):
   4. The observation term `velocity_commands = ObsTerm(func=mdp.generated_commands, params={"command_name": "base_velocity"})` calls `generated_commands`, which returns `env.command_manager.get_command("base_velocity")` = `vel_command_b`.
   5. The observation manager concatenates `velocity_commands` with other policy observations to form `obs["policy"] ∈ ℝ^{num_envs×obs_dim}`.
   6. The RSL-RL PPO runner flattens `obs["policy"]` per env into a 1D feature vector and feeds it into the actor and critic MLPs; the three components of the desired movement vector are fixed in position in this feature vector and condition the policy on the commanded base motion.***
+### 7. Concrete “shape” and units of the movement vector
+
+- **Vector shape per environment**
+  - The movement/command vector that conditions the policy is:
+    - A **3D real-valued vector** per environment: $c \in \mathbb{R}^3$.
+    - Stored as `vel_command_b` with shape `(num_envs, 3)`, where `b` denotes the robot **base frame**.
+  - Component semantics:
+    - $c_0 = v_x^{\text{cmd}}$ – desired forward/backward linear velocity along the robot’s $+x$ axis.
+    - $c_1 = v_y^{\text{cmd}}$ – desired lateral (left/right) linear velocity along the robot’s $+y$ axis.
+    - $c_2 = \omega_z^{\text{cmd}}$ – desired yaw rotational velocity (turn rate) around the $+z$ axis.
+
+- **Direction representation**
+  - There is **no explicit heading angle** (in degrees or radians) in the Robot Dog flat task’s movement vector:
+    - `heading_command` is disabled, so no separate heading command is generated or fed to the model.
+  - Instead, the planar **direction of motion** is encoded implicitly in:
+    - The **signs** and **relative magnitudes** of $(v_x^{\text{cmd}}, v_y^{\text{cmd}})$:
+      - Forward/backward: sign of $v_x^{\text{cmd}}$.
+      - Left/right: sign of $v_y^{\text{cmd}}$.
+      - If you wanted an angle, it would be $\text{atan2}(v_y^{\text{cmd}}, v_x^{\text{cmd}})$, but the network only sees $(v_x^{\text{cmd}}, v_y^{\text{cmd}})$ directly.
+
+- **Units and ranges**
+  - **Linear components**:
+    - Units: **meters per second** (m/s).
+    - For Robot Dog flat:
+      - $v_x^{\text{cmd}} \sim \mathcal{U}(-0.6, 0.6)$ m/s.
+      - $v_y^{\text{cmd}} \sim \mathcal{U}(-0.6, 0.6)$ m/s.
+  - **Angular component**:
+    - Units: **radians per second** (rad/s), *not* degrees.
+    - For Robot Dog flat:
+      - $\omega_z^{\text{cmd}} \sim \mathcal{U}(-0.8, 0.8)$ rad/s.
+  - There is **no separate scalar speed input**:
+    - The policy could infer $\|v_{\text{xy}}^{\text{cmd}}\| = \sqrt{(v_x^{\text{cmd}})^2 + (v_y^{\text{cmd}})^2}$ internally, but only the raw Cartesian components and yaw rate are provided.
+
+- **How this appears in the final model input**
+  - In the concatenated `policy` observation vector for each env:
+    - The three movement-vector entries appear as three contiguous floats:
+      - One index for $v_x^{\text{cmd}}$ (m/s),
+      - Next for $v_y^{\text{cmd}}$ (m/s),
+      - Next for $\omega_z^{\text{cmd}}$ (rad/s).
+  - These live alongside:
+    - Actual base linear/angular velocity, projected gravity, joint states, and last actions.
+  - From the network’s point of view, the movement vector is just three well-scaled numeric features indicating **“how fast and in what planar direction, plus how fast to rotate in yaw”** in the base frame.
+
 # Isaac Lab Model Shape - Complete Specification
 
 ## 48-Dimensional Observation Vector (Input to Model)
