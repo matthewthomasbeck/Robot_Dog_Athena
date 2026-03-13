@@ -71,6 +71,37 @@ def normalize_feet_positions(feet_dict, min_xyz, max_xyz):
     return np.array(arr, dtype=np.float32)
 
 
+########## INTERPRET INTENSITY ##########
+
+def interpret_intensity(intensity):
+
+    ##### interpret joystick intensity (1-10) into speed in m/s #####
+
+    try:  # try to interpret intensity safely
+
+        # clamp intensity to valid range
+        level = int(intensity)
+        if level <= 0:
+            return 0.0  # no movement for zero/invalid intensity
+        if level > 10:
+            level = 10
+
+        # divide range [0.1 m/s, TOP_SPEED] into 10 equal parts
+        min_speed = 0.1
+        max_speed = float(config.TOP_SPEED)
+        steps = 10 - 1  # 9 intervals between 10 levels
+
+        # map level 1..10 to speeds between 0.1 and TOP_SPEED (inclusive)
+        fraction = (level - 1) / steps if steps > 0 else 0.0
+        speed = min_speed + fraction * (max_speed - min_speed)
+
+        return float(speed)
+
+    except Exception as e:
+        logging.error(f"(inference.py): Failed to interpret intensity '{intensity}': {e}")
+        return 0.0
+
+
 ########## LOAD AND COMPILE MODEL ##########
 
 def load_and_compile_model( # function to load and compile an OpenVINO model
@@ -242,21 +273,25 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         lin_vel_x = 0.0
         lin_vel_y = 0.0
         ang_vel_z = 0.0
+
         # NOTE: Training-side frame uses +x as "shift left" and +y as "move backward".
         # To match this, we remap keys on the robot side:
         #   a = +x (left), d = -x (right), s = +y (backward), w = -y (forward).
+        # We also scale the commanded linear speed based on joystick/command intensity.
+
+        linear_speed = interpret_intensity(intensity)  # speed in m/s based on intensity (1-10)
 
         # X-axis (left/right in training frame: +x = left)
         if 'a' in command_list:
-            lin_vel_x = 0.4   # shift left → +x
+            lin_vel_x = linear_speed    # shift left → +x
         elif 'd' in command_list:
-            lin_vel_x = -0.4  # shift right → -x
+            lin_vel_x = -linear_speed   # shift right → -x
 
         # Y-axis (forward/backward in training frame: +y = backward)
         if 's' in command_list:
-            lin_vel_y = 0.3   # move backward → +y
+            lin_vel_y = linear_speed    # move backward → +y
         elif 'w' in command_list:
-            lin_vel_y = -0.3  # move forward → -y
+            lin_vel_y = -linear_speed   # move forward → -y
 
         # Rotation
         if 'arrowleft' in command_list:

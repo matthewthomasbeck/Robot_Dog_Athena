@@ -126,6 +126,10 @@ INTERNET_CONFIG = {
 
 ########## PHYSICAL CONFIGURATION ##########
 
+##### robot top speed #####
+
+TOP_SPEED = 0.6 # in m/s
+
 ##### set dictionary of servos and their ranges #####
 
 SERVO_CONFIG = { # dictionary of leg configurations
