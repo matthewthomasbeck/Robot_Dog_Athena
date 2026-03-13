@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed orientation bugs, awaiting new model from simulation">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed mapping issue between radians and PWM, still not confident in walking entirely but getting there">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.bin" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.pth" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,38 +49,38 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
-    &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
-    &quot;Python.pth_to_xml.executor&quot;: &quot;Run&quot;,
-    &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_complete_pipeline.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_xml.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test_xml_intel.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.control_logic.executor": "Run",
+    "Python.export_model.executor": "Run",
+    "Python.pth_to_xml.executor": "Run",
+    "Python.simulation_test.executor": "Run",
+    "Python.test_complete_pipeline.executor": "Run",
+    "Python.test_xml.executor": "Run",
+    "Python.test_xml_intel.executor": "Run",
+    "Python.visualize.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/custom_parts" />
+      <recent name="$PROJECT_DIR$/images" />
       <recent name="$PROJECT_DIR$/model" />
       <recent name="$PROJECT_DIR$/training/urdf" />
       <recent name="$PROJECT_DIR$/backend_to_frontend" />
-      <recent name="$PROJECT_DIR$/training" />
-      <recent name="$PROJECT_DIR$/rl_training/urdf" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/model/old_models" />
@@ -222,6 +224,15 @@
       <workItem from="1757858895050" duration="449000" />
       <workItem from="1757891787858" duration="5876000" />
       <workItem from="1758402832526" duration="11000" />
+      <workItem from="1758409777852" duration="6007000" />
+      <workItem from="1758417102139" duration="514000" />
+      <workItem from="1758419697048" duration="141000" />
+      <workItem from="1758423155864" duration="747000" />
+      <workItem from="1758456981746" duration="5090000" />
+      <workItem from="1758829608119" duration="1005000" />
+      <workItem from="1773197251084" duration="40000" />
+      <workItem from="1773197335716" duration="18817000" />
+      <workItem from="1773371241954" duration="3727000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
@@ -363,174 +374,6 @@
       <option name="project" value="LOCAL" />
       <updated>1737899730759</updated>
     </task>
-    <task id="LOCAL-00125" summary="Got basic implementation of movement reward  function, still need to finish it and fix the agent so its data sizes aren't dynamic">
-      <option name="closed" value="true" />
-      <created>1755452141973</created>
-      <option name="number" value="00125" />
-      <option name="presentableId" value="LOCAL-00125" />
-      <option name="project" value="LOCAL" />
-      <updated>1755452141973</updated>
-    </task>
-    <task id="LOCAL-00126" summary="Reward functions finished">
-      <option name="closed" value="true" />
-      <created>1755455355286</created>
-      <option name="number" value="00126" />
-      <option name="presentableId" value="LOCAL-00126" />
-      <option name="project" value="LOCAL" />
-      <updated>1755455355287</updated>
-    </task>
-    <task id="LOCAL-00127" summary="Made commands structure human readable but also computer-consistent to avoid dynamic shapes">
-      <option name="closed" value="true" />
-      <created>1755459358169</created>
-      <option name="number" value="00127" />
-      <option name="presentableId" value="LOCAL-00127" />
-      <option name="project" value="LOCAL" />
-      <updated>1755459358169</updated>
-    </task>
-    <task id="LOCAL-00128" summary="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me">
-      <option name="closed" value="true" />
-      <created>1755463753508</created>
-      <option name="number" value="00128" />
-      <option name="presentableId" value="LOCAL-00128" />
-      <option name="project" value="LOCAL" />
-      <updated>1755463753508</updated>
-    </task>
-    <task id="LOCAL-00129" summary="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!">
-      <option name="closed" value="true" />
-      <created>1755484449828</created>
-      <option name="number" value="00129" />
-      <option name="presentableId" value="LOCAL-00129" />
-      <option name="project" value="LOCAL" />
-      <updated>1755484449828</updated>
-    </task>
-    <task id="LOCAL-00130" summary="100k steps model">
-      <option name="closed" value="true" />
-      <created>1755488242935</created>
-      <option name="number" value="00130" />
-      <option name="presentableId" value="LOCAL-00130" />
-      <option name="project" value="LOCAL" />
-      <updated>1755488242935</updated>
-    </task>
-    <task id="LOCAL-00131" summary="Adjusted config for isaac use">
-      <option name="closed" value="true" />
-      <created>1755488287160</created>
-      <option name="number" value="00131" />
-      <option name="presentableId" value="LOCAL-00131" />
-      <option name="project" value="LOCAL" />
-      <updated>1755488287160</updated>
-    </task>
-    <task id="LOCAL-00132" summary="Got rid of stupid .pth file naming convention">
-      <option name="closed" value="true" />
-      <created>1755488748305</created>
-      <option name="number" value="00132" />
-      <option name="presentableId" value="LOCAL-00132" />
-      <option name="project" value="LOCAL" />
-      <updated>1755488748305</updated>
-    </task>
-    <task id="LOCAL-00133" summary="Going to resume training, hopefully things go better but I doubt they will :l">
-      <option name="closed" value="true" />
-      <created>1756266730353</created>
-      <option name="number" value="00133" />
-      <option name="presentableId" value="LOCAL-00133" />
-      <option name="project" value="LOCAL" />
-      <updated>1756266730353</updated>
-    </task>
-    <task id="LOCAL-00134" summary="UPDATE: Things have gone a little better, at around 1.28 million steps, somewhat of a very shitty gait can be seen; pushing before I hopefully get multiagent continuous training going">
-      <option name="closed" value="true" />
-      <created>1756569080531</created>
-      <option name="number" value="00134" />
-      <option name="presentableId" value="LOCAL-00134" />
-      <option name="project" value="LOCAL" />
-      <updated>1756569080531</updated>
-    </task>
-    <task id="LOCAL-00135" summary="I think I decoupled episode logic from model saving???? Bro I am so confused">
-      <option name="closed" value="true" />
-      <created>1756596289639</created>
-      <option name="number" value="00135" />
-      <option name="presentableId" value="LOCAL-00135" />
-      <option name="project" value="LOCAL" />
-      <updated>1756596289639</updated>
-    </task>
-    <task id="LOCAL-00136" summary="Multiple robots spawning in">
-      <option name="closed" value="true" />
-      <created>1756660546688</created>
-      <option name="number" value="00136" />
-      <option name="presentableId" value="LOCAL-00136" />
-      <option name="project" value="LOCAL" />
-      <updated>1756660546688</updated>
-    </task>
-    <task id="LOCAL-00137" summary="Saving before starting training from scratch">
-      <option name="closed" value="true" />
-      <created>1756747053924</created>
-      <option name="number" value="00137" />
-      <option name="presentableId" value="LOCAL-00137" />
-      <option name="project" value="LOCAL" />
-      <updated>1756747053924</updated>
-    </task>
-    <task id="LOCAL-00138" summary="Got multiple robots spawning in with individual control!!!">
-      <option name="closed" value="true" />
-      <created>1756764687042</created>
-      <option name="number" value="00138" />
-      <option name="presentableId" value="LOCAL-00138" />
-      <option name="project" value="LOCAL" />
-      <updated>1756764687043</updated>
-    </task>
-    <task id="LOCAL-00139" summary="Added threading again to isaac movement, saving before trying to fix rewards">
-      <option name="closed" value="true" />
-      <created>1756767017963</created>
-      <option name="number" value="00139" />
-      <option name="presentableId" value="LOCAL-00139" />
-      <option name="project" value="LOCAL" />
-      <updated>1756767017963</updated>
-    </task>
-    <task id="LOCAL-00140" summary="Robots can now run in parallel (but they still all must respawn at once)">
-      <option name="closed" value="true" />
-      <created>1756842806880</created>
-      <option name="number" value="00140" />
-      <option name="presentableId" value="LOCAL-00140" />
-      <option name="project" value="LOCAL" />
-      <updated>1756842806880</updated>
-    </task>
-    <task id="LOCAL-00141" summary="Parallel training complete, fingers crossed everything goes well">
-      <option name="closed" value="true" />
-      <created>1756847022847</created>
-      <option name="number" value="00141" />
-      <option name="presentableId" value="LOCAL-00141" />
-      <option name="project" value="LOCAL" />
-      <updated>1756847022847</updated>
-    </task>
-    <task id="LOCAL-00142" summary="Everything going well, changing naming format of models saved">
-      <option name="closed" value="true" />
-      <created>1756847842335</created>
-      <option name="number" value="00142" />
-      <option name="presentableId" value="LOCAL-00142" />
-      <option name="project" value="LOCAL" />
-      <updated>1756847842335</updated>
-    </task>
-    <task id="LOCAL-00143" summary="Rapid training achieved&#10;kms">
-      <option name="closed" value="true" />
-      <created>1756952503390</created>
-      <option name="number" value="00143" />
-      <option name="presentableId" value="LOCAL-00143" />
-      <option name="project" value="LOCAL" />
-      <updated>1756952503390</updated>
-    </task>
-    <task id="LOCAL-00144" summary="Solved annoying model duplication bug, testing regular model trainin and better episode resetting">
-      <option name="closed" value="true" />
-      <created>1757023338166</created>
-      <option name="number" value="00144" />
-      <option name="presentableId" value="LOCAL-00144" />
-      <option name="project" value="LOCAL" />
-      <updated>1757023338166</updated>
-    </task>
-    <task id="LOCAL-00145" summary="Fixed bugs from making code physical-exclusive">
-      <option name="closed" value="true" />
-      <created>1757296146818</created>
-      <option name="number" value="00145" />
-      <option name="presentableId" value="LOCAL-00145" />
-      <option name="project" value="LOCAL" />
-      <updated>1757296146819</updated>
-    </task>
     <task id="LOCAL-00146" summary="Adjusted copyright statement">
       <option name="closed" value="true" />
       <created>1757296394688</created>
@@ -595,11 +438,182 @@
       <option name="project" value="LOCAL" />
       <updated>1757966352868</updated>
     </task>
-    <option name="localTasksCounter" value="154" />
+    <task id="LOCAL-00154" summary="Created README.md with GIF">
+      <option name="closed" value="true" />
+      <created>1758410996155</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
+      <option name="project" value="LOCAL" />
+      <updated>1758410996156</updated>
+    </task>
+    <task id="LOCAL-00155" summary="Created README.md with GIF">
+      <option name="closed" value="true" />
+      <created>1758411177833</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1758411177833</updated>
+    </task>
+    <task id="LOCAL-00156" summary="Added images folder for better github presentation">
+      <option name="closed" value="true" />
+      <created>1758411538606</created>
+      <option name="number" value="00156" />
+      <option name="presentableId" value="LOCAL-00156" />
+      <option name="project" value="LOCAL" />
+      <updated>1758411538607</updated>
+    </task>
+    <task id="LOCAL-00157" summary="Added parts, edited README">
+      <option name="closed" value="true" />
+      <created>1758415412742</created>
+      <option name="number" value="00157" />
+      <option name="presentableId" value="LOCAL-00157" />
+      <option name="project" value="LOCAL" />
+      <updated>1758415412742</updated>
+    </task>
+    <task id="LOCAL-00158" summary="README semantics">
+      <option name="closed" value="true" />
+      <created>1758415542496</created>
+      <option name="number" value="00158" />
+      <option name="presentableId" value="LOCAL-00158" />
+      <option name="project" value="LOCAL" />
+      <updated>1758415542496</updated>
+    </task>
+    <task id="LOCAL-00159" summary="README semantics">
+      <option name="closed" value="true" />
+      <created>1758415769006</created>
+      <option name="number" value="00159" />
+      <option name="presentableId" value="LOCAL-00159" />
+      <option name="project" value="LOCAL" />
+      <updated>1758415769006</updated>
+    </task>
+    <task id="LOCAL-00160" summary="README semantics">
+      <option name="closed" value="true" />
+      <created>1758415868815</created>
+      <option name="number" value="00160" />
+      <option name="presentableId" value="LOCAL-00160" />
+      <option name="project" value="LOCAL" />
+      <updated>1758415868815</updated>
+    </task>
+    <task id="LOCAL-00161" summary="Table broke in README.md">
+      <option name="closed" value="true" />
+      <created>1758415952436</created>
+      <option name="number" value="00161" />
+      <option name="presentableId" value="LOCAL-00161" />
+      <option name="project" value="LOCAL" />
+      <updated>1758415952436</updated>
+    </task>
+    <task id="LOCAL-00162" summary="Messed up link to athena page">
+      <option name="closed" value="true" />
+      <created>1758417126039</created>
+      <option name="number" value="00162" />
+      <option name="presentableId" value="LOCAL-00162" />
+      <option name="project" value="LOCAL" />
+      <updated>1758417126039</updated>
+    </task>
+    <task id="LOCAL-00163" summary="Fixed hideous links">
+      <option name="closed" value="true" />
+      <created>1758417472334</created>
+      <option name="number" value="00163" />
+      <option name="presentableId" value="LOCAL-00163" />
+      <option name="project" value="LOCAL" />
+      <updated>1758417472334</updated>
+    </task>
+    <task id="LOCAL-00164" summary="Changed link from Amazon to AliExpress">
+      <option name="closed" value="true" />
+      <created>1758419831729</created>
+      <option name="number" value="00164" />
+      <option name="presentableId" value="LOCAL-00164" />
+      <option name="project" value="LOCAL" />
+      <updated>1758419831729</updated>
+    </task>
+    <task id="LOCAL-00165" summary="Semantics">
+      <option name="closed" value="true" />
+      <created>1758423746496</created>
+      <option name="number" value="00165" />
+      <option name="presentableId" value="LOCAL-00165" />
+      <option name="project" value="LOCAL" />
+      <updated>1758423746496</updated>
+    </task>
+    <task id="LOCAL-00166" summary="Made links prettier">
+      <option name="closed" value="true" />
+      <created>1758457218645</created>
+      <option name="number" value="00166" />
+      <option name="presentableId" value="LOCAL-00166" />
+      <option name="project" value="LOCAL" />
+      <updated>1758457218645</updated>
+    </task>
+    <task id="LOCAL-00167" summary="Highlight fix">
+      <option name="closed" value="true" />
+      <created>1758457295409</created>
+      <option name="number" value="00167" />
+      <option name="presentableId" value="LOCAL-00167" />
+      <option name="project" value="LOCAL" />
+      <updated>1758457295409</updated>
+    </task>
+    <task id="LOCAL-00168" summary="Highlight fix x2">
+      <option name="closed" value="true" />
+      <created>1758457381441</created>
+      <option name="number" value="00168" />
+      <option name="presentableId" value="LOCAL-00168" />
+      <option name="project" value="LOCAL" />
+      <updated>1758457381441</updated>
+    </task>
+    <task id="LOCAL-00169" summary="README fix x3">
+      <option name="closed" value="true" />
+      <created>1758457475481</created>
+      <option name="number" value="00169" />
+      <option name="presentableId" value="LOCAL-00169" />
+      <option name="project" value="LOCAL" />
+      <updated>1758457475481</updated>
+    </task>
+    <task id="LOCAL-00170" summary="README improvements">
+      <option name="closed" value="true" />
+      <created>1758458061263</created>
+      <option name="number" value="00170" />
+      <option name="presentableId" value="LOCAL-00170" />
+      <option name="project" value="LOCAL" />
+      <updated>1758458061263</updated>
+    </task>
+    <task id="LOCAL-00171" summary="README improvements">
+      <option name="closed" value="true" />
+      <created>1758458510857</created>
+      <option name="number" value="00171" />
+      <option name="presentableId" value="LOCAL-00171" />
+      <option name="project" value="LOCAL" />
+      <updated>1758458510857</updated>
+    </task>
+    <task id="LOCAL-00172" summary="(bug fix) accelerometer address incorrectly named in the accelerometer.py file, fixing">
+      <option name="closed" value="true" />
+      <created>1773198434585</created>
+      <option name="number" value="00172" />
+      <option name="presentableId" value="LOCAL-00172" />
+      <option name="project" value="LOCAL" />
+      <updated>1773198434586</updated>
+    </task>
+    <task id="LOCAL-00173" summary="Added IMU debug code and logs for testing">
+      <option name="closed" value="true" />
+      <created>1773205183605</created>
+      <option name="number" value="00173" />
+      <option name="presentableId" value="LOCAL-00173" />
+      <option name="project" value="LOCAL" />
+      <updated>1773205183605</updated>
+    </task>
+    <task id="LOCAL-00174" summary="Fixed mapping issue between radians and PWM, still not confident in walking entirely but getting there">
+      <option name="closed" value="true" />
+      <created>1773290509887</created>
+      <option name="number" value="00174" />
+      <option name="presentableId" value="LOCAL-00174" />
+      <option name="project" value="LOCAL" />
+      <updated>1773290509888</updated>
+    </task>
+    <option name="localTasksCounter" value="175" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.md" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -613,23 +627,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Supposedly fixed dynamic dims issue, so I can move models to the NCS2; fingers crossed and God watch over me" />
-    <MESSAGE value="Aug 17, 2025, exactly 9PM, model officially works on board the robot dog!!!!!" />
-    <MESSAGE value="100k steps model" />
-    <MESSAGE value="Adjusted config for isaac use" />
-    <MESSAGE value="Got rid of stupid .pth file naming convention" />
-    <MESSAGE value="Going to resume training, hopefully things go better but I doubt they will :l" />
-    <MESSAGE value="UPDATE: Things have gone a little better, at around 1.28 million steps, somewhat of a very shitty gait can be seen; pushing before I hopefully get multiagent continuous training going" />
-    <MESSAGE value="I think I decoupled episode logic from model saving???? Bro I am so confused" />
-    <MESSAGE value="Multiple robots spawning in" />
-    <MESSAGE value="Saving before starting training from scratch" />
-    <MESSAGE value="Got multiple robots spawning in with individual control!!!" />
-    <MESSAGE value="Added threading again to isaac movement, saving before trying to fix rewards" />
-    <MESSAGE value="Robots can now run in parallel (but they still all must respawn at once)" />
-    <MESSAGE value="Parallel training complete, fingers crossed everything goes well" />
-    <MESSAGE value="Everything going well, changing naming format of models saved" />
-    <MESSAGE value="Rapid training achieved&#10;kms" />
-    <MESSAGE value="Solved annoying model duplication bug, testing regular model trainin and better episode resetting" />
     <MESSAGE value="Fixed bugs from making code physical-exclusive" />
     <MESSAGE value="Adjusted copyright statement" />
     <MESSAGE value="Cleaned up comments" />
@@ -638,7 +635,24 @@
     <MESSAGE value="Added accelerometer to robot and added a working implementation" />
     <MESSAGE value="IMPORTANT: Completely integrated accelerometer, the model will no longer work as the input dim 67→97; bugs will likely pop up once orientation has been implemented isaac-side" />
     <MESSAGE value="Fixed orientation bugs, awaiting new model from simulation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed orientation bugs, awaiting new model from simulation" />
+    <MESSAGE value="Created README.md with GIF" />
+    <MESSAGE value="Added images folder for better github presentation" />
+    <MESSAGE value="Added parts, edited README" />
+    <MESSAGE value="README semantics" />
+    <MESSAGE value="Table broke in README.md" />
+    <MESSAGE value="Messed up link to athena page" />
+    <MESSAGE value="Fixed hideous links" />
+    <MESSAGE value="Changed link from Amazon to AliExpress" />
+    <MESSAGE value="Semantics" />
+    <MESSAGE value="Made links prettier" />
+    <MESSAGE value="Highlight fix" />
+    <MESSAGE value="Highlight fix x2" />
+    <MESSAGE value="README fix x3" />
+    <MESSAGE value="README improvements" />
+    <MESSAGE value="(bug fix) accelerometer address incorrectly named in the accelerometer.py file, fixing" />
+    <MESSAGE value="Added IMU debug code and logs for testing" />
+    <MESSAGE value="Fixed mapping issue between radians and PWM, still not confident in walking entirely but getting there" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed mapping issue between radians and PWM, still not confident in walking entirely but getting there" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Robot_Dog$test_complete_pipeline.coverage" NAME="test_complete_pipeline Coverage Results" MODIFIED="1755478654884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/model" />
