@@ -73,7 +73,7 @@ def map_angle_to_servo_position(angle, joint_data): # map radian to pwm
 
     ##### set constants #####
 
-    rad_per_microsecond = 0.002356 # radian change per microsecond of pwm
+    rad_per_microsecond = 0.001997 # radian change per microsecond of pwm
 
     ##### set variables #####
 
