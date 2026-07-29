@@ -161,11 +161,35 @@ PREVIOUS_ORIENTATIONS = [] # array of previous orientations for each robot (shif
 
 ##### joint ordering configuration #####
 
-# Joint ordering scheme for Isaac Lab model compatibility
-# "by_leg": [FL_hip, FL_upper, FL_lower, FR_hip, FR_upper, FR_lower, BL_hip, BL_upper, BL_lower, BR_hip, BR_upper, BR_lower]
-# "by_type": [FL_hip, FR_hip, BL_hip, BR_hip, FL_upper, FR_upper, BL_upper, BR_upper, FL_lower, FR_lower, BL_lower, BR_lower]
-# If physical robot moves differently than simulation, try switching this!
-JOINT_ORDERING_SCHEME = "by_type"  # Options: "by_leg" or "by_type"
+# Exact joint order from Isaac Lab JointPositionAction resolution
+# (logged as: Resolved joint names for the action term JointPositionAction).
+# Do not reorder — obs, last_action, and action decode must all use this list.
+ISAAC_JOINT_ORDER = [
+    "BL_hip", "BR_hip", "FL_hip", "FR_hip",
+    "BL_upper", "BR_upper", "FL_upper", "FR_upper",
+    "BL_lower", "BR_lower", "FL_lower", "FR_lower",
+]
+
+# Default standing/camber pose from Isaac Lab ROBOT_DOG_CFG.init_state.joint_pos
+ISAAC_DEFAULT_JOINT_POS = {
+    "BL_hip": -0.1465,
+    "BR_hip": 0.1465,
+    "FL_hip": 0.1465,
+    "FR_hip": -0.1465,
+    "BL_upper": 0.1465,
+    "BR_upper": -0.1465,
+    "FL_upper": -0.1465,
+    "FR_upper": 0.1465,
+    "BL_lower": 0.0,
+    "BR_lower": 0.0,
+    "FL_lower": 0.0,
+    "FR_lower": 0.0,
+}
+
+# Legacy toggle kept for reference only. Inference now always uses ISAAC_JOINT_ORDER.
+# "by_leg": FL/FR/BL/BR each hip-upper-lower
+# "by_type_legacy": FL,FR,BL,BR within each joint type (WRONG vs Isaac — was FL/FR/BL/BR, Isaac is BL/BR/FL/FR)
+JOINT_ORDERING_SCHEME = "isaac"  # Options: "isaac" (required), legacy: "by_leg", "by_type"
 
 ##### set accelerometer configuration #####
 

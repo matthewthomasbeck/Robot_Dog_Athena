@@ -306,42 +306,15 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         velocity_commands = np.array([lin_vel_x, lin_vel_y, ang_vel_z], dtype=np.float32)
 
         # 5) joint_pos (12): joint positions relative to default positions (radians)
-        # CRITICAL: Joint ordering must match model's expected order!
-        # Current scheme: "by_leg" = [FL_hip, FL_upper, FL_lower, FR_hip, FR_upper, FR_lower, BL_hip, BL_upper, BL_lower, BR_hip, BR_upper, BR_lower]
-        # Alternative: "by_type" = [FL_hip, FR_hip, BL_hip, BR_hip, FL_upper, FR_upper, BL_upper, BR_upper, FL_lower, FR_lower, BL_lower, BR_lower]
-        
+        # CRITICAL: Order must match Isaac Lab JointPositionAction resolution (ISAAC_JOINT_ORDER).
+        joint_order = list(config.ISAAC_JOINT_ORDER)
         joint_pos_abs = []
         default_positions_list = []
-        
-        if config.JOINT_ORDERING_SCHEME == "by_type":
-            # Order by joint type: all hips, then all uppers, then all lowers
-            for joint_name in ['hip', 'upper', 'lower']:
-                for leg_id in ['FL', 'FR', 'BL', 'BR']:
-                    joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
-                    # Default positions in same order
-                    if joint_name == 'hip':
-                        defaults = [0.1465, -0.1465, -0.1465, 0.1465]  # FL, FR, BL, BR
-                    elif joint_name == 'upper':
-                        defaults = [-0.1465, 0.1465, 0.1465, -0.1465]  # FL, FR, BL, BR
-                    else:  # lower
-                        defaults = [0.0, 0.0, 0.0, 0.0]  # FL, FR, BL, BR
-                    default_positions_list.append(defaults[['FL', 'FR', 'BL', 'BR'].index(leg_id)])
-        else:  # "by_leg" (default)
-            # Order by leg: all FL joints, then all FR joints, then all BL joints, then all BR joints
-            for leg_id in ['FL', 'FR', 'BL', 'BR']:
-                for joint_name in ['hip', 'upper', 'lower']:
-                    joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
-                    # Default positions in same order
-                    if leg_id == 'FL':
-                        defaults = [0.1465, -0.1465, 0.0]
-                    elif leg_id == 'FR':
-                        defaults = [-0.1465, 0.1465, 0.0]
-                    elif leg_id == 'BL':
-                        defaults = [-0.1465, 0.1465, 0.0]
-                    else:  # BR
-                        defaults = [0.1465, -0.1465, 0.0]
-                    default_positions_list.append(defaults[['hip', 'upper', 'lower'].index(joint_name)])
-        
+        for joint_key in joint_order:
+            leg_id, joint_name = joint_key.split("_", 1)
+            joint_pos_abs.append(float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE']))
+            default_positions_list.append(float(config.ISAAC_DEFAULT_JOINT_POS[joint_key]))
+
         joint_pos_abs = np.array(joint_pos_abs, dtype=np.float32)
         default_positions = np.array(default_positions_list, dtype=np.float32)
         joint_pos = joint_pos_abs - default_positions
@@ -375,7 +348,7 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
             base_ang_vel,       # 3: [wx, wy, wz] in rad/s
             projected_gravity,  # 3: [gx, gy, gz] normalized unit vector
             velocity_commands,  # 3: [lin_vel_x, lin_vel_y, ang_vel_z] in m/s, m/s, rad/s
-            joint_pos,          # 12: joint positions relative to defaults (order: JOINT_ORDERING_SCHEME)
+            joint_pos,          # 12: joint positions relative to defaults (ISAAC_JOINT_ORDER)
             joint_vel,          # 12: joint velocities in rad/s (SAME ORDER as joint_pos)
             last_action,        # 12: previous actions [-1, 1] (SAME ORDER as joint_pos)
         ]).astype(np.float32)
@@ -393,7 +366,7 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         assert len(joint_vel) == 12, f"joint_vel must be 12, got {len(joint_vel)}"
         assert len(last_action) == 12, f"last_action must be 12, got {len(last_action)}"
         
-        logging.debug(f"(inference.py): Observation vector shape: {obs.shape}, ordering scheme: {config.JOINT_ORDERING_SCHEME}")
+        logging.debug(f"(inference.py): Observation vector shape: {obs.shape}, joint_order: {joint_order}")
 
         input_vec = obs.reshape(1, -1)  # batch dimension
 
@@ -402,49 +375,27 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         result = model([input_vec])[output_layer]
 
         ##### parse output #####
-        # CRITICAL: Action order MUST match observation order!
+        # CRITICAL: Action order MUST match observation order (ISAAC_JOINT_ORDER)!
         # Isaac Lab JointPositionAction: q_des = default_joint_pos + scale * action
         # (scale=0.5, use_default_offset=True). Do NOT map actions across full servo range.
         ACTION_SCALE = 0.5
         raw_actions = np.array(result[0, :12], dtype=np.float32)
         target_angles_abs = default_positions + ACTION_SCALE * raw_actions
 
-        action_idx = 0
+        for action_idx, joint_key in enumerate(joint_order):
+            leg_id, joint_name = joint_key.split("_", 1)
+            target_angles[leg_id] = target_angles.get(leg_id, {})
+            movement_rates[leg_id] = movement_rates.get(leg_id, {})
 
-        if config.JOINT_ORDERING_SCHEME == "by_type":
-            # Order by joint type: all hips, then all uppers, then all lowers
-            for joint_name in ['hip', 'upper', 'lower']:
-                for leg_id in ['FL', 'FR', 'BL', 'BR']:
-                    target_angles[leg_id] = target_angles.get(leg_id, {})
-                    movement_rates[leg_id] = movement_rates.get(leg_id, {})
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            min_angle = servo_data['FULL_BACK_ANGLE']
+            max_angle = servo_data['FULL_FRONT_ANGLE']
+            if min_angle > max_angle:
+                min_angle, max_angle = max_angle, min_angle
 
-                    servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-                    min_angle = servo_data['FULL_BACK_ANGLE']
-                    max_angle = servo_data['FULL_FRONT_ANGLE']
-                    if min_angle > max_angle:
-                        min_angle, max_angle = max_angle, min_angle
-
-                    target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
-                    target_angles[leg_id][joint_name] = target_angle
-                    movement_rates[leg_id][joint_name] = 1.0  # legacy support
-                    action_idx += 1
-        else:  # "by_leg" (default)
-            # Order by leg: all FL joints, then all FR joints, then all BL joints, then all BR joints
-            for leg_id in ['FL', 'FR', 'BL', 'BR']:
-                target_angles[leg_id] = {}
-                movement_rates[leg_id] = {}
-
-                for joint_name in ['hip', 'upper', 'lower']:
-                    servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-                    min_angle = servo_data['FULL_BACK_ANGLE']
-                    max_angle = servo_data['FULL_FRONT_ANGLE']
-                    if min_angle > max_angle:
-                        min_angle, max_angle = max_angle, min_angle
-
-                    target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
-                    target_angles[leg_id][joint_name] = target_angle
-                    movement_rates[leg_id][joint_name] = 1.0  # legacy support
-                    action_idx += 1
+            target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
+            target_angles[leg_id][joint_name] = target_angle
+            movement_rates[leg_id][joint_name] = 1.0  # legacy support
 
         ##### update state memory for next step #####
 
