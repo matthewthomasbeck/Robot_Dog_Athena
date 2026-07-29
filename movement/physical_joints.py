@@ -70,16 +70,53 @@ def move_joints_to_angles(leg_id, end_angles, movement_rates):
 
 ##### move single joint to target angle #####
 
-def move_joint(leg_id, joint_name, target_angle, speed):
+def _serial_to_hip_mounted_servo_angle(leg_id, joint_name, serial_angle):
+    """Convert Isaac/serial joint angle to hip-mounted servo shaft angle.
+
+    Femur and tibia servos are both mounted at the hip with ~equal ligament arc
+    lengths (1:1). Holding the lower servo fixed while the femur moves by ``+x``
+    passively changes the knee angle (tibia vs femur) by ``-x``.
+
+    Policy / Isaac command **serial** angles (tibia relative to femur). To keep
+    that relative angle when the femur moves, advance the lower servo by the same
+    femur delta:
+
+        servo_lower = serial_lower + (serial_upper - upper_default)
+
+    Hip and upper map 1:1 (serial == servo).
+    """
+    if joint_name != "lower":
+        return float(serial_angle)
+
+    upper_key = f"{leg_id}_upper"
+    u0 = float(config.ISAAC_DEFAULT_JOINT_POS[upper_key])
+    # Upper is written before lower in move_joints_to_angles, so CURRENT_ANGLE
+    # already holds this step's serial upper command.
+    u_serial = float(config.SERVO_CONFIG[leg_id]["upper"]["CURRENT_ANGLE"])
+    return float(serial_angle) + (u_serial - u0)
+
+
+def move_joint(leg_id, joint_name, target_angle, speed, compensate_lower=True):
 
     ##### move the joint to the target angle at the specified speed #####
+    # ``target_angle`` is serial / Isaac space. CURRENT_ANGLE stays serial for RL.
+    # PWM uses hip-mounted servo space (compensated for lower) when enabled.
 
     servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-    pwm = map_angle_to_servo_position(target_angle, servo_data)
+    if compensate_lower:
+        pwm_angle = _serial_to_hip_mounted_servo_angle(leg_id, joint_name, target_angle)
+    else:
+        pwm_angle = float(target_angle)
+
+    min_angle = min(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
+    max_angle = max(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
+    pwm_angle = float(max(min_angle, min(max_angle, pwm_angle)))
+
+    pwm = map_angle_to_servo_position(pwm_angle, servo_data)
     speed = map_radian_to_servo_speed(speed)
     set_target(servo_data['servo'], pwm, speed, 255) # use 255 max acceleration
     config.SERVO_CONFIG[leg_id][joint_name]['CURRENT'] = pwm
-    config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = target_angle
+    config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'] = float(target_angle)
 
 
 ########## NEUTRAL POSITION ##########
@@ -105,7 +142,8 @@ def neutral_position_physical(intensity): # used to move all joints to neutral p
         try: # attempt to move the joint
             servo_data = config.SERVO_CONFIG[leg_id][joint_name]
             neutral_angle = servo_data['NEUTRAL_ANGLE']
-            move_joint(leg_id, joint_name, neutral_angle, speed) # angle based movement system
+            # Calibrated PWM neutral is raw servo space (no hip-mounted compensation).
+            move_joint(leg_id, joint_name, neutral_angle, speed, compensate_lower=False)
             
         except Exception as e: # if unable to move joint...
             logging.error(f"(physical_joints.py): Failed to move {leg_id}_{joint_name} to neutral: {e}\n")

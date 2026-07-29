@@ -129,7 +129,7 @@ ISAAC_MIRROR_CONFIG = {
     'PORT': 9000,
     'TIMEOUT_S': 0.75,  # no packet → hold Isaac default standing pose
     'DEFAULT_SPEED_RAD_S': 0.8,
-    'MAX_DELTA_RAD': 0.35,  # clamp per-joint step from CURRENT_ANGLE
+    'MAX_DELTA_RAD': 1.5,  # allow full joint travel for limit_sweep calibration
 }
 
 
