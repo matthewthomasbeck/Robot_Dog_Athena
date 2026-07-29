@@ -78,9 +78,12 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
 
     ##### initialize camera process #####
 
-    CAMERA_PROCESS = initialize_camera()  # create camera process
-    if CAMERA_PROCESS is None:
-        logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for robot!\n")
+    if config.CONTROL_MODE != 'isaac_mirror':
+        CAMERA_PROCESS = initialize_camera()  # create camera process
+        if CAMERA_PROCESS is None:
+            logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for robot!\n")
+    else:
+        logging.info("(control_logic.py): Skipping camera init (isaac_mirror mode).\n")
 
     ##### initialize socket and command queue #####
 
@@ -98,6 +101,13 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
         CHANNEL_DATA = initialize_receiver()  # get pigpio instance, decoders, and channel data
         if CHANNEL_DATA == None:
             logging.error("(control_logic.py): Failed to initialize CHANNEL_DATA for robot!\n")
+
+    elif config.CONTROL_MODE == 'isaac_mirror':
+        from utilities.isaac_mirror import start_isaac_mirror_server
+        if not start_isaac_mirror_server():
+            logging.error("(control_logic.py): Failed to start Isaac Lab mirror server!\n")
+        else:
+            logging.info("(control_logic.py): Isaac Lab mirror mode ready (waiting for desktop).\n")
 
     ##### initialize PREVIOUS_ORIENTATIONS for physical robot (1 robot) #####
 
@@ -147,6 +157,12 @@ def _physical_loop(CHANNEL_DATA):  # central function that runs robot in real li
 
     global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG  # declare as global as these will be edited by function
     mjpeg_buffer = b''  # initialize buffer for MJPEG frames
+
+    ##### isaac_mirror: dedicated joint stream loop (no website / RL) #####
+
+    if config.CONTROL_MODE == 'isaac_mirror':
+        _isaac_mirror_loop()
+        return
 
     ##### run robotic logic #####
 
@@ -200,6 +216,63 @@ def _physical_loop(CHANNEL_DATA):  # central function that runs robot in real li
 
     except Exception as e:  # if something breaks and only God knows what it is...
         logging.error(f"(control_logic.py): Unexpected exception in main loop: {e}\n")
+        exit(1)
+
+
+def _isaac_mirror_loop():
+    """Apply absolute joint targets streamed from Isaac Lab over LAN."""
+    global IS_NEUTRAL
+
+    from utilities.isaac_mirror import get_latest_message
+    from movement.movement_coordinator import apply_isaac_joint_targets, apply_isaac_default_pose
+
+    logging.info("(control_logic.py): Isaac mirror loop starting — moving to Isaac default pose.\n")
+    try:
+        apply_isaac_default_pose(speed_rad_s=0.5)
+        time.sleep(1.0)
+        IS_NEUTRAL = True
+    except Exception as e:
+        logging.error(f"(control_logic.py): Failed Isaac default pose: {e}\n")
+
+    holding_default = True
+    last_seq = None
+
+    try:
+        while True:
+            msg = get_latest_message()
+            if msg is None:
+                if not holding_default:
+                    logging.warning("(control_logic.py): Isaac stream timeout — holding default pose.\n")
+                    apply_isaac_default_pose()
+                    holding_default = True
+                    IS_NEUTRAL = True
+                time.sleep(0.05)
+                continue
+
+            msg_type = msg.get("type", "joint_targets")
+            seq = msg.get("seq")
+            if seq is not None and seq == last_seq:
+                time.sleep(0.01)
+                continue
+            last_seq = seq
+
+            if msg_type == "neutral":
+                apply_isaac_default_pose(speed_rad_s=msg.get("speed_rad_s"))
+                holding_default = True
+                IS_NEUTRAL = True
+                continue
+
+            joints = msg.get("joints") or {}
+            speed = msg.get("speed_rad_s")
+            apply_isaac_joint_targets(joints, speed_rad_s=speed)
+            holding_default = False
+            IS_NEUTRAL = False
+
+    except KeyboardInterrupt:
+        logging.info("(control_logic.py): Isaac mirror KeyboardInterrupt — default pose then exit.\n")
+        apply_isaac_default_pose(speed_rad_s=0.4)
+    except Exception as e:
+        logging.error(f"(control_logic.py): Isaac mirror loop failed: {e}\n")
         exit(1)
 
 

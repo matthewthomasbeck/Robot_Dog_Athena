@@ -36,7 +36,7 @@ import logging # import logging library for debugging
 ##### set global fps to be used by all modules #####
 
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
-CONTROL_MODE = 'web' # current control mode of the robot (web or radio)
+CONTROL_MODE = 'isaac_mirror'  # 'web' | 'radio' | 'isaac_mirror'
 RL_NOT_CNN = True # boolean to switch between testing and RL models (true is RL, false is testing)
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
@@ -121,6 +121,15 @@ INTERNET_CONFIG = {
     'BACKEND_PUBLIC_IP': "72.177.232.19", # public IP address of backend
     'BACKEND_PORT': 3000, # port number for backend (fixed typo from 'BACKED_PORT')
     'SSH_SOCKET_PATH': "/tmp/robot.sock" # path to unix socket for SSH communication
+}
+
+# Direct Isaac Lab → hardware joint mirror (LAN). Desktop connects TO the robot.
+ISAAC_MIRROR_CONFIG = {
+    'BIND_HOST': '0.0.0.0',
+    'PORT': 9000,
+    'TIMEOUT_S': 0.75,  # no packet → hold Isaac default standing pose
+    'DEFAULT_SPEED_RAD_S': 0.8,
+    'MAX_DELTA_RAD': 0.35,  # clamp per-joint step from CURRENT_ANGLE
 }
 
 

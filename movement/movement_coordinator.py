@@ -190,6 +190,65 @@ def thread_leg_movement(current_servo_config, target_angles, movement_rates): # 
         t.join()
 
 
+########## ISAAC LAB JOINT MIRROR ##########
+
+def apply_isaac_joint_targets(joints, speed_rad_s=None):
+    """Apply absolute joint targets from Isaac Lab (radians), skipping RL.
+
+    ``joints`` keys are Isaac names like ``FL_hip`` or nested ``{"FL": {"hip": ...}}``.
+    """
+    cfg = config.ISAAC_MIRROR_CONFIG
+    if speed_rad_s is None:
+        speed_rad_s = float(cfg["DEFAULT_SPEED_RAD_S"])
+    max_delta = float(cfg["MAX_DELTA_RAD"])
+
+    # Normalize to nested {leg: {joint: angle}}
+    nested: dict = {leg: {} for leg in ["FL", "FR", "BL", "BR"]}
+    if joints and any(k in joints for k in ["FL", "FR", "BL", "BR"]):
+        for leg_id in ["FL", "FR", "BL", "BR"]:
+            if leg_id in joints and isinstance(joints[leg_id], dict):
+                nested[leg_id].update(joints[leg_id])
+    else:
+        for joint_key, angle in (joints or {}).items():
+            if "_" not in str(joint_key):
+                continue
+            leg_id, joint_name = str(joint_key).split("_", 1)
+            if leg_id in nested and joint_name in ["hip", "upper", "lower"]:
+                nested[leg_id][joint_name] = float(angle)
+
+    target_angles = {}
+    movement_rates = {}
+    for leg_id in ["FL", "FR", "BL", "BR"]:
+        target_angles[leg_id] = {}
+        movement_rates[leg_id] = {}
+        for joint_name in ["hip", "upper", "lower"]:
+            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+            min_angle = min(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
+            max_angle = max(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
+
+            joint_key = f"{leg_id}_{joint_name}"
+            if joint_name in nested[leg_id]:
+                desired = float(nested[leg_id][joint_name])
+            else:
+                desired = float(config.ISAAC_DEFAULT_JOINT_POS[joint_key])
+
+            current = float(servo_data["CURRENT_ANGLE"])
+            # Rate-limit large jumps from a bad packet / reconnect
+            desired = max(current - max_delta, min(current + max_delta, desired))
+            desired = float(max(min_angle, min(max_angle, desired)))
+
+            target_angles[leg_id][joint_name] = desired
+            movement_rates[leg_id][joint_name] = float(speed_rad_s)
+
+    thread_leg_movement(config.SERVO_CONFIG, target_angles, movement_rates)
+
+
+def apply_isaac_default_pose(speed_rad_s=None):
+    """Hold the Isaac Lab default standing/camber pose."""
+    joints = {k: float(v) for k, v in config.ISAAC_DEFAULT_JOINT_POS.items()}
+    apply_isaac_joint_targets(joints, speed_rad_s=speed_rad_s)
+
+
 ########## RANDOM ACTION FUNCTION ##########
 
 def get_random_action(state, commands, intensity): # used to generate random movement for testing
