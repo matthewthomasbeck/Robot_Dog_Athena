@@ -403,53 +403,47 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
 
         ##### parse output #####
         # CRITICAL: Action order MUST match observation order!
-        # Use the same ordering scheme as joint_pos above
+        # Isaac Lab JointPositionAction: q_des = default_joint_pos + scale * action
+        # (scale=0.5, use_default_offset=True). Do NOT map actions across full servo range.
+        ACTION_SCALE = 0.5
+        raw_actions = np.array(result[0, :12], dtype=np.float32)
+        target_angles_abs = default_positions + ACTION_SCALE * raw_actions
 
         action_idx = 0
-        
+
         if config.JOINT_ORDERING_SCHEME == "by_type":
             # Order by joint type: all hips, then all uppers, then all lowers
             for joint_name in ['hip', 'upper', 'lower']:
                 for leg_id in ['FL', 'FR', 'BL', 'BR']:
                     target_angles[leg_id] = target_angles.get(leg_id, {})
                     movement_rates[leg_id] = movement_rates.get(leg_id, {})
-                    
+
                     servo_data = config.SERVO_CONFIG[leg_id][joint_name]
                     min_angle = servo_data['FULL_BACK_ANGLE']
                     max_angle = servo_data['FULL_FRONT_ANGLE']
-
                     if min_angle > max_angle:
                         min_angle, max_angle = max_angle, min_angle
 
-                    target_action = result[0, action_idx]  # get from model output
-                    target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
-                    target_angle = np.clip(target_angle, min_angle, max_angle)
-                    target_angles[leg_id][joint_name] = float(target_angle)
-                    
+                    target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
+                    target_angles[leg_id][joint_name] = target_angle
                     movement_rates[leg_id][joint_name] = 1.0  # legacy support
-                    
                     action_idx += 1
         else:  # "by_leg" (default)
             # Order by leg: all FL joints, then all FR joints, then all BL joints, then all BR joints
             for leg_id in ['FL', 'FR', 'BL', 'BR']:
                 target_angles[leg_id] = {}
                 movement_rates[leg_id] = {}
-                
+
                 for joint_name in ['hip', 'upper', 'lower']:
                     servo_data = config.SERVO_CONFIG[leg_id][joint_name]
                     min_angle = servo_data['FULL_BACK_ANGLE']
                     max_angle = servo_data['FULL_FRONT_ANGLE']
-
                     if min_angle > max_angle:
                         min_angle, max_angle = max_angle, min_angle
 
-                    target_action = result[0, action_idx]  # get from model output
-                    target_angle = min_angle + (target_action + 1.0) * 0.5 * (max_angle - min_angle)
-                    target_angle = np.clip(target_angle, min_angle, max_angle)
-                    target_angles[leg_id][joint_name] = float(target_angle)
-                    
+                    target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
+                    target_angles[leg_id][joint_name] = target_angle
                     movement_rates[leg_id][joint_name] = 1.0  # legacy support
-                    
                     action_idx += 1
 
         ##### update state memory for next step #####

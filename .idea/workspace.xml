@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Fixed mapping issue between radians and PWM, still not confident in walking entirely but getting there">
+    <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added vector shape info to the document">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.bin" beforeDir="false" afterPath="$PROJECT_DIR$/model/blind_rl_model.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/blind_rl_model.pth" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,7 +39,7 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="2mcFIiLVWB9RbUjveGQlndNtXOm" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+  <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
   </component>
   <component name="ProjectViewState">
@@ -49,31 +47,31 @@
     <option name="showLibraryContents" value="true" />
     <option name="showMembers" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.control_logic.executor": "Run",
-    "Python.export_model.executor": "Run",
-    "Python.pth_to_xml.executor": "Run",
-    "Python.simulation_test.executor": "Run",
-    "Python.test_complete_pipeline.executor": "Run",
-    "Python.test_xml.executor": "Run",
-    "Python.test_xml_intel.executor": "Run",
-    "Python.visualize.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.control_logic.executor&quot;: &quot;Run&quot;,
+    &quot;Python.export_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python.pth_to_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simulation_test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_complete_pipeline.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_xml.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_xml_intel.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualize.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/matthewthomasbeck/Library/Mobile Documents/com~apple~CloudDocs/Projects/Robot_Dog/Robot_Dog_Athena/model&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/custom_parts" />
