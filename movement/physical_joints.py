@@ -57,20 +57,33 @@ def swing_leg(leg_id, target_angles, movement_rates):
 def move_joints_to_angles(leg_id, end_angles, movement_rates):
 
     ##### move each joint to its target angle #####
+    # Lower (tibia) first, then upper (femur), then hip — pre-position the tibia
+    # before the femur swings so compensation isn't "dragging feet".
+    joint_order = ['lower', 'upper', 'hip']
+    commanded_upper = end_angles.get('upper')
 
-    for joint_name in ['hip', 'upper', 'lower']: # loop through each joint in the leg
+    for joint_name in joint_order:
 
         try: # attempt to move the joint
             end_angle = end_angles[joint_name]
             speed = movement_rates[joint_name]
-            move_joint(leg_id, joint_name, end_angle, speed)
+            move_joint(
+                leg_id,
+                joint_name,
+                end_angle,
+                speed,
+                upper_serial_for_compensation=commanded_upper,
+            )
+            # Give tibia a head start before femur swing (lift foot, then swing leg).
+            if joint_name == 'lower':
+                time.sleep(0.03)
             
         except Exception as e: # if unable to move joint...
             logging.error(f"(physical_joints.py): Failed to move {leg_id}_{joint_name} to angle: {e}\n")
 
 ##### move single joint to target angle #####
 
-def _serial_to_hip_mounted_servo_angle(leg_id, joint_name, serial_angle):
+def _serial_to_hip_mounted_servo_angle(leg_id, joint_name, serial_angle, upper_serial=None):
     """Convert Isaac/serial joint angle to hip-mounted servo shaft angle.
 
     Femur and tibia servos are both mounted at the hip with ~equal ligament arc
@@ -84,19 +97,30 @@ def _serial_to_hip_mounted_servo_angle(leg_id, joint_name, serial_angle):
         servo_lower = serial_lower + (serial_upper - upper_default)
 
     Hip and upper map 1:1 (serial == servo).
+
+    When lower moves before upper (preferred), pass this step's commanded
+    ``upper_serial`` so compensation isn't based on a stale CURRENT_ANGLE.
     """
     if joint_name != "lower":
         return float(serial_angle)
 
     upper_key = f"{leg_id}_upper"
     u0 = float(config.ISAAC_DEFAULT_JOINT_POS[upper_key])
-    # Upper is written before lower in move_joints_to_angles, so CURRENT_ANGLE
-    # already holds this step's serial upper command.
-    u_serial = float(config.SERVO_CONFIG[leg_id]["upper"]["CURRENT_ANGLE"])
+    if upper_serial is None:
+        u_serial = float(config.SERVO_CONFIG[leg_id]["upper"]["CURRENT_ANGLE"])
+    else:
+        u_serial = float(upper_serial)
     return float(serial_angle) + (u_serial - u0)
 
 
-def move_joint(leg_id, joint_name, target_angle, speed, compensate_lower=True):
+def move_joint(
+    leg_id,
+    joint_name,
+    target_angle,
+    speed,
+    compensate_lower=True,
+    upper_serial_for_compensation=None,
+):
 
     ##### move the joint to the target angle at the specified speed #####
     # ``target_angle`` is serial / Isaac space. CURRENT_ANGLE stays serial for RL.
@@ -104,7 +128,12 @@ def move_joint(leg_id, joint_name, target_angle, speed, compensate_lower=True):
 
     servo_data = config.SERVO_CONFIG[leg_id][joint_name]
     if compensate_lower:
-        pwm_angle = _serial_to_hip_mounted_servo_angle(leg_id, joint_name, target_angle)
+        pwm_angle = _serial_to_hip_mounted_servo_angle(
+            leg_id,
+            joint_name,
+            target_angle,
+            upper_serial=upper_serial_for_compensation,
+        )
     else:
         pwm_angle = float(target_angle)
 
@@ -126,11 +155,12 @@ def neutral_position_physical(intensity): # used to move all joints to neutral p
     ##### set variables #####
 
     speed = 9.5  # default to max speed
+    # Lower before upper (same swing order as gait), then hip.
     joint_order = [
-        ('FL', 'hip'), ('FL', 'upper'), ('FL', 'lower'),
-        ('FR', 'hip'), ('FR', 'upper'), ('FR', 'lower'),
-        ('BL', 'hip'), ('BL', 'upper'), ('BL', 'lower'),
-        ('BR', 'hip'), ('BR', 'upper'), ('BR', 'lower')
+        ('FL', 'lower'), ('FL', 'upper'), ('FL', 'hip'),
+        ('FR', 'lower'), ('FR', 'upper'), ('FR', 'hip'),
+        ('BL', 'lower'), ('BL', 'upper'), ('BL', 'hip'),
+        ('BR', 'lower'), ('BR', 'upper'), ('BR', 'hip'),
     ]
     
     logging.info("(physical_joints.py): Moving all legs to neutral position on physical robot...\n")
