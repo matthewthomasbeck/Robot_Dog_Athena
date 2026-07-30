@@ -78,12 +78,12 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
 
     ##### initialize camera process #####
 
-    if config.CONTROL_MODE != 'isaac_mirror':
+    if config.CONTROL_MODE not in ('isaac_mirror', 'lan'):
         CAMERA_PROCESS = initialize_camera()  # create camera process
         if CAMERA_PROCESS is None:
             logging.error("(control_logic.py): Failed to initialize CAMERA_PROCESS for robot!\n")
     else:
-        logging.info("(control_logic.py): Skipping camera init (isaac_mirror mode).\n")
+        logging.info(f"(control_logic.py): Skipping camera init ({config.CONTROL_MODE} mode).\n")
 
     ##### initialize socket and command queue #####
 
@@ -108,6 +108,14 @@ def set_real_robot_dependencies():  # function to initialize real robot dependen
             logging.error("(control_logic.py): Failed to start Isaac Lab mirror server!\n")
         else:
             logging.info("(control_logic.py): Isaac Lab mirror mode ready (waiting for desktop).\n")
+
+    elif config.CONTROL_MODE == 'lan':
+        from utilities.lan_teleop import start_lan_teleop_server
+        COMMAND_QUEUE = start_lan_teleop_server()
+        if COMMAND_QUEUE is None:
+            logging.error("(control_logic.py): Failed to start LAN teleop server!\n")
+        else:
+            logging.info("(control_logic.py): LAN teleop ready — desktop → TCP :9001 → on-robot RL.\n")
 
     ##### initialize PREVIOUS_ORIENTATIONS for physical robot (1 robot) #####
 
@@ -162,6 +170,12 @@ def _physical_loop(CHANNEL_DATA):  # central function that runs robot in real li
 
     if config.CONTROL_MODE == 'isaac_mirror':
         _isaac_mirror_loop()
+        return
+
+    ##### lan: keyboard teleop into on-robot RL (no camera / website) #####
+
+    if config.CONTROL_MODE == 'lan':
+        _lan_teleop_loop()
         return
 
     ##### run robotic logic #####
@@ -276,6 +290,43 @@ def _isaac_mirror_loop():
         exit(1)
 
 
+def _lan_teleop_loop():
+    """Receive WASD commands from desktop and run on-robot RL gait."""
+    global IS_COMPLETE, IS_NEUTRAL, CURRENT_LEG
+
+    logging.info("(control_logic.py): LAN teleop loop starting — neutral pose, waiting for desktop.\n")
+    try:
+        neutral_position(1)
+        time.sleep(2.0)
+        IS_NEUTRAL = True
+    except Exception as e:
+        logging.error(f"(control_logic.py): Failed LAN neutral pose: {e}\n")
+
+    try:
+        while True:
+            command = None
+            if COMMAND_QUEUE is not None and not COMMAND_QUEUE.empty():
+                command = COMMAND_QUEUE.get()
+
+            if command and IS_COMPLETE:
+                logging.info(f"(control_logic.py): LAN command '{command}' (WILL RUN).\n")
+                threading.Thread(target=_handle_command, args=(command, None), daemon=True).start()
+            elif not command and IS_COMPLETE and not IS_NEUTRAL:
+                threading.Thread(target=_handle_command, args=('n', None), daemon=True).start()
+
+            time.sleep(0.02)
+
+    except KeyboardInterrupt:
+        logging.info("(control_logic.py): LAN teleop KeyboardInterrupt — neutral then exit.\n")
+        try:
+            neutral_position(1)
+        except Exception:
+            pass
+    except Exception as e:
+        logging.error(f"(control_logic.py): LAN teleop loop failed: {e}\n")
+        exit(1)
+
+
 ########## HANDLE COMMANDS ##########
 
 def _handle_command(command, camera_frames=None):
@@ -314,7 +365,7 @@ def _handle_command(command, camera_frames=None):
             IS_NEUTRAL = False
             IS_COMPLETE = True
 
-    elif config.CONTROL_MODE == 'web':
+    elif config.CONTROL_MODE in ('web', 'lan'):
 
         intensity = 10
 

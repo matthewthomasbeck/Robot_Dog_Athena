@@ -36,7 +36,7 @@ import logging # import logging library for debugging
 ##### set global fps to be used by all modules #####
 
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
-CONTROL_MODE = 'isaac_mirror'  # 'web' | 'radio' | 'isaac_mirror'
+CONTROL_MODE = 'lan'  # 'web' | 'radio' | 'isaac_mirror' | 'lan'
 RL_NOT_CNN = True # boolean to switch between testing and RL models (true is RL, false is testing)
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
@@ -130,6 +130,12 @@ ISAAC_MIRROR_CONFIG = {
     'TIMEOUT_S': 0.75,  # no packet → hold Isaac default standing pose
     'DEFAULT_SPEED_RAD_S': 0.8,
     'MAX_DELTA_RAD': 1.5,  # allow full joint travel for limit_sweep calibration
+}
+
+# Desktop keyboard teleop → on-robot RL (no website backend).
+LAN_TELEOP_CONFIG = {
+    'BIND_HOST': '0.0.0.0',
+    'PORT': 9001,
 }
 
 
