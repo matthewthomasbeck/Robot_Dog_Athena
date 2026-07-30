@@ -168,23 +168,21 @@ TOP_SPEED = 0.6 # in m/s
 
 SERVO_CONFIG = { # dictionary of leg configurations
 
-    # Hip limits: angles are the Isaac/serial truth; PWM endpoints derived from
-    # NEUTRAL ± angle/0.001997 so clamps match the map (do not leave angles and
-    # PWM out of sync — that made FULL_FRONT only ~5° of travel after the last edit).
-    # Front angles pulled 30° toward 0; back angles pulled 10° toward 0 vs old labels.
-    'FL': {'hip': {'servo': 3, 'FULL_FRONT': 1782.37, 'FULL_BACK': 1476.98, 'NEUTRAL': 1564.375, 'CURRENT': 1564.375, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.174533, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+    # Hip limits: angles are Isaac/serial truth; PWM from NEUTRAL ± angle/0.001997.
+    # Front held (verified on hardware). Neutral shifted 5° inward; back +10° further inward.
+    'FL': {'hip': {'servo': 3, 'FULL_FRONT': 1782.37, 'FULL_BACK': 1345.88, 'NEUTRAL': 1520.68, 'CURRENT': 1520.68, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'upper': {'servo': 5, 'FULL_FRONT': 1266.00, 'FULL_BACK': 1921.50, 'NEUTRAL': 1593.75, 'CURRENT': 1593.75, 'FULL_FRONT_ANGLE': -0.654, 'FULL_BACK_ANGLE': 0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 4, 'FULL_FRONT': 1148.50, 'FULL_BACK': 1872.75, 'NEUTRAL': 1510.625, 'CURRENT': 1510.625, 'FULL_FRONT_ANGLE': -0.698, 'FULL_BACK_ANGLE': 0.698, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0}},
 
-    'FR': {'hip': {'servo': 2, 'FULL_FRONT': 1084.63, 'FULL_BACK': 1390.02, 'NEUTRAL': 1302.625, 'CURRENT': 1302.625, 'FULL_FRONT_ANGLE': -0.435335, 'FULL_BACK_ANGLE': 0.174533, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+    'FR': {'hip': {'servo': 2, 'FULL_FRONT': 1084.63, 'FULL_BACK': 1521.12, 'NEUTRAL': 1346.32, 'CURRENT': 1346.32, 'FULL_FRONT_ANGLE': -0.435335, 'FULL_BACK_ANGLE': 0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'upper': {'servo': 1, 'FULL_FRONT': 1921.50, 'FULL_BACK': 1310.00, 'NEUTRAL': 1615.75, 'CURRENT': 1615.75, 'FULL_FRONT_ANGLE': 0.654, 'FULL_BACK_ANGLE': -0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 0, 'FULL_FRONT': 2000.00, 'FULL_BACK': 1231.75, 'NEUTRAL': 1615.875, 'CURRENT': 1615.875, 'FULL_FRONT_ANGLE': 0.698, 'FULL_BACK_ANGLE': -0.698, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0}},
 
-    'BL': {'hip': {'servo': 8, 'FULL_FRONT': 1111.51, 'FULL_BACK': 1416.90, 'NEUTRAL': 1329.5, 'CURRENT': 1329.5, 'FULL_FRONT_ANGLE': -0.435335, 'FULL_BACK_ANGLE': 0.174533, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+    'BL': {'hip': {'servo': 8, 'FULL_FRONT': 1111.51, 'FULL_BACK': 1548.00, 'NEUTRAL': 1373.20, 'CURRENT': 1373.20, 'FULL_FRONT_ANGLE': -0.435335, 'FULL_BACK_ANGLE': 0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'upper': {'servo': 7, 'FULL_FRONT': 1354.00, 'FULL_BACK': 2000.00, 'NEUTRAL': 1777.0, 'CURRENT': 1777.0, 'FULL_FRONT_ANGLE': -0.654, 'FULL_BACK_ANGLE': 0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 6, 'FULL_FRONT': 1138.75, 'FULL_BACK': 2000.00, 'NEUTRAL': 1569.375, 'CURRENT': 1569.375, 'FULL_FRONT_ANGLE': -0.698, 'FULL_BACK_ANGLE': 0.698, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0}},
 
-    'BR': {'hip': {'servo': 11, 'FULL_FRONT': 1772.62, 'FULL_BACK': 1467.23, 'NEUTRAL': 1554.625, 'CURRENT': 1554.625, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.174533, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+    'BR': {'hip': {'servo': 11, 'FULL_FRONT': 1772.62, 'FULL_BACK': 1336.13, 'NEUTRAL': 1510.93, 'CURRENT': 1510.93, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'upper': {'servo': 10, 'FULL_FRONT': 1701.50, 'FULL_BACK': 1065.25, 'NEUTRAL': 1283.375, 'CURRENT': 1283.375, 'FULL_FRONT_ANGLE': 0.654, 'FULL_BACK_ANGLE': -0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 9, 'FULL_FRONT': 2000.00, 'FULL_BACK': 1221.75, 'NEUTRAL': 1610.875, 'CURRENT': 1610.875, 'FULL_FRONT_ANGLE': 0.698, 'FULL_BACK_ANGLE': -0.698, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0}},
 }
