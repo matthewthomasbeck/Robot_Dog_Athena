@@ -143,14 +143,15 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
             logging.debug(f"(movement_coordinator.py): Target angles: {target_angles}\n")
             logging.debug(f"(movement_coordinator.py): Movement rates: {movement_rates}\n")
 
-            ##### move legs and update current position #####
+            ##### move legs and wait long enough for arcs to finish #####
 
-            # move legs and update current angles
+            step_wait = _estimate_step_wait_s(target_angles, movement_rates)
             thread_leg_movement(
                 config.SERVO_CONFIG,
                 target_angles,
                 movement_rates
             )
+            time.sleep(step_wait)
 
         else: # if running person detection (testing)...
             run_person_detection(
@@ -160,14 +161,45 @@ def move_direction(commands, camera_frames, intensity, imageless_gait): # functi
                 frame,
                 run_inference=False
             )
+            time.sleep(float(config.GAIT_CONFIG['POLICY_DT_S']))
         logging.info(f"(movement_coordinator.py): Ran AI for command(s) {commands} with intensity {intensity}\n")
 
     except Exception as e: # if either model fails...
         logging.error(f"(movement_coordinator.py): Failed to run AI for command: {e}\n")
 
-    ##### force robot to slow down so the raspberry doesn't crash #####
 
-    time.sleep(0.0875) # only allow inference to run at rate # was 0.175
+def _estimate_step_wait_s(target_angles, movement_rates):
+    """Seconds to wait after commanding targets so servos can finish the arc.
+
+    Maestro set_target is fire-and-forget; without this, the next policy step
+    overwrites mid-swing and produces half-arcs.
+    """
+    gait = config.GAIT_CONFIG
+    policy_dt = float(gait['POLICY_DT_S'])
+    margin = float(gait['SETTLE_MARGIN_S'])
+    max_wait = float(gait['MAX_STEP_WAIT_S'])
+    default_speed = float(gait['SERVO_SPEED_RAD_S'])
+
+    max_travel_s = 0.0
+    for leg_id in ['FL', 'FR', 'BL', 'BR']:
+        if leg_id not in target_angles:
+            continue
+        for joint_name in ['hip', 'upper', 'lower']:
+            if joint_name not in target_angles[leg_id]:
+                continue
+            current = float(config.SERVO_CONFIG[leg_id][joint_name]['CURRENT_ANGLE'])
+            target = float(target_angles[leg_id][joint_name])
+            speed = float(movement_rates.get(leg_id, {}).get(joint_name, default_speed))
+            speed = max(speed, 0.25)
+            max_travel_s = max(max_travel_s, abs(target - current) / speed)
+
+    wait = max(policy_dt, max_travel_s + margin)
+    wait = min(wait, max_wait)
+    logging.debug(
+        f"(movement_coordinator.py): step_wait={wait:.3f}s "
+        f"(travel={max_travel_s:.3f}s, policy_dt={policy_dt:.3f}s)\n"
+    )
+    return wait
 
 
 ########## THREAD LEG MOVEMENT ##########

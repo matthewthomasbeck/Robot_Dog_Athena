@@ -395,7 +395,7 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
 
             target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
             target_angles[leg_id][joint_name] = target_angle
-            movement_rates[leg_id][joint_name] = 1.0  # legacy support
+            movement_rates[leg_id][joint_name] = float(config.GAIT_CONFIG['SERVO_SPEED_RAD_S'])
 
         ##### update state memory for next step #####
 

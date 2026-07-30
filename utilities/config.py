@@ -40,6 +40,15 @@ CONTROL_MODE = 'lan'  # 'web' | 'radio' | 'isaac_mirror' | 'lan'
 RL_NOT_CNN = True # boolean to switch between testing and RL models (true is RL, false is testing)
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
+# Gait timing: policy was trained at ~11.4 Hz, but servos must physically finish
+# each step or the next target truncates the arc ("half-arcs").
+GAIT_CONFIG = {
+    'SERVO_SPEED_RAD_S': 6.0,      # was hardcoded 1.0 — too slow to finish swings in one step
+    'POLICY_DT_S': 0.0875,         # match Isaac Lab hardware-rate cache
+    'SETTLE_MARGIN_S': 0.04,       # extra wait after estimated travel time
+    'MAX_STEP_WAIT_S': 0.35,       # cap so a stuck estimate can't freeze the dog
+}
+
 ##### set logging configuration #####
 
 LOG_CONFIG = {
