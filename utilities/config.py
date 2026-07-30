@@ -168,8 +168,8 @@ TOP_SPEED = 0.6 # in m/s
 
 SERVO_CONFIG = { # dictionary of leg configurations
 
-    # Hip limits: angles are Isaac/serial truth; PWM from NEUTRAL ± angle/0.001997.
-    # Front held (verified on hardware). Neutral shifted 5° inward; back +10° further inward.
+    # Calibrated FRONT / NEUTRAL / BACK triples (angle rad ↔ PWM µs).
+    # servos.map_angle_to_servo_position piecewise-lerps through NEUTRAL.
     'FL': {'hip': {'servo': 3, 'FULL_FRONT': 1782.37, 'FULL_BACK': 1345.88, 'NEUTRAL': 1520.68, 'CURRENT': 1520.68, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'upper': {'servo': 5, 'FULL_FRONT': 1178.86, 'FULL_BACK': 1702.75, 'NEUTRAL': 1681.15, 'CURRENT': 1681.15, 'FULL_FRONT_ANGLE': -0.828533, 'FULL_BACK_ANGLE': 0.217668, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 4, 'FULL_FRONT': 1117.40, 'FULL_BACK': 1947.54, 'NEUTRAL': 1554.32, 'CURRENT': 1554.32, 'FULL_FRONT_ANGLE': -0.785267, 'FULL_BACK_ANGLE': 0.872534, 'CURRENT_ANGLE': 0.087266, 'NEUTRAL_ANGLE': 0.087266}},

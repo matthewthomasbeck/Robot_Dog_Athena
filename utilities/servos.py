@@ -69,69 +69,73 @@ def set_target(channel, target, speed, acceleration): # function to set target p
 
 ########## ANGLE TO TARGET ##########
 
-def map_angle_to_servo_position(angle, joint_data): # map radian to pwm
+def _lerp(x, x0, x1, y0, y1):
+    """Linear map x in [x0, x1] → y in [y0, y1]."""
+    denom = x1 - x0
+    if abs(denom) < 1e-12:
+        return float(y0)
+    t = (x - x0) / denom
+    return float(y0 + t * (y1 - y0))
 
-    ##### set constants #####
 
-    rad_per_microsecond = 0.001997 # radian change per microsecond of pwm
+def map_angle_to_servo_position(angle, joint_data):
+    """Map serial/Isaac joint angle (rad) → Maestro PWM (µs).
 
-    ##### set variables #####
+    Uses the calibrated triple in ``SERVO_CONFIG``:
+        (FULL_FRONT_ANGLE ↔ FULL_FRONT),
+        (NEUTRAL_ANGLE ↔ NEUTRAL),
+        (FULL_BACK_ANGLE ↔ FULL_BACK)
 
-    neutral_pwm = joint_data['NEUTRAL'] # pwm value for neutral position
-    neutral_angle = joint_data.get('NEUTRAL_ANGLE', 0.0) # radian position for neutral pwm
+    Piecewise-linear through neutral so asymmetric front/back spans and
+    shifted neutrals stay exact. The old fixed ``0.001997 rad/us`` rate is
+    no longer used — it drifted after per-joint range tuning.
+    """
 
-    full_back_angle = joint_data['FULL_BACK_ANGLE'] # radian position for FULL_BACK pwm
-    full_front_angle = joint_data['FULL_FRONT_ANGLE'] # radian position for FULL_FRONT pwm
-    full_back_pwm = joint_data['FULL_BACK'] # value for full back position
-    full_front_pwm = joint_data['FULL_FRONT'] # value for full front position
+    neutral_pwm = float(joint_data["NEUTRAL"])
+    neutral_angle = float(joint_data.get("NEUTRAL_ANGLE", 0.0))
+    full_back_angle = float(joint_data["FULL_BACK_ANGLE"])
+    full_front_angle = float(joint_data["FULL_FRONT_ANGLE"])
+    full_back_pwm = float(joint_data["FULL_BACK"])
+    full_front_pwm = float(joint_data["FULL_FRONT"])
 
-    logging.debug(f"(servos.py): mapping angle {angle:.4f} rad using neutral "
-                  f"({neutral_angle:.4f} rad -> {neutral_pwm:.1f} us) "
-                  f"and rate {rad_per_microsecond} rad/us...\n")
+    angle = float(angle)
 
-    ##### infer servo direction from calibration #####
+    # Clamp to calibrated angle range.
+    a_lo = min(full_front_angle, full_back_angle)
+    a_hi = max(full_front_angle, full_back_angle)
+    if angle < a_lo:
+        angle = a_lo
+    elif angle > a_hi:
+        angle = a_hi
 
-    sign = 1.0 # default sign
-    slope_ref = None # reference slope for angle vs pwm near neutral
+    def _between(a, a0, a1, eps=1e-9):
+        return (a - a0) * (a - a1) <= eps
 
-    if (abs(full_front_pwm - neutral_pwm) > 1e-3 and
-        abs(full_front_angle - neutral_angle) > 1e-6): # prefer front side if valid
-
-        slope_ref = (full_front_angle - neutral_angle) / (full_front_pwm - neutral_pwm)
-
-    elif (abs(full_back_pwm - neutral_pwm) > 1e-3 and
-          abs(full_back_angle - neutral_angle) > 1e-6): # otherwise use back side
-
-        slope_ref = (full_back_angle - neutral_angle) / (full_back_pwm - neutral_pwm)
-
-    if slope_ref is not None: # if able to infer direction...
-        sign = 1.0 if slope_ref > 0 else -1.0 # set sign based on calibration
+    # Interpolate on the front or back side of neutral.
+    if _between(angle, neutral_angle, full_front_angle):
+        pwm = _lerp(angle, neutral_angle, full_front_angle, neutral_pwm, full_front_pwm)
+    elif _between(angle, neutral_angle, full_back_angle):
+        pwm = _lerp(angle, neutral_angle, full_back_angle, neutral_pwm, full_back_pwm)
     else:
-        logging.warning("(servos.py): could not infer servo direction from calibration; defaulting to positive direction.\n")
+        # Neutral outside [front, back] (misconfigured) — fall back to full-span lerp.
+        logging.warning(
+            "(servos.py): NEUTRAL_ANGLE outside FRONT/BACK span; using full-span lerp.\n"
+        )
+        pwm = _lerp(angle, full_front_angle, full_back_angle, full_front_pwm, full_back_pwm)
 
-    ##### map angle to pwm using neutral anchor and fixed rate #####
+    # Clamp to calibrated PWM bounds.
+    p_lo = min(full_front_pwm, full_back_pwm)
+    p_hi = max(full_front_pwm, full_back_pwm)
+    pwm = max(p_lo, min(p_hi, pwm))
 
-    angle_delta = angle - neutral_angle # angle offset from neutral
+    logging.debug(
+        f"(servos.py): angle {angle:.4f} rad -> pwm {pwm:.1f} us "
+        f"(N {neutral_angle:.4f}->{neutral_pwm:.1f}, "
+        f"F {full_front_angle:.4f}->{full_front_pwm:.1f}, "
+        f"B {full_back_angle:.4f}->{full_back_pwm:.1f})\n"
+    )
 
-    if abs(rad_per_microsecond) < 1e-9: # if dividing by zero...
-        logging.error("(servos.py): invalid radian rate; defaulting to neutral pwm.\n")
-        pwm = neutral_pwm
-    else:
-        pwm = neutral_pwm + (angle_delta / (sign * rad_per_microsecond)) # map via fixed rad/us rate
-
-    ##### clamp pwm to calibrated bounds #####
-
-    if full_back_pwm < full_front_pwm: # if back value scalar less than front value scalar...
-        pwm = max(full_back_pwm, min(full_front_pwm, pwm)) # clamp pwm to valid range
-
-    else: # if back value scalar greater than front value scalar...
-        pwm = max(full_front_pwm, min(full_back_pwm, pwm)) # clamp pwm to valid range
-
-    logging.debug(f"(servos.py): angle {angle:.3f} rad -> pwm {pwm:.1f} us "
-                  f"(range: {min(full_back_pwm, full_front_pwm)} to {max(full_back_pwm, full_front_pwm)})\n")
-    logging.debug(f"(servos.py): angle range (config): {full_back_angle:.3f} to {full_front_angle:.3f} rad\n")
-
-    return int(round(pwm)) # return calculated pulse width
+    return int(round(pwm))
 
 
 ########## RADIAN TO SERVO SPEED ##########
