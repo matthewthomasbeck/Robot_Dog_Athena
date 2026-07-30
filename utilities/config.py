@@ -40,10 +40,20 @@ CONTROL_MODE = 'lan'  # 'web' | 'radio' | 'isaac_mirror' | 'lan'
 RL_NOT_CNN = True # boolean to switch between testing and RL models (true is RL, false is testing)
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
-# Gait timing: policy was trained at ~11.4 Hz, but servos must physically finish
-# each step or the next target truncates the arc ("half-arcs").
+# Gait timing / Maestro speed (NOT a policy output — see note below).
+#
+# Datasheet no-load speeds for these 45kg digital servos:
+#   5.0V: 0.18 s / 60°  →  (π/3)/0.18 ≈ 5.82 rad/s
+#   7.4V: 0.13 s / 60°  →  (π/3)/0.13 ≈ 8.06 rad/s
+#   8.4V: 0.11 s / 60°  →  (π/3)/0.11 ≈ 9.52 rad/s
+# Isaac Lab DCMotorCfg.velocity_limit and servos.map_radian_to_servo_speed
+# already use 9.52 as the clamp (8.4V no-load). Under load, true speed is lower.
+#
+# The PPO policy outputs 12 joint *positions* only (default + 0.5*action).
+# It does not output joint speeds. Maestro still needs a speed limit for set_target;
+# that used to be hardcoded as 1.0 rad/s in inference.py ("legacy support").
 GAIT_CONFIG = {
-    'SERVO_SPEED_RAD_S': 6.0,      # was hardcoded 1.0 — too slow to finish swings in one step
+    'SERVO_SPEED_RAD_S': 9.52,     # Maestro cmd speed: datasheet 8.4V no-load max
     'POLICY_DT_S': 0.0875,         # match Isaac Lab hardware-rate cache
     'SETTLE_MARGIN_S': 0.04,       # extra wait after estimated travel time
     'MAX_STEP_WAIT_S': 0.35,       # cap so a stuck estimate can't freeze the dog
