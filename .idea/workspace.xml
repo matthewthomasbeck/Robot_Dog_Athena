@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="555ddb0a-d8dd-4a1f-aac9-16a9b7e1179e" name="Changes" comment="Added vector shape info to the document">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utilities/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/utilities/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -235,7 +234,7 @@
       <workItem from="1773197251084" duration="40000" />
       <workItem from="1773197335716" duration="18817000" />
       <workItem from="1773371241954" duration="3727000" />
-      <workItem from="1785423869284" duration="940000" />
+      <workItem from="1785423869284" duration="2262000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1734456532762</created>
