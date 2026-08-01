@@ -102,7 +102,7 @@ def get_orientation_vectors():
 
     Returns:
         A dict with:
-        - base_lin_vel: [3] (m/s)  (zeroed; no odometry)
+        - base_lin_vel: [3] (m/s)  (zeros here; inference overrides with commanded vel)
         - base_ang_vel: [3] (rad/s) [wx, wy, wz] in body frame
         - projected_gravity: [3] (unit vector) gravity direction in body frame
 
@@ -136,7 +136,8 @@ def get_orientation_vectors():
     wz = float(yaw) * deg2rad
     base_ang_vel = [wx, wy, wz]
 
-    # No base linear velocity estimate available (no odometry)
+    # No odometry here. inference.run_gait_adjustment_blind overrides this with the
+    # commanded planar velocity (lie: pretend measured lin vel == command).
     base_lin_vel = [0.0, 0.0, 0.0]
 
     return {
