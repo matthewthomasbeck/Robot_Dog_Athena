@@ -59,6 +59,12 @@ GAIT_CONFIG = {
     'MAX_STEP_WAIT_S': 0.35,       # cap so a stuck estimate can't freeze the dog
 }
 
+# No odometry: fill policy base_lin_vel from the velocity *command* (what sim
+# usually tracks closely), not zeros. Scale < 1 if real robot lags the command.
+BASE_LIN_VEL_CMD_SCALE = 1.0
+BASE_LIN_VEL_EMA_ALPHA = 0.35  # 0→freeze estimate, 1→instant jump to command
+EST_BASE_LIN_VEL = None  # runtime EMA state (xyz m/s); set in inference.py
+
 ##### set logging configuration #####
 
 LOG_CONFIG = {

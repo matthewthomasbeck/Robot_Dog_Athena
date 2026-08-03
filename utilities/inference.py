@@ -247,7 +247,10 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
 
         ##### build Isaac Lab 48-dim observation #####
 
-        # 1) base_lin_vel filled after velocity_commands (lied = commanded planar vel)
+        # 1) base_lin_vel (3)
+        base_lin_vel = np.array(orientation.get("base_lin_vel", [0.0, 0.0, 0.0]), dtype=np.float32)
+        if base_lin_vel.shape != (3,):
+            base_lin_vel = base_lin_vel.reshape(-1)[:3].astype(np.float32)
 
         # 2) base_ang_vel (3) (rad/s)
         base_ang_vel = np.array(orientation["base_ang_vel"], dtype=np.float32)
@@ -302,11 +305,25 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         ang_vel_z = float(np.clip(ang_vel_z, -0.8, 0.8))
         velocity_commands = np.array([lin_vel_x, lin_vel_y, ang_vel_z], dtype=np.float32)
 
-        # Lie about measured base_lin_vel: report the commanded planar velocity.
-        # Training used PhysX ground-truth lin vel; Athena has no odometer, and zeroing
-        # that slot broke the closed loop. Feeding cmd as "measured" pretends perfect
-        # tracking so the policy still emits the gait it learned for that speed.
-        base_lin_vel = np.array([lin_vel_x, lin_vel_y, 0.0], dtype=np.float32)
+        # 1b) base_lin_vel — no odometry on Athena. Using zeros is a large train/deploy
+        # mismatch (sim sees true body velocity). Approximate with a lagged/scaled
+        # copy of the planar velocity command, which well-tracked policies nearly match.
+        target_lin = np.array(
+            [
+                lin_vel_x * float(config.BASE_LIN_VEL_CMD_SCALE),
+                lin_vel_y * float(config.BASE_LIN_VEL_CMD_SCALE),
+                0.0,
+            ],
+            dtype=np.float32,
+        )
+        if config.EST_BASE_LIN_VEL is None:
+            config.EST_BASE_LIN_VEL = target_lin.copy()
+        else:
+            alpha = float(np.clip(config.BASE_LIN_VEL_EMA_ALPHA, 0.0, 1.0))
+            config.EST_BASE_LIN_VEL = (
+                (1.0 - alpha) * np.asarray(config.EST_BASE_LIN_VEL, dtype=np.float32) + alpha * target_lin
+            )
+        base_lin_vel = np.asarray(config.EST_BASE_LIN_VEL, dtype=np.float32).reshape(-1)[:3]
 
         # 5) joint_pos (12): joint positions relative to default positions (radians)
         # CRITICAL: Order must match Isaac Lab JointPositionAction resolution (ISAAC_JOINT_ORDER).
