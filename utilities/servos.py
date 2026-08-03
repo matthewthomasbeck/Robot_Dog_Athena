@@ -23,6 +23,7 @@ import logging # import logging for debugging
 
 ##### import necessary functions #####
 
+import utilities.config as config # gait flags (servo_range_clamping)
 from utilities.maestro import initialize_maestro # import maestro initialization functions
 
 
@@ -99,34 +100,35 @@ def map_angle_to_servo_position(angle, joint_data):
     full_front_pwm = float(joint_data["FULL_FRONT"])
 
     angle = float(angle)
+    clamp_ranges = bool(config.GAIT_CONFIG.get("servo_range_clamping", True))
 
-    # Clamp to calibrated angle range.
+    # Clamp to calibrated angle range (legacy). Off → keep angle and extrapolate PWM.
     a_lo = min(full_front_angle, full_back_angle)
     a_hi = max(full_front_angle, full_back_angle)
-    if angle < a_lo:
-        angle = a_lo
-    elif angle > a_hi:
-        angle = a_hi
+    if clamp_ranges:
+        angle = max(a_lo, min(a_hi, angle))
 
     def _between(a, a0, a1, eps=1e-9):
         return (a - a0) * (a - a1) <= eps
 
-    # Interpolate on the front or back side of neutral.
     if _between(angle, neutral_angle, full_front_angle):
         pwm = _lerp(angle, neutral_angle, full_front_angle, neutral_pwm, full_front_pwm)
     elif _between(angle, neutral_angle, full_back_angle):
         pwm = _lerp(angle, neutral_angle, full_back_angle, neutral_pwm, full_back_pwm)
+    elif abs(angle - full_front_angle) <= abs(angle - full_back_angle):
+        # Past FRONT (or misaligned neutral): use front-side slope.
+        pwm = _lerp(angle, neutral_angle, full_front_angle, neutral_pwm, full_front_pwm)
     else:
-        # Neutral outside [front, back] (misconfigured) — fall back to full-span lerp.
-        logging.warning(
-            "(servos.py): NEUTRAL_ANGLE outside FRONT/BACK span; using full-span lerp.\n"
-        )
-        pwm = _lerp(angle, full_front_angle, full_back_angle, full_front_pwm, full_back_pwm)
+        # Past BACK: use back-side slope.
+        pwm = _lerp(angle, neutral_angle, full_back_angle, neutral_pwm, full_back_pwm)
 
-    # Clamp to calibrated PWM bounds.
-    p_lo = min(full_front_pwm, full_back_pwm)
-    p_hi = max(full_front_pwm, full_back_pwm)
-    pwm = max(p_lo, min(p_hi, pwm))
+    if clamp_ranges:
+        p_lo = min(full_front_pwm, full_back_pwm)
+        p_hi = max(full_front_pwm, full_back_pwm)
+        pwm = max(p_lo, min(p_hi, pwm))
+    else:
+        # Soft Maestro absolute floor/ceiling only (µs); no SERVO_CONFIG span clip.
+        pwm = max(500.0, min(2500.0, pwm))
 
     logging.debug(
         f"(servos.py): angle {angle:.4f} rad -> pwm {pwm:.1f} us "

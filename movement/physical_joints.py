@@ -137,9 +137,10 @@ def move_joint(
     else:
         pwm_angle = float(target_angle)
 
-    min_angle = min(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
-    max_angle = max(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
-    pwm_angle = float(max(min_angle, min(max_angle, pwm_angle)))
+    if config.GAIT_CONFIG.get("servo_range_clamping", True):
+        min_angle = min(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
+        max_angle = max(servo_data["FULL_BACK_ANGLE"], servo_data["FULL_FRONT_ANGLE"])
+        pwm_angle = float(max(min_angle, min(max_angle, pwm_angle)))
 
     pwm = map_angle_to_servo_position(pwm_angle, servo_data)
     speed = map_radian_to_servo_speed(speed)

@@ -407,13 +407,14 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
             target_angles[leg_id] = target_angles.get(leg_id, {})
             movement_rates[leg_id] = movement_rates.get(leg_id, {})
 
-            servo_data = config.SERVO_CONFIG[leg_id][joint_name]
-            min_angle = servo_data['FULL_BACK_ANGLE']
-            max_angle = servo_data['FULL_FRONT_ANGLE']
-            if min_angle > max_angle:
-                min_angle, max_angle = max_angle, min_angle
-
-            target_angle = float(np.clip(target_angles_abs[action_idx], min_angle, max_angle))
+            target_angle = float(target_angles_abs[action_idx])
+            if config.GAIT_CONFIG.get('servo_range_clamping', True):
+                servo_data = config.SERVO_CONFIG[leg_id][joint_name]
+                min_angle = servo_data['FULL_BACK_ANGLE']
+                max_angle = servo_data['FULL_FRONT_ANGLE']
+                if min_angle > max_angle:
+                    min_angle, max_angle = max_angle, min_angle
+                target_angle = float(np.clip(target_angle, min_angle, max_angle))
             target_angles[leg_id][joint_name] = target_angle
             movement_rates[leg_id][joint_name] = float(config.GAIT_CONFIG['SERVO_SPEED_RAD_S'])
 

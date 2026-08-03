@@ -267,7 +267,8 @@ def apply_isaac_joint_targets(joints, speed_rad_s=None):
             current = float(servo_data["CURRENT_ANGLE"])
             # Rate-limit large jumps from a bad packet / reconnect
             desired = max(current - max_delta, min(current + max_delta, desired))
-            desired = float(max(min_angle, min(max_angle, desired)))
+            if config.GAIT_CONFIG.get("servo_range_clamping", True):
+                desired = float(max(min_angle, min(max_angle, desired)))
 
             target_angles[leg_id][joint_name] = desired
             movement_rates[leg_id][joint_name] = float(speed_rad_s)

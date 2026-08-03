@@ -36,7 +36,7 @@ import logging # import logging library for debugging
 ##### set global fps to be used by all modules #####
 
 LOOP_RATE_HZ = 30 # global loop rate in Hz for all modules TODO DEPRECATED/LEGACY
-CONTROL_MODE = 'lan'  # 'web' | 'radio' | 'isaac_mirror' | 'lan'
+CONTROL_MODE = 'isaac_mirror'  # 'web' | 'radio' | 'isaac_mirror' | 'lan'
 RL_NOT_CNN = True # boolean to switch between testing and RL models (true is RL, false is testing)
 DEFAULT_INTENSITY = 10 # default intensity for keyboard commands (1 to 10)
 
@@ -57,6 +57,9 @@ GAIT_CONFIG = {
     'POLICY_DT_S': 0.0875,         # match Isaac Lab hardware-rate cache
     'SETTLE_MARGIN_S': 0.04,       # extra wait after estimated travel time
     'MAX_STEP_WAIT_S': 0.35,       # cap so a stuck estimate can't freeze the dog
+    # Legacy: clip RL / move_joint / PWM-map targets to SERVO_CONFIG FULL_*_ANGLE.
+    # False = let policy targets through (still need FULL_* for angle↔PWM mapping).
+    'servo_range_clamping': False,
 }
 
 # No odometry: fill policy base_lin_vel from the velocity *command* (what sim
@@ -175,21 +178,22 @@ TOP_SPEED = 0.6 # in m/s
 SERVO_CONFIG = { # dictionary of leg configurations
 
     # Calibrated FRONT / NEUTRAL / BACK triples (angle rad ↔ PWM µs).
-    # servos.map_angle_to_servo_position piecewise-lerps through NEUTRAL.
+    # Uppers: FL recipe on all legs — FRONT +10° forward, BACK +25° forward,
+    # NEUTRAL PWM +10° toward BACK (FRONT/BACK PWM from pre-shift N @ 0.001997).
     'FL': {'hip': {'servo': 3, 'FULL_FRONT': 1782.37, 'FULL_BACK': 1345.88, 'NEUTRAL': 1520.68, 'CURRENT': 1520.68, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'upper': {'servo': 5, 'FULL_FRONT': 1178.86, 'FULL_BACK': 1702.75, 'NEUTRAL': 1681.15, 'CURRENT': 1681.15, 'FULL_FRONT_ANGLE': -0.828533, 'FULL_BACK_ANGLE': 0.217668, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 4, 'FULL_FRONT': 1117.40, 'FULL_BACK': 1947.54, 'NEUTRAL': 1554.32, 'CURRENT': 1554.32, 'FULL_FRONT_ANGLE': -0.785267, 'FULL_BACK_ANGLE': 0.872534, 'CURRENT_ANGLE': 0.087266, 'NEUTRAL_ANGLE': 0.087266}},
 
     'FR': {'hip': {'servo': 2, 'FULL_FRONT': 1084.63, 'FULL_BACK': 1521.12, 'NEUTRAL': 1346.32, 'CURRENT': 1346.32, 'FULL_FRONT_ANGLE': -0.435335, 'FULL_BACK_ANGLE': 0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
-           'upper': {'servo': 1, 'FULL_FRONT': 1921.50, 'FULL_BACK': 1310.00, 'NEUTRAL': 1528.35, 'CURRENT': 1528.35, 'FULL_FRONT_ANGLE': 0.654, 'FULL_BACK_ANGLE': -0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+           'upper': {'servo': 1, 'FULL_FRONT': 2030.64, 'FULL_BACK': 1506.75, 'NEUTRAL': 1528.35, 'CURRENT': 1528.35, 'FULL_FRONT_ANGLE': 0.828533, 'FULL_BACK_ANGLE': -0.217668, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 0, 'FULL_FRONT': 2009.10, 'FULL_BACK': 1178.96, 'NEUTRAL': 1572.18, 'CURRENT': 1572.18, 'FULL_FRONT_ANGLE': 0.785267, 'FULL_BACK_ANGLE': -0.872534, 'CURRENT_ANGLE': -0.087266, 'NEUTRAL_ANGLE': -0.087266}},
 
     'BL': {'hip': {'servo': 8, 'FULL_FRONT': 1111.51, 'FULL_BACK': 1548.00, 'NEUTRAL': 1373.20, 'CURRENT': 1373.20, 'FULL_FRONT_ANGLE': -0.435335, 'FULL_BACK_ANGLE': 0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
-           'upper': {'servo': 7, 'FULL_FRONT': 1354.00, 'FULL_BACK': 2000.00, 'NEUTRAL': 1777.0, 'CURRENT': 1777.0, 'FULL_FRONT_ANGLE': -0.654, 'FULL_BACK_ANGLE': 0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+           'upper': {'servo': 7, 'FULL_FRONT': 1362.11, 'FULL_BACK': 1886.00, 'NEUTRAL': 1864.40, 'CURRENT': 1864.40, 'FULL_FRONT_ANGLE': -0.828533, 'FULL_BACK_ANGLE': 0.217668, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 6, 'FULL_FRONT': 1176.15, 'FULL_BACK': 2006.29, 'NEUTRAL': 1613.07, 'CURRENT': 1613.07, 'FULL_FRONT_ANGLE': -0.785267, 'FULL_BACK_ANGLE': 0.872534, 'CURRENT_ANGLE': 0.087266, 'NEUTRAL_ANGLE': 0.087266}},
 
     'BR': {'hip': {'servo': 11, 'FULL_FRONT': 1772.62, 'FULL_BACK': 1336.13, 'NEUTRAL': 1510.93, 'CURRENT': 1510.93, 'FULL_FRONT_ANGLE': 0.435335, 'FULL_BACK_ANGLE': -0.349066, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
-           'upper': {'servo': 10, 'FULL_FRONT': 1701.50, 'FULL_BACK': 1065.25, 'NEUTRAL': 1283.375, 'CURRENT': 1283.375, 'FULL_FRONT_ANGLE': 0.654, 'FULL_BACK_ANGLE': -0.654, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
+           'upper': {'servo': 10, 'FULL_FRONT': 1698.26, 'FULL_BACK': 1174.38, 'NEUTRAL': 1195.98, 'CURRENT': 1195.98, 'FULL_FRONT_ANGLE': 0.828533, 'FULL_BACK_ANGLE': -0.217668, 'CURRENT_ANGLE': 0.0, 'NEUTRAL_ANGLE': 0.0},
            'lower': {'servo': 9, 'FULL_FRONT': 2004.10, 'FULL_BACK': 1173.96, 'NEUTRAL': 1567.18, 'CURRENT': 1567.18, 'FULL_FRONT_ANGLE': 0.785267, 'FULL_BACK_ANGLE': -0.872534, 'CURRENT_ANGLE': -0.087266, 'NEUTRAL_ANGLE': -0.087266}},
 }
 
