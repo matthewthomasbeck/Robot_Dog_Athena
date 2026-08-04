@@ -300,8 +300,9 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
             ang_vel_z = -0.5
 
         # Clamp to Isaac Lab typical ranges
-        lin_vel_x = float(np.clip(lin_vel_x, -0.6, 0.6))
-        lin_vel_y = float(np.clip(lin_vel_y, -0.6, 0.6))
+        max_lin = float(config.TOP_SPEED)
+        lin_vel_x = float(np.clip(lin_vel_x, -max_lin, max_lin))
+        lin_vel_y = float(np.clip(lin_vel_y, -max_lin, max_lin))
         ang_vel_z = float(np.clip(ang_vel_z, -0.8, 0.8))
         velocity_commands = np.array([lin_vel_x, lin_vel_y, ang_vel_z], dtype=np.float32)
 
