@@ -275,9 +275,10 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         ang_vel_z = 0.0
 
         # NOTE: Training-side frame uses +x as "shift left" and +y as "move backward".
-        # To match this, we remap keys on the robot side:
-        #   a = +x (left), d = -x (right), s = +y (backward), w = -y (forward).
-        # We also scale the commanded linear speed based on joystick/command intensity.
+        # WASD: a/d → ±x (unchanged). w/s and yaw were flipped vs physical nose / turn sense.
+        #   a = +x (left), d = -x (right)
+        #   w = +y (forward on hardware), s = -y (backward on hardware)
+        #   q/arrowleft = −wz (yaw left on hardware), e/arrowright = +wz
 
         linear_speed = interpret_intensity(intensity)  # speed in m/s based on intensity (1-10)
 
@@ -287,17 +288,17 @@ def run_gait_adjustment_blind( # function to run gait adjustment RL model withou
         elif 'd' in command_list:
             lin_vel_x = -linear_speed   # shift right → -x
 
-        # Y-axis (forward/backward in training frame: +y = backward)
-        if 's' in command_list:
-            lin_vel_y = linear_speed    # move backward → +y
-        elif 'w' in command_list:
-            lin_vel_y = -linear_speed   # move forward → -y
+        # Y-axis (forward/backward): swapped vs old map so W matches physical nose
+        if 'w' in command_list:
+            lin_vel_y = linear_speed    # move forward → +y
+        elif 's' in command_list:
+            lin_vel_y = -linear_speed   # move backward → -y
 
-        # Rotation
+        # Rotation: swapped so Q matches physical left turn
         if 'arrowleft' in command_list:
-            ang_vel_z = 0.5
-        elif 'arrowright' in command_list:
             ang_vel_z = -0.5
+        elif 'arrowright' in command_list:
+            ang_vel_z = 0.5
 
         # Clamp to Isaac Lab typical ranges
         max_lin = float(config.TOP_SPEED)
